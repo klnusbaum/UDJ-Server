@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 2.6)
+PROJECT(UDJ)
+FIND_PACKAGE(Qt4 REQUIRED)
+
+ADD_SUBDIRECTORY(src)
