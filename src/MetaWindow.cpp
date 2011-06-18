@@ -5,6 +5,12 @@
 #include <QPushButton>
 #include <QToolBar>
 #include <QStyle>
+#include "QFileDialog"
+#include "MusicFinder.hpp"
+#include <QMenuBar>
+
+namespace UDJ{
+
 
 MetaWindow::MetaWindow(){
   audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
@@ -57,6 +63,21 @@ void MetaWindow::stateChanged(Phonon::State newState, Phonon::State oldState){
   }
 }
 
+void MetaWindow::setMusicDir(){
+  //TODO: Check to see if musicDir is different than then current music dir
+  QString musicDir = QFileDialog::getExistingDirectory(this,
+    tr("Pick you music folder"),
+    QDir::homePath(),
+    QFileDialog::ShowDirsOnly);
+  QList<Phonon::MediaSource> newMusic = MusicFinder::findMusicInDir(QDir(musicDir));   
+  if(newMusic.isEmpty()){
+    return;
+  }
+  for(int i=0; i<newMusic.size(); ++i){
+  }
+
+}
+
 void MetaWindow::createActions(){
   playAction = new QAction(style()->standardIcon(QStyle::SP_MediaPlay),
     tr("Play"), this);
@@ -69,10 +90,20 @@ void MetaWindow::createActions(){
     tr("Stop"), this);
   stopAction->setShortcut(tr("Ctrl+S"));
   stopAction->setEnabled(false);
+
+  setMusicDirAction = new QAction(tr("S&et Music Directory"), this);
+  setMusicDirAction->setShortcut(tr("Ctrl+E"));
+
+  quitAction = new QAction(tr("&Quit"), this);
+  quitAction->setShortcuts(QKeySequence::Quit);
+  
+
   
   connect(playAction, SIGNAL(triggered()), mediaObject, SLOT(play()));
   connect(pauseAction, SIGNAL(triggered()), mediaObject, SLOT(pause()));
   connect(stopAction, SIGNAL(triggered()), mediaObject, SLOT(stop()));
+  connect(quitAction, SIGNAL(triggered()), this, SLOT(close()));
+  connect(setMusicDirAction, SIGNAL(triggered()), this, SLOT(setMusicDir()));
 
 }
 
@@ -97,17 +128,33 @@ void MetaWindow::setupUi(){
   playBackLayout->addWidget(bar);
   playBackLayout->addStretch();
   playBackLayout->addWidget(volumeSlider);
+
+  libraryView = new QTableView(this);
+  playlistWidget = new QWidget(this);
+  
+  QTabWidget* tabWidget = new QTabWidget(this);
+  tabWidget->addTab(libraryView, tr("Music Library"));
+  tabWidget->addTab(playlistWidget, tr("Playlist"));
+  
   
   QVBoxLayout *mainLayout = new QVBoxLayout;
   mainLayout->addLayout(seekerLayout);
   mainLayout->addLayout(playBackLayout);
+  mainLayout->addWidget(tabWidget);
 
   QWidget* widget = new QWidget;
   widget->setLayout(mainLayout);
 
   setCentralWidget(widget);
-  setWindowTitle("Udj");
-
-
-
+  setWindowTitle("UDJ");
 }
+
+void MetaWindow::setupMenus(){
+  QMenu *musicMenu = menuBar()->addMenu(tr("&Music"));
+  musicMenu->addAction(setMusicDirAction);
+  musicMenu->addSeparator();
+  musicMenu->addAction(quitAction);
+}
+
+
+} //end namespace
