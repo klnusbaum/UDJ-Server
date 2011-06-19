@@ -1,6 +1,6 @@
-SET(UDJ_SRCS main.cpp MetaWindow.cpp MusicFinder.cpp)
+SET(UDJ_SRCS main.cpp MetaWindow.cpp MusicFinder.cpp SettingsWidget.cpp)
 SET(UDJ_HDRS MusicFinder.hpp)
-SET(UDJ_MOC_HDRS MetaWindow.hpp)
+SET(UDJ_MOC_HDRS MetaWindow.hpp SettingsWidget.hpp)
 
 QT4_WRAP_CPP(MOC_SRCS ${UDJ_MOC_HDRS})
 

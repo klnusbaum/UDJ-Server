@@ -8,6 +8,7 @@
 #include "QFileDialog"
 #include "MusicFinder.hpp"
 #include <QMenuBar>
+#include "SettingsWidget.hpp"
 
 namespace UDJ{
 
@@ -132,10 +133,12 @@ void MetaWindow::setupUi(){
 
   libraryView = new QTableView(this);
   playlistView = new QTableView(this);
+  settingsWidget = new SettingsWidget(this);
   
   QTabWidget* tabWidget = new QTabWidget(this);
   tabWidget->addTab(playlistView, tr("Playlist"));
   tabWidget->addTab(libraryView, tr("Music Library"));
+  tabWidget->addTab(settingsWidget, tr("Settings"));
   
   
   QVBoxLayout *mainLayout = new QVBoxLayout;

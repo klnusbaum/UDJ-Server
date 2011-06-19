@@ -16,6 +16,8 @@ class QAction;
 namespace UDJ{
 
 
+class SettingsWidget;
+
 class MetaWindow : public QMainWindow{
   Q_OBJECT
 public:
@@ -34,6 +36,7 @@ private:
   Phonon::VolumeSlider *volumeSlider;
   QTableView* libraryView;
   QTableView* playlistView;
+  SettingsWidget* settingsWidget;
 
   QAction *playAction;
   QAction *pauseAction;
