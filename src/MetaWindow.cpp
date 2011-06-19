@@ -27,6 +27,7 @@ MetaWindow::MetaWindow(){
 
   createActions();
   setupUi();
+  setupMenus();
 
   mediaObject->setCurrentSource(Phonon::MediaSource("waterlanding.mp3"));
   
@@ -130,11 +131,11 @@ void MetaWindow::setupUi(){
   playBackLayout->addWidget(volumeSlider);
 
   libraryView = new QTableView(this);
-  playlistWidget = new QWidget(this);
+  playlistView = new QTableView(this);
   
   QTabWidget* tabWidget = new QTabWidget(this);
+  tabWidget->addTab(playlistView, tr("Playlist"));
   tabWidget->addTab(libraryView, tr("Music Library"));
-  tabWidget->addTab(playlistWidget, tr("Playlist"));
   
   
   QVBoxLayout *mainLayout = new QVBoxLayout;

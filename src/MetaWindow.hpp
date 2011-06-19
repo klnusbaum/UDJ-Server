@@ -33,7 +33,7 @@ private:
   Phonon::AudioOutput *audioOutput;
   Phonon::VolumeSlider *volumeSlider;
   QTableView* libraryView;
-  QWidget* playlistWidget;
+  QTableView* playlistView;
 
   QAction *playAction;
   QAction *pauseAction;
