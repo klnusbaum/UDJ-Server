@@ -36,6 +36,7 @@ private:
   Phonon::VolumeSlider *volumeSlider;
   QTableView* libraryView;
   QTableView* playlistView;
+  QTableView* partiersView;
   SettingsWidget* settingsWidget;
 
   QAction *playAction;

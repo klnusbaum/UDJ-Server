@@ -133,11 +133,13 @@ void MetaWindow::setupUi(){
 
   libraryView = new QTableView(this);
   playlistView = new QTableView(this);
+  partiersView = new QTableView(this);
   settingsWidget = new SettingsWidget(this);
   
   QTabWidget* tabWidget = new QTabWidget(this);
   tabWidget->addTab(playlistView, tr("Playlist"));
   tabWidget->addTab(libraryView, tr("Music Library"));
+  tabWidget->addTab(partiersView, tr("Partiers"));
   tabWidget->addTab(settingsWidget, tr("Settings"));
   
   
