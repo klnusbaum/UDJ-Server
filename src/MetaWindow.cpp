@@ -9,6 +9,8 @@
 #include "MusicFinder.hpp"
 #include <QMenuBar>
 #include "SettingsWidget.hpp"
+#include "MusicLibrary.hpp"
+#include <iostream>
 
 namespace UDJ{
 
@@ -30,8 +32,6 @@ MetaWindow::MetaWindow(){
   setupUi();
   setupMenus();
 
-  mediaObject->setCurrentSource(Phonon::MediaSource("waterlanding.mp3"));
-  
 
 }
 
@@ -67,17 +67,29 @@ void MetaWindow::stateChanged(Phonon::State newState, Phonon::State oldState){
 
 void MetaWindow::setMusicDir(){
   //TODO: Check to see if musicDir is different than then current music dir
-  QString musicDir = QFileDialog::getExistingDirectory(this,
+  QDir musicDir = QFileDialog::getExistingDirectory(this,
     tr("Pick you music folder"),
     QDir::homePath(),
     QFileDialog::ShowDirsOnly);
-  QList<Phonon::MediaSource> newMusic = MusicFinder::findMusicInDir(QDir(musicDir));   
+  QList<Phonon::MediaSource> newMusic = MusicFinder::findMusicInDir(musicDir.absolutePath());   
   if(newMusic.isEmpty()){
     return;
   }
-  for(int i=0; i<newMusic.size(); ++i){
-  }
+  library.setMusicLibrary(newMusic);
+  libraryModel->select();
+}
 
+void MetaWindow::tableClicked(const QModelIndex& index){
+  mediaObject->stop();
+  mediaObject->clearQueue();
+  QModelIndex filePathIndex = getFilePathIndex(index);
+  Phonon::MediaSource songToPlay(libraryModel->data(filePathIndex).toString()); 
+  mediaObject->setCurrentSource(songToPlay);
+  mediaObject->play();
+}
+
+QModelIndex MetaWindow::getFilePathIndex(const QModelIndex& songIndex){
+  return songIndex.sibling(songIndex.row(), 4);
 }
 
 void MetaWindow::createActions(){
@@ -131,7 +143,18 @@ void MetaWindow::setupUi(){
   playBackLayout->addStretch();
   playBackLayout->addWidget(volumeSlider);
 
+  libraryModel = new QSqlTableModel(this, library.getDatabase());
+  libraryModel->setTable("LIBRARY");
+  libraryModel->select();
+  libraryModel->setHeaderData(0, Qt::Horizontal, "Song");
+  libraryModel->setHeaderData(1, Qt::Horizontal, "Artist");
+  libraryModel->setHeaderData(2, Qt::Horizontal, "Album");
+
   libraryView = new QTableView(this);
+  libraryView->setModel(libraryModel);
+  libraryView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+  libraryView->setColumnHidden(4,true);
+  libraryView->setColumnHidden(0,true);
   playlistView = new QTableView(this);
   partiersView = new QTableView(this);
   settingsWidget = new SettingsWidget(this);
@@ -153,6 +176,8 @@ void MetaWindow::setupUi(){
 
   setCentralWidget(widget);
   setWindowTitle("UDJ");
+
+  connect(libraryView, SIGNAL(activated(const QModelIndex&)), this, SLOT(tableClicked(const QModelIndex&)));
 }
 
 void MetaWindow::setupMenus(){

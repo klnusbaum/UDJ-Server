@@ -8,6 +8,8 @@
 #include <phonon/mediaobject.h>
 #include <phonon/volumeslider.h>
 #include <phonon/audiooutput.h>
+#include <QSqlTableModel>
+#include "MusicLibrary.hpp"
 
 class QTabWidget;
 class QPushButton;
@@ -27,6 +29,7 @@ private slots:
   void tick(qint64 time);
   void sourceChanged(const Phonon::MediaSource &source);
   void setMusicDir();
+  void tableClicked(const QModelIndex& index);
   
 private:
   QTabWidget *tabs;
@@ -37,6 +40,7 @@ private:
   QTableView* libraryView;
   QTableView* playlistView;
   QTableView* partiersView;
+  QSqlTableModel* libraryModel;
   SettingsWidget* settingsWidget;
 
   QAction *playAction;
@@ -45,11 +49,14 @@ private:
   QAction *setMusicDirAction;
   QAction *quitAction;
 
+  MusicLibrary library;
+
 //  QFileSystemWatcher* fileWatcher;
 
   void createActions();
   void setupUi();
   void setupMenus();
+  static QModelIndex getFilePathIndex(const QModelIndex& songIndex);
 };
 
 
