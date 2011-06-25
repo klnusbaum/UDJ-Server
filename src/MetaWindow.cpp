@@ -1,17 +1,37 @@
+/**
+ * Copyright 2011 Kurtis L. Nusbaum
+ * 
+ * This file is part of UDJ.
+ * 
+ * UDJ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * UDJ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
+ */
 #include "MetaWindow.hpp"
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <QAction>
-#include <QGridLayout>
 #include <QTabWidget>
 #include <QPushButton>
 #include <QToolBar>
 #include <QStyle>
 #include <QFileDialog>
-#include <QHeaderView>
 #include <QProgressDialog>
 #include "MusicFinder.hpp"
 #include <QMenuBar>
 #include "SettingsWidget.hpp"
 #include "MusicLibrary.hpp"
+#include "PlaylistWidget.hpp"
+#include "LibraryView.hpp"
 #include <iostream>
 
 namespace UDJ{
@@ -150,28 +170,16 @@ void MetaWindow::setupUi(){
   playBackLayout->addWidget(volumeSlider);
 
   musicLibrary = new MusicLibrary(this);
-  musicLibrary->setTable("LIBRARY");
-  musicLibrary->select();
-  musicLibrary->setHeaderData(0, Qt::Horizontal, "Song");
-  musicLibrary->setHeaderData(1, Qt::Horizontal, "Artist");
-  musicLibrary->setHeaderData(2, Qt::Horizontal, "Album");
+  libraryView = new LibraryView(musicLibrary, this);
 
+  mainPlaylist = new PlaylistWidget(this);
 
-  libraryView = new QTableView(this);
-  libraryView->setModel(musicLibrary);
-  libraryView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-  libraryView->setColumnHidden(4,true);
-  libraryView->setColumnHidden(0,true);
-  libraryView->verticalHeader()->hide();
-  libraryView->horizontalHeader()->setStretchLastSection(true);
-
-
-  playlistView = new QTableView(this);
   partiersView = new QTableView(this);
+
   settingsWidget = new SettingsWidget(this);
   
   QTabWidget* tabWidget = new QTabWidget(this);
-  tabWidget->addTab(playlistView, tr("Playlist"));
+  tabWidget->addTab(mainPlaylist, tr("Playlist"));
   tabWidget->addTab(libraryView, tr("Music Library"));
   tabWidget->addTab(partiersView, tr("Partiers"));
   tabWidget->addTab(settingsWidget, tr("Settings"));
