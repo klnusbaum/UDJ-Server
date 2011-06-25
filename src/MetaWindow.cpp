@@ -5,7 +5,9 @@
 #include <QPushButton>
 #include <QToolBar>
 #include <QStyle>
-#include "QFileDialog"
+#include <QFileDialog>
+#include <QHeaderView>
+#include <QProgressDialog>
 #include "MusicFinder.hpp"
 #include <QMenuBar>
 #include "SettingsWidget.hpp"
@@ -75,8 +77,12 @@ void MetaWindow::setMusicDir(){
   if(newMusic.isEmpty()){
     return;
   }
-  library.setMusicLibrary(newMusic);
+  int numNewFiles = newMusic.size();
+  QProgressDialog progress("Loading Library...", "Cancel", 0, numNewFiles, this); 
+  progress.setWindowModality(Qt::WindowModal);
+  library.setMusicLibrary(newMusic, progress);
   libraryModel->select();
+  progress.setValue(numNewFiles);
 }
 
 void MetaWindow::tableClicked(const QModelIndex& index){
@@ -150,11 +156,16 @@ void MetaWindow::setupUi(){
   libraryModel->setHeaderData(1, Qt::Horizontal, "Artist");
   libraryModel->setHeaderData(2, Qt::Horizontal, "Album");
 
+
   libraryView = new QTableView(this);
   libraryView->setModel(libraryModel);
   libraryView->setEditTriggers(QAbstractItemView::NoEditTriggers);
   libraryView->setColumnHidden(4,true);
   libraryView->setColumnHidden(0,true);
+  libraryView->verticalHeader()->hide();
+  libraryView->horizontalHeader()->setStretchLastSection(true);
+
+
   playlistView = new QTableView(this);
   partiersView = new QTableView(this);
   settingsWidget = new SettingsWidget(this);

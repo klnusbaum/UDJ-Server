@@ -31,14 +31,16 @@ const QSqlDatabase& MusicLibrary::getDatabase() const{
   return musicdb;
 }
 
-void MusicLibrary::setMusicLibrary(QList<Phonon::MediaSource> songs){
+void MusicLibrary::setMusicLibrary(QList<Phonon::MediaSource> songs, QProgressDialog& progress){
   QSqlQuery workQuery(musicdb);
   workQuery.exec("DELETE FROM library");
-  for(QList<Phonon::MediaSource>::iterator it = songs.begin();
-    it != songs.end();
-    ++it)
-  {
-    addSong(*it);
+  for(int i =0; i<songs.size(); ++i){
+    progress.setValue(i);
+    if(progress.wasCanceled()){
+      break;
+    }
+    //progress.setLabelText("Adding " + getSongName(songs[i]));
+    addSong(songs[i]);
   }
 }
 
@@ -71,7 +73,6 @@ QString MusicLibrary::getSongName(Phonon::MediaSource song) const{
 
 QString MusicLibrary::getArtistName(Phonon::MediaSource song) const{
   QStringList metaData = metaDataGetter->metaData(Phonon::ArtistMetaData);
-  std::cout << "Artist size: " << metaData.size() << std::endl;
   if(metaData.size() != 0 && metaData[0] != ""){
     return metaData[0];
   }

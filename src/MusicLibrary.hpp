@@ -3,6 +3,7 @@
 #include <QSqlDatabase>
 #include <phonon/mediaobject.h>
 #include <phonon/mediasource.h>
+#include <QProgressDialog>
 
 namespace UDJ{
 
@@ -13,7 +14,7 @@ public:
   ~MusicLibrary();
   const QSqlDatabase& getDatabase() const;
 
-  void setMusicLibrary(QList<Phonon::MediaSource> songs);
+  void setMusicLibrary(QList<Phonon::MediaSource> songs, QProgressDialog& progress);
 
   void addSong(Phonon::MediaSource song);
 
