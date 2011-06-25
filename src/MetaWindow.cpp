@@ -196,7 +196,12 @@ void MetaWindow::setupUi(){
   setCentralWidget(widget);
   setWindowTitle("UDJ");
 
-  connect(libraryView, SIGNAL(activated(const QModelIndex&)), this, SLOT(tableClicked(const QModelIndex&)));
+  //connect(libraryView, SIGNAL(activated(const QModelIndex&)), this, SLOT(tableClicked(const QModelIndex&)));
+  connect(
+    libraryView, 
+    SIGNAL(songAddRequest(const QModelIndex&)), 
+    this, 
+    SLOT(addSongToPlaylist(const QModelIndex&)));
 }
 
 void MetaWindow::setupMenus(){
@@ -204,6 +209,24 @@ void MetaWindow::setupMenus(){
   musicMenu->addAction(setMusicDirAction);
   musicMenu->addSeparator();
   musicMenu->addAction(quitAction);
+}
+
+void MetaWindow::addSongToPlaylist(const QModelIndex& index){
+  int currentRow = mainPlaylist->rowCount();
+  mainPlaylist->insertRow(currentRow);
+  QTableWidgetItem* titleItem = new QTableWidgetItem(
+    musicLibrary->data(index.sibling(index.row(),1)).toString());
+  titleItem->setFlags(titleItem->flags() ^ Qt::ItemIsEditable);
+  QTableWidgetItem* artistItem = new QTableWidgetItem(
+    musicLibrary->data(index.sibling(index.row(),2)).toString());
+  artistItem->setFlags(artistItem->flags() ^ Qt::ItemIsEditable);
+  QTableWidgetItem* albumItem = new QTableWidgetItem(
+    musicLibrary->data(index.sibling(index.row(),3)).toString());
+  albumItem->setFlags(albumItem->flags() ^ Qt::ItemIsEditable);
+  mainPlaylist->setItem(currentRow, 0, titleItem);
+  mainPlaylist->setItem(currentRow, 1, artistItem);
+  mainPlaylist->setItem(currentRow, 2, albumItem);
+  
 }
 
 

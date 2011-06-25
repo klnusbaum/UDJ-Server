@@ -49,6 +49,7 @@ private slots:
   void sourceChanged(const Phonon::MediaSource &source);
   void setMusicDir();
   void tableClicked(const QModelIndex& index);
+  void addSongToPlaylist(const QModelIndex& index);
   
 private:
   QTabWidget *tabs;

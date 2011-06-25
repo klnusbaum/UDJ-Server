@@ -19,6 +19,8 @@
 #include "MusicLibrary.hpp"
 #include "LibraryView.hpp"
 #include <QHeaderView>
+#include <QContextMenuEvent>
+#include <QMenu>
 
 namespace UDJ{
 
@@ -30,6 +32,27 @@ LibraryView::LibraryView(MusicLibrary* musicLibrary, QWidget* parent):QTableView
   setModel(musicLibrary);
   setColumnHidden(0,true);
   setColumnHidden(4,true);
+}
+
+void LibraryView::contextMenuEvent(QContextMenuEvent* e){
+  int contextRow = rowAt(e->y());
+  if(contextRow == -1){
+    return;
+  }
+
+  QAction* selected = 
+    QMenu::exec(getContextMenuActions(), e->globalPos());
+  if(selected->text() == "Add to playlist"){
+    QModelIndex indexToAdd = indexAt(e->pos());
+    emit songAddRequest(indexToAdd);
+  }
+
+}
+
+QList<QAction*> LibraryView::getContextMenuActions(){
+  QList<QAction*> contextActions;
+  contextActions.append(new QAction("Add to playlist", this));
+  return contextActions;
 }
 
 

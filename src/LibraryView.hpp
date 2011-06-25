@@ -20,6 +20,8 @@
 #define LIBRARY_VIEW_HPP
 #include <QTableView>
 
+class QContextMenuEvent;
+
 namespace UDJ{
 
 
@@ -29,6 +31,12 @@ class LibraryView : public QTableView{
 Q_OBJECT
 public:
   LibraryView(MusicLibrary* musicLibrary, QWidget* parent=0);
+signals:
+  void songAddRequest(const QModelIndex& songToAdd); 
+protected:
+  void contextMenuEvent(QContextMenuEvent* e);
+private:
+  QList<QAction*> getContextMenuActions();
 };
 
 
