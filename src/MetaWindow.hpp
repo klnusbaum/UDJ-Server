@@ -40,7 +40,7 @@ private:
   QTableView* libraryView;
   QTableView* playlistView;
   QTableView* partiersView;
-  QSqlTableModel* libraryModel;
+  MusicLibrary* musicLibrary;
   SettingsWidget* settingsWidget;
 
   QAction *playAction;
@@ -48,8 +48,6 @@ private:
   QAction *stopAction;
   QAction *setMusicDirAction;
   QAction *quitAction;
-
-  MusicLibrary library;
 
 //  QFileSystemWatcher* fileWatcher;
 

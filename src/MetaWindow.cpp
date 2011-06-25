@@ -80,8 +80,8 @@ void MetaWindow::setMusicDir(){
   int numNewFiles = newMusic.size();
   QProgressDialog progress("Loading Library...", "Cancel", 0, numNewFiles, this); 
   progress.setWindowModality(Qt::WindowModal);
-  library.setMusicLibrary(newMusic, progress);
-  libraryModel->select();
+  musicLibrary->setMusicLibrary(newMusic, progress);
+  musicLibrary->select();
   progress.setValue(numNewFiles);
 }
 
@@ -89,7 +89,7 @@ void MetaWindow::tableClicked(const QModelIndex& index){
   mediaObject->stop();
   mediaObject->clearQueue();
   QModelIndex filePathIndex = getFilePathIndex(index);
-  Phonon::MediaSource songToPlay(libraryModel->data(filePathIndex).toString()); 
+  Phonon::MediaSource songToPlay(musicLibrary->data(filePathIndex).toString()); 
   mediaObject->setCurrentSource(songToPlay);
   mediaObject->play();
 }
@@ -149,16 +149,16 @@ void MetaWindow::setupUi(){
   playBackLayout->addStretch();
   playBackLayout->addWidget(volumeSlider);
 
-  libraryModel = new QSqlTableModel(this, library.getDatabase());
-  libraryModel->setTable("LIBRARY");
-  libraryModel->select();
-  libraryModel->setHeaderData(0, Qt::Horizontal, "Song");
-  libraryModel->setHeaderData(1, Qt::Horizontal, "Artist");
-  libraryModel->setHeaderData(2, Qt::Horizontal, "Album");
+  musicLibrary = new MusicLibrary(this);
+  musicLibrary->setTable("LIBRARY");
+  musicLibrary->select();
+  musicLibrary->setHeaderData(0, Qt::Horizontal, "Song");
+  musicLibrary->setHeaderData(1, Qt::Horizontal, "Artist");
+  musicLibrary->setHeaderData(2, Qt::Horizontal, "Album");
 
 
   libraryView = new QTableView(this);
-  libraryView->setModel(libraryModel);
+  libraryView->setModel(musicLibrary);
   libraryView->setEditTriggers(QAbstractItemView::NoEditTriggers);
   libraryView->setColumnHidden(4,true);
   libraryView->setColumnHidden(0,true);

@@ -8,12 +8,12 @@ SET(UDJ_SRCS
 
 SET(UDJ_HDRS 
   MusicFinder.hpp
-  MusicLibrary.hpp
 )
 
 SET(UDJ_MOC_HDRS 
   MetaWindow.hpp 
   SettingsWidget.hpp
+  MusicLibrary.hpp
 )
 
 QT4_WRAP_CPP(MOC_SRCS ${UDJ_MOC_HDRS})

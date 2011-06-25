@@ -8,16 +8,19 @@
 namespace UDJ{
 
 
-MusicLibrary::MusicLibrary(){
+MusicLibrary::MusicLibrary(QWidget* parent):QSqlTableModel(
+  parent, 
+  QSqlDatabase::addDatabase("QSQLITE", getMusicDBConnectionName()))
+{
   metaDataGetter = new Phonon::MediaObject(0);
-  musicdb = QSqlDatabase::addDatabase("QSQLITE", getMusicDBConnectionName()); 
-  QDir dbDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));  if(!dbDir.exists()){
+  QDir dbDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));  
+  if(!dbDir.exists()){
     //TODO handle if this fails
     dbDir.mkpath(dbDir.absolutePath());
   }
-  musicdb.setDatabaseName(dbDir.absoluteFilePath(getMusicDBName()));
-  musicdb.open(); 
-  QSqlQuery setupQuery(musicdb);
+  database().setDatabaseName(dbDir.absoluteFilePath(getMusicDBName()));
+  database().open(); 
+  QSqlQuery setupQuery(database());
   setupQuery.exec("CREATE TABLE IF NOT EXISTS library "
   "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
   "song TEXT NOT NULL, artist TEXT, album TEXT, filePath TEXT)");  
@@ -25,10 +28,6 @@ MusicLibrary::MusicLibrary(){
 
 MusicLibrary::~MusicLibrary(){
   delete metaDataGetter;
-}
-
-const QSqlDatabase& MusicLibrary::getDatabase() const{
-  return musicdb;
 }
 
 void MusicLibrary::setMusicLibrary(QList<Phonon::MediaSource> songs, QProgressDialog& progress){
@@ -39,7 +38,6 @@ void MusicLibrary::setMusicLibrary(QList<Phonon::MediaSource> songs, QProgressDi
     if(progress.wasCanceled()){
       break;
     }
-    //progress.setLabelText("Adding " + getSongName(songs[i]));
     addSong(songs[i]);
   }
 }
@@ -47,7 +45,7 @@ void MusicLibrary::setMusicLibrary(QList<Phonon::MediaSource> songs, QProgressDi
 void MusicLibrary::addSong(Phonon::MediaSource song){
   metaDataGetter->setCurrentSource(song);
   QSqlQuery addQuery("INSERT INTO library "
-    "(song, artist, album, filePath) VALUES ( ?, ?, ?, ?)", musicdb);
+    "(song, artist, album, filePath) VALUES ( ?, ?, ?, ?)", database());
   
   addQuery.addBindValue(getSongName(song));
   addQuery.addBindValue(getArtistName(song));

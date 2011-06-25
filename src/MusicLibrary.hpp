@@ -1,5 +1,6 @@
 #ifndef MUSIC_LIBRARY_HPP
 #define MUSIC_LIBRARY_HPP
+#include <QSqlTableModel>
 #include <QSqlDatabase>
 #include <phonon/mediaobject.h>
 #include <phonon/mediasource.h>
@@ -8,9 +9,10 @@
 namespace UDJ{
 
 
-class MusicLibrary{
+class MusicLibrary : public QSqlTableModel{
+Q_OBJECT
 public:
-  MusicLibrary();
+  MusicLibrary(QWidget* parent=0);
   ~MusicLibrary();
   const QSqlDatabase& getDatabase() const;
 
