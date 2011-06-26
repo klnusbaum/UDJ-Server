@@ -47,7 +47,10 @@ MusicLibrary::~MusicLibrary(){
 
 void MusicLibrary::setMusicLibrary(QList<Phonon::MediaSource> songs, QProgressDialog& progress){
   QSqlQuery workQuery(database());
-  workQuery.exec("DELETE FROM library");
+  workQuery.exec("DROP TABLE library");
+  workQuery.exec("CREATE TABLE IF NOT EXISTS library "
+  "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
+  "song TEXT NOT NULL, artist TEXT, album TEXT, filePath TEXT)");  
   for(int i =0; i<songs.size(); ++i){
     progress.setValue(i);
     if(progress.wasCanceled()){
