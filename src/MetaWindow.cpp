@@ -17,6 +17,7 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "MetaWindow.hpp"
+#include <QSqlQuery>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QAction>
@@ -28,11 +29,16 @@
 #include <QProgressDialog>
 #include "MusicFinder.hpp"
 #include <QMenuBar>
+#include <QDesktopServices>
 #include "SettingsWidget.hpp"
 #include "MusicLibrary.hpp"
-#include "PlaylistWidget.hpp"
+#include "PlaylistView.hpp"
 #include "LibraryView.hpp"
-#include <iostream>
+
+#ifdef UDJ_DEBUG_BUILD
+  #include <iostream>
+  #include <QSqlError>
+#endif
 
 namespace UDJ{
 
@@ -40,6 +46,7 @@ namespace UDJ{
 MetaWindow::MetaWindow(){
   audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
   mediaObject = new Phonon::MediaObject(this);
+  makeDBConnection();
 
   mediaObject->setTickInterval(1000);
   connect(mediaObject, SIGNAL(tick(qint64)), this, SLOT(tick(qint64)));
@@ -55,6 +62,48 @@ MetaWindow::MetaWindow(){
   setupMenus();
 
 
+}
+
+void MetaWindow::makeDBConnection(){
+  QDir dbDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));  
+  if(!dbDir.exists()){
+    //TODO handle if this fails
+    dbDir.mkpath(dbDir.absolutePath());
+  }
+  musicdb = QSqlDatabase::addDatabase("QSQLITE", getMusicDBConnectionName());
+  musicdb.setDatabaseName(dbDir.absoluteFilePath(getMusicDBName()));
+  musicdb.open(); 
+  QSqlQuery setupQuery(musicdb);
+  bool worked = false;
+  worked = setupQuery.exec("CREATE TABLE IF NOT EXISTS library "
+  "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
+  "song TEXT NOT NULL, artist TEXT, album TEXT, filePath TEXT)");  
+  #ifdef UDJ_DEBUG_BUILD
+  if(!worked){
+    std::cerr << "Failed to create library table" << std::endl;
+    std::cerr << setupQuery.lastError().text().toStdString() << std::endl;
+  }
+  #endif
+  worked = setupQuery.exec("CREATE TABLE IF NOT EXISTS mainplaylist "
+  "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
+  "libraryId INTEGER REFERENCES library (id) ON DELETE CASCADE);");
+  #ifdef UDJ_DEBUG_BUILD
+  if(!worked){
+    std::cerr << "Failed to create mainplaylist table" << std::endl;
+    std::cerr << setupQuery.lastError().text().toStdString() << std::endl;
+  }
+  #endif
+  worked = setupQuery.exec("CREATE VIEW IF NOT EXISTS main_playlist_view "
+    "AS SELECT "
+    "mainplaylist.id, library.id, library.song, library.artist, library.album, library.filePath "
+    "FROM mainplaylist INNER JOIN library ON "
+    "mainplaylist.libraryId = library.id ORDER BY mainplaylist.id;");
+  #ifdef UDJ_DEBUG_BUILD
+  if(!worked){
+    std::cerr << "Failed to create mainplaylist view" << std::endl;
+    std::cerr << setupQuery.lastError().text().toStdString() << std::endl;
+  }
+  #endif
 }
 
 void MetaWindow::tick(qint64 time){
@@ -108,14 +157,9 @@ void MetaWindow::setMusicDir(){
 void MetaWindow::tableClicked(const QModelIndex& index){
   mediaObject->stop();
   mediaObject->clearQueue();
-  QModelIndex filePathIndex = getFilePathIndex(index);
-  Phonon::MediaSource songToPlay(musicLibrary->data(filePathIndex).toString()); 
+  Phonon::MediaSource songToPlay(mainPlaylist->getFilePath(index)); 
   mediaObject->setCurrentSource(songToPlay);
   mediaObject->play();
-}
-
-QModelIndex MetaWindow::getFilePathIndex(const QModelIndex& songIndex){
-  return songIndex.sibling(songIndex.row(), 4);
 }
 
 void MetaWindow::createActions(){
@@ -137,14 +181,11 @@ void MetaWindow::createActions(){
   quitAction = new QAction(tr("&Quit"), this);
   quitAction->setShortcuts(QKeySequence::Quit);
   
-
-  
   connect(playAction, SIGNAL(triggered()), mediaObject, SLOT(play()));
   connect(pauseAction, SIGNAL(triggered()), mediaObject, SLOT(pause()));
   connect(stopAction, SIGNAL(triggered()), mediaObject, SLOT(stop()));
   connect(quitAction, SIGNAL(triggered()), this, SLOT(close()));
   connect(setMusicDirAction, SIGNAL(triggered()), this, SLOT(setMusicDir()));
-
 }
 
 void MetaWindow::setupUi(){
@@ -169,10 +210,10 @@ void MetaWindow::setupUi(){
   playBackLayout->addStretch();
   playBackLayout->addWidget(volumeSlider);
 
-  musicLibrary = new MusicLibrary(this);
+  musicLibrary = new MusicLibrary(musicdb, this);
   libraryView = new LibraryView(musicLibrary, this);
 
-  mainPlaylist = new PlaylistWidget(this);
+  mainPlaylist = new PlaylistView(musicLibrary, this);
 
   partiersView = new QTableView(this);
 
@@ -196,12 +237,22 @@ void MetaWindow::setupUi(){
   setCentralWidget(widget);
   setWindowTitle("UDJ");
 
-  //connect(libraryView, SIGNAL(activated(const QModelIndex&)), this, SLOT(tableClicked(const QModelIndex&)));
+  connect(
+    libraryView, 
+    SIGNAL(activated(const QModelIndex&)), 
+    mainPlaylist, 
+    SLOT(addSongToPlaylist(const QModelIndex&)));
   connect(
     libraryView, 
     SIGNAL(songAddRequest(const QModelIndex&)), 
-    this, 
+    mainPlaylist, 
     SLOT(addSongToPlaylist(const QModelIndex&)));
+  connect(
+    mainPlaylist,
+    SIGNAL(activated(const QModelIndex&)),
+    this,
+    SLOT(tableClicked(const QModelIndex&)));
+    
 }
 
 void MetaWindow::setupMenus(){
@@ -211,23 +262,6 @@ void MetaWindow::setupMenus(){
   musicMenu->addAction(quitAction);
 }
 
-void MetaWindow::addSongToPlaylist(const QModelIndex& index){
-  int currentRow = mainPlaylist->rowCount();
-  mainPlaylist->insertRow(currentRow);
-  QTableWidgetItem* titleItem = new QTableWidgetItem(
-    musicLibrary->data(index.sibling(index.row(),1)).toString());
-  titleItem->setFlags(titleItem->flags() ^ Qt::ItemIsEditable);
-  QTableWidgetItem* artistItem = new QTableWidgetItem(
-    musicLibrary->data(index.sibling(index.row(),2)).toString());
-  artistItem->setFlags(artistItem->flags() ^ Qt::ItemIsEditable);
-  QTableWidgetItem* albumItem = new QTableWidgetItem(
-    musicLibrary->data(index.sibling(index.row(),3)).toString());
-  albumItem->setFlags(albumItem->flags() ^ Qt::ItemIsEditable);
-  mainPlaylist->setItem(currentRow, 0, titleItem);
-  mainPlaylist->setItem(currentRow, 1, artistItem);
-  mainPlaylist->setItem(currentRow, 2, albumItem);
-  
-}
 
 
 } //end namespace

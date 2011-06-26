@@ -18,16 +18,28 @@
  */
 #ifndef PLAYLIST_WIDGET_HPP
 #define PLAYLIST_WIDGET_HPP
-#include <QTableWidget>
+#include <QTableView>
+#include <QSqlDatabase>
+
+class QSqlTableModel;
 
 namespace UDJ{
 
+class MusicLibrary;
 
-class PlaylistWidget : public QTableWidget{
+
+class PlaylistView : public QTableView{
 Q_OBJECT
 public:
-  PlaylistWidget(QWidget* parent=0);
-
+  PlaylistView(MusicLibrary* musicLibrary, QWidget* parent=0);
+  QString getFilePath(const QModelIndex& songIndex) const;
+  ~PlaylistView();
+public slots:
+  void addSongToPlaylist(const QModelIndex& libraryIndex);
+private:
+  MusicLibrary* musicLibrary;
+  QSqlDatabase database;
+  QSqlTableModel* playlistModel;
 };
 
 

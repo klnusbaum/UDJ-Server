@@ -20,6 +20,7 @@
 #define MEATWINDOW_HPP
 #include <QMainWindow>
 #include <QTableView>
+#include <QSqlDatabase>
 //#include <QFileSystemWatcher>
 #include <phonon/audiooutput.h>
 #include <phonon/seekslider.h>
@@ -36,7 +37,7 @@ class QAction;
 namespace UDJ{
 
 class SettingsWidget;
-class PlaylistWidget;
+class PlaylistView;
 class LibraryView;
 
 class MetaWindow : public QMainWindow{
@@ -49,7 +50,6 @@ private slots:
   void sourceChanged(const Phonon::MediaSource &source);
   void setMusicDir();
   void tableClicked(const QModelIndex& index);
-  void addSongToPlaylist(const QModelIndex& index);
   
 private:
   QTabWidget *tabs;
@@ -58,7 +58,7 @@ private:
   Phonon::AudioOutput *audioOutput;
   Phonon::VolumeSlider *volumeSlider;
   LibraryView* libraryView;
-  PlaylistWidget* mainPlaylist;
+  PlaylistView* mainPlaylist;
   QTableView* partiersView;
   MusicLibrary* musicLibrary;
   SettingsWidget* settingsWidget;
@@ -68,13 +68,22 @@ private:
   QAction *stopAction;
   QAction *setMusicDirAction;
   QAction *quitAction;
-
+  QSqlDatabase musicdb;
 //  QFileSystemWatcher* fileWatcher;
 
   void createActions();
   void setupUi();
   void setupMenus();
-  static QModelIndex getFilePathIndex(const QModelIndex& songIndex);
+  void makeDBConnection();
+  static const QString& getMusicDBConnectionName(){
+    static const QString musicDBConnectionName("musicdbConn");
+    return musicDBConnectionName;
+  }
+
+  static const QString& getMusicDBName(){
+    static const QString musicDBName("musicdb");
+    return musicDBName;
+  }
 };
 
 

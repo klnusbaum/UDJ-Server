@@ -4,7 +4,7 @@ SET(UDJ_SRCS
   MusicFinder.cpp 
   SettingsWidget.cpp 
   MusicLibrary.cpp
-  PlaylistWidget.cpp
+  PlaylistView.cpp
   LibraryView.cpp
 )
 
@@ -16,7 +16,7 @@ SET(UDJ_MOC_HDRS
   MetaWindow.hpp 
   SettingsWidget.hpp
   MusicLibrary.hpp
-  PlaylistWidget.hpp
+  PlaylistView.hpp
   LibraryView.hpp
 )
 

@@ -17,32 +17,22 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "MusicLibrary.hpp"
-#include <QDesktopServices>
 #include <QDir>
 #include <QSqlQuery>
-#include <iostream>
-#include <QSqlError>
+
+#ifdef UDJ_DEBUG_BUILD
+  #include <iostream>
+  #include <QSqlError>
+#endif
 
 namespace UDJ{
 
 
-MusicLibrary::MusicLibrary(QWidget* parent):QSqlTableModel(
-  parent, 
-  QSqlDatabase::addDatabase("QSQLITE", getMusicDBConnectionName()))
+MusicLibrary::MusicLibrary(QSqlDatabase musicdb, QWidget* parent)
+  :QSqlTableModel(parent,musicdb)
 {
   metaDataGetter = new Phonon::MediaObject(0);
-  QDir dbDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));  
-  if(!dbDir.exists()){
-    //TODO handle if this fails
-    dbDir.mkpath(dbDir.absolutePath());
-  }
-  database().setDatabaseName(dbDir.absoluteFilePath(getMusicDBName()));
-  database().open(); 
-  QSqlQuery setupQuery(database());
-  setupQuery.exec("CREATE TABLE IF NOT EXISTS library "
-  "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-  "song TEXT NOT NULL, artist TEXT, album TEXT, filePath TEXT)");  
-  setTable("LIBRARY");
+  setTable("library");
   select();
   setHeaderData(0, Qt::Horizontal, "id");
   setHeaderData(1, Qt::Horizontal, "Song");
@@ -56,7 +46,7 @@ MusicLibrary::~MusicLibrary(){
 }
 
 void MusicLibrary::setMusicLibrary(QList<Phonon::MediaSource> songs, QProgressDialog& progress){
-  QSqlQuery workQuery(musicdb);
+  QSqlQuery workQuery(database());
   workQuery.exec("DELETE FROM library");
   for(int i =0; i<songs.size(); ++i){
     progress.setValue(i);
@@ -77,10 +67,12 @@ void MusicLibrary::addSong(Phonon::MediaSource song){
   addQuery.addBindValue(getAlbumName(song));
   addQuery.addBindValue(song.fileName());
   bool worked = addQuery.exec();
+  #ifdef UDJ_DEBUG_BUILD
   if(!worked){
     std::cerr << "Failed to add song " << getSongName(song).toStdString() << std::endl;
     std::cerr << addQuery.lastError().text().toStdString() <<std::endl;
   }
+  #endif
 }
 
 QString MusicLibrary::getSongName(Phonon::MediaSource song) const{
