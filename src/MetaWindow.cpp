@@ -106,6 +106,26 @@ void MetaWindow::makeDBConnection(){
   #endif
 }
 
+MetaWindow::~MetaWindow(){
+  QSqlQuery viewDrop("DROP VIEW main_playlist_view;", musicdb);
+  bool worked = false;
+  worked = viewDrop.exec();
+  #ifdef UDJ_DEBUG_BUILD
+  if(!worked){
+    std::cerr << "drop view didn't work didn't work\n";
+    std::cerr << viewDrop.lastError().text().toStdString() << std::endl;
+  }
+  #endif
+  QSqlQuery playlistDrop("DROP TABLE mainplaylist;", musicdb);
+  worked = playlistDrop.exec();
+  #ifdef UDJ_DEBUG_BUILD
+  if(!worked){
+    std::cerr << "drop table didn't work\n";
+    std::cerr << playlistDrop.lastError().text().toStdString() << std::endl;
+  }
+  #endif
+}
+
 void MetaWindow::tick(qint64 time){
 
 }

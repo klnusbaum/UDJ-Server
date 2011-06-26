@@ -49,17 +49,6 @@ PlaylistView::PlaylistView(MusicLibrary* musicLibrary, QWidget* parent):
   setColumnHidden(1,true);
   setColumnHidden(5,true);
 }
-
-PlaylistView::~PlaylistView(){
-  QSqlQuery dropQuery("DELETE FROM mainplaylist;", database);
-  bool worked = dropQuery.exec();
-  #ifdef UDJ_DEBUG_BUILD
-  if(!worked){
-    std::cerr << "delete didn't work\n";
-    std::cerr << dropQuery.lastError().text().toStdString() << std::endl;
-  }
-  #endif
-}
   
 void PlaylistView::addSongToPlaylist(const QModelIndex& libraryIndex){
   QString libraryId = musicLibrary->data(

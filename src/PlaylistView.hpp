@@ -33,7 +33,6 @@ Q_OBJECT
 public:
   PlaylistView(MusicLibrary* musicLibrary, QWidget* parent=0);
   QString getFilePath(const QModelIndex& songIndex) const;
-  ~PlaylistView();
 public slots:
   void addSongToPlaylist(const QModelIndex& libraryIndex);
 private:

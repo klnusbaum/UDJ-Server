@@ -44,6 +44,7 @@ class MetaWindow : public QMainWindow{
   Q_OBJECT
 public:
   MetaWindow();
+  ~MetaWindow();
 private slots:
   void stateChanged(Phonon::State newState, Phonon::State oldState);
   void tick(qint64 time);
