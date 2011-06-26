@@ -35,6 +35,10 @@ public:
   QString getFilePath(const QModelIndex& songIndex) const;
 public slots:
   void addSongToPlaylist(const QModelIndex& libraryIndex);
+private slots:
+void updateView(
+  const QModelIndex& topLeft, 
+  const QModelIndex& /*bottomRight*/);
 private:
   MusicLibrary* musicLibrary;
   QSqlDatabase database;

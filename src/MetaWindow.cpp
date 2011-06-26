@@ -86,7 +86,9 @@ void MetaWindow::makeDBConnection(){
   #endif
   worked = setupQuery.exec("CREATE TABLE IF NOT EXISTS mainplaylist "
   "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-  "libraryId INTEGER REFERENCES library (id) ON DELETE CASCADE);");
+  "libraryId INTEGER REFERENCES library (id) ON DELETE CASCADE, "
+  "voteCount INTEGER DEFAULT 1, "
+  "timeAdded INTEGER);");
   #ifdef UDJ_DEBUG_BUILD
   if(!worked){
     std::cerr << "Failed to create mainplaylist table" << std::endl;
@@ -95,9 +97,9 @@ void MetaWindow::makeDBConnection(){
   #endif
   worked = setupQuery.exec("CREATE VIEW IF NOT EXISTS main_playlist_view "
     "AS SELECT "
-    "mainplaylist.id, library.id, library.song, library.artist, library.album, library.filePath "
+    "mainplaylist.id, mainplaylist.libraryId, library.song, library.artist, library.album, library.filePath, mainplaylist.voteCount, mainplaylist.timeAdded "
     "FROM mainplaylist INNER JOIN library ON "
-    "mainplaylist.libraryId = library.id ORDER BY mainplaylist.id;");
+    "mainplaylist.libraryId = library.id ORDER BY mainplaylist.voteCount DESC, mainplaylist.timeAdded;");
   #ifdef UDJ_DEBUG_BUILD
   if(!worked){
     std::cerr << "Failed to create mainplaylist view" << std::endl;
