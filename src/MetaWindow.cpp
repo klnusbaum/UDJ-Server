@@ -74,58 +74,33 @@ void MetaWindow::makeDBConnection(){
   musicdb.setDatabaseName(dbDir.absoluteFilePath(getMusicDBName()));
   musicdb.open(); 
   QSqlQuery setupQuery(musicdb);
-  bool worked = false;
-  worked = setupQuery.exec("CREATE TABLE IF NOT EXISTS library "
+  setupQuery.exec("CREATE TABLE IF NOT EXISTS library "
   "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
   "song TEXT NOT NULL, artist TEXT, album TEXT, filePath TEXT)");  
-  #ifdef UDJ_DEBUG_BUILD
-  if(!worked){
-    std::cerr << "Failed to create library table" << std::endl;
-    std::cerr << setupQuery.lastError().text().toStdString() << std::endl;
-  }
-  #endif
-  worked = setupQuery.exec("CREATE TABLE IF NOT EXISTS mainplaylist "
+  setupQuery.exec("CREATE TABLE mainplaylist IF NOT EXISTS "
   "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
   "libraryId INTEGER REFERENCES library (id) ON DELETE CASCADE, "
   "voteCount INTEGER DEFAULT 1, "
   "timeAdded INTEGER);");
-  #ifdef UDJ_DEBUG_BUILD
-  if(!worked){
-    std::cerr << "Failed to create mainplaylist table" << std::endl;
-    std::cerr << setupQuery.lastError().text().toStdString() << std::endl;
-  }
-  #endif
-  worked = setupQuery.exec("CREATE VIEW IF NOT EXISTS main_playlist_view "
+  
+  setupQuery.exec("CREATE VIEW IF NOT EXISTS main_playlist_view "
     "AS SELECT "
-    "mainplaylist.id, mainplaylist.libraryId, library.song, library.artist, library.album, library.filePath, mainplaylist.voteCount, mainplaylist.timeAdded "
+    "mainplaylist.id AS plId, "
+    "mainplaylist.libraryId AS libraryId, "
+    "library.song AS song, "
+    "library.artist AS artist, "
+    "library.album AS album, "
+    "library.filePath AS filePath, "
+    "mainplaylist.voteCount AS voteCount, "
+    "mainplaylist.timeAdded AS timeAdded "
     "FROM mainplaylist INNER JOIN library ON "
     "mainplaylist.libraryId = library.id ORDER BY mainplaylist.voteCount DESC, mainplaylist.timeAdded;");
-  #ifdef UDJ_DEBUG_BUILD
-  if(!worked){
-    std::cerr << "Failed to create mainplaylist view" << std::endl;
-    std::cerr << setupQuery.lastError().text().toStdString() << std::endl;
-  }
-  #endif
-}
-
-MetaWindow::~MetaWindow(){
-  QSqlQuery viewDrop("DROP VIEW main_playlist_view;", musicdb);
-  bool worked = false;
-  worked = viewDrop.exec();
-  #ifdef UDJ_DEBUG_BUILD
-  if(!worked){
-    std::cerr << "drop view didn't work didn't work\n";
-    std::cerr << viewDrop.lastError().text().toStdString() << std::endl;
-  }
-  #endif
-  QSqlQuery playlistDrop("DROP TABLE mainplaylist;", musicdb);
-  worked = playlistDrop.exec();
-  #ifdef UDJ_DEBUG_BUILD
-  if(!worked){
-    std::cerr << "drop table didn't work\n";
-    std::cerr << playlistDrop.lastError().text().toStdString() << std::endl;
-  }
-  #endif
+  setupQuery.exec("CREATE TRIGGER IF NOT EXISTS updateVotes INSTEAD OF "
+    "UPDATE ON main_playlist_view BEGIN "
+    "UPDATE mainplaylist SET voteCount=new.voteCount "
+    "WHERE  mainplaylist.id = old.plId"
+    "END;");
+  
 }
 
 void MetaWindow::tick(qint64 time){
@@ -177,6 +152,7 @@ void MetaWindow::setMusicDir(){
 }
 
 void MetaWindow::tableClicked(const QModelIndex& index){
+  std::cout << "in clicked\n";
   mediaObject->stop();
   mediaObject->clearQueue();
   Phonon::MediaSource songToPlay(mainPlaylist->getFilePath(index)); 

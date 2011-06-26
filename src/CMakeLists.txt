@@ -6,6 +6,7 @@ SET(UDJ_SRCS
   MusicLibrary.cpp
   PlaylistView.cpp
   LibraryView.cpp
+  PlaylistDelegate.cpp
 )
 
 SET(UDJ_HDRS 
@@ -18,6 +19,7 @@ SET(UDJ_MOC_HDRS
   MusicLibrary.hpp
   PlaylistView.hpp
   LibraryView.hpp
+  PlaylistDelegate.hpp
 )
 
 QT4_WRAP_CPP(MOC_SRCS ${UDJ_MOC_HDRS})

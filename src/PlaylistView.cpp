@@ -19,8 +19,9 @@
 #include "PlaylistView.hpp"
 #include "MusicLibrary.hpp"
 #include <QHeaderView>
-#include <QSqlTableModel>
+#include <QSqlRelationalTableModel>
 #include <QSqlQuery>
+#include "PlaylistDelegate.hpp"
 #ifdef UDJ_DEBUG_BUILD
   #include <QSqlError>
   #include <iostream>
@@ -33,7 +34,7 @@ PlaylistView::PlaylistView(MusicLibrary* musicLibrary, QWidget* parent):
   musicLibrary(musicLibrary),
   database(musicLibrary->database())
 {
-  playlistModel = new QSqlTableModel(this, database);
+  playlistModel = new QSqlRelationalTableModel(this, database);
   playlistModel->setTable("main_playlist_view");
   playlistModel->select();
   playlistModel->setHeaderData(0, Qt::Horizontal, "playlist id");
@@ -42,17 +43,16 @@ PlaylistView::PlaylistView(MusicLibrary* musicLibrary, QWidget* parent):
   playlistModel->setHeaderData(3, Qt::Horizontal, "Artist");
   playlistModel->setHeaderData(4, Qt::Horizontal, "Album");
   playlistModel->setHeaderData(5, Qt::Horizontal, "Filepath");
+  playlistModel->setHeaderData(6, Qt::Horizontal, "Votes");
+  playlistModel->setHeaderData(7, Qt::Horizontal, "Time Added");
+  playlistModel->setEditStrategy(QSqlTableModel::OnFieldChange);
   horizontalHeader()->setStretchLastSection(true);
   //setEditTriggers(QAbstractItemView::NoEditTriggers);
+  setItemDelegate(new PlaylistDelegate(this));
   setModel(playlistModel);
   setColumnHidden(0,true);
   setColumnHidden(1,true);
   setColumnHidden(5,true);
-  connect(
-    playlistModel,
-    SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
-    this,
-    SLOT(updateView(const QModelIndex&, const QModelIndex&)));
 }
   
 void PlaylistView::addSongToPlaylist(const QModelIndex& libraryIndex){
@@ -62,28 +62,14 @@ void PlaylistView::addSongToPlaylist(const QModelIndex& libraryIndex){
     "INSERT INTO mainplaylist (libraryId, timeAdded) VALUES ( ? , strftime('%s','now') )", 
     database);
   addQuery.addBindValue(QString(libraryId));
-  bool worked = addQuery.exec();
-  #ifdef UDJ_DEBUG_BUILD
-  if(!worked){
-    std::cerr << "Failed to add to playlist\n";
-    std::cerr << addQuery.lastError().text().toStdString() << std::endl;
-  }
-  #endif
+  addQuery.exec();
   playlistModel->select();
 }
 
 QString PlaylistView::getFilePath(const QModelIndex& songIndex) const{
   QModelIndex filePathIndex = songIndex.sibling(songIndex.row(), 5);
+  std::cerr << "Filepath: " << playlistModel->data(filePathIndex).toString().toStdString() << std::endl;
   return playlistModel->data(filePathIndex).toString();
-}
-
-void PlaylistView::updateView(
-  const QModelIndex& topLeft, 
-  const QModelIndex& /*bottomRight*/)
-{
-  if(topLeft.column() == 3){
-    playlistModel->select();
-  } 
 }
 
 
