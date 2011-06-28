@@ -47,12 +47,13 @@ PlaylistView::PlaylistView(MusicLibrary* musicLibrary, QWidget* parent):
   playlistModel->setHeaderData(7, Qt::Horizontal, "Time Added");
   playlistModel->setEditStrategy(QSqlTableModel::OnFieldChange);
   horizontalHeader()->setStretchLastSection(true);
-  //setEditTriggers(QAbstractItemView::NoEditTriggers);
+//  setEditTriggers(QAbstractItemView::NoEditTriggers);
   setItemDelegate(new PlaylistDelegate(this));
   setModel(playlistModel);
   setColumnHidden(0,true);
   setColumnHidden(1,true);
   setColumnHidden(5,true);
+  setSelectionBehavior(QAbstractItemView::SelectRows);
 }
   
 void PlaylistView::addSongToPlaylist(const QModelIndex& libraryIndex){
@@ -68,7 +69,6 @@ void PlaylistView::addSongToPlaylist(const QModelIndex& libraryIndex){
 
 QString PlaylistView::getFilePath(const QModelIndex& songIndex) const{
   QModelIndex filePathIndex = songIndex.sibling(songIndex.row(), 5);
-  std::cerr << "Filepath: " << playlistModel->data(filePathIndex).toString().toStdString() << std::endl;
   return playlistModel->data(filePathIndex).toString();
 }
 

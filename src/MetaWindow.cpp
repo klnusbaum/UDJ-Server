@@ -152,7 +152,9 @@ void MetaWindow::setMusicDir(){
 }
 
 void MetaWindow::tableClicked(const QModelIndex& index){
-  std::cout << "in clicked\n";
+  if(index.column() == 6){
+    return;
+  }
   mediaObject->stop();
   mediaObject->clearQueue();
   Phonon::MediaSource songToPlay(mainPlaylist->getFilePath(index)); 
@@ -248,6 +250,11 @@ void MetaWindow::setupUi(){
   connect(
     mainPlaylist,
     SIGNAL(activated(const QModelIndex&)),
+    this,
+    SLOT(tableClicked(const QModelIndex&)));
+  connect(
+    mainPlaylist,
+    SIGNAL(doubleClicked(const QModelIndex&)),
     this,
     SLOT(tableClicked(const QModelIndex&)));
     

@@ -32,6 +32,7 @@ LibraryView::LibraryView(MusicLibrary* musicLibrary, QWidget* parent):QTableView
   setModel(musicLibrary);
   setColumnHidden(0,true);
   setColumnHidden(4,true);
+  setSelectionBehavior(QAbstractItemView::SelectRows);
 }
 
 void LibraryView::contextMenuEvent(QContextMenuEvent* e){
