@@ -54,6 +54,8 @@ MetaWindow::MetaWindow(){
     this, SLOT(stateChanged(Phonon::State, Phonon::State)));
   connect(mediaObject, SIGNAL(currentSourceChanged(Phonon::MediaSource)),
     this, SLOT(sourceChanged(Phonon::MediaSource)));
+  //connect(mediaObject, SIGNAL(aboutToFinish()), this, SLOT(aboutToFinish()));
+  //connect(mediaObject, SIGNAL(finished()), this, SLOT(finished()));
 
   Phonon::createPath(mediaObject, audioOutput);
 
@@ -75,13 +77,13 @@ void MetaWindow::makeDBConnection(){
   musicdb.open(); 
   QSqlQuery setupQuery(musicdb);
   setupQuery.exec("CREATE TABLE IF NOT EXISTS library "
-  "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-  "song TEXT NOT NULL, artist TEXT, album TEXT, filePath TEXT)");  
+    "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
+   "song TEXT NOT NULL, artist TEXT, album TEXT, filePath TEXT)");  
   setupQuery.exec("CREATE TABLE mainplaylist IF NOT EXISTS "
-  "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-  "libraryId INTEGER REFERENCES library (id) ON DELETE CASCADE, "
-  "voteCount INTEGER DEFAULT 1, "
-  "timeAdded INTEGER);");
+   "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
+   "libraryId INTEGER REFERENCES library (id) ON DELETE CASCADE, "
+   "voteCount INTEGER DEFAULT 1, "
+   "timeAdded INTEGER);");
   
   setupQuery.exec("CREATE VIEW IF NOT EXISTS main_playlist_view "
     "AS SELECT "
@@ -100,7 +102,11 @@ void MetaWindow::makeDBConnection(){
     "UPDATE mainplaylist SET voteCount=new.voteCount "
     "WHERE  mainplaylist.id = old.plId"
     "END;");
-  
+  setupQuery.exec("CREATE TRIGGER IF NOT EXISTS deleteFromPlaylist INSTEAD OF "
+    "DELETE ON main_playlist_view BEGIN "
+    "DELETE FROM mainplaylist "
+    "WHERE mainplaylist.id = old.plId;"
+    "END;");
 }
 
 void MetaWindow::tick(qint64 time){
@@ -160,6 +166,18 @@ void MetaWindow::tableClicked(const QModelIndex& index){
   Phonon::MediaSource songToPlay(mainPlaylist->getFilePath(index)); 
   mediaObject->setCurrentSource(songToPlay);
   mediaObject->play();
+  bool worked = mainPlaylist->model()->removeRow(0);
+  if(!worked){
+    std::cerr << "Problem: " << ((QSqlQueryModel*)mainPlaylist->model())->lastError().text().toStdString() << std::endl;
+  }
+}
+
+void MetaWindow::aboutToFinish(){
+  QModelIndex nextIndex = mainPlaylist->model()->index(0,0);
+  if(nextIndex.isValid()){
+    mediaObject->enqueue(
+      Phonon::MediaSource(mainPlaylist->getFilePath(nextIndex)));
+  }
 }
 
 void MetaWindow::createActions(){
