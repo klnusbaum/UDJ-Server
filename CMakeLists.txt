@@ -18,7 +18,16 @@
 
 cmake_minimum_required(VERSION 2.6)
 PROJECT(UDJ)
-FIND_PACKAGE(Qt4 REQUIRED)
+FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtPhonon QtSql REQUIRED)
+
+IF(NOT QT_PHONON_FOUND)
+message(FATAL_ERROR "Couldn't find Phonon module!")
+ENDIF(NOT QT_PHONON_FOUND)
+
+IF(NOT QT_QTSQL_FOUND)
+message(FATAL_ERROR "Couldn't find QtSql module!")
+ENDIF(NOT QT_QTSQL_FOUND)
+
 set(UDJ_DEBUG_BUILD FALSE CACHE BOOL "Enables/Disables a debug build of UDJ")
 
 IF(UDJ_DEBUG_BUILD)
