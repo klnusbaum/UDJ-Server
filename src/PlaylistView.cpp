@@ -19,7 +19,6 @@
 #include "PlaylistView.hpp"
 #include "MusicLibrary.hpp"
 #include <QHeaderView>
-#include <QSqlRelationalTableModel>
 #include <QSqlRecord>
 #include <QSqlField>
 #include "PlaylistDelegate.hpp"

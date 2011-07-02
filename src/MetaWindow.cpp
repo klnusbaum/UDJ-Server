@@ -36,7 +36,6 @@
 #include "LibraryView.hpp"
 
 
-
 namespace UDJ{
 
 
@@ -82,7 +81,7 @@ void MetaWindow::makeDBConnection(){
    "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
    "libraryId INTEGER REFERENCES library (id) ON DELETE CASCADE, "
    "voteCount INTEGER DEFAULT 1, "
-   "timeAdded INTEGER DEFAULT CURRENT);");
+   "timeAdded INTEGER DEFAULT CURRENT_TIMESTAMP);");
 	PRINT_SQLERROR("Error creating mainplaylist table.", setupQuery)	
   worked = setupQuery.exec("CREATE VIEW IF NOT EXISTS main_playlist_view "
     "AS SELECT "
@@ -174,8 +173,9 @@ void MetaWindow::tableClicked(const QModelIndex& index){
   Phonon::MediaSource songToPlay(mainPlaylist->getFilePath(index)); 
   mediaObject->setCurrentSource(songToPlay);
   mediaObject->play();
-  bool worked = mainPlaylist->model()->removeRow(0);
-	PRINT_SQLERROR("Error deleting song", (*((QSqlQueryModel*)(mainPlaylist->model()))))
+  bool worked = true;
+	worked = mainPlaylist->model()->removeRow(index.row());
+	PRINT_SQLERROR("Error deleting song", (*(mainPlaylist->getSqlModel())) )
 }
 
 void MetaWindow::aboutToFinish(){

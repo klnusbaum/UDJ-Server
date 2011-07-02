@@ -18,7 +18,7 @@
 
 cmake_minimum_required(VERSION 2.6)
 PROJECT(UDJ)
-FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtPhonon QtSql REQUIRED)
+FIND_PACKAGE(Qt4 4.4.3 COMPONENTS QtCore QtGui QtPhonon QtSql REQUIRED)
 
 IF(NOT QT_PHONON_FOUND)
 message(FATAL_ERROR "Couldn't find Phonon module!")
