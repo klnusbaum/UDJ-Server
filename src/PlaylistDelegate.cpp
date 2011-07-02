@@ -19,8 +19,6 @@
 #include "PlaylistDelegate.hpp"
 #include <QSpinBox>
 #include <QSqlRelationalTableModel>
-#include <QSqlQuery>
-#include <iostream>
 
 
 namespace UDJ{

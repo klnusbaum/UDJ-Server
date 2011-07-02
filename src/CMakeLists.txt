@@ -28,6 +28,7 @@ SET(UDJ_SRCS
 
 SET(UDJ_HDRS 
   MusicFinder.hpp
+	ConfigDefs.hpp
 )
 
 SET(UDJ_MOC_HDRS 

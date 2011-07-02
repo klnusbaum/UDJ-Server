@@ -20,11 +20,6 @@
 #include <QDir>
 #include <QSqlQuery>
 
-#ifdef UDJ_DEBUG_BUILD
-  #include <iostream>
-  #include <QSqlError>
-#endif
-
 namespace UDJ{
 
 
@@ -70,12 +65,7 @@ void MusicLibrary::addSong(Phonon::MediaSource song){
   addQuery.addBindValue(getAlbumName(song));
   addQuery.addBindValue(song.fileName());
   bool worked = addQuery.exec();
-  #ifdef UDJ_DEBUG_BUILD
-  if(!worked){
-    std::cerr << "Failed to add song " << getSongName(song).toStdString() << std::endl;
-    std::cerr << addQuery.lastError().text().toStdString() <<std::endl;
-  }
-  #endif
+	PRINT_SQLERROR("Failed to add song " << getSongName(song).toStdString(), addQuery)
 }
 
 QString MusicLibrary::getSongName(Phonon::MediaSource song) const{

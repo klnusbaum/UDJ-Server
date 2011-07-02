@@ -23,6 +23,7 @@
 #include <phonon/mediaobject.h>
 #include <phonon/mediasource.h>
 #include <QProgressDialog>
+#include "ConfigDefs.hpp"
 
 namespace UDJ{
 

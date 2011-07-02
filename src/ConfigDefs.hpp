@@ -16,32 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef PLAYLIST_DELEGATE_HPP
-#define PLAYLIST_DELEGATE_HPP
 
-#include <QSqlRelationalDelegate>
-#include "ConfigDefs.hpp"
+#ifdef UDJ_DEBUG_BUILD
+#include <iostream>
+#include <QSqlError>
 
-namespace UDJ{
+#define PRINT_SQLERROR( MESSAGE , QSQLOBJECT ) \
+	if(!worked){ \
+		std::cerr << MESSAGE << std::endl; \
+		std::cerr << QSQLOBJECT.lastError().text().toStdString() << std::endl; \
+		std::cerr << std::endl; \
+	} \
+ 
+#else
+#define PRINT_SQLERROR( MESSAGE, QSQLOBJECT) \
 
+#endif
 
-class PlaylistDelegate : public QSqlRelationalDelegate{
-Q_OBJECT
-public:
-  PlaylistDelegate(QObject* parent=0);
-  QWidget* createEditor(
-    QWidget* parent, 
-    const QStyleOptionViewItem& option, 
-    const QModelIndex& index) const;
-  void setEditorData(
-    QWidget* editor,
-    const QModelIndex& index) const;
-  void setModelData(
-    QWidget* editor,
-    QAbstractItemModel* model,
-    const QModelIndex& index);
-};
-
-
-} //end namespace
-#endif //PLAYLIST_DELEGATE_HPP

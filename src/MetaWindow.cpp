@@ -35,10 +35,7 @@
 #include "PlaylistView.hpp"
 #include "LibraryView.hpp"
 
-#ifdef UDJ_DEBUG_BUILD
-  #include <iostream>
-  #include <QSqlError>
-#endif
+
 
 namespace UDJ{
 
@@ -76,16 +73,18 @@ void MetaWindow::makeDBConnection(){
   musicdb.setDatabaseName(dbDir.absoluteFilePath(getMusicDBName()));
   musicdb.open(); 
   QSqlQuery setupQuery(musicdb);
-  setupQuery.exec("CREATE TABLE IF NOT EXISTS library "
+	bool worked = true;
+  worked = setupQuery.exec("CREATE TABLE IF NOT EXISTS library "
     "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
    "song TEXT NOT NULL, artist TEXT, album TEXT, filePath TEXT)");  
-  setupQuery.exec("CREATE TABLE mainplaylist IF NOT EXISTS "
+	PRINT_SQLERROR("Error creating library table", setupQuery)	
+  worked = setupQuery.exec("CREATE TABLE IF NOT EXISTS mainplaylist"
    "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
    "libraryId INTEGER REFERENCES library (id) ON DELETE CASCADE, "
    "voteCount INTEGER DEFAULT 1, "
-   "timeAdded INTEGER);");
-  
-  setupQuery.exec("CREATE VIEW IF NOT EXISTS main_playlist_view "
+   "timeAdded INTEGER DEFAULT CURRENT);");
+	PRINT_SQLERROR("Error creating mainplaylist table.", setupQuery)	
+  worked = setupQuery.exec("CREATE VIEW IF NOT EXISTS main_playlist_view "
     "AS SELECT "
     "mainplaylist.id AS plId, "
     "mainplaylist.libraryId AS libraryId, "
@@ -97,16 +96,25 @@ void MetaWindow::makeDBConnection(){
     "mainplaylist.timeAdded AS timeAdded "
     "FROM mainplaylist INNER JOIN library ON "
     "mainplaylist.libraryId = library.id ORDER BY mainplaylist.voteCount DESC, mainplaylist.timeAdded;");
-  setupQuery.exec("CREATE TRIGGER IF NOT EXISTS updateVotes INSTEAD OF "
+	PRINT_SQLERROR("Error creating main_playlist_view view.", setupQuery)	
+  worked = setupQuery.exec("CREATE TRIGGER IF NOT EXISTS updateVotes INSTEAD OF "
     "UPDATE ON main_playlist_view BEGIN "
     "UPDATE mainplaylist SET voteCount=new.voteCount "
-    "WHERE  mainplaylist.id = old.plId"
+    "WHERE  mainplaylist.id = old.plId;"
     "END;");
-  setupQuery.exec("CREATE TRIGGER IF NOT EXISTS deleteFromPlaylist INSTEAD OF "
+	PRINT_SQLERROR("Error creating update trigger for main_playlist_view.", setupQuery)	
+  worked = setupQuery.exec("CREATE TRIGGER IF NOT EXISTS deleteFromPlaylist INSTEAD OF "
     "DELETE ON main_playlist_view BEGIN "
     "DELETE FROM mainplaylist "
     "WHERE mainplaylist.id = old.plId;"
     "END;");
+	PRINT_SQLERROR("Error creating delete trigger for main_playlist_view.", setupQuery)	
+  worked = setupQuery.exec("CREATE TRIGGER IF NOT EXISTS insertOnPlaylist INSTEAD OF "
+    "INSERT ON main_playlist_view BEGIN "
+    "INSERT INTO mainplaylist "
+    "(libraryId) VALUES (new.libraryId);"
+    "END;");
+	PRINT_SQLERROR("Error creating insert trigger for main_playlist_view.", setupQuery)	
 }
 
 void MetaWindow::tick(qint64 time){
@@ -167,9 +175,7 @@ void MetaWindow::tableClicked(const QModelIndex& index){
   mediaObject->setCurrentSource(songToPlay);
   mediaObject->play();
   bool worked = mainPlaylist->model()->removeRow(0);
-  if(!worked){
-    std::cerr << "Problem: " << ((QSqlQueryModel*)mainPlaylist->model())->lastError().text().toStdString() << std::endl;
-  }
+	PRINT_SQLERROR("Error deleting song", (*((QSqlQueryModel*)(mainPlaylist->model()))))
 }
 
 void MetaWindow::aboutToFinish(){

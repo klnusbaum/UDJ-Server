@@ -20,12 +20,9 @@
 #include "MusicLibrary.hpp"
 #include <QHeaderView>
 #include <QSqlRelationalTableModel>
-#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QSqlField>
 #include "PlaylistDelegate.hpp"
-#ifdef UDJ_DEBUG_BUILD
-  #include <QSqlError>
-  #include <iostream>
-#endif
 
 namespace UDJ{
 
@@ -59,12 +56,11 @@ PlaylistView::PlaylistView(MusicLibrary* musicLibrary, QWidget* parent):
 void PlaylistView::addSongToPlaylist(const QModelIndex& libraryIndex){
   QString libraryId = musicLibrary->data(
     libraryIndex.sibling(libraryIndex.row(),0)).toString();
-  QSqlQuery addQuery(
-    "INSERT INTO mainplaylist (libraryId, timeAdded) VALUES ( ? , strftime('%s','now') )", 
-    database);
-  addQuery.addBindValue(QString(libraryId));
-  addQuery.exec();
-  playlistModel->select();
+	QSqlRecord toInsert;
+	toInsert.append(QSqlField("libraryId", QVariant::Int));
+	toInsert.setValue(0, libraryId);
+	bool worked = playlistModel->insertRecord(-1, toInsert);
+	PRINT_SQLERROR("Adding to playlist failed", (*playlistModel))
 }
 
 QString PlaylistView::getFilePath(const QModelIndex& songIndex) const{
