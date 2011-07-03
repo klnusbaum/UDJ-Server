@@ -273,12 +273,6 @@ void MetaWindow::setupUi(){
     SIGNAL(activated(const QModelIndex&)),
     this,
     SLOT(tableClicked(const QModelIndex&)));
-  connect(
-    mainPlaylist,
-    SIGNAL(doubleClicked(const QModelIndex&)),
-    this,
-    SLOT(tableClicked(const QModelIndex&)));
-    
 }
 
 void MetaWindow::setupMenus(){

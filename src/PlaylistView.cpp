@@ -44,6 +44,7 @@ PlaylistView::PlaylistView(MusicLibrary* musicLibrary, QWidget* parent):
   playlistModel->setHeaderData(7, Qt::Horizontal, "Time Added");
   playlistModel->setEditStrategy(QSqlTableModel::OnFieldChange);
   horizontalHeader()->setStretchLastSection(true);
+	setEditTriggers(QAbstractItemView::NoEditTriggers);
   setItemDelegate(new PlaylistDelegate(this));
   setModel(playlistModel);
   setColumnHidden(0,true);
