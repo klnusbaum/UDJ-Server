@@ -172,8 +172,7 @@ void MetaWindow::tableClicked(const QModelIndex& index){
   mediaObject->stop();
   mediaObject->setCurrentSource(mainPlaylist->getFilePath(index));
   mediaObject->play();
-	bool worked = mainPlaylist->model()->removeRow(index.row());
-	PRINT_SQLERROR("Error deleting song", (*(mainPlaylist->getSqlModel())) ) 
+	mainPlaylist->removeSong(index);
 }
 
 void MetaWindow::aboutToFinish(){

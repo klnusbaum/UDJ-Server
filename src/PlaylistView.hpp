@@ -20,8 +20,8 @@
 #define PLAYLIST_VIEW_HPP
 #include <QTableView>
 #include <QSqlDatabase>
-#include <QSqlRelationalTableModel>
 
+class QSqlRelationalTableModel;
 
 namespace UDJ{
 
@@ -33,11 +33,9 @@ Q_OBJECT
 public:
   PlaylistView(MusicLibrary* musicLibrary, QWidget* parent=0);
   QString getFilePath(const QModelIndex& songIndex) const;
-	inline QSqlRelationalTableModel* getSqlModel(){
-		return ((QSqlRelationalTableModel*)model());
-	}
 public slots:
   void addSongToPlaylist(const QModelIndex& libraryIndex);
+	void removeSong(const QModelIndex& index);
 private:
   MusicLibrary* musicLibrary;
   QSqlDatabase database;

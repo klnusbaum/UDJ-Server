@@ -22,6 +22,7 @@
 #include <QSqlRecord>
 #include <QSqlField>
 #include "PlaylistDelegate.hpp"
+#include <QSqlRelationalTableModel>
 
 namespace UDJ{
 
@@ -43,7 +44,6 @@ PlaylistView::PlaylistView(MusicLibrary* musicLibrary, QWidget* parent):
   playlistModel->setHeaderData(7, Qt::Horizontal, "Time Added");
   playlistModel->setEditStrategy(QSqlTableModel::OnFieldChange);
   horizontalHeader()->setStretchLastSection(true);
-//  setEditTriggers(QAbstractItemView::NoEditTriggers);
   setItemDelegate(new PlaylistDelegate(this));
   setModel(playlistModel);
   setColumnHidden(0,true);
@@ -65,6 +65,11 @@ void PlaylistView::addSongToPlaylist(const QModelIndex& libraryIndex){
 QString PlaylistView::getFilePath(const QModelIndex& songIndex) const{
   QModelIndex filePathIndex = songIndex.sibling(songIndex.row(), 5);
   return playlistModel->data(filePathIndex).toString();
+}
+
+void PlaylistView::removeSong(const QModelIndex& index){
+	bool worked = playlistModel->removeRow(index.row());
+	PRINT_SQLERROR("Error deleting song", (*playlistModel) ) 
 }
 
 
