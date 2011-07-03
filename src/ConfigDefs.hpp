@@ -17,6 +17,9 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef CONFIG_DEFS_HPP
+#define CONFIG_DEFS_HPP
+
 #ifdef UDJ_DEBUG_BUILD
 #include <iostream>
 #include <QSqlError>
@@ -33,3 +36,5 @@
 
 #endif
 
+
+#endif

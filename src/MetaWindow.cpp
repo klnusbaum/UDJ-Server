@@ -102,11 +102,12 @@ void MetaWindow::makeDBConnection(){
     "WHERE  mainplaylist.id = old.plId;"
     "END;");
 	PRINT_SQLERROR("Error creating update trigger for main_playlist_view.", setupQuery)	
-  worked = setupQuery.exec("CREATE TRIGGER IF NOT EXISTS deleteFromPlaylist INSTEAD OF "
-    "DELETE ON main_playlist_view BEGIN "
-    "DELETE FROM mainplaylist "
-    "WHERE mainplaylist.id = old.plId;"
-    "END;");
+	worked = setupQuery.exec("CREATE TRIGGER IF NOT EXISTS deleteSongFromPlaylist "
+	"INSTEAD OF DELETE ON main_playlist_view "
+	"BEGIN "
+	"DELETE FROM mainplaylist "
+	"where mainplaylist.id = old.plId; "
+	"END;");
 	PRINT_SQLERROR("Error creating delete trigger for main_playlist_view.", setupQuery)	
   worked = setupQuery.exec("CREATE TRIGGER IF NOT EXISTS insertOnPlaylist INSTEAD OF "
     "INSERT ON main_playlist_view BEGIN "
@@ -169,13 +170,10 @@ void MetaWindow::tableClicked(const QModelIndex& index){
     return;
   }
   mediaObject->stop();
-  mediaObject->clearQueue();
-  Phonon::MediaSource songToPlay(mainPlaylist->getFilePath(index)); 
-  mediaObject->setCurrentSource(songToPlay);
+  mediaObject->setCurrentSource(mainPlaylist->getFilePath(index));
   mediaObject->play();
-  bool worked = true;
-	worked = mainPlaylist->model()->removeRow(index.row());
-	PRINT_SQLERROR("Error deleting song", (*(mainPlaylist->getSqlModel())) )
+	bool worked = mainPlaylist->model()->removeRow(index.row());
+	PRINT_SQLERROR("Error deleting song", (*(mainPlaylist->getSqlModel())) ) 
 }
 
 void MetaWindow::aboutToFinish(){
