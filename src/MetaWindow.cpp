@@ -29,6 +29,8 @@
 #include <QProgressDialog>
 #include "MusicFinder.hpp"
 #include <QMenuBar>
+#include <QLabel>
+#include <QTime>
 #include <QDesktopServices>
 #include "SettingsWidget.hpp"
 #include "MusicLibrary.hpp"
@@ -118,7 +120,8 @@ void MetaWindow::makeDBConnection(){
 }
 
 void MetaWindow::tick(qint64 time){
-
+	QTime tickTime(0, (time/60000)%60, (time/1000)%60);
+	timeLabel->setText(tickTime.toString("mm:ss"));
 }
 
 void MetaWindow::sourceChanged(const Phonon::MediaSource &source){
@@ -210,8 +213,10 @@ void MetaWindow::createActions(){
 }
 
 void MetaWindow::setupUi(){
-  QToolBar *bar = new QToolBar;
+	songTitle = new QLabel(this);
+	timeLabel = new QLabel("--:--", this);
 
+  QToolBar *bar = new QToolBar;
   bar->addAction(playAction);  
   bar->addAction(pauseAction);  
   bar->addAction(stopAction);  
@@ -222,6 +227,11 @@ void MetaWindow::setupUi(){
   volumeSlider = new Phonon::VolumeSlider(this);
   volumeSlider->setAudioOutput(audioOutput);
   volumeSlider->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+
+	QHBoxLayout *infoLayout = new QHBoxLayout;
+	infoLayout->addWidget(songTitle);
+	infoLayout->addStretch();
+	infoLayout->addWidget(timeLabel);
 
   QHBoxLayout *seekerLayout = new QHBoxLayout;
   seekerLayout->addWidget(seekSlider);
@@ -248,6 +258,7 @@ void MetaWindow::setupUi(){
   
   
   QVBoxLayout *mainLayout = new QVBoxLayout;
+	mainLayout->addLayout(infoLayout);
   mainLayout->addLayout(seekerLayout);
   mainLayout->addLayout(playBackLayout);
   mainLayout->addWidget(tabWidget);

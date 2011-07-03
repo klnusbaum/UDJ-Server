@@ -33,6 +33,7 @@
 class QTabWidget;
 class QPushButton;
 class QAction;
+class QLabel;
 
 namespace UDJ{
 
@@ -53,6 +54,7 @@ private slots:
   void aboutToFinish();
   
 private:
+	QLabel *songTitle, *timeLabel;
   QTabWidget *tabs;
   Phonon::SeekSlider *seekSlider;
   Phonon::MediaObject *mediaObject;
