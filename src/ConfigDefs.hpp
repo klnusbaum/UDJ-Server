@@ -27,7 +27,7 @@
 #define PRINT_SQLERROR( MESSAGE , QSQLOBJECT ) \
 	if(!worked){ \
 		std::cerr << MESSAGE << std::endl; \
-		std::cerr << QSQLOBJECT.lastError().text().toStdString() << std::endl; \
+		std::cerr << "SQL ERROR MESSAGE: '" << QSQLOBJECT.lastError().text().toStdString() << "'" << std::endl; \
 		std::cerr << std::endl; \
 	} \
  
