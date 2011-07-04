@@ -194,10 +194,10 @@ void MetaWindow::setupUi(){
   playBackLayout->addStretch();
   playBackLayout->addWidget(volumeSlider);
 
-  musicLibrary = new MusicLibrary(musicdb, serverConnection, this);
+  musicLibrary = new MusicLibrary(serverConnection, this);
   libraryView = new LibraryView(musicLibrary, this);
 
-  mainPlaylist = new PlaylistView(musicLibrary, this);
+  mainPlaylist = new PlaylistView(serverConnection, musicLibrary, this);
 
   partiersView = new QTableView(this);
 

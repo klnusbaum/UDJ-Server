@@ -26,19 +26,20 @@ namespace UDJ{
 
 class MusicLibrary;
 class PlaylistModel;
+class UDJServerConnection;
 
 
 class PlaylistView : public QTableView{
 Q_OBJECT
 public:
-  PlaylistView(MusicLibrary* musicLibrary, QWidget* parent=0);
+  PlaylistView(UDJServerConnection* serverConnection, MusicLibrary* musicLibrary, QWidget* parent=0);
   QString getFilePath(const QModelIndex& songIndex) const;
 public slots:
   void addSongToPlaylist(const QModelIndex& libraryIndex);
 	void removeSong(const QModelIndex& index);
 private:
   MusicLibrary* musicLibrary;
-  QSqlDatabase database;
+	UDJServerConnection* serverConnection;
   PlaylistModel* playlistModel;
 };
 

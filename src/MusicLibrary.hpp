@@ -32,7 +32,7 @@ namespace UDJ{
 class MusicLibrary : public QSqlTableModel{
 Q_OBJECT
 public:
-  MusicLibrary(QSqlDatabase musicdb, UDJServerConnection* serverConnection, QWidget* parent=0);
+  MusicLibrary(UDJServerConnection* serverConnection, QWidget* parent=0);
   ~MusicLibrary();
 
   void setMusicLibrary(QList<Phonon::MediaSource> songs, QProgressDialog& progress);

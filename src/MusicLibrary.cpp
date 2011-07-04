@@ -22,8 +22,8 @@
 namespace UDJ{
 
 
-MusicLibrary::MusicLibrary(QSqlDatabase musicdb, UDJServerConnection* serverConnection, QWidget* parent)
-  :QSqlTableModel(parent,musicdb),
+MusicLibrary::MusicLibrary(UDJServerConnection* serverConnection, QWidget* parent)
+  :QSqlTableModel(parent,serverConnection->getMusicDB()),
 	serverConnection(serverConnection)
 {
   metaDataGetter = new Phonon::MediaObject(0);

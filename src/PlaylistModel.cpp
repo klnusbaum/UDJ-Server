@@ -17,17 +17,18 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "PlaylistModel.hpp"
-#include <QSqlQuery>
 
 namespace UDJ{
 
 PlaylistModel::PlaylistModel(
-	QObject* parent,
-	QSqlDatabase db):
-	QSqlRelationalTableModel(parent, db)
+	UDJServerConnection* serverConnection,
+	QObject* parent):
+	QSqlRelationalTableModel(parent, serverConnection->getMusicDB()),
+	serverConnection(serverConnection)
 {
-  setTable("main_playlist_view");
+  setTable(serverConnection->getMainPlaylistTableName());
   select();
+	//Need to make this more dependent on the info from the UDJServerConnection
   setHeaderData(0, Qt::Horizontal, "playlist id");
   setHeaderData(1, Qt::Horizontal, "library id");
   setHeaderData(2, Qt::Horizontal, "Song");
@@ -54,20 +55,28 @@ bool PlaylistModel::updateVoteCount(const QModelIndex& index, int difference){
 	}
 	const QModelIndex plIdIndex = index.sibling(index.row(), 0);
 	int plId = data(plIdIndex).toInt();
-	QSqlQuery updateQuery(
-		"UPDATE main_playlist_view "
-		"SET voteCount = (voteCount + ?) "
-		"WHERE plId = ? ", 
-		database());
-	updateQuery.addBindValue(difference);
-	updateQuery.addBindValue(plId);
-	EXEC_SQL(
-		"Updating vote count didn't work!", 
-		updateQuery.exec(), 
-		updateQuery);
-	//TODO Should only do if the previous SQL execution was successful
-	select();
-	
+	if(serverConnection->incrementVoteCount(plId, difference)){
+		select();
+	}
+	else{
+		//TODO should show error
+	}
+}
+
+bool PlaylistModel::addSongToPlaylist(int libraryId){
+	bool success = serverConnection->addSongToPlaylist(libraryId);
+	if(success){
+		select();
+	}
+	return success;
+}
+
+bool PlaylistModel::removeSongFromPlaylist(const QModelIndex& index){
+	int plId = data(index.sibling(index.row(), 0)).toInt();
+	bool toReturn = serverConnection->removeSongFromPlaylist(plId);
+	if(toReturn){
+		select();
+	}
 }
 
 } //end namespace

@@ -23,15 +23,16 @@
 #include <QSqlField>
 #include "PlaylistDelegate.hpp"
 #include "PlaylistModel.hpp"
+#include "UDJServerConnection.hpp"
 
 namespace UDJ{
 
-PlaylistView::PlaylistView(MusicLibrary* musicLibrary, QWidget* parent):
+PlaylistView::PlaylistView(UDJServerConnection* serverConnection, MusicLibrary* musicLibrary, QWidget* parent):
   QTableView(parent),
   musicLibrary(musicLibrary),
-  database(musicLibrary->database())
+  serverConnection(serverConnection)
 {
-  playlistModel = new PlaylistModel(this, database);
+  playlistModel = new PlaylistModel(serverConnection, this);
   horizontalHeader()->setStretchLastSection(true);
   setItemDelegateForColumn(6, new PlaylistDelegate(this));
   setModel(playlistModel);
@@ -42,15 +43,11 @@ PlaylistView::PlaylistView(MusicLibrary* musicLibrary, QWidget* parent):
 }
   
 void PlaylistView::addSongToPlaylist(const QModelIndex& libraryIndex){
-  QString libraryId = musicLibrary->data(
-    libraryIndex.sibling(libraryIndex.row(),0)).toString();
-	QSqlRecord toInsert;
-	toInsert.append(QSqlField("libraryId", QVariant::Int));
-	toInsert.setValue(0, libraryId);
-	EXEC_SQL(
-		"Adding to playlist failed", 
-		playlistModel->insertRecord(-1, toInsert), 
-		(*playlistModel))
+  int libraryId = musicLibrary->data(
+    libraryIndex.sibling(libraryIndex.row(),0)).toInt();
+	if(! playlistModel->addSongToPlaylist(libraryId)){
+		//TODO display error message
+	}
 }
 
 QString PlaylistView::getFilePath(const QModelIndex& songIndex) const{
@@ -59,10 +56,9 @@ QString PlaylistView::getFilePath(const QModelIndex& songIndex) const{
 }
 
 void PlaylistView::removeSong(const QModelIndex& index){
-	EXEC_SQL(
-		"Error deleting song", 
-		playlistModel->removeRow(index.row()), 
-		(*playlistModel) ) 
+	if(! playlistModel->removeSongFromPlaylist(index)){
+		//TODO display error message
+	}
 }
 
 

@@ -58,6 +58,13 @@ public:
 		const QString& filePath);
 	
 	bool clearMyLibrary();
+	
+	bool incrementVoteCount(int plId, int difference);
+
+	bool addSongToPlaylist(int libraryId);
+
+	bool removeSongFromPlaylist(int plId);
+
 signals:
 	void partierLeft(int partierId);
 	void partierJoined(int partierId);

@@ -20,7 +20,7 @@
 #define PLAYLIST_MODEL_HPP
 
 #include <QSqlRelationalTableModel>
-#include "ConfigDefs.hpp"
+#include "UDJServerConnection.hpp"
 
 namespace UDJ{
 
@@ -28,9 +28,13 @@ namespace UDJ{
 class PlaylistModel : public QSqlRelationalTableModel{
 Q_OBJECT
 public:
-	PlaylistModel(QObject* parent=0, QSqlDatabase db=QSqlDatabase());
+	PlaylistModel(UDJServerConnection* serverConnection, QObject* parent=0);
 	virtual Qt::ItemFlags flags(const QModelIndex& index) const;
 	bool updateVoteCount(const QModelIndex& index, int difference);
+	bool addSongToPlaylist(int libraryId);
+	bool removeSongFromPlaylist(const QModelIndex& index);
+private:
+	UDJServerConnection* serverConnection;
 };
 
 

@@ -165,5 +165,48 @@ bool UDJServerConnection::addSongToLibrary(
 	return true;
 }
 
+bool UDJServerConnection::incrementVoteCount(int plId, int difference){
+
+	QSqlQuery updateQuery(
+		"UPDATE main_playlist_view "
+		"SET voteCount = (voteCount + ?) "
+		"WHERE plId = ? ", 
+		musicdb);
+	updateQuery.addBindValue(difference);
+	updateQuery.addBindValue(plId);
+	EXEC_SQL(
+		"Updating vote count didn't work!", 
+		updateQuery.exec(), 
+		updateQuery);
+	//TODO return value should be based on success of above query.
+	return true;
+}
+
+bool UDJServerConnection::addSongToPlaylist(int libraryId){
+	QSqlQuery insertQuery("INSERT INTO " + getMainPlaylistTableName() +" "
+		"(libraryId) VALUES ( ? );", musicdb);
+	insertQuery.addBindValue(libraryId);
+	
+	EXEC_SQL(
+		"Adding to playlist failed", 
+		insertQuery.exec(),
+		insertQuery)
+	//TODO this value should instead be based on the result of the
+	//above sql query.
+	return true;
+}
+
+bool UDJServerConnection::removeSongFromPlaylist(int plId){
+	QSqlQuery removeQuery("DELETE FROM " + getMainPlaylistTableName() + " "
+		"WHERE plId =  ? ;", musicdb);
+	removeQuery.addBindValue(plId);
+	
+	EXEC_SQL(
+		"Remove from playlist failed", 
+		removeQuery.exec(),
+		removeQuery)
+	//TODO this value should be based on above result
+	return true;
+}
 
 }//end namespace
