@@ -18,12 +18,17 @@
  */
 #include <QApplication>
 #include "MetaWindow.hpp"
+#include "UDJServerConnection.hpp"
 
 int main(int argc, char* argv[]){
   QApplication app(argc, argv);
   app.setApplicationName("Udj");
   app.setQuitOnLastWindowClosed(true);
-  UDJ::MetaWindow window;
+	UDJ::UDJServerConnection* serverConnection = new UDJ::UDJServerConnection();	
+	serverConnection->startConnection();
+  UDJ::MetaWindow window(serverConnection);
   window.show();
-  return app.exec();
+  int toReturn = app.exec();
+	delete serverConnection;
+	return toReturn;
 }

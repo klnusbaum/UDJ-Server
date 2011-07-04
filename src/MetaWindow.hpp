@@ -29,6 +29,7 @@
 #include <phonon/audiooutput.h>
 #include <QSqlTableModel>
 #include "MusicLibrary.hpp"
+#include "UDJServerConnection.hpp"
 
 class QTabWidget;
 class QPushButton;
@@ -44,7 +45,7 @@ class LibraryView;
 class MetaWindow : public QMainWindow{
   Q_OBJECT
 public:
-  MetaWindow();
+  MetaWindow(UDJServerConnection* serverConnection);
 private slots:
   void stateChanged(Phonon::State newState, Phonon::State oldState);
   void tick(qint64 time);
@@ -65,6 +66,7 @@ private:
   QTableView* partiersView;
   MusicLibrary* musicLibrary;
   SettingsWidget* settingsWidget;
+	UDJServerConnection* serverConnection;
 
   QAction *playAction;
   QAction *pauseAction;
@@ -77,16 +79,6 @@ private:
   void createActions();
   void setupUi();
   void setupMenus();
-  void makeDBConnection();
-  static const QString& getMusicDBConnectionName(){
-    static const QString musicDBConnectionName("musicdbConn");
-    return musicDBConnectionName;
-  }
-
-  static const QString& getMusicDBName(){
-    static const QString musicDBName("musicdb");
-    return musicDBName;
-  }
 
 };
 
