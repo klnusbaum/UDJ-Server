@@ -16,24 +16,39 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef PLAYLIST_MODEL_HPP
-#define PLAYLIST_MODEL_HPP
+#ifndef DIFFERENCE_SPINNER_HPP
+#define DIFFERENCE_SPINNER_HPP
 
-#include <QSqlRelationalTableModel>
 #include "ConfigDefs.hpp"
+#include <QSpinBox>
 
 namespace UDJ{
 
 
-class PlaylistModel : public QSqlRelationalTableModel{
+class DifferenceSpinner : public QSpinBox{
 Q_OBJECT
 public:
-	PlaylistModel(QObject* parent=0, QSqlDatabase db=QSqlDatabase());
-	virtual Qt::ItemFlags flags(const QModelIndex& index) const;
-	bool updateVoteCount(const QModelIndex& index, int difference);
+  DifferenceSpinner(QWidget* parent=0):
+		QSpinBox(parent),
+		savedValue(-1){}
+
+	inline void saveCurrentValue(){
+		savedValue = value();
+	}
+
+	inline int getSavedValue(){
+		return savedValue;
+	}
+
+	inline int getCurrentValueSavedValueDiff(){
+		return value()-getSavedValue();
+	}
+
+private:
+	int savedValue;
 };
 
 
 } //end namespace
-#endif //PLAYLIST_MODEL_HPP
+#endif //DIFFERENCE_SPINNER_HPP
 

@@ -17,8 +17,8 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "PlaylistDelegate.hpp"
-#include <QSpinBox>
-#include <QSqlRelationalTableModel>
+#include "DifferenceSpinner.hpp"
+#include "PlaylistModel.hpp"
 
 
 namespace UDJ{
@@ -36,8 +36,7 @@ QWidget* PlaylistDelegate::createEditor(
   if(index.column() != 6){
     return 0;
   }
-  QSpinBox* editor = new QSpinBox(parent);
-  editor->setMinimum(0);
+  DifferenceSpinner* editor = new DifferenceSpinner(parent);
   return editor; 
 }
 
@@ -45,7 +44,9 @@ void PlaylistDelegate::setEditorData(
   QWidget* editor,
   const QModelIndex& index) const
 {
-  ((QSpinBox*)editor)->setValue(index.model()->data(index).toInt());
+	DifferenceSpinner* castedEditor = (DifferenceSpinner*)editor;
+  castedEditor->setValue(index.model()->data(index).toInt());
+	castedEditor->saveCurrentValue();
 }
 
 void setModelData(
@@ -53,8 +54,8 @@ void setModelData(
   QAbstractItemModel* model,
   const QModelIndex& index)
 {
-  int data = ((QSpinBox*)editor)->value();
-  ((QSqlRelationalTableModel*)model)->setData(index, data);
+  int diff = ((DifferenceSpinner*)editor)->getCurrentValueSavedValueDiff();
+  ((PlaylistModel*)model)->updateVoteCount(index, diff);
 }
 
 

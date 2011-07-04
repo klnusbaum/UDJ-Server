@@ -40,6 +40,7 @@ SET(UDJ_MOC_HDRS
   LibraryView.hpp
   PlaylistDelegate.hpp
 	PlaylistModel.hpp
+	DifferenceSpinner.hpp
 )
 
 QT4_WRAP_CPP(MOC_SRCS ${UDJ_MOC_HDRS})

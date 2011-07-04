@@ -17,6 +17,7 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "PlaylistModel.hpp"
+#include <QSqlQuery>
 
 namespace UDJ{
 
@@ -45,6 +46,27 @@ Qt::ItemFlags PlaylistModel::flags(const QModelIndex& index) const{
 		fromParent &= mask;
 	}
 	return fromParent;
+}
+
+bool PlaylistModel::updateVoteCount(const QModelIndex& index, int difference){
+	if(index.column() != 6 || !index.isValid()){
+		return false;
+	}
+	const QModelIndex plIdIndex = index.sibling(index.row(), 0);
+	int plId = data(plIdIndex).toInt();
+	QSqlQuery updateQuery(
+		"UPDATE main_playlist_view "
+		"SET voteCount = (voteCount + ?) "
+		"WHERE plId = ? ", 
+		database());
+	updateQuery.addBindValue(difference);
+	updateQuery.addBindValue(plId);
+	bool worked = updateQuery.exec();
+	PRINT_SQLERROR("Updating vote count didn't work!", updateQuery);
+	if(worked){
+		select();
+	}		
+	
 }
 
 } //end namespace
