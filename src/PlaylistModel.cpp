@@ -61,11 +61,12 @@ bool PlaylistModel::updateVoteCount(const QModelIndex& index, int difference){
 		database());
 	updateQuery.addBindValue(difference);
 	updateQuery.addBindValue(plId);
-	bool worked = updateQuery.exec();
-	PRINT_SQLERROR("Updating vote count didn't work!", updateQuery);
-	if(worked){
-		select();
-	}		
+	EXEC_SQL(
+		"Updating vote count didn't work!", 
+		updateQuery.exec(), 
+		updateQuery);
+	//TODO Should only do if the previous SQL execution was successful
+	select();
 	
 }
 

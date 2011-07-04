@@ -64,8 +64,10 @@ void MusicLibrary::addSong(Phonon::MediaSource song){
   addQuery.addBindValue(getArtistName(song));
   addQuery.addBindValue(getAlbumName(song));
   addQuery.addBindValue(song.fileName());
-  bool worked = addQuery.exec();
-	PRINT_SQLERROR("Failed to add song " << getSongName(song).toStdString(), addQuery)
+	EXEC_SQL(
+		"Failed to add song " << getSongName(song).toStdString(), 
+		addQuery.exec(), 
+		addQuery)
 }
 
 QString MusicLibrary::getSongName(Phonon::MediaSource song) const{

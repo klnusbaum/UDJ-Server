@@ -47,8 +47,10 @@ void PlaylistView::addSongToPlaylist(const QModelIndex& libraryIndex){
 	QSqlRecord toInsert;
 	toInsert.append(QSqlField("libraryId", QVariant::Int));
 	toInsert.setValue(0, libraryId);
-	bool worked = playlistModel->insertRecord(-1, toInsert);
-	PRINT_SQLERROR("Adding to playlist failed", (*playlistModel))
+	EXEC_SQL(
+		"Adding to playlist failed", 
+		playlistModel->insertRecord(-1, toInsert), 
+		(*playlistModel))
 }
 
 QString PlaylistView::getFilePath(const QModelIndex& songIndex) const{
@@ -57,8 +59,10 @@ QString PlaylistView::getFilePath(const QModelIndex& songIndex) const{
 }
 
 void PlaylistView::removeSong(const QModelIndex& index){
-	bool worked = playlistModel->removeRow(index.row());
-	PRINT_SQLERROR("Error deleting song", (*playlistModel) ) 
+	EXEC_SQL(
+		"Error deleting song", 
+		playlistModel->removeRow(index.row()), 
+		(*playlistModel) ) 
 }
 
 

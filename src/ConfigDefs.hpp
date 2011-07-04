@@ -24,16 +24,16 @@
 #include <iostream>
 #include <QSqlError>
 
-#define PRINT_SQLERROR( MESSAGE , QSQLOBJECT ) \
-	if(!worked){ \
+#define EXEC_SQL( MESSAGE , STMT, QSQLOBJECT ) \
+	if(!( STMT )){ \
 		std::cerr << MESSAGE << std::endl; \
 		std::cerr << "SQL ERROR MESSAGE: '" << QSQLOBJECT.lastError().text().toStdString() << "'" << std::endl; \
 		std::cerr << std::endl; \
 	} \
  
 #else
-#define PRINT_SQLERROR( MESSAGE, QSQLOBJECT) \
-
+#define EXEC_SQL( MESSAGE, STMT, QSQLOBJECT) \
+	STMT;
 #endif
 
 

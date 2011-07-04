@@ -72,9 +72,10 @@ void MetaWindow::sourceChanged(const Phonon::MediaSource &source){
 	QSqlQuery nameQuery(musicdb);	
 	nameQuery.prepare("SELECT song from library where filePath= ?");
 	nameQuery.addBindValue(source.fileName());	
-	bool worked = true;
-	worked = nameQuery.exec();
-	PRINT_SQLERROR("Error creating insert trigger for main_playlist_view.", nameQuery)	
+	EXEC_SQL(
+		"Error creating insert trigger for main_playlist_view.", 
+		nameQuery.exec(), 
+		nameQuery)	
 	nameQuery.next();	
 	songTitle->setText(nameQuery.value(0).toString());
 
