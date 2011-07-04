@@ -87,6 +87,7 @@ private:
     static const QString musicDBName("musicdb");
     return musicDBName;
   }
+
 };
 
 
