@@ -24,6 +24,7 @@
 #include <phonon/mediasource.h>
 #include <QProgressDialog>
 #include "ConfigDefs.hpp"
+#include "UDJServerConnection.hpp"
 
 namespace UDJ{
 
@@ -31,7 +32,7 @@ namespace UDJ{
 class MusicLibrary : public QSqlTableModel{
 Q_OBJECT
 public:
-  MusicLibrary(QSqlDatabase musicdb, QWidget* parent=0);
+  MusicLibrary(QSqlDatabase musicdb, UDJServerConnection* serverConnection, QWidget* parent=0);
   ~MusicLibrary();
 
   void setMusicLibrary(QList<Phonon::MediaSource> songs, QProgressDialog& progress);
@@ -40,6 +41,7 @@ public:
 
 private:
   Phonon::MediaObject* metaDataGetter;
+	UDJServerConnection* serverConnection;
   
   QString getSongName(Phonon::MediaSource song) const;
   QString getArtistName(Phonon::MediaSource song) const;

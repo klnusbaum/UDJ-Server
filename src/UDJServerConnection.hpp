@@ -35,6 +35,29 @@ public:
 	inline QSqlDatabase getMusicDB(){
 		return musicdb;
 	}	
+	inline int getPartyId(){
+		return partyId;
+	}
+
+	inline QString getLibraryTableName(){
+		return "library";
+	}
+
+	inline QString getMainPlaylistTableName(){
+		return "main_playlist_view";
+	}
+
+	inline QString getPartiersTableName(){
+		return "my_partiers";
+	}
+
+	bool addSongToLibrary(
+		const QString& songName,
+		const QString& artistName,
+		const QString& ablumName,
+		const QString& filePath);
+	
+	bool clearMyLibrary();
 signals:
 	void partierLeft(int partierId);
 	void partierJoined(int partierId);
@@ -51,6 +74,7 @@ private:
     static const QString musicDBName("musicdb");
     return musicDBName;
   }
+	int partyId;
 };
 
 

@@ -18,17 +18,19 @@
  */
 #include "MusicLibrary.hpp"
 #include <QDir>
-#include <QSqlQuery>
 
 namespace UDJ{
 
 
-MusicLibrary::MusicLibrary(QSqlDatabase musicdb, QWidget* parent)
-  :QSqlTableModel(parent,musicdb)
+MusicLibrary::MusicLibrary(QSqlDatabase musicdb, UDJServerConnection* serverConnection, QWidget* parent)
+  :QSqlTableModel(parent,musicdb),
+	serverConnection(serverConnection)
 {
   metaDataGetter = new Phonon::MediaObject(0);
-  setTable("library");
+  setTable(serverConnection->getLibraryTableName());
   select();
+
+	//Make this more dependent up what serverConnection is telling us.
   setHeaderData(0, Qt::Horizontal, "id");
   setHeaderData(1, Qt::Horizontal, "Song");
   setHeaderData(2, Qt::Horizontal, "Artist");
@@ -41,11 +43,7 @@ MusicLibrary::~MusicLibrary(){
 }
 
 void MusicLibrary::setMusicLibrary(QList<Phonon::MediaSource> songs, QProgressDialog& progress){
-  QSqlQuery workQuery(database());
-  workQuery.exec("DROP TABLE library");
-  workQuery.exec("CREATE TABLE IF NOT EXISTS library "
-  "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-  "song TEXT NOT NULL, artist TEXT, album TEXT, filePath TEXT)");  
+	serverConnection->clearMyLibrary();
   for(int i =0; i<songs.size(); ++i){
     progress.setValue(i);
     if(progress.wasCanceled()){
@@ -57,17 +55,11 @@ void MusicLibrary::setMusicLibrary(QList<Phonon::MediaSource> songs, QProgressDi
 
 void MusicLibrary::addSong(Phonon::MediaSource song){
   metaDataGetter->setCurrentSource(song);
-  QSqlQuery addQuery("INSERT INTO library "
-    "(song, artist, album, filePath) VALUES ( ?, ?, ?, ?)", database());
-  
-  addQuery.addBindValue(getSongName(song));
-  addQuery.addBindValue(getArtistName(song));
-  addQuery.addBindValue(getAlbumName(song));
-  addQuery.addBindValue(song.fileName());
-	EXEC_SQL(
-		"Failed to add song " << getSongName(song).toStdString(), 
-		addQuery.exec(), 
-		addQuery)
+	serverConnection->addSongToLibrary(
+  	getSongName(song),
+  	getArtistName(song),
+  	getAlbumName(song),
+  	song.fileName());
 }
 
 QString MusicLibrary::getSongName(Phonon::MediaSource song) const{

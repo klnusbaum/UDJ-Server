@@ -2,6 +2,7 @@
 #include <QDesktopServices>
 #include <QDir>
 #include <QSqlQuery>
+#include <QVariant>
 
 namespace UDJ{
 
@@ -32,10 +33,18 @@ void UDJServerConnection::startConnection(){
 		"(id INTEGER PRIMARY KEY AUTOINCREMENT, "
 		"name TEXT NOT NULL);"),
 		setupQuery)
+	EXEC_SQL(
+		"Error adding this party to the party table.",
+		setupQuery.exec("INSERT INTO parties (name) VALUES ( 'defaultParty' );"),
+		setupQuery)
+
+	setupQuery.exec("select id from parties where name='defaultParty'");
+	setupQuery.next();
+	partyId = setupQuery.value(0).toInt();
 	
 	//TODO enforce currentParty refering to a party in the party table
 	EXEC_SQL(
-		"Error creating partiers table",
+		"Error creating users table",
 		setupQuery.exec("CREATE TABLE IF NOT EXISTS users "
 		"(id INTEGER PRIMARY KEY AUTOINCREMENT, "
 		"first_name TEXT NOT NULL, "
@@ -46,6 +55,23 @@ void UDJServerConnection::startConnection(){
 		"hostingParty INTEGER CHECK (hostingParty = 0 OR hostingParty = 1), "
 		"currentParty INTEGER);"),
 		setupQuery)
+
+	EXEC_SQL(
+		"Error inserting partier 1",
+		setupQuery.exec("INSERT INTO users (first_name, last_name, "
+		"gender, birthday, inParty, hostingParty, currentParty) VALUES ("
+		"'kurtis', 'nusbaum', 'male', '24/07/1989', 1, 0, " + QString::number(partyId) + ");"),
+		setupQuery)
+
+	EXEC_SQL(
+		"Error creating partiers view",
+  	setupQuery.exec("CREATE VIEW IF NOT EXISTS my_partiers "
+    "AS SELECT "
+    "id, "
+		"first_name "
+    "FROM users where currentParty = " +QString::number(partyId) +";"),
+		setupQuery)
+	
 
 	EXEC_SQL(
 		"Error creating library table", 
@@ -107,6 +133,36 @@ void UDJServerConnection::startConnection(){
     "END;"),
 		setupQuery)
 
+}
+
+bool UDJServerConnection::clearMyLibrary(){
+  QSqlQuery workQuery(musicdb);
+  workQuery.exec("DROP TABLE library");
+  workQuery.exec("CREATE TABLE IF NOT EXISTS library "
+  "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
+  "song TEXT NOT NULL, artist TEXT, album TEXT, filePath TEXT)");  
+}
+
+bool UDJServerConnection::addSongToLibrary(
+	const QString& songName,
+	const QString& artistName,
+	const QString& albumName,
+	const QString& filePath)
+{
+
+  QSqlQuery addQuery("INSERT INTO library "
+    "(song, artist, album, filePath) VALUES ( ?, ?, ?, ?)", musicdb);
+  
+  addQuery.addBindValue(songName);
+  addQuery.addBindValue(artistName);
+  addQuery.addBindValue(albumName);
+  addQuery.addBindValue(filePath);
+	EXEC_SQL(
+		"Failed to add song " << songName.toStdString(), 
+		addQuery.exec(), 
+		addQuery)
+	//TODO this should be based on what the above query returns.
+	return true;
 }
 
 

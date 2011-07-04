@@ -70,10 +70,10 @@ void MetaWindow::tick(qint64 time){
 
 void MetaWindow::sourceChanged(const Phonon::MediaSource &source){
 	QSqlQuery nameQuery(musicdb);	
-	nameQuery.prepare("SELECT song from library where filePath= ?");
+	nameQuery.prepare("SELECT song from " +serverConnection->getLibraryTableName() + " where filePath= ?");
 	nameQuery.addBindValue(source.fileName());	
 	EXEC_SQL(
-		"Error creating insert trigger for main_playlist_view.", 
+		"Error getting songname.", 
 		nameQuery.exec(), 
 		nameQuery)	
 	nameQuery.next();	
@@ -194,7 +194,7 @@ void MetaWindow::setupUi(){
   playBackLayout->addStretch();
   playBackLayout->addWidget(volumeSlider);
 
-  musicLibrary = new MusicLibrary(musicdb, this);
+  musicLibrary = new MusicLibrary(musicdb, serverConnection, this);
   libraryView = new LibraryView(musicLibrary, this);
 
   mainPlaylist = new PlaylistView(musicLibrary, this);
