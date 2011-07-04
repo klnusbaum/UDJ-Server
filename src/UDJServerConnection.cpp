@@ -27,10 +27,31 @@ void UDJServerConnection::startConnection(){
   QSqlQuery setupQuery(musicdb);
 
 	EXEC_SQL(
+		"Error creating party table",
+		setupQuery.exec("CREATE TABLE IF NOT EXISTS parties "
+		"(id INTEGER PRIMARY KEY AUTOINCREMENT, "
+		"name TEXT NOT NULL);"),
+		setupQuery)
+	
+	//TODO enforce currentParty refering to a party in the party table
+	EXEC_SQL(
+		"Error creating partiers table",
+		setupQuery.exec("CREATE TABLE IF NOT EXISTS users "
+		"(id INTEGER PRIMARY KEY AUTOINCREMENT, "
+		"first_name TEXT NOT NULL, "
+		"last_name TEXT NOT NULL, "
+		"gender TEXT NOT NULL, "
+		"birthday TEXT, "
+		"inParty INTEGER CHECK (inParty = 0 OR inParty = 1), "
+		"hostingParty INTEGER CHECK (hostingParty = 0 OR hostingParty = 1), "
+		"currentParty INTEGER);"),
+		setupQuery)
+
+	EXEC_SQL(
 		"Error creating library table", 
 		setupQuery.exec("CREATE TABLE IF NOT EXISTS library "
     "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-   	"song TEXT NOT NULL, artist TEXT, album TEXT, filePath TEXT)"), 
+   	"song TEXT NOT NULL, artist TEXT, album TEXT, filePath TEXT);"), 
 		setupQuery)	
 
 	EXEC_SQL(
@@ -39,7 +60,7 @@ void UDJServerConnection::startConnection(){
    	"(id INTEGER PRIMARY KEY AUTOINCREMENT, "
    	"libraryId INTEGER REFERENCES library (id) ON DELETE CASCADE, "
    	"voteCount INTEGER DEFAULT 1, "
-   	"timeAdded INTEGER DEFAULT CURRENT_TIMESTAMP);"),
+   	"timeAdded TEXT DEFAULT CURRENT_TIMESTAMP);"),
 		setupQuery)	
 
 	EXEC_SQL(
