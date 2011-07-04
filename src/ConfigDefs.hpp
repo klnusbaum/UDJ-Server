@@ -20,6 +20,11 @@
 #ifndef CONFIG_DEFS_HPP
 #define CONFIG_DEFS_HPP
 
+typedef long libraryid_t;
+typedef long playlistid_t;
+typedef long partyid_t;
+typedef long partierid_t;
+
 #ifdef UDJ_DEBUG_BUILD
 #include <iostream>
 #include <QSqlError>

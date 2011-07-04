@@ -42,17 +42,17 @@ PlaylistView::PlaylistView(UDJServerConnection* serverConnection, MusicLibrary* 
   setSelectionBehavior(QAbstractItemView::SelectRows);
 }
   
-void PlaylistView::addSongToPlaylist(const QModelIndex& libraryIndex){
-  int libraryId = musicLibrary->data(
-    libraryIndex.sibling(libraryIndex.row(),0)).toInt();
-	if(! playlistModel->addSongToPlaylist(libraryId)){
-		//TODO display error message
-	}
-}
-
 QString PlaylistView::getFilePath(const QModelIndex& songIndex) const{
   QModelIndex filePathIndex = songIndex.sibling(songIndex.row(), 5);
   return playlistModel->data(filePathIndex).toString();
+}
+
+void PlaylistView::addSongToPlaylist(const QModelIndex& libraryIndex){
+  libraryid_t libraryId = musicLibrary->data(
+    libraryIndex.sibling(libraryIndex.row(),0)).value<libraryid_t>();
+	if(! playlistModel->addSongToPlaylist(libraryId)){
+		//TODO display error message
+	}
 }
 
 void PlaylistView::removeSong(const QModelIndex& index){

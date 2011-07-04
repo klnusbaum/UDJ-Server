@@ -31,7 +31,7 @@ public:
 	PlaylistModel(UDJServerConnection* serverConnection, QObject* parent=0);
 	virtual Qt::ItemFlags flags(const QModelIndex& index) const;
 	bool updateVoteCount(const QModelIndex& index, int difference);
-	bool addSongToPlaylist(int libraryId);
+	bool addSongToPlaylist(libraryid_t libraryId);
 	bool removeSongFromPlaylist(const QModelIndex& index);
 private:
 	UDJServerConnection* serverConnection;

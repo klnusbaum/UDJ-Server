@@ -40,7 +40,7 @@ void UDJServerConnection::startConnection(){
 
 	setupQuery.exec("select id from parties where name='defaultParty'");
 	setupQuery.next();
-	partyId = setupQuery.value(0).toInt();
+	partyId = setupQuery.value(0).value<partyid_t>();
 	
 	//TODO enforce currentParty refering to a party in the party table
 	EXEC_SQL(
@@ -165,7 +165,7 @@ bool UDJServerConnection::addSongToLibrary(
 	return true;
 }
 
-bool UDJServerConnection::incrementVoteCount(int plId, int difference){
+bool UDJServerConnection::incrementVoteCount(playlistid_t plId, int difference){
 
 	QSqlQuery updateQuery(
 		"UPDATE main_playlist_view "
@@ -173,7 +173,7 @@ bool UDJServerConnection::incrementVoteCount(int plId, int difference){
 		"WHERE plId = ? ", 
 		musicdb);
 	updateQuery.addBindValue(difference);
-	updateQuery.addBindValue(plId);
+	updateQuery.addBindValue(QVariant::fromValue(plId));
 	EXEC_SQL(
 		"Updating vote count didn't work!", 
 		updateQuery.exec(), 
@@ -182,10 +182,10 @@ bool UDJServerConnection::incrementVoteCount(int plId, int difference){
 	return true;
 }
 
-bool UDJServerConnection::addSongToPlaylist(int libraryId){
+bool UDJServerConnection::addSongToPlaylist(libraryid_t libraryId){
 	QSqlQuery insertQuery("INSERT INTO " + getMainPlaylistTableName() +" "
 		"(libraryId) VALUES ( ? );", musicdb);
-	insertQuery.addBindValue(libraryId);
+	insertQuery.addBindValue(QVariant::fromValue(libraryId));
 	
 	EXEC_SQL(
 		"Adding to playlist failed", 
@@ -196,10 +196,10 @@ bool UDJServerConnection::addSongToPlaylist(int libraryId){
 	return true;
 }
 
-bool UDJServerConnection::removeSongFromPlaylist(int plId){
+bool UDJServerConnection::removeSongFromPlaylist(playlistid_t plId){
 	QSqlQuery removeQuery("DELETE FROM " + getMainPlaylistTableName() + " "
 		"WHERE plId =  ? ;", musicdb);
-	removeQuery.addBindValue(plId);
+	removeQuery.addBindValue(QVariant::fromValue(plId));
 	
 	EXEC_SQL(
 		"Remove from playlist failed", 

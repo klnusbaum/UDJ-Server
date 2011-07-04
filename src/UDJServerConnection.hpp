@@ -35,7 +35,7 @@ public:
 	inline QSqlDatabase getMusicDB(){
 		return musicdb;
 	}	
-	inline int getPartyId(){
+	inline partyid_t  getPartyId(){
 		return partyId;
 	}
 
@@ -59,17 +59,17 @@ public:
 	
 	bool clearMyLibrary();
 	
-	bool incrementVoteCount(int plId, int difference);
+	bool incrementVoteCount(playlistid_t plId, int difference);
 
-	bool addSongToPlaylist(int libraryId);
+	bool addSongToPlaylist(playlistid_t libraryId);
 
-	bool removeSongFromPlaylist(int plId);
+	bool removeSongFromPlaylist(playlistid_t plId);
 
 signals:
-	void partierLeft(int partierId);
-	void partierJoined(int partierId);
-	void songAddedToMainPlaylist(int libraryId);
-	void voteCountChanged(int playlistId);
+	void partierLeft(partierid_t partierId);
+	void partierJoined(partierid_t partierId);
+	void songAddedToMainPlaylist(libraryid_t libraryId);
+	void voteCountChanged(playlistid_t playlistId);
 private:
 	QSqlDatabase musicdb;
   static const QString& getMusicDBConnectionName(){
@@ -81,7 +81,7 @@ private:
     static const QString musicDBName("musicdb");
     return musicDBName;
   }
-	int partyId;
+	partyid_t partyId;
 };
 
 
