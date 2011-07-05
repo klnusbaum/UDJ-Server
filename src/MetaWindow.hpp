@@ -41,6 +41,7 @@ namespace UDJ{
 class SettingsWidget;
 class PlaylistView;
 class LibraryView;
+class PartiersView;
 
 class MetaWindow : public QMainWindow{
   Q_OBJECT
@@ -63,7 +64,7 @@ private:
   Phonon::VolumeSlider *volumeSlider;
   LibraryView* libraryView;
   PlaylistView* mainPlaylist;
-  QTableView* partiersView;
+  PartiersView* partiersView;
   MusicLibrary* musicLibrary;
   SettingsWidget* settingsWidget;
 	UDJServerConnection* serverConnection;

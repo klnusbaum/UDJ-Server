@@ -35,6 +35,7 @@
 #include "MusicLibrary.hpp"
 #include "PlaylistView.hpp"
 #include "LibraryView.hpp"
+#include "PartiersView.hpp"
 
 
 namespace UDJ{
@@ -199,7 +200,7 @@ void MetaWindow::setupUi(){
 
   mainPlaylist = new PlaylistView(serverConnection, musicLibrary, this);
 
-  partiersView = new QTableView(this);
+  partiersView = new PartiersView(serverConnection,this);
 
   settingsWidget = new SettingsWidget(this);
   

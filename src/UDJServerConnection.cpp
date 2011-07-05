@@ -33,10 +33,6 @@ void UDJServerConnection::startConnection(){
 		"(id INTEGER PRIMARY KEY AUTOINCREMENT, "
 		"name TEXT NOT NULL);"),
 		setupQuery)
-	EXEC_SQL(
-		"Error adding this party to the party table.",
-		setupQuery.exec("INSERT INTO parties (name) VALUES ( 'defaultParty' );"),
-		setupQuery)
 
 	setupQuery.exec("select id from parties where name='defaultParty'");
 	setupQuery.next();
@@ -56,12 +52,6 @@ void UDJServerConnection::startConnection(){
 		"currentParty INTEGER);"),
 		setupQuery)
 
-	EXEC_SQL(
-		"Error inserting partier 1",
-		setupQuery.exec("INSERT INTO users (first_name, last_name, "
-		"gender, birthday, inParty, hostingParty, currentParty) VALUES ("
-		"'kurtis', 'nusbaum', 'male', '24/07/1989', 1, 0, " + QString::number(partyId) + ");"),
-		setupQuery)
 
 	EXEC_SQL(
 		"Error creating partiers view",

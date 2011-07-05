@@ -26,6 +26,7 @@ SET(UDJ_SRCS
   PlaylistDelegate.cpp
 	PlaylistModel.cpp
 	UDJServerConnection.cpp
+	PartiersView.cpp
 )
 
 SET(UDJ_HDRS 
@@ -43,6 +44,7 @@ SET(UDJ_MOC_HDRS
 	PlaylistModel.hpp
 	DifferenceSpinner.hpp
 	UDJServerConnection.hpp
+	PartiersView.hpp
 )
 
 QT4_WRAP_CPP(MOC_SRCS ${UDJ_MOC_HDRS})
