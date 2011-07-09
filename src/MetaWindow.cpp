@@ -130,9 +130,11 @@ void MetaWindow::aboutToFinish(){
 }
 
 void MetaWindow::finished(){
-  Phonon::MediaSource newSong = mainPlaylist->getAndRemoveNextSong(); 
-  mediaObject->setCurrentSource(newSong);
-  mediaObject->play();
+  if(mainPlaylist->model()->rowCount() > 0){
+    Phonon::MediaSource newSong = mainPlaylist->getAndRemoveNextSong(); 
+    mediaObject->setCurrentSource(newSong);
+    mediaObject->play();
+  }
 }
 
 void MetaWindow::createActions(){
