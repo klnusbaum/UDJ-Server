@@ -38,7 +38,7 @@ void PartiersView::contextMenuEvent(QContextMenuEvent* e){
 
   QAction* selected = 
     QMenu::exec(getContextMenuActions(), e->globalPos());
-  if(selected->text() == "Boot Partier"){
+  if(selected->text() == "Kick Partier"){
     QModelIndex indexToBoot = indexAt(e->pos());
 		partierid_t toBoot = getPartierId(indexToBoot);
 		if(serverConnection->kickUser(toBoot)){
@@ -57,7 +57,7 @@ partierid_t PartiersView::getPartierId(const QModelIndex& index) const{
 
 QList<QAction*> PartiersView::getContextMenuActions(){
   QList<QAction*> contextActions;
-  contextActions.append(new QAction("Boot Partier", this));
+  contextActions.append(new QAction("Kick Partier", this));
   return contextActions;
 }
 
