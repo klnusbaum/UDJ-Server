@@ -24,14 +24,42 @@ class QCheckBox;
 
 namespace UDJ{
 
-
+/**
+ * \brief Widget used to view and adjust UDJ settings
+ */
 class SettingsWidget : public QWidget{
 Q_OBJECT
 public:
+  /** @name Constructor(s) */
+  //@{
+
+  /**
+   * \brief Constructs a SettingsWidget
+   *
+   * @param parent The parent widget.
+   */
   SettingsWidget(QWidget* parent=0);
+
+  //@}
+
 private:
-  void setupUi();
+  /** @name Private Members */
+  //@{
+
+  /** 
+   * \brief Checkbox indicating whether or not file uploads should be allowed.
+   */
   QCheckBox* allowFileUploads;
+
+  //@}
+
+  /** @name Private Functions */
+  //@{
+
+  /** \brief Sets up all the UI components that make up the widget. */
+  void setupUi();
+
+  //@}
 };
 
 

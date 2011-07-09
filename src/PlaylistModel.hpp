@@ -24,17 +24,77 @@
 
 namespace UDJ{
 
-
+/** 
+ * \brief A model representing the data in the Playlist.
+ */
 class PlaylistModel : public QSqlRelationalTableModel{
 Q_OBJECT
 public:
+  /** @name Constructor(s) */
+  //@{
+
+  /**
+   * \brief Constructs a playlist model.
+   *
+   * @param serverConnection The connection the the UDJ server.
+   * @param parent The parent QObject.
+   */
 	PlaylistModel(UDJServerConnection* serverConnection, QObject* parent=0);
+
+  //@}
+
+  /** @name Overriden from QSqlRelationalTableModel */
+  //@{
+
+  /** \brief . */
 	virtual Qt::ItemFlags flags(const QModelIndex& index) const;
+
+  //@}
+
+  /** @name Getters and Setters */
+  //@{
+
+  /**
+   * \brief Changes the vote count at of the playlist item located at index.
+   *
+   * Depending on the value of difference, this function either increments
+   * or decrements the vote count of the playlist item located at index.
+   *
+   * @param index The index of the playlist item whose vote count is to be
+   * changed.
+   * @param difference The change in number that should be applied to the 
+   * playlist item's vote count.
+   * @return True if changing the vote count was sucessful, false otherwise.
+   */
 	bool updateVoteCount(const QModelIndex& index, int difference);
+  
+  /**
+   * \brief Adds a song to the playlist.
+   *
+   * @param libraryId The library id of the song to be added to the playlist.
+   * @return True if the song was sucessfully added to the playlist,
+   * false otherwise.
+   */
 	bool addSongToPlaylist(libraryid_t libraryId);
+  
+  /**
+   * \brief Removes a song from the playlist.
+   *
+   * @param index Index of the song to be removed.
+   * @return True if the song was sucessfully removed, false otherwise.
+   */
 	bool removeSongFromPlaylist(const QModelIndex& index);
+
+  //@}
 private:
+
+  /** @name Private Members */
+  //@{
+
+  /** \brief The connection to the UDJ server. */
 	UDJServerConnection* serverConnection;
+
+  //@}
 };
 
 

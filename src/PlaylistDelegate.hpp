@@ -24,22 +24,46 @@
 
 namespace UDJ{
 
-
+/**
+ * \brief A delegate used by the the PLaylistView to display items from a
+ * PlaylistModel.
+ */
 class PlaylistDelegate : public QSqlRelationalDelegate{
 Q_OBJECT
 public:
+  /** @name Constructor(s) */
+  //@{
+
+  /**
+   * \brief Constructs a PlaylistDelegate.
+   * 
+   * @param parent The parent object.
+   */
   PlaylistDelegate(QObject* parent=0);
+
+  //@}
+
+  /** @name Overriden from QItemDelegate */
+  //@{
+  
+  /** * \brief .  */
   QWidget* createEditor(
     QWidget* parent, 
     const QStyleOptionViewItem& option, 
     const QModelIndex& index) const;
+
+  /** * \brief .  */
   void setEditorData(
     QWidget* editor,
     const QModelIndex& index) const;
+
+  /** * \brief .  */
   void setModelData(
     QWidget* editor,
     QAbstractItemModel* model,
     const QModelIndex& index);
+
+  //@}
 };
 
 

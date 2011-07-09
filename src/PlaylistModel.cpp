@@ -55,7 +55,7 @@ bool PlaylistModel::updateVoteCount(const QModelIndex& index, int difference){
 	}
 	const QModelIndex plIdIndex = index.sibling(index.row(), 0);
 	playlistid_t plId = data(plIdIndex).value<playlistid_t>();
-	if(serverConnection->incrementVoteCount(plId, difference)){
+	if(serverConnection->alterVoteCount(plId, difference)){
 		select();
 	}
 	else{

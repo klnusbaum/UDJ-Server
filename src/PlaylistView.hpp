@@ -28,19 +28,84 @@ class MusicLibrary;
 class PlaylistModel;
 class UDJServerConnection;
 
-
+/**
+ * \brief Used to view the items in a PlaylistModel
+ */
 class PlaylistView : public QTableView{
 Q_OBJECT
 public:
+
+  /** @name Constructors */
+  //@{
+
+  /**
+   * \brief Constructs a PlaylistView
+   *
+   * @param serverConnection Connection to the UDJ server
+   * @param musicLibrary The music library containing music that might be
+   * added to the playlist.
+   * @param parent The parent widget.
+   */
   PlaylistView(UDJServerConnection* serverConnection, MusicLibrary* musicLibrary, QWidget* parent=0);
+
+  //@}
+
+  /** @name Getters and Setters */
+  //@{
+
+  /** 
+   * \brief Retrieves the file path of the song located at the given song
+   * index.
+   *
+   * @param songIndex The index of the song whose file path id desired.
+   * @return The file path of the song at the given song index.
+   */
   QString getFilePath(const QModelIndex& songIndex) const;
+
+  //@}
+
 public slots:
+
+  /** @name Public slots */
+  //@{
+
+  /** 
+   * \brief Adds song to the playlist.
+   * 
+   * @param libraryIndex Index in the library model corresponding to the
+   * song that should be added.
+   */
   void addSongToPlaylist(const QModelIndex& libraryIndex);
+  
+  /**
+   * \brief Removes the given song from the playlist.
+   * 
+   * @param index The index in the playlist model that corresponds to the song
+   * which should be removed.
+   */
 	void removeSong(const QModelIndex& index);
+
+  //@}
+
 private:
+
+  /** @name Private Members */
+  //@{
+
+  /**
+   * \brief The music library containing music that could potentially be added
+   * to the playlist.
+   */
   MusicLibrary* musicLibrary;
+
+  /** \brief The connection to the UDJ server */
 	UDJServerConnection* serverConnection;
+
+  /** \brief The model containing the playlist data */
   PlaylistModel* playlistModel;
+
+  //@}
+
 };
 
 
