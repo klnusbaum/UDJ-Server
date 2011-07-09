@@ -61,6 +61,14 @@ void PlaylistView::removeSong(const QModelIndex& index){
 	}
 }
 
+Phonon::MediaSource PlaylistView::getAndRemoveNextSong(){
+  const QModelIndex root = model()->index(0,0);
+  Phonon::MediaSource toReturn = 
+    model()->data(root.sibling(root.row(), 5)).toString();
+  removeSong(root);
+  return toReturn;
+}
+
 
 } //end namespace
 

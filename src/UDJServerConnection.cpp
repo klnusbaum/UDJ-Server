@@ -165,7 +165,7 @@ bool UDJServerConnection::addSongToLibrary(
 	return true;
 }
 
-bool UDJServerConnection::incrementVoteCount(playlistid_t plId, int difference){
+bool UDJServerConnection::alterVoteCount(playlistid_t plId, int difference){
 
 	QSqlQuery updateQuery(
 		"UPDATE main_playlist_view "

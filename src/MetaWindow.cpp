@@ -53,8 +53,7 @@ MetaWindow::MetaWindow(UDJServerConnection* serverConnection):
     this, SLOT(stateChanged(Phonon::State, Phonon::State)));
   connect(mediaObject, SIGNAL(currentSourceChanged(Phonon::MediaSource)),
     this, SLOT(sourceChanged(Phonon::MediaSource)));
-  //connect(mediaObject, SIGNAL(aboutToFinish()), this, SLOT(aboutToFinish()));
-  //connect(mediaObject, SIGNAL(finished()), this, SLOT(finished()));
+  connect(mediaObject, SIGNAL(finished()), this, SLOT(finished()));
 
   Phonon::createPath(mediaObject, audioOutput);
 
@@ -128,6 +127,12 @@ void MetaWindow::aboutToFinish(){
     mediaObject->enqueue(
       Phonon::MediaSource(mainPlaylist->getFilePath(nextIndex)));
   }
+}
+
+void MetaWindow::finished(){
+  Phonon::MediaSource newSong = mainPlaylist->getAndRemoveNextSong(); 
+  mediaObject->setCurrentSource(newSong);
+  mediaObject->play();
 }
 
 void MetaWindow::createActions(){

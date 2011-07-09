@@ -20,6 +20,7 @@
 #define PLAYLIST_VIEW_HPP
 #include <QTableView>
 #include <QSqlDatabase>
+#include <phonon/mediasource.h>
 
 
 namespace UDJ{
@@ -61,6 +62,14 @@ public:
    * @return The file path of the song at the given song index.
    */
   QString getFilePath(const QModelIndex& songIndex) const;
+
+  /**
+   * \brief Retrieves the next song to be played and removes it from the
+   * playlist.
+   *
+   * @return The next song to be played.
+   */
+  Phonon::MediaSource getAndRemoveNextSong();
 
   //@}
 

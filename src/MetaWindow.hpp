@@ -108,6 +108,12 @@ private slots:
    * \brief Called whenever the current song being played is about to finish.
    */
   void aboutToFinish();
+
+  /**
+   * \brief Called when the primary media object has finished playing it's
+   * current song.
+   */
+   void finished();
   
   //@}
 
