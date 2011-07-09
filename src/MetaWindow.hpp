@@ -43,43 +43,131 @@ class PlaylistView;
 class LibraryView;
 class PartiersView;
 
+/**
+ * \brief A class that is the main point of interaction with the user. 
+ * 
+ * This is the main window with which the user will interact. It contains
+ * all information about the current playlist, their music library, which
+ * partiers are currently logged into their party, and any relevant 
+ * settings.
+ */
 class MetaWindow : public QMainWindow{
   Q_OBJECT
 public:
+  /** @name Constructor(s) */
+  //@{
+
+  /** \brief Constructs a MetaWindow
+   *
+   * @param serverConnection A connection to a UDJ server.
+   */
   MetaWindow(UDJServerConnection* serverConnection);
+
+  //@}
+
 private slots:
+
+  /** @name Private Slots */
+  //@{
+
+  /**
+   * \brief Handles whenever the state of the primary
+   * MediaObject is changed. 
+   *
+   * @param newState The new state of the primary MediaObject.
+   * @parma oldState The old state of the primary MediaObject.
+   */
   void stateChanged(Phonon::State newState, Phonon::State oldState);
+  
+  /** \brief Called when ever the primary MediaObject "ticks" 
+   *
+   * @param time The current time of the primary MediaObject.
+   */
   void tick(qint64 time);
+
+  /**
+   * \brief Called whenever media source of the primary MediaObject is changed.
+   *
+   * @param source The new source of the primary MediaObject.
+   */
   void sourceChanged(const Phonon::MediaSource &source);
+
+  /**
+   * \brief Set's the users music library to a user selected directory.
+   */
   void setMusicDir();
-  void tableClicked(const QModelIndex& index);
+  
+  /**
+   * \brief Called whenever the playlist is clicked.
+   *
+   * @param index The index of the item in the playlist that was clicked.
+   */
+  void playlistClicked(const QModelIndex& index);
+
+  /**
+   * \brief Called whenever the current song being played is about to finish.
+   */
   void aboutToFinish();
   
+  //@}
+
 private:
-	QLabel *songTitle, *timeLabel;
+  /** @name Private Members */
+  //@{
+  
+  /** \brief Used to display the name of the currently playing song. */
+	QLabel *songTitle;
+  /** \bried Used to display the time played of the current song. */
+  QLabel *timeLabel;
+  /** \brief The main widget holding all the various tabs in the display. */
   QTabWidget *tabs;
+  /** \brief The main seeker to change the songs current playback position. */
   Phonon::SeekSlider *seekSlider;
+  /** \brief The primary media object used for song playback. */
   Phonon::MediaObject *mediaObject;
+  /** \brief The primary audioOutput device used for song playback. */
   Phonon::AudioOutput *audioOutput;
+  /** \brief The volume slider used to control playback volume. */
   Phonon::VolumeSlider *volumeSlider;
+  /** \brief Used to display the contents of the users media library */
   LibraryView* libraryView;
+  /** \brief Used to display the current song playlist. */
   PlaylistView* mainPlaylist;
+  /** \brief Used to display the list of partiers currently logged into 
+  the party.*/
   PartiersView* partiersView;
+  /** \brief The users media library */
   MusicLibrary* musicLibrary;
+  /** \brief A widget used for displaying and modifying settings */
   SettingsWidget* settingsWidget;
+  /** \brief A connection with the UDJ server */
 	UDJServerConnection* serverConnection;
 
+  /** \brief Causes playback to start */
   QAction *playAction;
+  /** \brief Pauses playback */
   QAction *pauseAction;
+  /** \brief Stops playback */
   QAction *stopAction;
+  /** \brief Triggers selection of music directory. */
   QAction *setMusicDirAction;
+  /** \brief Causes the application to quit. */
   QAction *quitAction;
-  QSqlDatabase musicdb;
 //  QFileSystemWatcher* fileWatcher;
 
+  //@}
+
+  /** @name Private Functions */
+  //@{
+
+  /** \brief Sets up all the actions used by the MetaWindow. */
   void createActions();
+  /** \brief Sets up all the MetaWindow's UI components. */
   void setupUi();
+  /** \brief Sets up the MetaWindow's menus. */
   void setupMenus();
+  
+  //@}
 
 };
 

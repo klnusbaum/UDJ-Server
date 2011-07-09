@@ -93,4 +93,14 @@ QString MusicLibrary::getAlbumName(Phonon::MediaSource song) const{
   }
 }
 
+QString MusicLibrary::getSongNameFromSource(const Phonon::MediaSource &source) const{
+  QString filename = source.fileName();
+  for(int i =0; i < rowCount(); ++i){
+    if(data(index(i,4)).toString() == filename){
+      return data(index(i,1)).toString();
+    }
+  }
+  return "";
+}
+
 } //end namespace

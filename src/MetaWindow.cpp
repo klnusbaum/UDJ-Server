@@ -46,7 +46,6 @@ MetaWindow::MetaWindow(UDJServerConnection* serverConnection):
 {
   audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
   mediaObject = new Phonon::MediaObject(this);
-	musicdb = serverConnection->getMusicDB();	
 
   mediaObject->setTickInterval(1000);
   connect(mediaObject, SIGNAL(tick(qint64)), this, SLOT(tick(qint64)));
@@ -70,16 +69,7 @@ void MetaWindow::tick(qint64 time){
 }
 
 void MetaWindow::sourceChanged(const Phonon::MediaSource &source){
-	QSqlQuery nameQuery(musicdb);	
-	nameQuery.prepare("SELECT song from " +serverConnection->getLibraryTableName() + " where filePath= ?");
-	nameQuery.addBindValue(source.fileName());	
-	EXEC_SQL(
-		"Error getting songname.", 
-		nameQuery.exec(), 
-		nameQuery)	
-	nameQuery.next();	
-	songTitle->setText(nameQuery.value(0).toString());
-
+	songTitle->setText(musicLibrary->getSongNameFromSource(source));
 }
 
 void MetaWindow::stateChanged(Phonon::State newState, Phonon::State oldState){
@@ -122,7 +112,7 @@ void MetaWindow::setMusicDir(){
   progress.setValue(numNewFiles);
 }
 
-void MetaWindow::tableClicked(const QModelIndex& index){
+void MetaWindow::playlistClicked(const QModelIndex& index){
   if(index.column() == 6){
     return;
   }
@@ -237,7 +227,7 @@ void MetaWindow::setupUi(){
     mainPlaylist,
     SIGNAL(activated(const QModelIndex&)),
     this,
-    SLOT(tableClicked(const QModelIndex&)));
+    SLOT(playlistClicked(const QModelIndex&)));
 }
 
 void MetaWindow::setupMenus(){

@@ -25,17 +25,53 @@
 
 namespace UDJ{
 
-
+/**
+ * \brief A class used to find music on a Host's computer.
+ */
 class MusicFinder{
 public:
+  /** @name Finder Function(s) */
+  //@{
+
+  /**
+   * \brief Finds all the music in a given directory.
+   *
+   * Recusrively searchs this directory and all subdirectories looking
+   * for any music files to be added to the users music library. It then
+   * returns a list of MediaSources representing all of the found songs.
+   *
+   * @param musicDir The directory in which to search for music.
+   * @return A list of MediaSources corresponding to each found song.
+   */
   static QList<Phonon::MediaSource> findMusicInDir(const QString& musicDir);
+
+  //@}
 private:
+  /** @name Private Function(s) */
+  //@{
+
+  /** 
+   * \brief Given a file, determines whether or not it contains music.
+   * 
+   * @param file The file in question.
+   * @param True if the file in question contains music, false otherwise.
+   */
   static bool isMusicFile(const QFileInfo& file);
+
+  /**
+   * Retrieves the regular expression used to help determine if a file
+   * constains music.
+   *
+   * @return The regular expression user to help determine if a file
+   * constains music.
+   */
   static const QRegExp& getMusicFileMatcher(){
     //static const QRegExp matcher("*.mp3|*.m4a|*.ogg|*.wav", Qt::CaseSensitive, QRegExp::Wildcard);
     static const QRegExp matcher("*.mp3", Qt::CaseSensitive, QRegExp::Wildcard);
     return matcher;
   }
+
+  //@}
 }; 
 
 

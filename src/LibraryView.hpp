@@ -27,16 +27,60 @@ namespace UDJ{
 
 class MusicLibrary;
 
+/** \brief A class for viewing the current contents of the users music library.
+*/
 class LibraryView : public QTableView{
 Q_OBJECT
 public:
+	/** @name Constructors */
+  //@{
+
+  /** \brief Constructs a MusicLibrary
+   *
+   * @param musicLibrary The music library whose data this LibraryView should
+   * present
+   * @param parent The parent widget
+   */
   LibraryView(MusicLibrary* musicLibrary, QWidget* parent=0);
+
+  //@}
 signals:
+  
+  /** @name Signals */
+  //@{
+
+  /** \brief Emitted when a song is requested to be added to the curren
+   * playlist.
+   *
+   * @param songToAdd The model index in the music library of the song
+   * that is being requested to be added to the playlist.
+   */
   void songAddRequest(const QModelIndex& songToAdd); 
+
+  //@}
 protected:
+
+  /** @name Overriden from QWidget */
+  //@{
+
+  /** \brief . */
   void contextMenuEvent(QContextMenuEvent* e);
+
+  //@}
+
 private:
+  /** @name Private Functions */
+  //@{
+  
+  /** \brief Get a list of actions to be displayed in the LibraryView's
+   * context menu.
+   *
+   * @return A list of action to be displayed in the LibraryView's context
+   * menu.
+   */
   QList<QAction*> getContextMenuActions();
+
+  //@}
 };
 
 
