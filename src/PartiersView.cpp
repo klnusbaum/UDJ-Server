@@ -2,6 +2,9 @@
 #include "UDJServerConnection.hpp"
 #include <QSqlRelationalTableModel>
 #include <QHeaderView>
+#include <QAction>
+#include <QContextMenuEvent>
+#include <QMenu>
 
 namespace UDJ{
 
@@ -27,5 +30,35 @@ PartiersView::PartiersView(
 	setColumnHidden(0,true);
 }
 
+void PartiersView::contextMenuEvent(QContextMenuEvent* e){
+  int contextRow = rowAt(e->y());
+  if(contextRow == -1){
+    return;
+  }
+
+  QAction* selected = 
+    QMenu::exec(getContextMenuActions(), e->globalPos());
+  if(selected->text() == "Boot Partier"){
+    QModelIndex indexToBoot = indexAt(e->pos());
+		partierid_t toBoot = getPartierId(indexToBoot);
+		if(serverConnection->kickUser(toBoot)){
+			partiersModel->select();
+		}
+		else{
+			//TODO
+			//Tell host that there was a problem kicking ths user.
+		}
+  }
+}
+
+partierid_t PartiersView::getPartierId(const QModelIndex& index) const{
+	return partiersModel->data(index.sibling(index.row(),0)).value<partierid_t>();
+}
+
+QList<QAction*> PartiersView::getContextMenuActions(){
+  QList<QAction*> contextActions;
+  contextActions.append(new QAction("Boot Partier", this));
+  return contextActions;
+}
 
 } //end namepsace 

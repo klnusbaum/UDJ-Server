@@ -65,6 +65,7 @@ public:
 
 	bool removeSongFromPlaylist(playlistid_t plId);
 
+	bool kickUser(partierid_t toKick);
 signals:
 	void partierLeft(partierid_t partierId);
 	void partierJoined(partierid_t partierId);

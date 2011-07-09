@@ -19,8 +19,11 @@
 #ifndef PARTIERS_VIEW_HPP
 #define PARTIERS_VIEW_HPP
 #include <QTableView>
+#include "ConfigDefs.hpp"
 
 class QSqlRelationalTableModel;
+class QAction;
+class QContextMenuEvent;
 
 namespace UDJ{
 
@@ -30,9 +33,14 @@ class PartiersView : public QTableView{
 Q_OBJECT
 public:
 	PartiersView(UDJServerConnection* serverConnection, QWidget* parent=0);
+protected:
+	void contextMenuEvent(QContextMenuEvent* e);
 private:
 	UDJServerConnection* serverConnection;
 	QSqlRelationalTableModel* partiersModel;
+
+	partierid_t getPartierId(const QModelIndex& index) const;
+	QList<QAction*> getContextMenuActions();
 
 };
 

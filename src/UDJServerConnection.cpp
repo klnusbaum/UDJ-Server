@@ -61,6 +61,16 @@ void UDJServerConnection::startConnection(){
 		"first_name "
     "FROM users where currentParty = " +QString::number(partyId) +";"),
 		setupQuery)
+
+	EXEC_SQL(
+		"Error creating delete trigger for kicking partiers.",
+		setupQuery.exec("CREATE TRIGGER IF NOT EXISTS kickPartier "
+		"INSTEAD OF DELETE ON my_partiers "
+		"BEGIN "
+		"UPDATE users SET inParty=0, currentParty=-1 "
+		"where users.id = old.id; "
+		"END;"),
+		setupQuery)
 	
 
 	EXEC_SQL(
@@ -188,7 +198,7 @@ bool UDJServerConnection::addSongToPlaylist(libraryid_t libraryId){
 
 bool UDJServerConnection::removeSongFromPlaylist(playlistid_t plId){
 	QSqlQuery removeQuery("DELETE FROM " + getMainPlaylistTableName() + " "
-		"WHERE plId =  ? ;", musicdb);
+		"WHERE plId = ? ;", musicdb);
 	removeQuery.addBindValue(QVariant::fromValue(plId));
 	
 	EXEC_SQL(
@@ -197,6 +207,19 @@ bool UDJServerConnection::removeSongFromPlaylist(playlistid_t plId){
 		removeQuery)
 	//TODO this value should be based on above result
 	return true;
+}
+
+bool UDJServerConnection::kickUser(partierid_t toKick){
+	QSqlQuery removeQuery("DELETE FROM " + getPartiersTableName() + " "
+		"WHERE id = ? ;", musicdb);
+	removeQuery.addBindValue(QVariant::fromValue(toKick));
+	EXEC_SQL(
+		"Kicking partier failed", 
+		removeQuery.exec(),
+		removeQuery)
+	//TODO this value should be based on above result
+	return true;
+	
 }
 
 }//end namespace
