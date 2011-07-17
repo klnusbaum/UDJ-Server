@@ -1,8 +1,8 @@
 package org.klnusbaum.udj.auth;
 
 import android.app.Service;
-import android.content.Inten;
-import andorid.os.IBinder;
+import android.content.Intent;
+import android.os.IBinder;
 import android.util.Log;
 
 public class AuthService extends Service {

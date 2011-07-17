@@ -4,6 +4,7 @@ import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
+import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,8 +21,7 @@ class Authenticator extends AbstractAccountAuthenticator{
     String accountType, String authTokenType, String[] requiredFeatures,
     Bundle options) throws NetworkErrorException
   {
-    final Intent intent = net Intent(mContext, AuthActivity.class);
-    intent.putExtra(AuthActivity.AUTHTOKEN_TYPE_EXTRA, authTokenType);
+    final Intent intent = new Intent(context, AuthActivity.class);
     intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,
       response);
     final Bundle bundle = new Bundle();
@@ -32,13 +32,14 @@ class Authenticator extends AbstractAccountAuthenticator{
   public Bundle confirmCredentials(AccountAuthenticatorResponse response,
     Account account, Bundle options) 
   {
-    if(options != null && options.containsKey(AccountManager.KEY_PASSWORD)){
+/*    if(options != null && options.containsKey(AccountManager.KEY_PASSWORD)){
       final String password = options.getString(AccountManager.KEY_PASSWORD);
       final verified = serverConfirmPassword(account.name, password);
       final Bundle result = new Bundle();
       result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, verified);
       return result;
-    }
+    }*/
+    return null;
   }
 
   public Bundle editProperties(AccountAuthenticatorResponse response,

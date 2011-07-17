@@ -1,23 +1,34 @@
-
 package org.klnusbaum.udj.auth;
-import android.account.AccountAuthenticatorActivity;
+import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.ProgressDialog;
 import android.view.View;
 import android.widget.EditText;
 import android.os.Handler;
 import android.os.Bundle;
+import android.content.Intent;
+import android.content.ContentResolver;
+import android.content.DialogInterface;
+import android.app.AlertDialog;
+import android.app.Dialog;
 
-public class AuthActivity extends AccountAuthenticatorActivity{
+import org.klnusbaum.udj.network.ServerConnection;
+import org.klnusbaum.udj.R;
+
+public class AuthActivity extends AccountAuthenticatorActivity {
   public static final String CONFIRMCREDENTIALS_EXTRA="confirmCredentials";
   public static final String PASSWORD_EXTRA = "password";
   public static final String USERNAME_EXTRA = "username";
   public static final String AUTHOTKEN_TYPE_EXTRA="authtokenType";
   public static final int PROGRESS_DIALOG = 0;
-  public static final int FAILED_DIALOG = 0;
+  public static final int FAILED_DIALOG = 1;
 
   private Thread authThread;
   private final Handler messageHandler = new Handler();
+
+  private EditText usernameEdit;
+  private EditText passwordEdit;
 
   public void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
@@ -81,17 +92,17 @@ public class AuthActivity extends AccountAuthenticatorActivity{
     String password = passwordEdit.getText().toString();
     final Account account = new Account(
       username,
-      getString(R.id.account_type));
+      getString(R.string.account_type));
     AccountManager acManager = AccountManager.get(this);
     acManager.addAccountExplicitly(
       account, password, null);
     ContentResolver.setSyncAutomatically(account,
-      getString(R.id.authority), true);
+      getString(R.string.authority), true);
 
     final Intent intent = new Intent();
     intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, username);
     intent.putExtra(
-      AccountManager.KEY_ACCOUNT_TYPE, getString(R.id.account_type);
+      AccountManager.KEY_ACCOUNT_TYPE, getString(R.string.account_type));
     intent.putExtra(AccountManager.KEY_AUTHTOKEN, password);
     setAccountAuthenticatorResult(intent.getExtras());
     setResult(RESULT_OK, intent);
