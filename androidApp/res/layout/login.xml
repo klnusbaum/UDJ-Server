@@ -55,6 +55,8 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:hint="@string/password_hint"
+    android:password="true"
+    android:inputType="textPassword"
   />
   <Button
     android:id="@+id/loginButton"
@@ -62,6 +64,7 @@
     android:layout_height="wrap_content"
     android:text="@string/login_text"
     android:layout_gravity="center_horizontal"
+    android:onClick="preformLogin"
   />
 </LinearLayout>
 

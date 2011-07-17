@@ -17,15 +17,10 @@
   You should have received a copy of the GNU General Public License
   along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<resources>
-    <string name="app_name">UDJ</string>
-    <string name="udj_name">UDJ</string>
-    <string name="username_text">Username:</string>
-    <string name="username_hint">Username:</string>
-    <string name="password_text">Password:</string>
-    <string name="password_hint">Password:</string>
-    <string name="login_text">Login</string>
-    <string name="authenticating">Logging In...</string>
-    <string name="account_type">org.klnusbaum.udj.udjaccount</string>
-    <string name="authority">org.klnusbaum.udj</string>
-</resources>
+<account-authenticator
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:accountType="@string/account_type"
+  android:icon="@drawable/icon"
+  android:smallIcon="@drawable/icon"
+  android:label="@string/app_name"
+/>
