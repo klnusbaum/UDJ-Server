@@ -26,6 +26,6 @@
     <string name="password_hint">Password:</string>
     <string name="login_text">Login</string>
     <string name="authenticating">Logging In...</string>
-    <string name="account_type">org.klnusbaum.udj.udjaccount</string>
+    <string name="account_type">org.klnusbaum.udj.account</string>
     <string name="authority">org.klnusbaum.udj</string>
 </resources>
