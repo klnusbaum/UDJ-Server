@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import org.klnusbaum.udj.R;
+
 class Authenticator extends AbstractAccountAuthenticator{
 
   Context context;
@@ -32,42 +34,54 @@ class Authenticator extends AbstractAccountAuthenticator{
   public Bundle confirmCredentials(AccountAuthenticatorResponse response,
     Account account, Bundle options) 
   {
-/*    if(options != null && options.containsKey(AccountManager.KEY_PASSWORD)){
+    final Bundle result = new Bundle();
+    result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, true);
+    return result;
+    /*if(options != null && options.containsKey(AccountManager.KEY_PASSWORD)){
       final String password = options.getString(AccountManager.KEY_PASSWORD);
       final verified = serverConfirmPassword(account.name, password);
       final Bundle result = new Bundle();
       result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, verified);
       return result;
-    }*/
-    return null;
+    }
+    return null;*/
   }
 
   public Bundle editProperties(AccountAuthenticatorResponse response,
     String accountType)
   {
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   public Bundle getAuthToken(AccountAuthenticatorResponse response,
     Account account, String authTokenType, Bundle loginOptions)
   {
-    return null;
+    final AccountManager am = AccountManager.get(context);
+    final String password = am.getPassword(account);
+    final Bundle result = new Bundle();
+    result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
+    result.putString(AccountManager.KEY_ACCOUNT_TYPE,context.getString(R.string.account_type));
+    result.putString(AccountManager.KEY_AUTHTOKEN, password);
+    return result;
   }
 
   public String getAuthTokenLabel(String authTokenType){
-    return null;
+    return "password";
   }
 
   public Bundle hasFeatures(AccountAuthenticatorResponse response,
     Account account, String[] freatures)
   {
-    return null;
+    final Bundle result = new Bundle();
+    result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, false);
+    return result;
   }
 
   public Bundle updateCredentials(AccountAuthenticatorResponse response,
     Account account, String authTokenType, Bundle loginOptions)
   {
-    return null;
+    final Bundle bundle = new Bundle();
+    return bundle;
   }
 
 }
