@@ -18,7 +18,6 @@
  */
 package org.klnusbaum.udj.network;
 
-package org.klnusbaum.udj.network;
 import android.content.Context;
 import android.os.Handler;
 
