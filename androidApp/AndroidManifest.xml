@@ -68,8 +68,8 @@
             android:name="android.content.SyncAdapter"
             android:resource="@xml/syncadapter" />
         </service>
-        <provider android:name="UDJPartyProvider"
-            android:authorities="org.klnusbaum.udj"
+        <provider android:name="org.klnusbaum.udj.UDJPartyProvider"
+            android:authorities="@string/authority"
         />
 
     </application>

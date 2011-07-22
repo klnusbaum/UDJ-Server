@@ -75,6 +75,12 @@ class Authenticator extends AbstractAccountAuthenticator{
   public Bundle getAuthToken(AccountAuthenticatorResponse response,
     Account account, String authTokenType, Bundle loginOptions)
   {
+    if(!authTokenType.equals(context.getString(R.string.authtoken_type))){
+      final Bundle result = new Bundle();
+      result.putString(
+        AccountManager.KEY_ERROR_MESSAGE, "invalid authTokenType");
+      return result;
+    }
     final AccountManager am = AccountManager.get(context);
     final String password = am.getPassword(account);
     final Bundle result = new Bundle();
@@ -85,7 +91,10 @@ class Authenticator extends AbstractAccountAuthenticator{
   }
 
   public String getAuthTokenLabel(String authTokenType){
-    return "password";
+    if(!authTokenType.equals(context.getString(R.string.authtoken_type))){
+      return context.getString(R.string.auth_token_label);
+    }
+    return null;
   }
 
   public Bundle hasFeatures(AccountAuthenticatorResponse response,
