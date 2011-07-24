@@ -65,7 +65,6 @@ public class AuthActivity extends AccountAuthenticatorActivity{
   } 
      
   public void preformLogin(View view){
-    Log.i(LOGID, "In preform login");
     if(addingNewAccount){
       username = usernameEdit.getText().toString();
     }
@@ -74,12 +73,10 @@ public class AuthActivity extends AccountAuthenticatorActivity{
     
     //TODO Acutually preform login stuff
     final Account account = 
-      new Account(username, "org.klnusbaum.udj");
+      new Account(username, getString(R.string.acount_type);
     final Intent resultIntent = new Intent();
     if(addingNewAccount){
-      Log.i(LOGID, "Before actual add");
       am.addAccountExplicitly(account, password, null);
-      Log.i(LOGID, "after actual add");
       ContentResolver.setSyncAutomatically(account, 
         getString(R.string.authority), true);
       resultIntent.putExtra(AccountManager.KEY_ACCOUNT_NAME, username);
