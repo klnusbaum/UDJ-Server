@@ -73,7 +73,7 @@ public class AuthActivity extends AccountAuthenticatorActivity{
     
     //TODO Acutually preform login stuff
     final Account account = 
-      new Account(username, getString(R.string.acount_type);
+      new Account(username, getString(R.string.account_type));
     final Intent resultIntent = new Intent();
     if(addingNewAccount){
       am.addAccountExplicitly(account, password, null);
