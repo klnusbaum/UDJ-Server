@@ -16,54 +16,47 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.klnusbaum.udj.auth;
 
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
-import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import org.klnusbaum.udj.R;
 
-class Authenticator extends AbstractAccountAuthenticator{
+public class Authenticator extends AbstractAccountAuthenticator{
 
-  Context context;
+  private Context context;
+  
   public Authenticator(Context context){
     super(context);
-    this.context= context; 
+    this.context = context;
   }
 
   public Bundle addAccount(AccountAuthenticatorResponse response,
     String accountType, String authTokenType, String[] requiredFeatures,
-    Bundle options) throws NetworkErrorException
+    Bundle options)
   {
-    final Intent intent = new Intent(context, AuthActivity.class);
-    intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,
+    final Intent addIntent = new Intent(context, AuthActivity.class);
+    addIntent.putExtra(AuthActivity.AUTHTOKEN_TYPE_EXTRA, authTokenType);
+    addIntent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,
       response);
-    final Bundle bundle = new Bundle();
-    bundle.putParcelable(AccountManager.KEY_INTENT, intent);
-    return bundle;
+    final Bundle addBundle = new Bundle();
+    addBundle.putParcelable(AccountManager.KEY_INTENT, addIntent);
+    return addBundle;
   }
 
   public Bundle confirmCredentials(AccountAuthenticatorResponse response,
-    Account account, Bundle options) 
+    Account account, Bundle options)
   {
+    //TOD actually implement this method
     final Bundle result = new Bundle();
     result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, true);
     return result;
-    /*if(options != null && options.containsKey(AccountManager.KEY_PASSWORD)){
-      final String password = options.getString(AccountManager.KEY_PASSWORD);
-      final verified = serverConfirmPassword(account.name, password);
-      final Bundle result = new Bundle();
-      result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, verified);
-      return result;
-    }
-    return null;*/
   }
 
   public Bundle editProperties(AccountAuthenticatorResponse response,
@@ -72,33 +65,47 @@ class Authenticator extends AbstractAccountAuthenticator{
     throw new UnsupportedOperationException();
   }
 
-  public Bundle getAuthToken(AccountAuthenticatorResponse response,
+  public Bundle getAuthToken(AccountAuthenticatorResponse respones,
     Account account, String authTokenType, Bundle loginOptions)
   {
     if(!authTokenType.equals(context.getString(R.string.authtoken_type))){
       final Bundle result = new Bundle();
-      result.putString(
-        AccountManager.KEY_ERROR_MESSAGE, "invalid authTokenType");
+      result.putString(AccountManager.KEY_ERROR_MESSAGE,
+        "Authtoken type not appropriate for this Authenticator!");
       return result;
     }
     final AccountManager am = AccountManager.get(context);
     final String password = am.getPassword(account);
+    if(password != null){
+      if(isValidUserNameAndPassword(account.name, password)){
+        final Bundle result = new Bundle();
+        result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
+        result.putString(AccountManager.KEY_ACCOUNT_TYPE, 
+          context.getString(R.string.account_type));
+        result.putString(AccountManager.KEY_AUTHTOKEN, password);
+        return result;
+      }
+    }
+    
+    //TODO Doesn't get here yet, but if it does we need to launch the
+    //AUTH_ACTIVITY and get the correct password.
     final Bundle result = new Bundle();
     result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
-    result.putString(AccountManager.KEY_ACCOUNT_TYPE,context.getString(R.string.account_type));
-    result.putString(AccountManager.KEY_AUTHTOKEN, password);
+    result.putString(AccountManager.KEY_ACCOUNT_TYPE, 
+      context.getString(R.string.account_type));
+    result.putString(AccountManager.KEY_AUTHTOKEN, "steve");
     return result;
   }
 
   public String getAuthTokenLabel(String authTokenType){
-    if(!authTokenType.equals(context.getString(R.string.authtoken_type))){
+    if(authTokenType.equals(context.getString(R.string.authtoken_type))){
       return context.getString(R.string.auth_token_label);
     }
     return null;
   }
 
   public Bundle hasFeatures(AccountAuthenticatorResponse response,
-    Account account, String[] freatures)
+    Account account, String[] freaturs)
   {
     final Bundle result = new Bundle();
     result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, false);
@@ -108,10 +115,20 @@ class Authenticator extends AbstractAccountAuthenticator{
   public Bundle updateCredentials(AccountAuthenticatorResponse response,
     Account account, String authTokenType, Bundle loginOptions)
   {
-    final Bundle bundle = new Bundle();
-    return bundle;
+    final Intent updateIntent = new Intent(context, AuthActivity.class);
+    updateIntent.putExtra(AuthActivity.USERNAME_EXTRA, account.name);
+    updateIntent.putExtra(AuthActivity.AUTHTOKEN_TYPE_EXTRA, authTokenType);
+    updateIntent.putExtra(AuthActivity.UPDATE_CREDS_EXTRA, true);
+    final Bundle updateBundle = new Bundle();
+    updateBundle.putParcelable(AccountManager.KEY_INTENT, updateIntent);
+    return updateBundle;
   }
+    
 
+  private boolean isValidUserNameAndPassword(String accountName,
+    String password)
+  {
+    //TODO Implement this function
+    return true;
+  }
 }
-
-

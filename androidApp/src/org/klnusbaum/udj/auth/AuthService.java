@@ -16,25 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.klnusbaum.udj.auth;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.util.Log;
 
-public class AuthService extends Service {
-  private static final String LOGTAG = "AUTH_SERVICE";
+
+public class AuthService extends Service{
+
   private Authenticator authenticator;
-
-  @Override
+  
   public void onCreate(){
-    authenticator = new Authenticator(this);
+    this.authenticator = new Authenticator(this);
   }
 
-  @Override
   public IBinder onBind(Intent intent){
     return authenticator.getIBinder();
   }
 }
+

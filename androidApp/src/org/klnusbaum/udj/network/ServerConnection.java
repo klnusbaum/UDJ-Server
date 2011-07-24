@@ -41,11 +41,11 @@ public class ServerConnection{
   public static boolean authenticate(String username, String password,
     Handler handler, final Context context)
   {
-    handler.post(new Runnable(){
+/*    handler.post(new Runnable(){
       public void run(){
         ((AuthActivity) context).onAuthResult(true);
       }
-    });
+    });*/
     return true;
   }
 }
