@@ -18,16 +18,29 @@
  */
 package org.klnusbaum.udj;
 
-import android.app.Activity;
+import android.app.ListActivity;
+import android.widget.SimpleCursorAdapter;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.database.Cursor;
 
-public class LibraryActivity extends Activity{
+public class LibraryActivity extends ListActivity{
+  
+  SimpleCursorAdapter libraryAdapter;
+  
   public void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
-
-    TextView textview = new TextView(this);
-    textview.setText("Library View");
-    setContentView(textview);
+    Cursor libraryCursor = managedQuery(
+      UDJPartyProvider.LIBRARY_URI, null, null, null, null); 
+    libraryAdapter = new SimpleCursorAdapter(
+      this,
+      R.layout.library_list_item,
+      libraryCursor,
+      new String[] {UDJPartyProvider.SONG_COLUMN, UDJPartyProvider.ARTIST_COLUMN},
+      new int[] {R.id.librarySongName, R.id.libraryArtistName}
+    );
+    setListAdapter(libraryAdapter);
+  /*  ListView lv = getListView();
+    lv.setTextFilterEnabled(true);
+   	registerForContextMenu(lv); */
   }
 }

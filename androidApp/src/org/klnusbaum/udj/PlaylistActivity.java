@@ -18,16 +18,25 @@
  */
 package org.klnusbaum.udj;
 
-import android.app.Activity;
+import android.app.ListActivity;
+import android.widget.SimpleCursorAdapter;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.database.Cursor;
 
-public class PlaylistActivity extends Activity{
+public class PlaylistActivity extends ListActivity{
+  SimpleCursorAdapter libraryAdapter;
   public void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
 
-    TextView textview = new TextView(this);
-    textview.setText("Playlist View");
-    setContentView(textview);
+    Cursor playlistCursor = managedQuery(
+      UDJPartyProvider.PLAYLIST_URI, null, null, null, null); 
+    libraryAdapter = new SimpleCursorAdapter(
+      this,
+      R.layout.playlist_list_item,
+      playlistCursor,
+      new String[] {UDJPartyProvider.SONG_COLUMN, UDJPartyProvider.ARTIST_COLUMN, UDJPartyProvider.VOTES_COLUMN},
+      new int[] {R.id.playlistSongName, R.id.playlistArtistName, R.id.playlistVotes}
+    );
+    setListAdapter(libraryAdapter);
   }
 }

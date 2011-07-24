@@ -44,10 +44,10 @@ public class UDJPartyProvider extends ContentProvider{
   private static final String PARTIERS_TABLE_NAME = "partiers";
 
   public static final Uri PLAYLIST_URI = 
-    Uri.parse("content://org.klnusbaum.udj.udjpartyprovider.playlist");
+    Uri.parse("content://org.klnusbaum.udj/playlist");
 
   public static final Uri LIBRARY_URI = 
-    Uri.parse("content://org.klnusbaum.udj.udjpartyprovider.library");
+    Uri.parse("content://org.klnusbaum.udj/library");
 
 
   /** The various states a playlist record can be in */
@@ -171,10 +171,10 @@ public class UDJPartyProvider extends ContentProvider{
     String selection, String[] selectionArgs, String sortOrder)
   {
     SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-    if(uri.getAuthority().equals(PLAYLIST_URI)){
+    if(uri.equals(PLAYLIST_URI)){
       qb.setTables(PLAYLIST_TABLE_NAME); 
     }
-    else if(uri.getAuthority().equals(LIBRARY_URI)){
+    else if(uri.equals(LIBRARY_URI)){
       qb.setTables(LIBRARY_TABLE_NAME); 
     }
     else{
