@@ -26,10 +26,17 @@ import android.os.Bundle;
 import android.content.ContentProviderClient;
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.OperationCanceledException;
+import android.accounts.AuthenticatorException;;
 
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.io.IOException;
+import org.apache.http.auth.AuthenticationException;
+import org.apache.http.ParseException;
 
 import org.klnusbaum.udj.network.ServerConnection;
+import org.klnusbaum.udj.R;
 
 
 /**
@@ -39,6 +46,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
   private final Context context;
   private GregorianCalendar lastUpdated;
   private AccountManager am;
+
+  public static final String LIBRARY_SYNC_EXTRA = "library_sync";
 
   /**
    * Constructs a SyncAdapter.
@@ -50,7 +59,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
   public SyncAdapter(Context context, boolean autoInitialize){
     super(context, autoInitialize);
     this.context=context;
-    am = AccountManager(context);
+    am = AccountManager.get(context);
   }
 
   @Override
@@ -60,10 +69,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
     boolean synclibrary = extras.getBoolean(LIBRARY_SYNC_EXTRA, false);
     String authtoken = null;
     try{
-      authotoken = am.blockingGetAuthToken(account, context.getString(R.string.authtoken_type), true);
+      authtoken = am.blockingGetAuthToken(account, context.getString(R.string.authtoken_type), true);
       if(synclibrary){
         List<LibraryEntry> updatedLibEntries = 
-          ServerConnection.syncLibrary(acount, authtoken, lastUpdated);
+          ServerConnection.syncLibrary(account, authtoken, lastUpdated);
         RESTProcessor.processNewLibEntries(updatedLibEntries);
       }
       List<PlaylistEntry> newPlaylistEntries =
@@ -80,10 +89,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
     catch(final IOException e){
       syncResult.stats.numIoExceptions++;
     }
-    catch(final AuthenticationException e){
-      mAccountManager.invalidateAuthToken(Constants.ACCOUNT_TYPE, authtoken);
+    /*catch(final AuthenticationException e){
+      am.invalidateAuthToken(
+        context.getString(R.string.account_type), authtoken);
       syncResult.stats.numAuthExceptions++;
-    }
+    }*/
     catch(final ParseException e){
        syncResult.stats.numParseExceptions++;
     }

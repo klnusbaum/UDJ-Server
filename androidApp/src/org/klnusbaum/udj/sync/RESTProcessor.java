@@ -18,6 +18,8 @@
  */
 package org.klnusbaum.udj.sync;
 
+import java.util.List;
+
 public class RESTProcessor{
 
   static void processNewLibEntries(List<LibraryEntry> newEntries){

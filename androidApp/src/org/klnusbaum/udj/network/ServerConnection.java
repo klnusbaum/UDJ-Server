@@ -20,8 +20,15 @@ package org.klnusbaum.udj.network;
 
 import android.content.Context;
 import android.os.Handler;
+import android.accounts.Account;
+
+import java.util.GregorianCalendar;
+import java.util.List;
+
 
 import org.klnusbaum.udj.auth.AuthActivity;
+import org.klnusbaum.udj.sync.LibraryEntry;
+import org.klnusbaum.udj.sync.PlaylistEntry;
 
 /**
  * A connection to the UDJ server
