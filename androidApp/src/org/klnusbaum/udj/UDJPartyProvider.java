@@ -60,6 +60,8 @@ public class UDJPartyProvider extends ContentProvider{
   public static final String SYNCED_MARK="synced";
   public static final String UPDATEING_MARK ="updating"; 
   public static final String NEEDS_UPDATE_MARK ="needs update"; 
+  public static final String NEEDS_INSERT_MARK ="needs insert"; 
+  public static final String INSERTING_MARK ="inserting"; 
   
 	/** Constants used for various column names */
   public static final String SONG_COLUMN = "song";

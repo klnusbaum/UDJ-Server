@@ -74,4 +74,16 @@ public class ServerConnection{
     });*/
     return true;
   }
+
+  public static List<PlaylistEntry> syncPlaylist(Account account,
+    String authtoken, GregorianCalendar lastUpdated)
+  {
+    return null;
+  }
+
+  public static List<LibraryEntry> syncLibrary(Account account,
+    String authtoken, GregorianCalendar lastUpdated)
+  {
+    return null;
+  }
 }
