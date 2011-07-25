@@ -23,7 +23,12 @@ import android.os.Bundle;
 import android.content.Intent;
 import android.widget.TabHost;
 
+/**
+ * The main activity display class.
+ */
 public class MainActivity extends TabActivity{
+
+  @Override
   public void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
     

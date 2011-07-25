@@ -27,14 +27,25 @@ import android.content.ContentProviderClient;
 import android.accounts.Account;
 
 
+/**
+ * Adapter used to sync up with the UDJ server.
+ */
 public class SyncAdapter extends AbstractThreadedSyncAdapter{
   private final Context context;
 
+  /**
+   * Constructs a SyncAdapter.
+   *
+   * @param context The context from with the sync adapter is being
+   * created.
+   * @param autoInitialize Whether or not to automatically initialize.
+   */
   public SyncAdapter(Context context, boolean autoInitialize){
     super(context, autoInitialize);
     this.context=context;
   }
 
+  @Override
   public void onPerformSync(Account account, Bundle extras, String authority,
     ContentProviderClient provider, SyncResult syncResult)
   {

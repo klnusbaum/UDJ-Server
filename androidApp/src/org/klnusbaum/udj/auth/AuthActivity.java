@@ -31,22 +31,38 @@ import android.util.Log;
 import org.klnusbaum.udj.R;
 
 
+/**
+ * Activity used for setting up and editing UDJ accounts.
+ */
 public class AuthActivity extends AccountAuthenticatorActivity{
 
-  private static final String LOGID = "AuthActivity";
+  /** Public constants used for identifing extras in bundles */
   public static final String USERNAME_EXTRA = "username";
   public static final String AUTHTOKEN_TYPE_EXTRA = "auth_token_type";
   public static final String UPDATE_CREDS_EXTRA = "update credentials";
 
+  /** Stores the current username */
   private String username;
+  
+  /** Stores the current Authentication Token Type */
   private String authTokenType;
 
+  /** Indicated whether or not this activity is being used to add
+   a new acccount */
   private boolean addingNewAccount;
+
+  /** Indicated whether or not this activity is being 
+   confirm crednetials */
   private boolean confirmingCreds;
 
+  /** The EditText used for the username */
   private EditText usernameEdit;
+  /** The EditText used for the password */
   private EditText passwordEdit;
+  /** Reference to the Account Manager */
   private AccountManager am;
+
+  @Override
   public void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
     am = AccountManager.get(this);
@@ -64,6 +80,13 @@ public class AuthActivity extends AccountAuthenticatorActivity{
    
   } 
      
+  /**
+   * Activated when the login button is clicked, this method
+   * attempts to authenticate the user with the server
+   *
+   * @param view The button that was clicked in order to activate
+   * this method
+   */
   public void preformLogin(View view){
     if(addingNewAccount){
       username = usernameEdit.getText().toString();
@@ -95,7 +118,6 @@ public class AuthActivity extends AccountAuthenticatorActivity{
     AccountManager.get(this).setPassword(account, password);
     setAccountAuthenticatorResult(resultIntent.getExtras());
     setResult(RESULT_OK, resultIntent);
-    Log.i(LOGID, "Before finish");
     finish();
   }
 }

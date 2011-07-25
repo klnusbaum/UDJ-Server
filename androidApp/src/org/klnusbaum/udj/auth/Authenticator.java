@@ -28,15 +28,25 @@ import android.os.Bundle;
 
 import org.klnusbaum.udj.R;
 
+/**
+ * Class used to authenticate with the UDJ server
+ */
 public class Authenticator extends AbstractAccountAuthenticator{
 
   private Context context;
   
+  /**
+   * Constructs an Authenticator
+   *
+   * @param context The context in which the Authenticator is
+   * being used.
+   */
   public Authenticator(Context context){
     super(context);
     this.context = context;
   }
 
+  @Override
   public Bundle addAccount(AccountAuthenticatorResponse response,
     String accountType, String authTokenType, String[] requiredFeatures,
     Bundle options)
@@ -50,6 +60,7 @@ public class Authenticator extends AbstractAccountAuthenticator{
     return addBundle;
   }
 
+  @Override
   public Bundle confirmCredentials(AccountAuthenticatorResponse response,
     Account account, Bundle options)
   {
@@ -59,12 +70,14 @@ public class Authenticator extends AbstractAccountAuthenticator{
     return result;
   }
 
+  @Override
   public Bundle editProperties(AccountAuthenticatorResponse response,
     String accountType)
   {
     throw new UnsupportedOperationException();
   }
 
+  @Override
   public Bundle getAuthToken(AccountAuthenticatorResponse respones,
     Account account, String authTokenType, Bundle loginOptions)
   {
@@ -97,6 +110,7 @@ public class Authenticator extends AbstractAccountAuthenticator{
     return result;
   }
 
+  @Override
   public String getAuthTokenLabel(String authTokenType){
     if(authTokenType.equals(context.getString(R.string.authtoken_type))){
       return context.getString(R.string.auth_token_label);
@@ -104,6 +118,7 @@ public class Authenticator extends AbstractAccountAuthenticator{
     return null;
   }
 
+  @Override
   public Bundle hasFeatures(AccountAuthenticatorResponse response,
     Account account, String[] freaturs)
   {
@@ -112,6 +127,7 @@ public class Authenticator extends AbstractAccountAuthenticator{
     return result;
   }
 
+  @Override
   public Bundle updateCredentials(AccountAuthenticatorResponse response,
     Account account, String authTokenType, Bundle loginOptions)
   {
@@ -124,8 +140,15 @@ public class Authenticator extends AbstractAccountAuthenticator{
     return updateBundle;
   }
     
-
-  private boolean isValidUserNameAndPassword(String accountName,
+  /**
+   * Determines whether or not the given username and password
+   * combination are valid.
+   *
+   * @param username The username in question.
+   * @param password The password assocaited with the username
+   * in question.
+   */ 
+  private boolean isValidUserNameAndPassword(String username,
     String password)
   {
     //TODO Implement this function

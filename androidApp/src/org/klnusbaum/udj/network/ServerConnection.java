@@ -23,8 +23,23 @@ import android.os.Handler;
 
 import org.klnusbaum.udj.auth.AuthActivity;
 
+/**
+ * A connection to the UDJ server
+ */
 public class ServerConnection{
 
+  /**
+   * Attempts to authenticate with ther UDJ server. Should
+   * be used by the AuthActivity.
+   *
+   * @param username The user name to be authenticated.
+   * @param password The password to be authenticated.
+   * @param messageHandler A handler used to send messages back to the
+   * AuthActivity that called attemptAuth.
+   * @param context The context from which the method was called, i.e. the
+   * AuthActivity.
+   * @return A thread that is running the authentication attempt.
+   */
   public static Thread attemptAuth(final String username, final String password,
     final Handler messageHandler, final Context context)
   {
@@ -38,6 +53,17 @@ public class ServerConnection{
   }
 
 
+  /**
+   * Actually handles authenticating the the user.
+   *
+   * @param username The user name to be authenticated.
+   * @param password The password to be authenticated.
+   * @param messageHandler A handler used to send messages back to the
+   * AuthActivity that called attemptAuth.
+   * @param context The context from which the method was called, i.e. the
+   * AuthActivity.
+   * @return True if the authentication was successful. False otherwise.
+   */
   public static boolean authenticate(String username, String password,
     Handler handler, final Context context)
   {

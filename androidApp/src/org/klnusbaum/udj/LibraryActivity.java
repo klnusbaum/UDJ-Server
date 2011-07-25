@@ -23,10 +23,16 @@ import android.widget.SimpleCursorAdapter;
 import android.os.Bundle;
 import android.database.Cursor;
 
+/**
+ * An Activity which displays the party's current
+ * available libary.
+ */
 public class LibraryActivity extends ListActivity{
   
+  /** Adapter used to help display the contents of the library. */
   SimpleCursorAdapter libraryAdapter;
   
+  @Override
   public void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
     Cursor libraryCursor = managedQuery(

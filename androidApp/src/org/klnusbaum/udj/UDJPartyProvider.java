@@ -30,6 +30,10 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+/**
+ * Content provider used to maintain the content asociated
+ * with the current party the user is logged into.
+ */
 public class UDJPartyProvider extends ContentProvider{
   
 	/** Name of the database */
@@ -43,9 +47,11 @@ public class UDJPartyProvider extends ContentProvider{
   /** Name of the partiers table. */
   private static final String PARTIERS_TABLE_NAME = "partiers";
 
+  /** URI for the playlist */
   public static final Uri PLAYLIST_URI = 
     Uri.parse("content://org.klnusbaum.udj/playlist");
 
+  /** URI for the Library */
   public static final Uri LIBRARY_URI = 
     Uri.parse("content://org.klnusbaum.udj/library");
 
@@ -82,16 +88,6 @@ public class UDJPartyProvider extends ContentProvider{
     ARTIST_COLUMN + " TEXT NOT NULL, " + 
     ALBUM_COLUMN + " TEXT NOT NULL, " +
     SYNC_STATE_COLUMN + " TEXT NOT NULL DEFAULT " + SYNCED_MARK + ");";
-
-
-  /** Query for getting the playlist */
-  private static final String PLAYLIST_QUERY = 
-    "SELECT " + SONG_COLUMN + "," + ARTIST_COLUMN +
-    "," + VOTES_COLUMN + " FROM " +PLAYLIST_TABLE_NAME;
-
-  private static final String LIBRARY_QUERY = 
-    "SELECT " + SONG_COLUMN + "," + ARTIST_COLUMN +
-    " FROM " +LIBRARY_TABLE_NAME;
 
 	/** Helper for opening up the actual database. */
   private PartyDBHelper dbOpenHelper;
@@ -150,23 +146,28 @@ public class UDJPartyProvider extends ContentProvider{
     }
   }
 
+  @Override
   public boolean onCreate(){
     dbOpenHelper = new PartyDBHelper(getContext());
     return true;
   }
 
+  @Override
   public String getType(Uri uri){
     return "none";
   }
 
+  @Override
   public int delete(Uri uri, String where, String[] whereArgs){
     return 0;
   }
 
+  @Override
   public Uri insert(Uri uri, ContentValues initialValues){
     return null;
   }
   
+  @Override
   public Cursor query(Uri uri, String[] projection, 
     String selection, String[] selectionArgs, String sortOrder)
   {
@@ -187,6 +188,7 @@ public class UDJPartyProvider extends ContentProvider{
     return toReturn;
   }
 
+  @Override
   public int update(Uri uri, ContentValues values, String where, 
     String[] whereArgs)
   {

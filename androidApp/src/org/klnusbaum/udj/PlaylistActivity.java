@@ -23,20 +23,29 @@ import android.widget.SimpleCursorAdapter;
 import android.os.Bundle;
 import android.database.Cursor;
 
+/**
+ * Class used for displaying the contents of the Playlist.
+ */
 public class PlaylistActivity extends ListActivity{
-  SimpleCursorAdapter libraryAdapter;
+
+  /**
+   * Adapter used to help display the contents of the playlist.
+   */
+  SimpleCursorAdapter playlistAdapter;
+
+  @Override
   public void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
 
     Cursor playlistCursor = managedQuery(
       UDJPartyProvider.PLAYLIST_URI, null, null, null, null); 
-    libraryAdapter = new SimpleCursorAdapter(
+    playlistAdapter = new SimpleCursorAdapter(
       this,
       R.layout.playlist_list_item,
       playlistCursor,
       new String[] {UDJPartyProvider.SONG_COLUMN, UDJPartyProvider.ARTIST_COLUMN, UDJPartyProvider.VOTES_COLUMN},
       new int[] {R.id.playlistSongName, R.id.playlistArtistName, R.id.playlistVotes}
     );
-    setListAdapter(libraryAdapter);
+    setListAdapter(playlistAdapter);
   }
 }

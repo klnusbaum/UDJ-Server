@@ -23,14 +23,20 @@ import android.content.Intent;
 import android.os.IBinder;
 
 
+/**
+ * Service used to authenticate with the UDJ server.
+ */
 public class AuthService extends Service{
 
+  /** Reference to the actual authenticator */
   private Authenticator authenticator;
   
+  @Override
   public void onCreate(){
     this.authenticator = new Authenticator(this);
   }
 
+  @Override
   public IBinder onBind(Intent intent){
     return authenticator.getIBinder();
   }
