@@ -33,6 +33,8 @@ import java.util.ArrayList;
 /**
  * Content provider used to maintain the content asociated
  * with the current party the user is logged into.
+ * 
+ * TODO Playlist table and library table should be joined to create a view.
  */
 public class UDJPartyProvider extends ContentProvider{
   
@@ -59,8 +61,9 @@ public class UDJPartyProvider extends ContentProvider{
   /** The various states a playlist record can be in */
   public static final String SYNCED_MARK="synced";
   public static final String UPDATEING_MARK ="updating"; 
-  public static final String NEEDS_UPDATE_MARK ="needs update"; 
-  public static final String NEEDS_INSERT_MARK ="needs insert"; 
+  public static final String NEEDS_UP_VOTE ="needs_up_vote"; 
+  public static final String NEEDS_DOWN_VOTE ="needs_down_vote"; 
+  public static final String NEEDS_INSERT_MARK ="needs _nsert"; 
   public static final String INSERTING_MARK ="inserting"; 
   
 	/** Constants used for various column names */
@@ -71,6 +74,7 @@ public class UDJPartyProvider extends ContentProvider{
   public static final String PLAYLIST_ID_COLUMN = "_id";
   public static final String LIBRARY_ID_COLUMN = "_id";
   public static final String SYNC_STATE_COLUMN = "sync_state";
+  public static final String PLAYLIST_LIBRARY_ID_COLUMN ="libid";
 
 
 	/** SQL statement for creating the library table. */
@@ -85,6 +89,10 @@ public class UDJPartyProvider extends ContentProvider{
   private static final String PLAYLIST_TABLE_CREATE = 
     "CREATE TABLE " + PLAYLIST_TABLE_NAME + "("+
 		PLAYLIST_ID_COLUMN + " INTEGER PRIMARY KEY, " +
+
+    PLAYLIST_LIBRARY_ID_COLUMN + " INTEGER REFERENCES "+ 
+    LIBRARY_TABLE_NAME + "(" + LIBRARY_ID_COLUMN+") ON DELETE CASCADE, "+
+
     VOTES_COLUMN + " INTEGER NOT NULL, " +
 		SONG_COLUMN + " TEXT NOT NULL, " +
     ARTIST_COLUMN + " TEXT NOT NULL, " + 
@@ -132,13 +140,22 @@ public class UDJPartyProvider extends ContentProvider{
       "\"Cant Wait\");");
 
       db.execSQL("INSERT INTO " + PLAYLIST_TABLE_NAME + 
-      " (" + PLAYLIST_ID_COLUMN + ", " + VOTES_COLUMN + "," +
-      SONG_COLUMN + ", " + ARTIST_COLUMN + ", " + ALBUM_COLUMN+
-      ") VALUES (1, 4, \"Good day\", \"Steve\",\"Blue Harvest\");");
+      " (" + PLAYLIST_ID_COLUMN + ", " +
+       PLAYLIST_LIBRARY_ID_COLUMN + ", "+ 
+      VOTES_COLUMN + "," +
+      SONG_COLUMN + ", " +
+      ARTIST_COLUMN + ", " +
+      ALBUM_COLUMN+
+      ") VALUES (1, 1, 4, \"Good day\", \"Steve\",\"Blue Harvest\");");
+
       db.execSQL("INSERT INTO " + PLAYLIST_TABLE_NAME + 
-      " (" + PLAYLIST_ID_COLUMN + ", " + VOTES_COLUMN + "," +
-      SONG_COLUMN + ", " + ARTIST_COLUMN + ", " + ALBUM_COLUMN +
-      ") VALUES (2, 3, \"Five\", \"Nash\",\"Cant Wait\");");
+      " (" + PLAYLIST_ID_COLUMN + ", " +
+       PLAYLIST_LIBRARY_ID_COLUMN + ", "+ 
+      VOTES_COLUMN + "," +
+      SONG_COLUMN + ", " +
+      ARTIST_COLUMN + ", " +
+      ALBUM_COLUMN+
+      ") VALUES (2, 4, 3, \"Five\", \"Nash\",\"Cant Wait\");");
                
     }
 

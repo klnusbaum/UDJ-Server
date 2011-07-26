@@ -1,2 +1,6 @@
+HOST CLIENT
 -Enable seemless playback by queuing up songs that are about to be played.
+
+ANDROID APP
 -Make sure the purging of the library table is done when the party is over.
+-Make a Playlist view that is a join of the playlist table and the Library table
