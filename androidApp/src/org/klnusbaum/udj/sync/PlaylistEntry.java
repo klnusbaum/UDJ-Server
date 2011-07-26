@@ -18,7 +18,28 @@
  */
 package org.klnusbaum.udj.sync;
 
+import android.database.Cursor;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.List;
+
 public class PlaylistEntry{
 
+  public static PlaylistEntry valueOf(JSONObject jObj){
+    //TODO implement
+    return null;
+  }
+
+  public static PlaylistEntry valueOf(Cursor cur){
+    //TODO implement
+    return null;
+  }
+
+  public static JSONArray getJSONArray(List<PlaylistEntry> entries){
+    //TODO impelment
+    return null;
+  } 
 
 }

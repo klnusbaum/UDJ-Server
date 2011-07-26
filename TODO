@@ -4,3 +4,4 @@ HOST CLIENT
 ANDROID APP
 -Make sure the purging of the library table is done when the party is over.
 -Make a Playlist view that is a join of the playlist table and the Library table
+-Compress all data before sending it to the phone and then uncompress it.

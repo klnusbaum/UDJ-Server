@@ -24,6 +24,30 @@ import android.accounts.Account;
 
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
+import java.util.ArrayList;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthenticationException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.NameValuePair;
+import org.apache.http.ParseException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.conn.params.ConnManagerParams;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 
 import org.klnusbaum.udj.auth.AuthActivity;
@@ -34,7 +58,30 @@ import org.klnusbaum.udj.sync.PlaylistEntry;
  * A connection to the UDJ server
  */
 public class ServerConnection{
+  
+  public static final String PARAM_USERNAME = "username";
+  public static final String PARAM_PASSWORD = "password";
+  public static final String PARAM_LAST_UPDATE = "timestamp";
+  public static final String PARAM_UPDATE_ARRAY = "updatearray";
+  public static final String SERVER_TIMESTAMP_FORMAT = "yyyy-mm-dd hh:mm:ss";
+  public static final String SERVER_URL = "https://www.bazaarsolutions.org/udj";
+  public static final String PLAYLIST_URI = 
+    SERVER_URL + "/playlist";
+  public static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
+  private static HttpClient httpClient;
+  
 
+
+  public static HttpClient getHttpClient(){
+    if(httpClient == null){
+      httpClient = new DefaultHttpClient();
+      final HttpParams params = httpClient.getParams();
+      HttpConnectionParams.setConnectionTimeout(params, REGISTRATION_TIMEOUT);
+      HttpConnectionParams.setSoTimeout(params, REGISTRATION_TIMEOUT);
+      ConnManagerParams.setTimeout(params, REGISTRATION_TIMEOUT);
+    }
+    return httpClient;
+  }
   /**
    * Attempts to authenticate with ther UDJ server. Should
    * be used by the AuthActivity.
@@ -92,8 +139,43 @@ public class ServerConnection{
     Account account,
     String authtoken, 
     List<PlaylistEntry> toUpdate, 
-    GregorianCalendar lastUpdated)
+    GregorianCalendar lastUpdated) throws
+    JSONException, ParseException, IOException, AuthenticationException
   {
-    return null;
+    final ArrayList<PlaylistEntry> toReturn = new ArrayList<PlaylistEntry>();
+    final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+    params.add(new BasicNameValuePair(PARAM_USERNAME, account.name));
+    params.add(new BasicNameValuePair(PARAM_PASSWORD, authtoken));
+    if(lastUpdated != null){
+      final SimpleDateFormat formatter =
+        new SimpleDateFormat(SERVER_TIMESTAMP_FORMAT);
+      formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+      params.add(new BasicNameValuePair(
+        PARAM_LAST_UPDATE, formatter.format(lastUpdated)));
+    }
+    params.add(new BasicNameValuePair(
+      PARAM_UPDATE_ARRAY, 
+      PlaylistEntry.getJSONArray(toUpdate).toString()));
+    HttpEntity entity = null;
+    entity = new UrlEncodedFormEntity(params);
+    final HttpPost post = new HttpPost(PLAYLIST_URI);
+    post.addHeader(entity.getContentType());
+    post.setEntity(entity);
+    final HttpResponse resp = getHttpClient().execute(post);
+    final String response = EntityUtils.toString(resp.getEntity());
+    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
+      //Get stuff from response 
+      final JSONArray playlistEntries = new JSONArray(response);
+      for(int i=0; i < playlistEntries.length(); ++i){
+        toReturn.add(PlaylistEntry.valueOf(playlistEntries.getJSONObject(i)));
+      }
+    } 
+    else if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
+      throw new AuthenticationException();
+    }
+    else{
+      throw new IOException();
+    }
+    return toReturn;
   }
 }

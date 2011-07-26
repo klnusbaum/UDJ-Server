@@ -27,15 +27,21 @@ import android.content.ContentProviderClient;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.OperationCanceledException;
-import android.accounts.AuthenticatorException;;
+import android.accounts.AuthenticatorException;
+import android.database.Cursor;
+import android.os.RemoteException;
 
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.io.IOException;
+import java.util.ArrayList;
+import org.json.JSONException;
+
 import org.apache.http.auth.AuthenticationException;
 import org.apache.http.ParseException;
 
 import org.klnusbaum.udj.network.ServerConnection;
+import org.klnusbaum.udj.UDJPartyProvider;
 import org.klnusbaum.udj.R;
 
 
@@ -48,6 +54,20 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
   private AccountManager am;
 
   public static final String LIBRARY_SYNC_EXTRA = "library_sync";
+
+  private static final String[] playlistProjection = new String[]{
+    UDJPartyProvider.PLAYLIST_ID_COLUMN, 
+    UDJPartyProvider.PLAYLIST_LIBRARY_ID_COLUMN, 
+    UDJPartyProvider.SYNC_STATE_COLUMN};
+  private static final String playlistWhereClause = 
+    UDJPartyProvider.SYNC_STATE_COLUMN + "=? OR " + 
+    UDJPartyProvider.SYNC_STATE_COLUMN + "=? OR " + 
+    UDJPartyProvider.SYNC_STATE_COLUMN + "=?";
+  private static final String[] playlistWhereArgs = new String[]{
+    UDJPartyProvider.NEEDS_UP_VOTE, 
+    UDJPartyProvider.NEEDS_DOWN_VOTE, 
+    UDJPartyProvider.NEEDS_INSERT_MARK
+  };
 
   /**
    * Constructs a SyncAdapter.
@@ -74,14 +94,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
       if(synclibrary){
         List<LibraryEntry> updatedLibEntries = 
           ServerConnection.getLibraryUpdate(account, authtoken, lastUpdated);
-        RESTProcessor.processLibraryEntries(updatedLibEntries);
+        RESTProcessor.processLibEntries(updatedLibEntries);
       }
       List<PlaylistEntry> changedPlaylistEntries = 
         getAndMarkPlaylistEntriesToUpdate(provider);
       List<PlaylistEntry> updatedPlaylistEntries =
         ServerConnection.getPlaylistUpdate(
           account, authtoken, changedPlaylistEntries, lastUpdated);
-      RESTProcessor.processPlaylistEntries(newPlaylistEntries);
+      RESTProcessor.processPlaylistEntries(updatedPlaylistEntries);
       lastUpdated = (GregorianCalendar)GregorianCalendar.getInstance();
     } 
     catch(final AuthenticatorException e){
@@ -93,57 +113,56 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
     catch(final IOException e){
       syncResult.stats.numIoExceptions++;
     }
-    /*catch(final AuthenticationException e){
+    catch(final AuthenticationException e){
       am.invalidateAuthToken(
         context.getString(R.string.account_type), authtoken);
       syncResult.stats.numAuthExceptions++;
-    }*/
+    }
     catch(final ParseException e){
+       syncResult.stats.numParseExceptions++;
+    }
+    catch(final JSONException e){
+       syncResult.stats.numParseExceptions++;
+    }
+    catch(final RemoteException e){
        syncResult.stats.numParseExceptions++;
     }
   }
 
-  private List<PlaylistEntries> 
+  private List<PlaylistEntry> 
     getAndMarkPlaylistEntriesToUpdate(ContentProviderClient provider)
+    throws RemoteException
   {
-    static final String[] projection = 
-      new String[] {PLAYLIST_ID_COLUMN, PLAYLIST_LIBRARY_ID_COLUMN, 
-        SYNC_STATE_COLUMN}
-    static final String whereClause = 
-      UDJPartyProvider.SYNC_STATE_COLUMN + "=? OR " + 
-      UDJPartyProvider.SYNC_STATE_COLUMN + "=? OR " + 
-      UDJPartyProvider.SYNC_STATE_COLUMN + "=?";
-    static final String[] whereArgs = new String[]
-      {NEEDS_UP_VOTE, NEEDS_DOWN_VOTE, NEEDS_INSERT_MARK};
 
     Cursor needsUpdating = provider.query(
       UDJPartyProvider.PLAYLIST_URI,
-      projection,
-      whereClause,
-      whereArgs,
+      playlistProjection,
+      playlistWhereClause,
+      playlistWhereArgs,
       null
     );
-    List<PlaylistEntry> toReturn = new ArrayList<PlaylistEntry>(c.getCount());
-    ArrayList<ContentProviderOperation> batchOps = 
-      new ArrayList<ContentProviderOperation>();
-    while(c.moveToNext()){
-      toReturn.add(new PlaylistEntry(c));
-      batchOps.add(getChangeToUpdatingOperation(c.getInt(0), c.getString(2)));
+    List<PlaylistEntry> toReturn = 
+      new ArrayList<PlaylistEntry>(needsUpdating.getCount());
+   /* ArrayList<ContentProviderOperation> batchOps = 
+      new ArrayList<ContentProviderOperation>();*/
+    while(needsUpdating.moveToNext()){
+      toReturn.add(PlaylistEntry.valueOf(needsUpdating));
+/*    batchOps.add(getChangeToUpdatingOperation(c.getInt(0), c.getString(2)));
       if(batchOps.size() == 50){
         provider.applyBatch(batchOps); 
         batchOps.clear();
-      }
+      }*/
     } 
-    provider.applyBatch(batchOps); 
-    c.close();
+    //provider.applyBatch(batchOps); 
+    needsUpdating.close();
     return toReturn;
   }
 
-  private static ContentProviderOperation getChangeToUpdatingOperation(
+/*  private static ContentProviderOperation getChangeToUpdatingOperation(
     int plid, String currentSyncState)
   {
-    ContentProviderClient.Builder builder = 
-      ContentProviderClient.newUpdateQuery(UDJPartyProvider.PLAYLIST_URI);
+    ContentProviderOperation.Builder builder = 
+      ContentProviderOperation.newUpdateQuery(UDJPartyProvider.PLAYLIST_URI);
     builder = builder.withSelection(
       UDJPartyProvider.PLAYLIST_ID_COLUMN + "=?", 
       new String(plid));
@@ -158,5 +177,5 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
         UDJPartyProvider.UPDATEING_MARK);
     }
     return builder.build();
-  }
+  }*/
 }

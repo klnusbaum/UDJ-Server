@@ -46,6 +46,8 @@ public class UDJPartyProvider extends ContentProvider{
   private static final String LIBRARY_TABLE_NAME = "library";
 	/** Name of the playlist table. */
   private static final String PLAYLIST_TABLE_NAME = "playlist";
+  /** Name of the playlist view. */
+  private static final String PLAYLIST_VIEW_NAME = "playlist_view";
   /** Name of the partiers table. */
   private static final String PARTIERS_TABLE_NAME = "partiers";
 
@@ -75,6 +77,7 @@ public class UDJPartyProvider extends ContentProvider{
   public static final String LIBRARY_ID_COLUMN = "_id";
   public static final String SYNC_STATE_COLUMN = "sync_state";
   public static final String PLAYLIST_LIBRARY_ID_COLUMN ="libid";
+  public static final String TIME_ADDED_COLUMN ="time_added";
 
 
 	/** SQL statement for creating the library table. */
@@ -94,10 +97,24 @@ public class UDJPartyProvider extends ContentProvider{
     LIBRARY_TABLE_NAME + "(" + LIBRARY_ID_COLUMN+") ON DELETE CASCADE, "+
 
     VOTES_COLUMN + " INTEGER NOT NULL, " +
-		SONG_COLUMN + " TEXT NOT NULL, " +
-    ARTIST_COLUMN + " TEXT NOT NULL, " + 
-    ALBUM_COLUMN + " TEXT NOT NULL, " +
     SYNC_STATE_COLUMN + " TEXT NOT NULL DEFAULT " + SYNCED_MARK + ");";
+
+  private static final String PLAYLIST_VIEW_CREATE = 
+    "CREATE VIEW " + PLAYLIST_VIEW_NAME + " " +
+    "AS SELECT " +
+    PLAYLIST_TABLE_NAME + "._id AS _id, " + 
+    PLAYLIST_TABLE_NAME + "._id AS " + PLAYLIST_LIBRARY_ID_COLUMN + ", " +
+    LIBRARY_TABLE_NAME + "." + SONG_COLUMN + " AS " + SONG_COLUMN + ", " +
+    LIBRARY_TABLE_NAME + "." + ARTIST_COLUMN + " AS " + ARTIST_COLUMN + ", " +
+    LIBRARY_TABLE_NAME + "." + ALBUM_COLUMN + " AS " + ALBUM_COLUMN + ", " +
+    PLAYLIST_TABLE_NAME + "." + VOTES_COLUMN + " AS " + VOTES_COLUMN + " " +
+    PLAYLIST_TABLE_NAME + "." + TIME_ADDED_COLUMN + " AS " + TIME_ADDED_COLUMN + " " +
+    "FROM " + PLAYLIST_TABLE_NAME + " INNER JOIN " + LIBRARY_TABLE_NAME + " " +
+    " ON " + PLAYLIST_TABLE_NAME + "." + PLAYLIST_LIBRARY_ID_COLUMN + "=" +
+    LIBRARY_TABLE_NAME + "._id ORDER BY " + PLAYLIST_TABLE_NAME + "." +
+    VOTES_COLUMN + " DESC, " + PLAYLIST_TABLE_NAME + "." + TIME_ADDED_COLUMN + 
+    ";";
+    
 
 	/** Helper for opening up the actual database. */
   private PartyDBHelper dbOpenHelper;
@@ -120,6 +137,7 @@ public class UDJPartyProvider extends ContentProvider{
     public void onCreate(SQLiteDatabase db){
       db.execSQL(LIBRARY_TABLE_CREATE);
       db.execSQL(PLAYLIST_TABLE_CREATE);
+      db.execSQL(PLAYLIST_VIEW_CREATE);
 
       //INSERT DUMMY SONGS FOR NOW
       db.execSQL("INSERT INTO " + LIBRARY_TABLE_NAME + 
@@ -142,20 +160,14 @@ public class UDJPartyProvider extends ContentProvider{
       db.execSQL("INSERT INTO " + PLAYLIST_TABLE_NAME + 
       " (" + PLAYLIST_ID_COLUMN + ", " +
        PLAYLIST_LIBRARY_ID_COLUMN + ", "+ 
-      VOTES_COLUMN + "," +
-      SONG_COLUMN + ", " +
-      ARTIST_COLUMN + ", " +
-      ALBUM_COLUMN+
-      ") VALUES (1, 1, 4, \"Good day\", \"Steve\",\"Blue Harvest\");");
+      VOTES_COLUMN +
+      ") VALUES (1, 1, 4);");
 
       db.execSQL("INSERT INTO " + PLAYLIST_TABLE_NAME + 
       " (" + PLAYLIST_ID_COLUMN + ", " +
        PLAYLIST_LIBRARY_ID_COLUMN + ", "+ 
-      VOTES_COLUMN + "," +
-      SONG_COLUMN + ", " +
-      ARTIST_COLUMN + ", " +
-      ALBUM_COLUMN+
-      ") VALUES (2, 4, 3, \"Five\", \"Nash\",\"Cant Wait\");");
+      VOTES_COLUMN + 
+      ") VALUES (2, 4, 3);");
                
     }
 
@@ -192,7 +204,7 @@ public class UDJPartyProvider extends ContentProvider{
   {
     SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
     if(uri.equals(PLAYLIST_URI)){
-      qb.setTables(PLAYLIST_TABLE_NAME); 
+      qb.setTables(PLAYLIST_VIEW_NAME); 
     }
     else if(uri.equals(LIBRARY_URI)){
       qb.setTables(LIBRARY_TABLE_NAME); 
@@ -211,6 +223,10 @@ public class UDJPartyProvider extends ContentProvider{
   public int update(Uri uri, ContentValues values, String where, 
     String[] whereArgs)
   {
+    SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+    if(uri.equals(PLAYLIST_URI)){
+      return db.update(PLAYLIST_TABLE_NAME, values, where, whereArgs);
+    }
     return 0;
   }
 

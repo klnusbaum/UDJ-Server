@@ -22,11 +22,11 @@ import java.util.List;
 
 public class RESTProcessor{
 
-  static void processNewLibEntries(List<LibraryEntry> newEntries){
+  static void processLibEntries(List<LibraryEntry> newEntries){
 
   }
 
-  static void processNewPlaylistEntries(List<PlaylistEntry> newEntries){
+  static void processPlaylistEntries(List<PlaylistEntry> newEntries){
 
   }
 }
