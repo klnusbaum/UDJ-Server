@@ -30,6 +30,7 @@ import android.accounts.OperationCanceledException;
 import android.accounts.AuthenticatorException;
 import android.database.Cursor;
 import android.os.RemoteException;
+import android.content.OperationApplicationException;
 
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -89,19 +90,32 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
     boolean synclibrary = extras.getBoolean(LIBRARY_SYNC_EXTRA, false);
     String authtoken = null;
     try{
+      //Get Authtoken
       authtoken = am.blockingGetAuthToken(
         account, context.getString(R.string.authtoken_type), true);
+
+      //Sync Library if requested
       if(synclibrary){
         List<LibraryEntry> updatedLibEntries = 
           ServerConnection.getLibraryUpdate(account, authtoken, lastUpdated);
-        RESTProcessor.processLibEntries(updatedLibEntries);
+        RESTProcessor.processLibEntries(updatedLibEntries, account.name, context);
       }
+
+      //Get a list of all the playlist entries we want the server
+      // to update
       List<PlaylistEntry> changedPlaylistEntries = 
         getAndMarkPlaylistEntriesToUpdate(provider);
+
+      //Tell the server to do the update via REST
+      //A retrieve it's response.
       List<PlaylistEntry> updatedPlaylistEntries =
         ServerConnection.getPlaylistUpdate(
           account, authtoken, changedPlaylistEntries, lastUpdated);
-      RESTProcessor.processPlaylistEntries(updatedPlaylistEntries);
+
+      //Process the REST response from the server.
+      RESTProcessor.processPlaylistEntries(
+        updatedPlaylistEntries, account.name, context);
+
       lastUpdated = (GregorianCalendar)GregorianCalendar.getInstance();
     } 
     catch(final AuthenticatorException e){
@@ -119,13 +133,16 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
       syncResult.stats.numAuthExceptions++;
     }
     catch(final ParseException e){
-       syncResult.stats.numParseExceptions++;
+      syncResult.stats.numParseExceptions++;
     }
     catch(final JSONException e){
-       syncResult.stats.numParseExceptions++;
+      syncResult.stats.numParseExceptions++;
     }
     catch(final RemoteException e){
-       syncResult.stats.numParseExceptions++;
+      syncResult.stats.numParseExceptions++;
+    }
+    catch(final OperationApplicationException e){
+      syncResult.stats.numParseExceptions++;
     }
   }
 

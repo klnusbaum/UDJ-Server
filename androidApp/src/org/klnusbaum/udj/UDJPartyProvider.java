@@ -97,7 +97,8 @@ public class UDJPartyProvider extends ContentProvider{
     LIBRARY_TABLE_NAME + "(" + LIBRARY_ID_COLUMN+") ON DELETE CASCADE, "+
 
     VOTES_COLUMN + " INTEGER NOT NULL, " +
-    SYNC_STATE_COLUMN + " TEXT NOT NULL DEFAULT " + SYNCED_MARK + ");";
+    SYNC_STATE_COLUMN + " TEXT NOT NULL DEFAULT " + SYNCED_MARK + ", " +
+    TIME_ADDED_COLUMN + " TEXT);";
 
   private static final String PLAYLIST_VIEW_CREATE = 
     "CREATE VIEW " + PLAYLIST_VIEW_NAME + " " +

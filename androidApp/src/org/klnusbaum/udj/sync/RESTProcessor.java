@@ -19,14 +19,98 @@
 package org.klnusbaum.udj.sync;
 
 import java.util.List;
+import java.util.ArrayList;
+import android.content.Context;
+import android.content.ContentResolver;
+import android.content.ContentProviderOperation;
+import android.content.OperationApplicationException;
+import android.database.Cursor;
+import android.os.RemoteException;
+
+import org.klnusbaum.udj.R;
+import org.klnusbaum.udj.UDJPartyProvider;
 
 public class RESTProcessor{
 
-  static void processLibEntries(List<LibraryEntry> newEntries){
+  public static void processLibEntries(
+    List<LibraryEntry> newEntries, String account, Context context)
+  {
 
   }
 
-  static void processPlaylistEntries(List<PlaylistEntry> newEntries){
+  public static void processPlaylistEntries(
+    List<PlaylistEntry> newEntries, String account, Context context)
+    throws RemoteException, OperationApplicationException
+  {
+    final ContentResolver resolver = context.getContentResolver();
+    ArrayList<ContentProviderOperation> batchOps = new ArrayList<ContentProviderOperation>();
+    for(PlaylistEntry pe: newEntries){
+      if(havePlId(pe.getPlId(), resolver)){
+        if(pe.getIsDeleted()){
+          deletePlaylistEntry(pe, batchOps);
+        }
+        else{
+          updatePlaylistEntry(pe, batchOps);
+        }
+      }
+      else{
+        insertPlaylistEntry(pe, batchOps);
+      }
 
+      if(batchOps.size() >= 50){
+        resolver.applyBatch(context.getString(R.string.authority), batchOps);
+        batchOps.clear();
+      }
+    }  
+  }
+
+  private static void insertPlaylistEntry(
+    PlaylistEntry pe,
+    ArrayList<ContentProviderOperation> batchOps)
+  {
+    final ContentProviderOperation.Builder insertOp = 
+      ContentProviderOperation.newInsert(UDJPartyProvider.PLAYLIST_URI)
+      .withValue(UDJPartyProvider.PLAYLIST_ID_COLUMN, pe.getPlId())
+      .withValue(UDJPartyProvider.LIBRARY_ID_COLUMN, pe.getLibId())
+      .withValue(UDJPartyProvider.TIME_ADDED_COLUMN, pe.getTimeAdded())
+      .withValue(UDJPartyProvider.VOTES_COLUMN, pe.getVoteCount())
+      .withValue(UDJPartyProvider.SYNC_STATE_COLUMN, UDJPartyProvider.SYNCED_MARK);
+    batchOps.add(insertOp.build());
+  }
+
+  private static void deletePlaylistEntry(
+    PlaylistEntry pe,
+    ArrayList<ContentProviderOperation> batchOps)
+  {
+    String[] selectionArgs = new String[] {String.valueOf(pe.getPlId())};
+    final ContentProviderOperation.Builder deleteOp = 
+      ContentProviderOperation.newDelete(UDJPartyProvider.PLAYLIST_URI)
+      .withSelection("WHERE " + UDJPartyProvider.PLAYLIST_ID_COLUMN + "=?", selectionArgs);
+    batchOps.add(deleteOp.build());
+  }
+    
+  private static void updatePlaylistEntry(
+    PlaylistEntry pe, 
+    ArrayList<ContentProviderOperation> batchOps)
+  {
+    String[] selectionArgs = new String[] {String.valueOf(pe.getPlId())};
+    final ContentProviderOperation.Builder updateBuilder = 
+      ContentProviderOperation.newUpdate(UDJPartyProvider.PLAYLIST_URI)
+      .withSelection("WHERE " + UDJPartyProvider.PLAYLIST_ID_COLUMN + "=?", selectionArgs)
+      .withValue(UDJPartyProvider.VOTES_COLUMN, pe.getVoteCount())
+      .withValue(UDJPartyProvider.SYNC_STATE_COLUMN, UDJPartyProvider.SYNCED_MARK);
+    batchOps.add(updateBuilder.build());
+  } 
+
+  private static boolean havePlId(int plId, ContentResolver resolver)
+    throws OperationApplicationException
+  {
+    Cursor c = resolver.query(
+      UDJPartyProvider.PLAYLIST_URI, 
+      new String[] {"COUNT("+ UDJPartyProvider.PLAYLIST_ID_COLUMN+ ")"},
+      "WHERE " + UDJPartyProvider.PLAYLIST_ID_COLUMN+ "=?",
+      new String[] {String.valueOf(plId)},
+      null);
+    return c.getCount() > 0;
   }
 }

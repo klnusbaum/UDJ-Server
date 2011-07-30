@@ -142,8 +142,8 @@ public class ServerConnection{
     GregorianCalendar lastUpdated) throws
     JSONException, ParseException, IOException, AuthenticationException
   {
-    final ArrayList<PlaylistEntry> toReturn = new ArrayList<PlaylistEntry>();
     final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+    ArrayList<PlaylistEntry> toReturn = new ArrayList<PlaylistEntry>();
     params.add(new BasicNameValuePair(PARAM_USERNAME, account.name));
     params.add(new BasicNameValuePair(PARAM_PASSWORD, authtoken));
     if(lastUpdated != null){
@@ -166,9 +166,7 @@ public class ServerConnection{
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
       //Get stuff from response 
       final JSONArray playlistEntries = new JSONArray(response);
-      for(int i=0; i < playlistEntries.length(); ++i){
-        toReturn.add(PlaylistEntry.valueOf(playlistEntries.getJSONObject(i)));
-      }
+      toReturn = PlaylistEntry.fromJSONArray(playlistEntries);
     } 
     else if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
       throw new AuthenticationException();
