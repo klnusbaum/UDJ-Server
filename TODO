@@ -1,7 +1,18 @@
 HOST CLIENT
 -Enable seemless playback by queuing up songs that are about to be played.
+And what's more, songs should fade into one another. Like a real dj would.
+Sync the beat of the new song to the beat of the the one that is currently
+playing, fade into new song, then gradual return beat of new song to normal.
 
 ANDROID APP
 -Make sure the purging of the library table is done when the party is over.
 -Make a Playlist view that is a join of the playlist table and the Library table
 -Compress all data before sending it to the phone and then uncompress it.
+-Users should be able to remove songs they added form the playlist
+(You know, say they accidentally double added a song)
+-Indicator on playlist of songs you've added
+
+SERVER
+-If two users add the same song within a certain threshold of oneanother (e.g.
+the same song was added by two different users within 10 seconds of one another)
+just merge the song requests
