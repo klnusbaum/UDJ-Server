@@ -19,9 +19,19 @@
 package org.klnusbaum.udj;
 
 import android.app.ListActivity;
-import android.widget.SimpleCursorAdapter;
+import android.widget.CursorAdapter;
 import android.os.Bundle;
 import android.database.Cursor;
+import android.content.Context;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.ImageButton;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.util.Log;
+
+
+import org.klnusbaum.udj.R;
 
 /**
  * Class used for displaying the contents of the Playlist.
@@ -31,7 +41,7 @@ public class PlaylistActivity extends ListActivity{
   /**
    * Adapter used to help display the contents of the playlist.
    */
-  SimpleCursorAdapter playlistAdapter;
+  PlaylistAdapter playlistAdapter;
 
   @Override
   public void onCreate(Bundle savedInstanceState){
@@ -39,13 +49,64 @@ public class PlaylistActivity extends ListActivity{
 
     Cursor playlistCursor = managedQuery(
       UDJPartyProvider.PLAYLIST_URI, null, null, null, null); 
-    playlistAdapter = new SimpleCursorAdapter(
-      this,
-      R.layout.playlist_list_item,
-      playlistCursor,
-      new String[] {UDJPartyProvider.SONG_COLUMN, UDJPartyProvider.ARTIST_COLUMN, UDJPartyProvider.VOTES_COLUMN},
-      new int[] {R.id.playlistSongName, R.id.playlistArtistName, R.id.playlistVotes}
-    );
+    playlistAdapter = new PlaylistAdapter(this, playlistCursor);
     setListAdapter(playlistAdapter);
   }
+
+  private class PlaylistAdapter extends CursorAdapter{
+  
+    public PlaylistAdapter(Context context, Cursor c){
+      super(context, c);
+    }
+
+    @Override
+    public void bindView(View view, Context context, Cursor cursor){
+      
+      int playlistId = cursor.getInt(cursor.getColumnIndex(UDJPartyProvider.PLAYLIST_ID_COLUMN));
+
+      TextView songName = 
+        (TextView)view.findViewById(R.id.playlistSongName);
+      songName.setText(cursor.getString(cursor.getColumnIndex(UDJPartyProvider.SONG_COLUMN)));
+
+      TextView artist = 
+        (TextView)view.findViewById(R.id.playlistArtistName);
+      artist.setText(cursor.getString(cursor.getColumnIndex(UDJPartyProvider.ARTIST_COLUMN)));
+      if(cursor.getString(cursor.getColumnIndex(UDJPartyProvider.ARTIST_COLUMN)) == ""){
+        Log.i("Playslist", "Didn't get artist");
+      }
+
+      ImageButton upVote = 
+        (ImageButton)view.findViewById(R.id.up_vote_button);
+      upVote.setTag(String.valueOf(playlistId));
+
+      ImageButton downVote = 
+        (ImageButton)view.findViewById(R.id.up_vote_button);
+      downVote.setTag(String.valueOf(playlistId));
+
+      String voteStatus = cursor.getString(cursor.getColumnIndex(UDJPartyProvider.VOTE_STATUS_COLUMN));
+      if(voteStatus == UDJPartyProvider.VOTED_UP){
+        upVote.setEnabled(false); 
+      }
+      else if(voteStatus == UDJPartyProvider.VOTED_DOWN){
+        downVote.setEnabled(false); 
+      }
+
+      TextView votes = 
+        (TextView)view.findViewById(R.id.playlistVotes);
+      votes.setText(String.valueOf(
+      cursor.getInt(cursor.getColumnIndex(UDJPartyProvider.VOTES_COLUMN))));
+
+    }
+
+    @Override
+    public View newView(Context context, Cursor cursor, ViewGroup parent){
+      LayoutInflater inflater = (LayoutInflater)context.getSystemService(
+        Context.LAYOUT_INFLATER_SERVICE);
+      View itemView = inflater.inflate(R.layout.playlist_list_item, null);
+      bindView(itemView, context, cursor);
+      return itemView;
+    }
+  }
 }
+
+
