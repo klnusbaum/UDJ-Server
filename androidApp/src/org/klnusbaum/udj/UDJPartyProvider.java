@@ -66,6 +66,11 @@ public class UDJPartyProvider extends ContentProvider{
   public static final String NEEDS_UP_VOTE ="needs_up_vote"; 
   public static final String NEEDS_DOWN_VOTE ="needs_down_vote"; 
   public static final String NEEDS_INSERT_MARK ="needs_insert"; 
+
+  /** The various states of a playlist record's vote status */
+  public static final String HASNT_VOTED="hasnt_voted";
+  public static final String VOTED_UP="votedup";
+  public static final String VOTED_DOWN="voteddown";
   
 	/** Constants used for various column names */
   public static final String SONG_COLUMN = "song";
@@ -79,6 +84,7 @@ public class UDJPartyProvider extends ContentProvider{
   public static final String PLAYLIST_LIBRARY_ID_COLUMN ="libid";
   public static final String SERVER_PLAYLIST_ID_COLUMN ="server_id";
   public static final String TIME_ADDED_COLUMN ="time_added";
+  public static final String VOTE_STATUS_COLUMN ="vote_status";
 
   public static final int INVALID_SERVER_PLAYLIST_ID = -1;
   public static final int INVALID_PLAYLIST_ID = -1;
@@ -101,7 +107,8 @@ public class UDJPartyProvider extends ContentProvider{
     LIBRARY_TABLE_NAME + "(" + LIBRARY_ID_COLUMN+") ON DELETE CASCADE, "+
 
     VOTES_COLUMN + " INTEGER NOT NULL, " +
-    SYNC_STATE_COLUMN + " TEXT NOT NULL DEFAULT " + SYNCED_MARK + ", " +
+    VOTE_STATUS_COLUMN + " TEXT NOT NULL DEFAULT '" + HASNT_VOTED +"', " +
+    SYNC_STATE_COLUMN + " TEXT NOT NULL DEFAULT '" + SYNCED_MARK + "', " +
     SERVER_PLAYLIST_ID_COLUMN + " INTEGER UNIQUE, " +
     TIME_ADDED_COLUMN + " TEXT);";
 
@@ -109,12 +116,27 @@ public class UDJPartyProvider extends ContentProvider{
     "CREATE VIEW " + PLAYLIST_VIEW_NAME + " " +
     "AS SELECT " +
     PLAYLIST_TABLE_NAME + "._id AS _id, " + 
-    PLAYLIST_TABLE_NAME + "._id AS " + PLAYLIST_LIBRARY_ID_COLUMN + ", " +
+
+    PLAYLIST_TABLE_NAME + "." + PLAYLIST_LIBRARY_ID_COLUMN + " AS " +
+    PLAYLIST_LIBRARY_ID_COLUMN + ", " +
+
+    PLAYLIST_TABLE_NAME + "." + SERVER_PLAYLIST_ID_COLUMN + " AS " + 
+    SERVER_PLAYLIST_ID_COLUMN + ", " + 
+
+    PLAYLIST_TABLE_NAME + "." + SYNC_STATE_COLUMN + " AS " + 
+    SYNC_STATE_COLUMN + ", " + 
+
+    PLAYLIST_TABLE_NAME + "." + VOTE_STATUS_COLUMN + " AS " + 
+    VOTE_STATUS_COLUMN + ", " + 
+
     LIBRARY_TABLE_NAME + "." + SONG_COLUMN + " AS " + SONG_COLUMN + ", " +
     LIBRARY_TABLE_NAME + "." + ARTIST_COLUMN + " AS " + ARTIST_COLUMN + ", " +
     LIBRARY_TABLE_NAME + "." + ALBUM_COLUMN + " AS " + ALBUM_COLUMN + ", " +
-    PLAYLIST_TABLE_NAME + "." + VOTES_COLUMN + " AS " + VOTES_COLUMN + " " +
-    PLAYLIST_TABLE_NAME + "." + TIME_ADDED_COLUMN + " AS " + TIME_ADDED_COLUMN + " " +
+    PLAYLIST_TABLE_NAME + "." + VOTES_COLUMN + " AS " + VOTES_COLUMN + ", " +
+
+    PLAYLIST_TABLE_NAME + "." + TIME_ADDED_COLUMN + " AS " + 
+    TIME_ADDED_COLUMN + " " +
+
     "FROM " + PLAYLIST_TABLE_NAME + " INNER JOIN " + LIBRARY_TABLE_NAME + " " +
     " ON " + PLAYLIST_TABLE_NAME + "." + PLAYLIST_LIBRARY_ID_COLUMN + "=" +
     LIBRARY_TABLE_NAME + "._id ORDER BY " + PLAYLIST_TABLE_NAME + "." +

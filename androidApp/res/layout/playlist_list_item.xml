@@ -21,11 +21,10 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
   android:layout_height="fill_parent"
-  android:orientation="vertical"
 >
   <TextView 
     android:id="@+id/playlistSongName"
-    android:layout_width="fill_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:textAppearance="?android:attr/textAppearanceMedium"
     android:textStyle="bold"
@@ -42,15 +41,35 @@
     android:textAppearance="?android:attr/textAppearanceSmall"
     android:layout_below="@id/playlistSongName"
   />
+  <LinearLayout
+    android:orientation="vertical"
+    android:id="@+id/votingButtons"
+    android:layout_alignParentRight="true"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+  >
+    <ImageButton
+      android:id="@+id/up_vote_button"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:src="@android:drawable/arrow_up_float"
+    />
+    <ImageButton
+      android:id="@+id/down_vote_button"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:src="@android:drawable/arrow_down_float"
+    />
+  </LinearLayout>
   <TextView 
     android:id="@+id/playlistVotes"
     android:layout_marginTop="-4dip"
     android:layout_gravity="right"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:textAppearance="?android:attr/textAppearanceSmall"
-    android:layout_alignParentRight="true"
-    android:layout_below="@id/playlistSongName"
+    android:textAppearance="?android:attr/textAppearanceMedium"
+    android:layout_toLeftOf="@id/votingButtons"
+    android:layout_centerVertical="true"
   />
 </RelativeLayout>
 	
