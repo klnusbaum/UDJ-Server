@@ -67,6 +67,8 @@ public class ServerConnection{
   public static final String SERVER_URL = "https://www.bazaarsolutions.org/udj";
   public static final String PLAYLIST_URI = 
     SERVER_URL + "/playlist";
+  public static final String PLAYLIST_URI = 
+    SERVER_URL + "/library";
   public static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
   private static HttpClient httpClient;
   
@@ -129,10 +131,46 @@ public class ServerConnection{
     return true;
   }
 
-  public static List<LibraryEntry> getLibraryUpdate(Account account,
-    String authtoken, GregorianCalendar lastUpdated)
+  public static List<LibraryEntry> getLibraryUpdate(
+    Account account,
+    String authtoken, 
+    GregorianCalendar lastUpdated, 
+    List<LibraryEntry> toUpdate)
+    throws JSONException, ParseException, IOException, AuthenticationException
   {
-    return null;
+    final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+    ArrayList<PlaylistEntry> toReturn = new ArrayList<PlaylistEntry>();
+    params.add(new BasicNameValuePair(PARAM_USERNAME, account.name));
+    params.add(new BasicNameValuePair(PARAM_PASSWORD, authtoken));
+    if(lastUpdated != null){
+      final SimpleDateFormat formatter =
+        new SimpleDateFormat(SERVER_TIMESTAMP_FORMAT);
+      formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+      params.add(new BasicNameValuePair(
+        PARAM_LAST_UPDATE, formatter.format(lastUpdated)));
+    }
+    params.add(new BasicNameValuePair(
+      PARAM_UPDATE_ARRAY, 
+      LibraryEntry.getJSONArray(toUpdate).toString()));
+    HttpEntity entity = null;
+    entity = new UrlEncodedFormEntity(params);
+    final HttpPost post = new HttpPost(LIBRARY_URI);
+    post.addHeader(entity.getContentType());
+    post.setEntity(entity);
+    final HttpResponse resp = getHttpClient().execute(post);
+    final String response = EntityUtils.toString(resp.getEntity());
+    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
+      //Get stuff from response 
+      final JSONArray libraryEntries = new JSONArray(response);
+      toReturn = LibraryEntry.fromJSONArray(libraryEntries);
+    } 
+    else if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
+      throw new AuthenticationException();
+    }
+    else{
+      throw new IOException();
+    }
+    return toReturn;
   }
 
   public static List<PlaylistEntry> getPlaylistUpdate(  

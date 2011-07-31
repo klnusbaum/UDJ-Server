@@ -45,7 +45,7 @@ public class RESTProcessor{
     final ContentResolver resolver = context.getContentResolver();
     ArrayList<ContentProviderOperation> batchOps = new ArrayList<ContentProviderOperation>();
     for(PlaylistEntry pe: newEntries){
-      if(havePlId(pe.getPlId(), resolver)){
+      if(pe.getPlId() != UDJPartyProvider.INVALID_PLAYLIST_ID && havePlId(pe.getPlId(), resolver)){
         if(pe.getIsDeleted()){
           deletePlaylistEntry(pe, batchOps);
         }
@@ -70,7 +70,7 @@ public class RESTProcessor{
   {
     final ContentProviderOperation.Builder insertOp = 
       ContentProviderOperation.newInsert(UDJPartyProvider.PLAYLIST_URI)
-      .withValue(UDJPartyProvider.PLAYLIST_ID_COLUMN, pe.getPlId())
+      .withValue(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN, pe.getServerId())
       .withValue(UDJPartyProvider.LIBRARY_ID_COLUMN, pe.getLibId())
       .withValue(UDJPartyProvider.TIME_ADDED_COLUMN, pe.getTimeAdded())
       .withValue(UDJPartyProvider.VOTES_COLUMN, pe.getVoteCount())
@@ -99,6 +99,7 @@ public class RESTProcessor{
       .withSelection("WHERE " + UDJPartyProvider.PLAYLIST_ID_COLUMN + "=?", selectionArgs)
       .withValue(UDJPartyProvider.VOTES_COLUMN, pe.getVoteCount())
       .withValue(UDJPartyProvider.SYNC_STATE_COLUMN, UDJPartyProvider.SYNCED_MARK);
+      .withValue(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN, pe.getServerId());
     batchOps.add(updateBuilder.build());
   } 
 

@@ -72,12 +72,17 @@ public class UDJPartyProvider extends ContentProvider{
   public static final String SONG_COLUMN = "song";
   public static final String ARTIST_COLUMN = "artist";
   public static final String ALBUM_COLUMN = "album";
-  public static final String VOTES_COLUMN = "votes";
-  public static final String PLAYLIST_ID_COLUMN = "_id";
   public static final String LIBRARY_ID_COLUMN = "_id";
+
+  public static final String PLAYLIST_ID_COLUMN = "_id";
+  public static final String VOTES_COLUMN = "votes";
   public static final String SYNC_STATE_COLUMN = "sync_state";
   public static final String PLAYLIST_LIBRARY_ID_COLUMN ="libid";
+  public static final String SERVER_PLAYLIST_ID_COLUMN ="server_id";
   public static final String TIME_ADDED_COLUMN ="time_added";
+
+  public static final int INVALID_SERVER_PLAYLIST_ID = -1;
+  public static final int INVALID_PLAYLIST_ID = -1;
 
 
 	/** SQL statement for creating the library table. */
@@ -91,13 +96,14 @@ public class UDJPartyProvider extends ContentProvider{
 	/** SQL statement for creating the playlist table. */
   private static final String PLAYLIST_TABLE_CREATE = 
     "CREATE TABLE " + PLAYLIST_TABLE_NAME + "("+
-		PLAYLIST_ID_COLUMN + " INTEGER PRIMARY KEY, " +
+		PLAYLIST_ID_COLUMN + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 
     PLAYLIST_LIBRARY_ID_COLUMN + " INTEGER REFERENCES "+ 
     LIBRARY_TABLE_NAME + "(" + LIBRARY_ID_COLUMN+") ON DELETE CASCADE, "+
 
     VOTES_COLUMN + " INTEGER NOT NULL, " +
     SYNC_STATE_COLUMN + " TEXT NOT NULL DEFAULT " + SYNCED_MARK + ", " +
+    SERVER_PLAYLIST_ID_COLUMN + " INTEGER UNIQUE, " +
     TIME_ADDED_COLUMN + " TEXT);";
 
   private static final String PLAYLIST_VIEW_CREATE = 

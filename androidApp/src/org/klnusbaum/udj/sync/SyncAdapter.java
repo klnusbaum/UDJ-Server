@@ -58,6 +58,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 
   private static final String[] playlistProjection = new String[]{
     UDJPartyProvider.PLAYLIST_ID_COLUMN, 
+    UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN, 
     UDJPartyProvider.PLAYLIST_LIBRARY_ID_COLUMN, 
     UDJPartyProvider.SYNC_STATE_COLUMN};
   private static final String playlistWhereClause = 
@@ -104,7 +105,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
       //Get a list of all the playlist entries we want the server
       // to update
       List<PlaylistEntry> changedPlaylistEntries = 
-        getAndMarkPlaylistEntriesToUpdate(provider);
+        getChangePlaylistEntries(provider);
 
       //Tell the server to do the update via REST
       //A retrieve it's response.
@@ -147,7 +148,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
   }
 
   private List<PlaylistEntry> 
-    getAndMarkPlaylistEntriesToUpdate(ContentProviderClient provider)
+    getChangePlaylistEntries(ContentProviderClient provider)
     throws RemoteException
   {
 

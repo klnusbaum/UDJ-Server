@@ -33,6 +33,7 @@ public class PlaylistEntry{
   private int plId;
   private int libId;
   private int voteCount;
+  private int serverId;
   private String syncState;
   private boolean isDeleted;
   private String timeAdded;
@@ -41,6 +42,7 @@ public class PlaylistEntry{
 
   public PlaylistEntry(
     int plId,
+    int serverId,
     int libId,
     int voteCount,
     String syncState,
@@ -50,6 +52,7 @@ public class PlaylistEntry{
     this.plId = plId;
     this.libId = libId;
     this.voteCount = voteCount;
+    this.serverId = serverId;
     this.syncState = syncState;
     this.isDeleted = isDeleted;
     this.timeAdded = timeAdded;
@@ -73,12 +76,16 @@ public class PlaylistEntry{
   public String getTimeAdded(){
     return timeAdded;
   }
+  public int getServerId(){
+    return serverId;
+  }
 
   public static PlaylistEntry valueOf(JSONObject jObj)
     throws JSONException 
   {
     return new PlaylistEntry(
-      jObj.getInt(UDJPartyProvider.PLAYLIST_ID_COLUMN), 
+      jObj.optInt(UDJPartyProvider.PLAYLIST_ID_COLUMN, UDJPartyProvider.INVALID_PLAYLIST_ID), 
+      jObj.optInt(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN, INVALID_SERVER_PLAYLIST_ID), 
       jObj.getInt(UDJPartyProvider.PLAYLIST_LIBRARY_ID_COLUMN),
       jObj.getInt(UDJPartyProvider.VOTES_COLUMN),
       jObj.optString(UDJPartyProvider.SYNC_STATE_COLUMN),
@@ -89,6 +96,7 @@ public class PlaylistEntry{
   public static PlaylistEntry valueOf(Cursor cur){
     return new PlaylistEntry(
       cur.getInt(cur.getColumnIndex(UDJPartyProvider.PLAYLIST_ID_COLUMN)),
+      cur.getInt(cur.getColumnIndex(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN)),
       cur.getInt(cur.getColumnIndex(UDJPartyProvider.PLAYLIST_LIBRARY_ID_COLUMN)),
       cur.getInt(cur.getColumnIndex(UDJPartyProvider.VOTES_COLUMN)),
       cur.getString(cur.getColumnIndex(UDJPartyProvider.SYNC_STATE_COLUMN)),
@@ -96,18 +104,23 @@ public class PlaylistEntry{
       cur.getString(cur.getColumnIndex(UDJPartyProvider.TIME_ADDED_COLUMN))); 
   }
 
+  public static JSONObject getJSONObject(PlaylistEntry pe){
+    JSONObject toReturn = new JSONObject();
+    toReturn.put(UDJPartyProvider.PLAYLIST_ID_COLUMN, pe.getPlId());
+    toReturn.put(UDJPartyProvider.PLAYLIST_LIBRARY_ID_COLUMN, pe.getLibId());
+    toReturn.put(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN, pe.getServerId());
+    toReturn.put(UDJPartyProvider.VOTES_COLUMN, pe.getVoteCount());
+    toReturn.put(UDJPartyProvider.SYNC_STATE_COLUMN, pe.getSyncState());
+    toReturn.put(UDJPartyProvider.TIME_ADDED_COLUMN, pe.getTimeAdded());
+  }
+  
+
   public static JSONArray getJSONArray(List<PlaylistEntry> entries)
     throws JSONException
   {
     JSONArray toReturn = new JSONArray();
     for(PlaylistEntry pe: entries){
-      JSONObject toInsert = new JSONObject();
-      toInsert.put(UDJPartyProvider.PLAYLIST_ID_COLUMN, pe.getPlId());
-      toInsert.put(UDJPartyProvider.PLAYLIST_LIBRARY_ID_COLUMN, pe.getLibId());
-      toInsert.put(UDJPartyProvider.VOTES_COLUMN, pe.getVoteCount());
-      toInsert.put(UDJPartyProvider.SYNC_STATE_COLUMN, pe.getSyncState());
-      toInsert.put(UDJPartyProvider.TIME_ADDED_COLUMN, pe.getTimeAdded());
-      toReturn.put(toInsert);
+      toReturn.put(getJSONObject(pe));
     }
     return toReturn;
   } 

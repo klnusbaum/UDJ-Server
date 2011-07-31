@@ -19,6 +19,57 @@
 package org.klnusbaum.udj.sync;
 
 public class LibraryEntry{
+  private int libId; 
+  private String song;
+  private String artist;
+  private String album;
+  private boolean isDeleted;
 
+  public LibraryEntry(
+    int libId, 
+    String song, 
+    String artist,
+    String album,
+    boolean isDeleted)
+  {
+    this.libId = libId;
+    this.song = song;
+    this.artist = artist;
+    this.album = album;
+    this.isDeleted = isDeleted;
+  }
+
+  public int getLibId(){
+    return libId;
+  }
+  
+  public String getSong(){
+    return song;
+  }
+  
+  public String getArtist(){
+    return artist;
+  }
+  
+  public String getAlbum(){
+    return album;
+  }
+  
+  public boolean getIsDeleted(){
+    return isDeleted;
+  }
+
+  public static LibraryEntry valueOf(JSONObject jObj)
+    throws JSONException 
+  {
+    return new LibraryEntry(
+      jObj.getInt(UDJPartyProvider.LIBRARY_ID_COLUMN), 
+      jObj.getString(UDJPartyProvider.SONG_COLUMN),
+      jObj.getString(UDJPartyProvider.ARTIST_COLUMN),
+      jObj.getString(UDJPartyProvider.ALBUM_COLUMN),
+      jObj.getBoolean(IS_DELETED_FLAG));
+  }
+
+  
 
 }
