@@ -67,7 +67,7 @@ public class ServerConnection{
   public static final String SERVER_URL = "https://www.bazaarsolutions.org/udj";
   public static final String PLAYLIST_URI = 
     SERVER_URL + "/playlist";
-  public static final String PLAYLIST_URI = 
+  public static final String LIBRARY_URI = 
     SERVER_URL + "/library";
   public static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
   private static HttpClient httpClient;
@@ -134,55 +134,37 @@ public class ServerConnection{
   public static List<LibraryEntry> getLibraryUpdate(
     Account account,
     String authtoken, 
-    GregorianCalendar lastUpdated, 
-    List<LibraryEntry> toUpdate)
+    GregorianCalendar lastUpdated)
     throws JSONException, ParseException, IOException, AuthenticationException
   {
-    final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-    ArrayList<PlaylistEntry> toReturn = new ArrayList<PlaylistEntry>();
-    params.add(new BasicNameValuePair(PARAM_USERNAME, account.name));
-    params.add(new BasicNameValuePair(PARAM_PASSWORD, authtoken));
-    if(lastUpdated != null){
-      final SimpleDateFormat formatter =
-        new SimpleDateFormat(SERVER_TIMESTAMP_FORMAT);
-      formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-      params.add(new BasicNameValuePair(
-        PARAM_LAST_UPDATE, formatter.format(lastUpdated)));
-    }
-    params.add(new BasicNameValuePair(
-      PARAM_UPDATE_ARRAY, 
-      LibraryEntry.getJSONArray(toUpdate).toString()));
-    HttpEntity entity = null;
-    entity = new UrlEncodedFormEntity(params);
-    final HttpPost post = new HttpPost(LIBRARY_URI);
-    post.addHeader(entity.getContentType());
-    post.setEntity(entity);
-    final HttpResponse resp = getHttpClient().execute(post);
-    final String response = EntityUtils.toString(resp.getEntity());
-    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
-      //Get stuff from response 
-      final JSONArray libraryEntries = new JSONArray(response);
-      toReturn = LibraryEntry.fromJSONArray(libraryEntries);
-    } 
-    else if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
-      throw new AuthenticationException();
-    }
-    else{
-      throw new IOException();
-    }
-    return toReturn;
+    final ArrayList<NameValuePair> params = 
+      getEssentialParameters(account.name, authtoken, lastUpdated);
+    JSONArray libraryEntries = doPost(params, LIBRARY_URI);
+    return LibraryEntry.fromJSONArray(libraryEntries);
   }
 
   public static List<PlaylistEntry> getPlaylistUpdate(  
-    Account account,
+   Account account,
     String authtoken, 
     List<PlaylistEntry> toUpdate, 
     GregorianCalendar lastUpdated) throws
     JSONException, ParseException, IOException, AuthenticationException
   {
-    final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+    final ArrayList<NameValuePair> params = 
+      getEssentialParameters(account.name, authtoken, lastUpdated);
+    params.add(new BasicNameValuePair(
+      PARAM_UPDATE_ARRAY, 
+      PlaylistEntry.getJSONArray(toUpdate).toString()));
+    JSONArray playlistEntries = doPost(params, PLAYLIST_URI);
+    return PlaylistEntry.fromJSONArray(playlistEntries);
+  }
+
+  private static ArrayList<NameValuePair> getEssentialParameters(
+    String name, String authtoken, GregorianCalendar lastUpdated)
+  {
+    ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
     ArrayList<PlaylistEntry> toReturn = new ArrayList<PlaylistEntry>();
-    params.add(new BasicNameValuePair(PARAM_USERNAME, account.name));
+    params.add(new BasicNameValuePair(PARAM_USERNAME, name));
     params.add(new BasicNameValuePair(PARAM_PASSWORD, authtoken));
     if(lastUpdated != null){
       final SimpleDateFormat formatter =
@@ -191,20 +173,23 @@ public class ServerConnection{
       params.add(new BasicNameValuePair(
         PARAM_LAST_UPDATE, formatter.format(lastUpdated)));
     }
-    params.add(new BasicNameValuePair(
-      PARAM_UPDATE_ARRAY, 
-      PlaylistEntry.getJSONArray(toUpdate).toString()));
+    return params;
+  }
+
+  public static JSONArray doPost(ArrayList<NameValuePair> params, String uri)
+    throws AuthenticationException, IOException, JSONException
+  {
     HttpEntity entity = null;
     entity = new UrlEncodedFormEntity(params);
-    final HttpPost post = new HttpPost(PLAYLIST_URI);
+    final HttpPost post = new HttpPost(uri);
     post.addHeader(entity.getContentType());
     post.setEntity(entity);
     final HttpResponse resp = getHttpClient().execute(post);
     final String response = EntityUtils.toString(resp.getEntity());
+    JSONArray toReturn = null;
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
       //Get stuff from response 
-      final JSONArray playlistEntries = new JSONArray(response);
-      toReturn = PlaylistEntry.fromJSONArray(playlistEntries);
+      toReturn = new JSONArray(response);
     } 
     else if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
       throw new AuthenticationException();

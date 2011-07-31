@@ -18,12 +18,24 @@
  */
 package org.klnusbaum.udj.sync;
 
+import android.database.Cursor;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONException;
+
+import java.util.List;
+import java.util.ArrayList;
+
+import org.klnusbaum.udj.UDJPartyProvider;
+
 public class LibraryEntry{
   private int libId; 
   private String song;
   private String artist;
   private String album;
   private boolean isDeleted;
+  private static final String IS_DELETED_FLAG = "is_deleted";
 
   public LibraryEntry(
     int libId, 
@@ -70,6 +82,44 @@ public class LibraryEntry{
       jObj.getBoolean(IS_DELETED_FLAG));
   }
 
-  
+  public static LibraryEntry valueOf(Cursor cur){
+    return new LibraryEntry(
+      cur.getInt(cur.getColumnIndex(UDJPartyProvider.LIBRARY_ID_COLUMN)),
+      cur.getString(cur.getColumnIndex(UDJPartyProvider.SONG_COLUMN)),
+      cur.getString(cur.getColumnIndex(UDJPartyProvider.ARTIST_COLUMN)),
+      cur.getString(cur.getColumnIndex(UDJPartyProvider.ALBUM_COLUMN)),
+      false);
+  }
 
+  public static JSONObject getJSONObject(LibraryEntry pe)
+    throws JSONException
+  {
+    JSONObject toReturn = new JSONObject();
+    toReturn.put(UDJPartyProvider.LIBRARY_ID_COLUMN, pe.getLibId());
+    toReturn.put(UDJPartyProvider.SONG_COLUMN, pe.getSong());
+    toReturn.put(UDJPartyProvider.ARTIST_COLUMN, pe.getArtist());
+    toReturn.put(UDJPartyProvider.ALBUM_COLUMN, pe.getAlbum());
+    return toReturn;
+  }
+
+  public static JSONArray getJSONArray(List<LibraryEntry> entries)
+    throws JSONException
+  {
+    JSONArray toReturn = new JSONArray();
+    for(LibraryEntry le: entries){
+      toReturn.put(getJSONObject(le));
+    }
+    return toReturn;
+  } 
+
+  public static ArrayList<LibraryEntry> fromJSONArray(JSONArray array)
+    throws JSONException
+  {
+    ArrayList<LibraryEntry> toReturn = new ArrayList<LibraryEntry>();
+    for(int i=0; i < array.length(); ++i){
+      toReturn.add(LibraryEntry.valueOf(array.getJSONObject(i)));
+    }
+    return toReturn;
+  }
+  
 }

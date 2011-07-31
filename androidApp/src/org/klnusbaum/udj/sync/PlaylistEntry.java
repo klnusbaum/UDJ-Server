@@ -85,7 +85,7 @@ public class PlaylistEntry{
   {
     return new PlaylistEntry(
       jObj.optInt(UDJPartyProvider.PLAYLIST_ID_COLUMN, UDJPartyProvider.INVALID_PLAYLIST_ID), 
-      jObj.optInt(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN, INVALID_SERVER_PLAYLIST_ID), 
+      jObj.getInt(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN), 
       jObj.getInt(UDJPartyProvider.PLAYLIST_LIBRARY_ID_COLUMN),
       jObj.getInt(UDJPartyProvider.VOTES_COLUMN),
       jObj.optString(UDJPartyProvider.SYNC_STATE_COLUMN),
@@ -104,7 +104,9 @@ public class PlaylistEntry{
       cur.getString(cur.getColumnIndex(UDJPartyProvider.TIME_ADDED_COLUMN))); 
   }
 
-  public static JSONObject getJSONObject(PlaylistEntry pe){
+  public static JSONObject getJSONObject(PlaylistEntry pe)
+    throws JSONException
+  {
     JSONObject toReturn = new JSONObject();
     toReturn.put(UDJPartyProvider.PLAYLIST_ID_COLUMN, pe.getPlId());
     toReturn.put(UDJPartyProvider.PLAYLIST_LIBRARY_ID_COLUMN, pe.getLibId());
@@ -112,6 +114,7 @@ public class PlaylistEntry{
     toReturn.put(UDJPartyProvider.VOTES_COLUMN, pe.getVoteCount());
     toReturn.put(UDJPartyProvider.SYNC_STATE_COLUMN, pe.getSyncState());
     toReturn.put(UDJPartyProvider.TIME_ADDED_COLUMN, pe.getTimeAdded());
+    return toReturn;
   }
   
 

@@ -65,8 +65,7 @@ public class UDJPartyProvider extends ContentProvider{
   public static final String UPDATEING_MARK ="updating"; 
   public static final String NEEDS_UP_VOTE ="needs_up_vote"; 
   public static final String NEEDS_DOWN_VOTE ="needs_down_vote"; 
-  public static final String NEEDS_INSERT_MARK ="needs _nsert"; 
-  public static final String INSERTING_MARK ="inserting"; 
+  public static final String NEEDS_INSERT_MARK ="needs_insert"; 
   
 	/** Constants used for various column names */
   public static final String SONG_COLUMN = "song";
