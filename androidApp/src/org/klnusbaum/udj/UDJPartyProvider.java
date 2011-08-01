@@ -27,6 +27,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.content.Context;
 import android.util.Log;
+import android.database.SQLException;
+import android.content.ContentUris;
 
 import java.util.ArrayList;
 
@@ -66,8 +68,7 @@ public class UDJPartyProvider extends ContentProvider{
   public static final String NEEDS_UP_VOTE ="needs_up_vote"; 
   public static final String NEEDS_DOWN_VOTE ="needs_down_vote"; 
   public static final String NEEDS_INSERT_MARK ="needs_insert"; 
-
-  /** The various states of a playlist record's vote status */
+/** The various states of a playlist record's vote status */
   public static final String HASNT_VOTED="hasnt_voted";
   public static final String VOTED_UP="votedup";
   public static final String VOTED_DOWN="voteddown";
@@ -106,11 +107,14 @@ public class UDJPartyProvider extends ContentProvider{
     PLAYLIST_LIBRARY_ID_COLUMN + " INTEGER REFERENCES "+ 
     LIBRARY_TABLE_NAME + "(" + LIBRARY_ID_COLUMN+") ON DELETE CASCADE, "+
 
-    VOTES_COLUMN + " INTEGER NOT NULL, " +
+    VOTES_COLUMN + " INTEGER NOT NULL DEFAULT 0, " +
     VOTE_STATUS_COLUMN + " TEXT NOT NULL DEFAULT '" + HASNT_VOTED +"', " +
     SYNC_STATE_COLUMN + " TEXT NOT NULL DEFAULT '" + SYNCED_MARK + "', " +
-    SERVER_PLAYLIST_ID_COLUMN + " INTEGER UNIQUE, " +
-    TIME_ADDED_COLUMN + " TEXT);";
+
+    SERVER_PLAYLIST_ID_COLUMN + " INTEGER DEFAULT " + 
+    String.valueOf(INVALID_SERVER_PLAYLIST_ID) + ", " +
+
+    TIME_ADDED_COLUMN + " TEXT DEFAULT CURRENT_TIMESTAMP);";
 
   private static final String PLAYLIST_VIEW_CREATE = 
     "CREATE VIEW " + PLAYLIST_VIEW_NAME + " " +
@@ -223,7 +227,20 @@ public class UDJPartyProvider extends ContentProvider{
 
   @Override
   public Uri insert(Uri uri, ContentValues initialValues){
-    return null;
+    Log.i("TAG", "In insert");
+    SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+    if(uri.equals(PLAYLIST_URI)){
+      long rowId = db.insert(PLAYLIST_TABLE_NAME, null, initialValues);
+      if(rowId > 0){
+        return ContentUris.withAppendedId(PLAYLIST_URI, rowId); 
+      }
+      else{
+        throw new SQLException("Failed to insert " + uri);
+      }
+    }
+    else{
+      throw new IllegalArgumentException("Unknown URI " + uri);
+    }
   }
   
   @Override
