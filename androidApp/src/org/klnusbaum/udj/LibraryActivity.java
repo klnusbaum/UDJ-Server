@@ -22,6 +22,15 @@ import android.app.ListActivity;
 import android.widget.SimpleCursorAdapter;
 import android.os.Bundle;
 import android.database.Cursor;
+import android.content.ContentValues;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.ImageButton;
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.widget.CursorAdapter;
+import android.util.Log;
 
 /**
  * An Activity which displays the party's current
@@ -49,5 +58,49 @@ public class LibraryActivity extends ListActivity{
     lv.setTextFilterEnabled(true);
    	registerForContextMenu(lv); */
   }
+
+  private class LibraryAdapter extends CursorAdapter{
+
+    public LibraryAdapter(Context context, Cursor c){
+      super(context, c);
+    }
+
+    @Override
+    public void bindView(View view, Context context, Cursor cursor){
+      int libraryId = cursor.getInt(cursor.getColumnIndex(UDJPartyProvider.LIBRARY_ID_COLUMN));
+      
+      TextView songName =
+        (TextView)view.findViewById(R.id.librarySongName);
+
+      TextView artistName =
+        (TextView)view.findViewById(R.id.libraryArtistName);
+      
+      ImageButton addSong = 
+        (ImageButton)view.findViewById(R.id.lib_add_button);
+      addSong.setTag(String.valueOf(libraryId));
+      addSong.setOnClickListener(new View.OnClickListener(){
+        public void onClick(View v){
+          addSongClick(v);
+        }
+      });
+    }
   
+    @Override
+    public View newView(Context context, Cursor cursor, ViewGroup parent){
+      LayoutInflater inflater = (LayoutInflater)context.getSystemService(
+        Context.LAYOUT_INFLATER_SERVICE);
+      View itemView = inflater.inflate(R.layout.library_list_item, null);
+      return itemView;
+    }
+
+    private void addSongClick(View view){
+      String libId = view.getTag().toString(); 
+      ContentValues values = new ContentValues();
+      values.put(UDJPartyProvider.LIBRARY_ID_COLUMN,Integer.valueOf(libId) );
+      getContentResolver().insert(
+        UDJPartyProvider.PLAYLIST_URI,
+        values);
+    }
+
+  }  
 }

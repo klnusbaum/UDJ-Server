@@ -91,9 +91,7 @@ public class PlaylistActivity extends ListActivity{
       });
 
       String voteStatus = cursor.getString(cursor.getColumnIndex(UDJPartyProvider.VOTE_STATUS_COLUMN));
-      Log.i("TAG", "Status " + voteStatus);
       if(voteStatus.equals(UDJPartyProvider.VOTED_UP)){
-        Log.i("TAG", "Disabling up vote");
         upVote.setEnabled(false); 
       }
       else{
@@ -101,7 +99,6 @@ public class PlaylistActivity extends ListActivity{
       } 
 
       if(voteStatus.equals(UDJPartyProvider.VOTED_DOWN)){
-        Log.i("TAG", "Disabling down vote");
         downVote.setEnabled(false); 
       }
       else{
