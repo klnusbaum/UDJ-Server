@@ -29,6 +29,7 @@ import android.widget.ImageButton;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.util.Log;
+import android.content.ContentValues;
 
 
 import org.klnusbaum.udj.R;
@@ -61,7 +62,6 @@ public class PlaylistActivity extends ListActivity{
 
     @Override
     public void bindView(View view, Context context, Cursor cursor){
-      
       int playlistId = cursor.getInt(cursor.getColumnIndex(UDJPartyProvider.PLAYLIST_ID_COLUMN));
 
       TextView songName = 
@@ -71,31 +71,48 @@ public class PlaylistActivity extends ListActivity{
       TextView artist = 
         (TextView)view.findViewById(R.id.playlistArtistName);
       artist.setText(cursor.getString(cursor.getColumnIndex(UDJPartyProvider.ARTIST_COLUMN)));
-      if(cursor.getString(cursor.getColumnIndex(UDJPartyProvider.ARTIST_COLUMN)) == ""){
-        Log.i("Playslist", "Didn't get artist");
-      }
 
       ImageButton upVote = 
         (ImageButton)view.findViewById(R.id.up_vote_button);
       upVote.setTag(String.valueOf(playlistId));
+      upVote.setOnClickListener(new View.OnClickListener(){
+        public void onClick(View v){
+          upVoteClick(v);
+        }
+      });
 
       ImageButton downVote = 
-        (ImageButton)view.findViewById(R.id.up_vote_button);
+        (ImageButton)view.findViewById(R.id.down_vote_button);
       downVote.setTag(String.valueOf(playlistId));
+      downVote.setOnClickListener(new View.OnClickListener(){
+        public void onClick(View v){
+          downVoteClick(v);
+        }
+      });
 
       String voteStatus = cursor.getString(cursor.getColumnIndex(UDJPartyProvider.VOTE_STATUS_COLUMN));
-      if(voteStatus == UDJPartyProvider.VOTED_UP){
+      Log.i("TAG", "Status " + voteStatus);
+      if(voteStatus.equals(UDJPartyProvider.VOTED_UP)){
+        Log.i("TAG", "Disabling up vote");
         upVote.setEnabled(false); 
       }
-      else if(voteStatus == UDJPartyProvider.VOTED_DOWN){
+      else{
+        upVote.setEnabled(true);
+      } 
+
+      if(voteStatus.equals(UDJPartyProvider.VOTED_DOWN)){
+        Log.i("TAG", "Disabling down vote");
         downVote.setEnabled(false); 
+      }
+      else{
+        downVote.setEnabled(true);
       }
 
       TextView votes = 
         (TextView)view.findViewById(R.id.playlistVotes);
       votes.setText(String.valueOf(
       cursor.getInt(cursor.getColumnIndex(UDJPartyProvider.VOTES_COLUMN))));
-
+      
     }
 
     @Override
@@ -103,8 +120,37 @@ public class PlaylistActivity extends ListActivity{
       LayoutInflater inflater = (LayoutInflater)context.getSystemService(
         Context.LAYOUT_INFLATER_SERVICE);
       View itemView = inflater.inflate(R.layout.playlist_list_item, null);
-      bindView(itemView, context, cursor);
       return itemView;
+    }
+
+    private void upVoteClick(View view){
+      String playlistId = view.getTag().toString();
+      ContentValues toUpdate = new ContentValues();
+      toUpdate.put(UDJPartyProvider.VOTE_STATUS_COLUMN, UDJPartyProvider.VOTED_UP);
+      toUpdate.put(UDJPartyProvider.SYNC_STATE_COLUMN, UDJPartyProvider.NEEDS_UP_VOTE);
+      getContentResolver().update(
+        UDJPartyProvider.PLAYLIST_URI,
+        toUpdate,
+        UDJPartyProvider.PLAYLIST_ID_COLUMN + "= ?",
+        new String[]{playlistId});
+     Cursor playlistCursor = managedQuery(
+       UDJPartyProvider.PLAYLIST_URI, null, null, null, null); 
+     changeCursor(playlistCursor);
+   }
+  
+    private void downVoteClick(View view){
+      String playlistId = view.getTag().toString();
+      ContentValues toUpdate = new ContentValues();
+      toUpdate.put(UDJPartyProvider.VOTE_STATUS_COLUMN, UDJPartyProvider.VOTED_DOWN);
+      toUpdate.put(UDJPartyProvider.SYNC_STATE_COLUMN, UDJPartyProvider.NEEDS_DOWN_VOTE);
+      getContentResolver().update(
+        UDJPartyProvider.PLAYLIST_URI,
+        toUpdate,
+        UDJPartyProvider.PLAYLIST_ID_COLUMN + "= ?",
+        new String[]{playlistId});
+     Cursor playlistCursor = managedQuery(
+       UDJPartyProvider.PLAYLIST_URI, null, null, null, null); 
+     changeCursor(playlistCursor);
     }
   }
 }
