@@ -27,20 +27,25 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:padding="5dp"
   >
     <TabWidget
       android:id="@android:id/tabs"
+      android:orientation="horizontal"
       android:layout_width="fill_parent"
       android:layout_height="wrap_content"
+      android:layout_weight="0"
     />
     <FrameLayout
       android:id="@android:id/tabcontent"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:layout_weight="0"
+    />
+    <FrameLayout
+      android:id="@+android:id/realtabcontent"
       android:layout_width="fill_parent"
-      android:layout_height="fill_parent"
-      android:padding="5dp"
+      android:layout_height="0dp"
+      android:layout_weight="1"
     />
   </LinearLayout>
 </TabHost>
-
-

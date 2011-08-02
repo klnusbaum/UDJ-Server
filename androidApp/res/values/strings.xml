@@ -30,4 +30,6 @@
     <string name="authtoken_type">org.klnusbaum.udj</string>
     <string name="authority">org.klnusbaum.udj</string>
     <string name="auth_token_label">password</string>
+    <string name="no_playlist_items">There are currently no items in the playlist</string>
+    <string name="no_library_songs">Hit refresh to see if the host has added any new songs to the library</string>
 </resources>
