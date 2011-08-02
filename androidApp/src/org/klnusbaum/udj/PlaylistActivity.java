@@ -73,8 +73,6 @@ public class PlaylistActivity extends FragmentActivity{
       setEmptyText(getActivity().getString(R.string.no_playlist_items));
 
       //setHasOptionsMenu(true)
-      //Cursor playlistCursor = managedQuery(
-      //UDJPartyProvider.PLAYLIST_URI, null, null, null, null); 
       playlistAdapter = new PlaylistAdapter(getActivity(), null);
       setListAdapter(playlistAdapter);
       setListShown(false);
@@ -82,7 +80,13 @@ public class PlaylistActivity extends FragmentActivity{
     }
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args){
-      return new CursorLoader(getActivity(), UDJPartyProvider.PLAYLIST_URI, null, null, null, null);
+      return new CursorLoader(
+        getActivity(), 
+        UDJPartyProvider.PLAYLIST_URI, 
+        null,
+        null,
+        null,
+        null);
     }
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data){
@@ -107,35 +111,39 @@ public class PlaylistActivity extends FragmentActivity{
 
       @Override
       public void bindView(View view, Context context, Cursor cursor){
-        int playlistId = cursor.getInt(cursor.getColumnIndex(UDJPartyProvider.PLAYLIST_ID_COLUMN));
+        int playlistId = cursor.getInt(cursor.getColumnIndex(
+          UDJPartyProvider.PLAYLIST_ID_COLUMN));
   
         TextView songName = 
           (TextView)view.findViewById(R.id.playlistSongName);
-        songName.setText(cursor.getString(cursor.getColumnIndex(UDJPartyProvider.SONG_COLUMN)));
+        songName.setText(cursor.getString(cursor.getColumnIndex(
+          UDJPartyProvider.SONG_COLUMN)));
   
         TextView artist = 
           (TextView)view.findViewById(R.id.playlistArtistName);
-        artist.setText(cursor.getString(cursor.getColumnIndex(UDJPartyProvider.ARTIST_COLUMN)));
+        artist.setText(cursor.getString(cursor.getColumnIndex(
+          UDJPartyProvider.ARTIST_COLUMN)));
   
         ImageButton upVote = 
           (ImageButton)view.findViewById(R.id.up_vote_button);
         upVote.setTag(String.valueOf(playlistId));
-    /*    upVote.setOnClickListener(new View.OnClickListener(){
+        upVote.setOnClickListener(new View.OnClickListener(){
           public void onClick(View v){
             upVoteClick(v);
           }
-        });*/
+        });
   
         ImageButton downVote = 
           (ImageButton)view.findViewById(R.id.down_vote_button);
         downVote.setTag(String.valueOf(playlistId));
-        /*downVote.setOnClickListener(new View.OnClickListener(){
+        downVote.setOnClickListener(new View.OnClickListener(){
           public void onClick(View v){
             downVoteClick(v);
           }
-        });*/
+        });
   
-        /*String voteStatus = cursor.getString(cursor.getColumnIndex(UDJPartyProvider.VOTE_STATUS_COLUMN));
+        String voteStatus = cursor.getString(cursor.getColumnIndex(
+          UDJPartyProvider.VOTE_STATUS_COLUMN));
         if(voteStatus.equals(UDJPartyProvider.VOTED_UP)){
           upVote.setEnabled(false); 
         }
@@ -148,7 +156,7 @@ public class PlaylistActivity extends FragmentActivity{
         }
         else{
           downVote.setEnabled(true);
-        }*/
+        }
   
         TextView votes = 
           (TextView)view.findViewById(R.id.playlistVotes);
@@ -168,25 +176,31 @@ public class PlaylistActivity extends FragmentActivity{
       private void upVoteClick(View view){
         String playlistId = view.getTag().toString();
         ContentValues toUpdate = new ContentValues();
-        toUpdate.put(UDJPartyProvider.VOTE_STATUS_COLUMN, UDJPartyProvider.VOTED_UP);
-        toUpdate.put(UDJPartyProvider.SYNC_STATE_COLUMN, UDJPartyProvider.NEEDS_UP_VOTE);
+        toUpdate.put(
+          UDJPartyProvider.VOTE_STATUS_COLUMN, UDJPartyProvider.VOTED_UP);
+        toUpdate.put(
+          UDJPartyProvider.SYNC_STATE_COLUMN, UDJPartyProvider.NEEDS_UP_VOTE);
         getActivity().getContentResolver().update(
           UDJPartyProvider.PLAYLIST_URI,
           toUpdate,
           UDJPartyProvider.PLAYLIST_ID_COLUMN + "= ?",
           new String[]{playlistId});
+        getLoaderManager().restartLoader(0, null, PlaylistFragment.this);
       }
     
       private void downVoteClick(View view){
         String playlistId = view.getTag().toString();
         ContentValues toUpdate = new ContentValues();
-        toUpdate.put(UDJPartyProvider.VOTE_STATUS_COLUMN, UDJPartyProvider.VOTED_DOWN);
-        toUpdate.put(UDJPartyProvider.SYNC_STATE_COLUMN, UDJPartyProvider.NEEDS_DOWN_VOTE);
+        toUpdate.put(
+          UDJPartyProvider.VOTE_STATUS_COLUMN, UDJPartyProvider.VOTED_DOWN);
+        toUpdate.put(
+          UDJPartyProvider.SYNC_STATE_COLUMN, UDJPartyProvider.NEEDS_DOWN_VOTE);
         getActivity().getContentResolver().update(
           UDJPartyProvider.PLAYLIST_URI,
         toUpdate,
         UDJPartyProvider.PLAYLIST_ID_COLUMN + "= ?",
         new String[]{playlistId});
+        getLoaderManager().restartLoader(0, null, PlaylistFragment.this);
       }
     }
   }
