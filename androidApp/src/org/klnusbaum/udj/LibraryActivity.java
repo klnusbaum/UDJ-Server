@@ -82,7 +82,7 @@ public class LibraryActivity extends FragmentActivity{
       if(isResumed()){
         setListShown(true);
       }
-      else{
+      else if(isVisible()){
         setListShownNoAnimation(true);
       }
     }

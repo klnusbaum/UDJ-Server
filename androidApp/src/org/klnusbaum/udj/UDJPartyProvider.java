@@ -107,7 +107,7 @@ public class UDJPartyProvider extends ContentProvider{
     PLAYLIST_LIBRARY_ID_COLUMN + " INTEGER REFERENCES "+ 
     LIBRARY_TABLE_NAME + "(" + LIBRARY_ID_COLUMN+") ON DELETE CASCADE, "+
 
-    VOTES_COLUMN + " INTEGER NOT NULL DEFAULT 0, " +
+    VOTES_COLUMN + " INTEGER NOT NULL DEFAULT 1, " +
     VOTE_STATUS_COLUMN + " TEXT NOT NULL DEFAULT '" + HASNT_VOTED +"', " +
     SYNC_STATE_COLUMN + " TEXT NOT NULL DEFAULT '" + SYNCED_MARK + "', " +
 
@@ -227,7 +227,6 @@ public class UDJPartyProvider extends ContentProvider{
 
   @Override
   public Uri insert(Uri uri, ContentValues initialValues){
-    Log.i("TAG", "In insert");
     SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
     if(uri.equals(PLAYLIST_URI)){
       long rowId = db.insert(PLAYLIST_TABLE_NAME, null, initialValues);

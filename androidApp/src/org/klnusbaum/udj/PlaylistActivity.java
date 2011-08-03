@@ -62,11 +62,12 @@ public class PlaylistActivity extends FragmentActivity{
   public static class PlaylistFragment extends ListFragment
     implements LoaderManager.LoaderCallbacks<Cursor>
   {
+
+    private static final int CURSOR_LOADER_ID = 0;
     /**
      * Adapter used to help display the contents of the playlist.
      */
     PlaylistAdapter playlistAdapter;
-
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
@@ -77,7 +78,7 @@ public class PlaylistActivity extends FragmentActivity{
       playlistAdapter = new PlaylistAdapter(getActivity(), null);
       setListAdapter(playlistAdapter);
       setListShown(false);
-      getLoaderManager().initLoader(0, null, this);
+      getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
     }
     
 
