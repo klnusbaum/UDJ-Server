@@ -62,23 +62,11 @@ public class PlaylistActivity extends FragmentActivity{
   public static class PlaylistFragment extends ListFragment
     implements LoaderManager.LoaderCallbacks<Cursor>
   {
-    boolean needsToBeShown = false;
     /**
      * Adapter used to help display the contents of the playlist.
      */
     PlaylistAdapter playlistAdapter;
 
-    public void onResume(){
-      super.onResume();
-      //TODO
-      //THIS IS HACK, KLUDGE. I don't know if this is the best way to do this
-      //but it works for now. 
-      if(needsToBeShown){
-        setListShownNoAnimation(true);
-        needsToBeShown =false;
-      }
-    }
-    
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
@@ -91,6 +79,7 @@ public class PlaylistActivity extends FragmentActivity{
       setListShown(false);
       getLoaderManager().initLoader(0, null, this);
     }
+    
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args){
       return new CursorLoader(
@@ -107,16 +96,8 @@ public class PlaylistActivity extends FragmentActivity{
       if(isResumed()){
         setListShown(true);
       }
-      else{
-        try{
-          setListShownNoAnimation(true);
-        }
-        //TODO
-        //THIS IS THE SAME HACK AS ABOVE
-        //NEED TO FIX THIS.
-        catch(IllegalStateException e){
-          needsToBeShown = true;
-        }
+      else if(isVisible()){
+        setListShownNoAnimation(true);
       }
     }
 
