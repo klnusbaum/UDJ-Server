@@ -272,6 +272,7 @@ public class UDJPartyProvider extends ContentProvider{
     if(uri.equals(PLAYLIST_URI)){
       int numRowsChanged = db.update(PLAYLIST_TABLE_NAME, values, where, whereArgs);
       getContext().getContentResolver().notifyChange(PLAYLIST_URI, null, true);
+      return numRowsChanged;
     }
     return 0;
   }
