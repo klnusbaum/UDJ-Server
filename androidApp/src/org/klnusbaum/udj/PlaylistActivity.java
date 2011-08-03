@@ -62,10 +62,23 @@ public class PlaylistActivity extends FragmentActivity{
   public static class PlaylistFragment extends ListFragment
     implements LoaderManager.LoaderCallbacks<Cursor>
   {
+    boolean needsToBeShown = false;
     /**
      * Adapter used to help display the contents of the playlist.
      */
     PlaylistAdapter playlistAdapter;
+
+    public void onResume(){
+      super.onResume();
+      //TODO
+      //THIS IS HACK, KLUDGE. I don't know if this is the best way to do this
+      //but it works for now. 
+      if(needsToBeShown){
+        setListShownNoAnimation(true);
+        needsToBeShown =false;
+      }
+    }
+    
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
@@ -95,7 +108,15 @@ public class PlaylistActivity extends FragmentActivity{
         setListShown(true);
       }
       else{
-        setListShownNoAnimation(true);
+        try{
+          setListShownNoAnimation(true);
+        }
+        //TODO
+        //THIS IS THE SAME HACK AS ABOVE
+        //NEED TO FIX THIS.
+        catch(IllegalStateException e){
+          needsToBeShown = true;
+        }
       }
     }
 
@@ -185,7 +206,6 @@ public class PlaylistActivity extends FragmentActivity{
           toUpdate,
           UDJPartyProvider.PLAYLIST_ID_COLUMN + "= ?",
           new String[]{playlistId});
-        getLoaderManager().restartLoader(0, null, PlaylistFragment.this);
       }
     
       private void downVoteClick(View view){
@@ -200,7 +220,6 @@ public class PlaylistActivity extends FragmentActivity{
         toUpdate,
         UDJPartyProvider.PLAYLIST_ID_COLUMN + "= ?",
         new String[]{playlistId});
-        getLoaderManager().restartLoader(0, null, PlaylistFragment.this);
       }
     }
   }

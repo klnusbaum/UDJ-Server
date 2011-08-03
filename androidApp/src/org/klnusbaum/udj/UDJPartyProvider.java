@@ -232,6 +232,7 @@ public class UDJPartyProvider extends ContentProvider{
     if(uri.equals(PLAYLIST_URI)){
       long rowId = db.insert(PLAYLIST_TABLE_NAME, null, initialValues);
       if(rowId > 0){
+        getContext().getContentResolver().notifyChange(PLAYLIST_URI, null, true);
         return ContentUris.withAppendedId(PLAYLIST_URI, rowId); 
       }
       else{
@@ -270,7 +271,8 @@ public class UDJPartyProvider extends ContentProvider{
   {
     SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
     if(uri.equals(PLAYLIST_URI)){
-      return db.update(PLAYLIST_TABLE_NAME, values, where, whereArgs);
+      int numRowsChanged = db.update(PLAYLIST_TABLE_NAME, values, where, whereArgs);
+      getContext().getContentResolver().notifyChange(PLAYLIST_URI, null, true);
     }
     return 0;
   }

@@ -111,11 +111,11 @@ public class LibraryActivity extends FragmentActivity{
         ImageButton addSong = 
           (ImageButton)view.findViewById(R.id.lib_add_button);
         addSong.setTag(String.valueOf(libraryId));
-   /*    addSong.setOnClickListener(new View.OnClickListener(){
-         public void onClick(View v){
-           addSongClick(v);
-         }
-       });*/
+        addSong.setOnClickListener(new View.OnClickListener(){
+          public void onClick(View v){
+            addSongClick(v);
+          }
+        });
       }
    
       @Override
@@ -129,7 +129,7 @@ public class LibraryActivity extends FragmentActivity{
       private void addSongClick(View view){
         String libId = view.getTag().toString(); 
         ContentValues values = new ContentValues();
-        values.put(UDJPartyProvider.LIBRARY_ID_COLUMN,Integer.valueOf(libId) );
+        values.put(UDJPartyProvider.PLAYLIST_LIBRARY_ID_COLUMN,Integer.valueOf(libId) );
         getActivity().getContentResolver().insert(
           UDJPartyProvider.PLAYLIST_URI,
           values);
