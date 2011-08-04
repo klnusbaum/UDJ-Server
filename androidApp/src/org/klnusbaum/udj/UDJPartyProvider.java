@@ -61,6 +61,9 @@ public class UDJPartyProvider extends ContentProvider{
   public static final Uri LIBRARY_URI = 
     Uri.parse("content://org.klnusbaum.udj/library");
 
+  public static final Uri PARTIERS_URI =
+    Uri.parse("content://org.klnusbaum.udj/partiers");
+
 
   /** The various states a playlist record can be in */
   public static final String SYNCED_MARK="synced";
@@ -73,12 +76,13 @@ public class UDJPartyProvider extends ContentProvider{
   public static final String VOTED_UP="votedup";
   public static final String VOTED_DOWN="voteddown";
   
-	/** Constants used for various column names */
+	/** Constants used for various Library column names */
   public static final String SONG_COLUMN = "song";
   public static final String ARTIST_COLUMN = "artist";
   public static final String ALBUM_COLUMN = "album";
   public static final String LIBRARY_ID_COLUMN = "_id";
 
+	/** Constants used for various Playlist column names */
   public static final String PLAYLIST_ID_COLUMN = "_id";
   public static final String VOTES_COLUMN = "votes";
   public static final String SYNC_STATE_COLUMN = "sync_state";
@@ -86,6 +90,7 @@ public class UDJPartyProvider extends ContentProvider{
   public static final String SERVER_PLAYLIST_ID_COLUMN ="server_id";
   public static final String TIME_ADDED_COLUMN ="time_added";
   public static final String VOTE_STATUS_COLUMN ="vote_status";
+
 
   public static final int INVALID_SERVER_PLAYLIST_ID = -1;
   public static final int INVALID_PLAYLIST_ID = -1;
