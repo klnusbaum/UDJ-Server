@@ -18,7 +18,7 @@
  */
 package org.klnusbaum.udj;
 
-import android.app.TabActivity;
+import android.app.Activity;
 import android.os.Bundle;
 import android.content.Intent;
 import android.widget.TabHost;
@@ -26,10 +26,14 @@ import android.view.View;
 import android.content.Context;
 import android.accounts.AccountManager;
 import android.accounts.Account;
+import android.content.DialogInterface;
+import android.app.AlertDialog;
+import android.app.Dialog;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.DialogFragment;
 
 import java.util.HashMap;
 
@@ -44,6 +48,9 @@ public class PartyActivity extends FragmentActivity{
   TabManager tabManager;
 
   private static final String TAB_EXTRA = "org.klnusbaum.udj.tab";
+
+  private static final String DIALOG_FRAG_TAG = "dialog";
+
 
   @Override
   protected void onCreate(Bundle savedInstanceState){
@@ -70,6 +77,47 @@ public class PartyActivity extends FragmentActivity{
   protected void onSaveInstanceState(Bundle outState){
     super.onSaveInstanceState(outState);
     outState.putString(TAB_EXTRA, tabHost.getCurrentTabTag());
+  }
+
+  @Override 
+  public void onBackPressed(){
+    DialogFragment newFrag = new QuitDialogFragment();
+    newFrag.show(getSupportFragmentManager(), DIALOG_FRAG_TAG);
+  }
+
+  private void doQuit(){
+    dismissQuitDialog();
+    setResult(Activity.RESULT_OK);
+    finish();
+  }
+
+  private void dismissQuitDialog(){
+    QuitDialogFragment qd = 
+      (QuitDialogFragment)getSupportFragmentManager().findFragmentByTag(DIALOG_FRAG_TAG);
+    qd.dismiss();
+  }
+
+  public static class QuitDialogFragment extends DialogFragment{
+    
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState){
+      return new AlertDialog.Builder(getActivity())
+        .setTitle(R.string.quit_title)
+        .setMessage(R.string.quit_message)
+        .setPositiveButton(android.R.string.ok,
+          new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton){
+              ((PartyActivity)getActivity()).doQuit();
+            }
+          })
+        .setPositiveButton(android.R.string.cancel,
+          new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton){
+              ((PartyActivity)getActivity()).dismissQuitDialog();
+            }
+          })
+        .create();
+    }
   }
 
 

@@ -34,4 +34,6 @@
     <string name="no_library_songs">Hit refresh to see if the host has added any new songs to the library</string>
     <string name="party_name_label">Name of party:</string>
     <string name="party_name_hint">Party Name</string>
+    <string name="quit_title">Quit?</string>
+    <string name="quit_message">Are you sure you want to leave the party?</string>
 </resources>
