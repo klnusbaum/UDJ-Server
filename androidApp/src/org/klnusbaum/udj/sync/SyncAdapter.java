@@ -51,10 +51,15 @@ import org.klnusbaum.udj.R;
  */
 public class SyncAdapter extends AbstractThreadedSyncAdapter{
   private final Context context;
-  private GregorianCalendar lastUpdated;
+  private GregorianCalendar libraryLastUpdate;
+  private GregorianCalendar playlistLastUpdate;
+  private GregorianCalendar partiesLastUpdate;
+
   private AccountManager am;
 
   public static final String LIBRARY_SYNC_EXTRA = "library_sync";
+  public static final String PLAYLIST_SYNC_EXTRA = "playlist_sync";
+  public static final String PARTIES_SYNC_EXTRA = "playlist_sync";
 
   private static final String[] playlistProjection = new String[]{
     UDJPartyProvider.PLAYLIST_ID_COLUMN, 
@@ -89,6 +94,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
     ContentProviderClient provider, SyncResult syncResult)
   {
     boolean synclibrary = extras.getBoolean(LIBRARY_SYNC_EXTRA, false);
+    boolean syncPlaylist = extras.getBoolean(PLAYLIST_SYNC_EXTRA, false);
+    boolean syncParties = extras.getBoolean(PARTIES_SYNC_EXTRA, false);
     String authtoken = null;
     try{
       //Get Authtoken
@@ -98,26 +105,36 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
       //Sync Library if requested
       if(synclibrary){
         List<LibraryEntry> updatedLibEntries = 
-          ServerConnection.getLibraryUpdate(account, authtoken, lastUpdated);
+          ServerConnection.getLibraryUpdate(account, authtoken, libraryLastUpdate);
         RESTProcessor.processLibEntries(updatedLibEntries, account.name, context);
+        libraryLastUpdate = (GregorianCalendar)GregorianCalendar.getInstance();
       }
 
-      //Get a list of all the playlist entries we want the server
-      // to update
-      List<PlaylistEntry> changedPlaylistEntries = 
-        getChangePlaylistEntries(provider);
+      //Sync playlist if requested
+      if(syncPlaylist){
 
-      //Tell the server to do the update via REST
-      //A retrieve it's response.
-      List<PlaylistEntry> updatedPlaylistEntries =
-        ServerConnection.getPlaylistUpdate(
-          account, authtoken, changedPlaylistEntries, lastUpdated);
+        //Get a list of all the playlist entries we want the server
+        // to update
+        List<PlaylistEntry> changedPlaylistEntries = 
+          getChangePlaylistEntries(provider);
+  
+        //Tell the server to do the update via REST
+        //A retrieve it's response.
+        List<PlaylistEntry> updatedPlaylistEntries =
+          ServerConnection.getPlaylistUpdate(
+            account, authtoken, changedPlaylistEntries, playlistLastUpdate);
+  
+        //Process the REST response from the server.
+        RESTProcessor.processPlaylistEntries(
+          updatedPlaylistEntries, account.name, context);
+  
+        playlistLastUpdate = (GregorianCalendar)GregorianCalendar.getInstance();
+      }
 
-      //Process the REST response from the server.
-      RESTProcessor.processPlaylistEntries(
-        updatedPlaylistEntries, account.name, context);
-
-      lastUpdated = (GregorianCalendar)GregorianCalendar.getInstance();
+      //Sync parties if requested
+      if(syncParties){
+        
+      }
     } 
     catch(final AuthenticatorException e){
       syncResult.stats.numParseExceptions++;

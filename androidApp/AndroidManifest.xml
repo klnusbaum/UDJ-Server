@@ -35,7 +35,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application android:label="@string/app_name" android:icon="@drawable/icon">
-        <activity android:name="MainActivity"
+        <activity android:name="PartySelectorActivity"
           android:theme="@android:style/Theme.NoTitleBar"
           android:label="@string/app_name"
         >
@@ -45,6 +45,11 @@
             </intent-filter>
 
         </activity>
+
+        <activity android:name="PartyActivity"
+          android:theme="@android:style/Theme.NoTitleBar"
+        />
+
         <activity android:name="PlaylistActivity"/>
         <activity android:name="LibraryActivity"/>
 

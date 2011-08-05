@@ -10,6 +10,9 @@ ANDROID APP
 -Users should be able to remove songs they added form the playlist
 (You know, say they accidentally double added a song)
 -Indicator on playlist of songs you've added
+-Parties without passwords
+-Get nearby parties
+-Be able to refresh near by parties
 
 SERVER
 -If two users add the same song within a certain threshold of oneanother (e.g.

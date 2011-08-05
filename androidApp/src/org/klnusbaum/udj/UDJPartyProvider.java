@@ -55,14 +55,32 @@ public class UDJPartyProvider extends ContentProvider{
 
   /** URI for the playlist */
   public static final Uri PLAYLIST_URI = 
-    Uri.parse("content://org.klnusbaum.udj/playlist");
+    Uri.parse("content://org.klnusbaum.udj/playlist?serverSync=false");
 
   /** URI for the Library */
   public static final Uri LIBRARY_URI = 
-    Uri.parse("content://org.klnusbaum.udj/library");
+    Uri.parse("content://org.klnusbaum.udj/library?serverSync=false");
 
   public static final Uri PARTIERS_URI =
-    Uri.parse("content://org.klnusbaum.udj/partiers");
+    Uri.parse("content://org.klnusbaum.udj/partiers?serverSync=false");
+
+  public static final Uri PARTIES_URI =
+    Uri.parse("content://org.klnusbaum.udj/parties?serverSync=false");
+
+  /** URI for the playlist */
+  public static final Uri PLAYLIST_SYNC_URI = 
+    Uri.parse("content://org.klnusbaum.udj/playlist?serverSync=true");
+
+  /** URI for the Library */
+  public static final Uri LIBRARY_SYNC_URI = 
+    Uri.parse("content://org.klnusbaum.udj/library?serverSync=true");
+
+  public static final Uri PARTIERS_SYNC_URI =
+    Uri.parse("content://org.klnusbaum.udj/partiers?serverSync=true");
+
+  public static final Uri PARTIES_SYNC_URI =
+    Uri.parse("content://org.klnusbaum.udj/parties?serverSync=true");
+
 
 
   /** The various states a playlist record can be in */

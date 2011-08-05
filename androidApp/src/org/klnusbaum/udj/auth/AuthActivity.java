@@ -109,6 +109,7 @@ public class AuthActivity extends AccountAuthenticatorActivity{
         authTokenType.equals(getString(R.string.authtoken_type)))
       {
         resultIntent.putExtra(AccountManager.KEY_AUTHTOKEN, password);
+        resultIntent.putExtra(AccountManager.KEY_ACCOUNT_NAME, username);
       }
     }
     else{

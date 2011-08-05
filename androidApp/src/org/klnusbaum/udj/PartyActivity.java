@@ -24,6 +24,8 @@ import android.content.Intent;
 import android.widget.TabHost;
 import android.view.View;
 import android.content.Context;
+import android.accounts.AccountManager;
+import android.accounts.Account;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -31,10 +33,12 @@ import android.support.v4.app.FragmentTransaction;
 
 import java.util.HashMap;
 
+import org.klnusbaum.udj.auth.AuthActivity;
+
 /**
  * The main activity display class.
  */
-public class MainActivity extends FragmentActivity{
+public class PartyActivity extends FragmentActivity{
   
   TabHost tabHost;
   TabManager tabManager;
@@ -61,10 +65,13 @@ public class MainActivity extends FragmentActivity{
     }
   }
 
+
+  @Override
   protected void onSaveInstanceState(Bundle outState){
     super.onSaveInstanceState(outState);
     outState.putString(TAB_EXTRA, tabHost.getCurrentTabTag());
   }
+
 
   /** The following is taken from the android Support Demos */
 
@@ -169,3 +176,4 @@ public class MainActivity extends FragmentActivity{
         }
     }
 }
+
