@@ -52,6 +52,8 @@ public class UDJPartyProvider extends ContentProvider{
   private static final String PLAYLIST_VIEW_NAME = "playlist_view";
   /** Name of the partiers table. */
   private static final String PARTIERS_TABLE_NAME = "partiers";
+  /** Name of the parties table. */
+  private static final String PARTIES_TABLE_NAME = "parties";
 
   /** URI for the playlist */
   public static final Uri PLAYLIST_URI = 
@@ -81,7 +83,27 @@ public class UDJPartyProvider extends ContentProvider{
   public static final Uri PARTIES_SYNC_URI =
     Uri.parse("content://org.klnusbaum.udj/parties?serverSync=true");
 
+  public static final Uri PARTIES_LOGIN_URI =
+    Uri.parse("content://org.klnusbaum.udj/parties?login=true");
 
+  /**LIBRARY TABLE */
+
+	/** Constants used for various Library column names */
+  public static final String SONG_COLUMN = "song";
+  public static final String ARTIST_COLUMN = "artist";
+  public static final String ALBUM_COLUMN = "album";
+  public static final String LIBRARY_ID_COLUMN = "_id";
+
+	/** SQL statement for creating the library table. */
+  private static final String LIBRARY_TABLE_CREATE = 
+    "CREATE TABLE " + LIBRARY_TABLE_NAME + "("+
+		LIBRARY_ID_COLUMN + " INTEGER PRIMARY KEY, " +
+		SONG_COLUMN + " TEXT NOT NULL, " +
+    ARTIST_COLUMN + " TEXT NOT NULL, " + 
+    ALBUM_COLUMN + " TEXT NOT NULL " + ");";
+
+
+  /** PLAYLIST TABLE */
 
   /** The various states a playlist record can be in */
   public static final String SYNCED_MARK="synced";
@@ -89,17 +111,12 @@ public class UDJPartyProvider extends ContentProvider{
   public static final String NEEDS_UP_VOTE ="needs_up_vote"; 
   public static final String NEEDS_DOWN_VOTE ="needs_down_vote"; 
   public static final String NEEDS_INSERT_MARK ="needs_insert"; 
-/** The various states of a playlist record's vote status */
+
+  /** The various states of a playlist record's vote status */
   public static final String HASNT_VOTED="hasnt_voted";
   public static final String VOTED_UP="votedup";
   public static final String VOTED_DOWN="voteddown";
   
-	/** Constants used for various Library column names */
-  public static final String SONG_COLUMN = "song";
-  public static final String ARTIST_COLUMN = "artist";
-  public static final String ALBUM_COLUMN = "album";
-  public static final String LIBRARY_ID_COLUMN = "_id";
-
 	/** Constants used for various Playlist column names */
   public static final String PLAYLIST_ID_COLUMN = "_id";
   public static final String VOTES_COLUMN = "votes";
@@ -109,18 +126,9 @@ public class UDJPartyProvider extends ContentProvider{
   public static final String TIME_ADDED_COLUMN ="time_added";
   public static final String VOTE_STATUS_COLUMN ="vote_status";
 
-
+  /** Constants used for representing invalid ids */
   public static final int INVALID_SERVER_PLAYLIST_ID = -1;
   public static final int INVALID_PLAYLIST_ID = -1;
-
-
-	/** SQL statement for creating the library table. */
-  private static final String LIBRARY_TABLE_CREATE = 
-    "CREATE TABLE " + LIBRARY_TABLE_NAME + "("+
-		LIBRARY_ID_COLUMN + " INTEGER PRIMARY KEY, " +
-		SONG_COLUMN + " TEXT NOT NULL, " +
-    ARTIST_COLUMN + " TEXT NOT NULL, " + 
-    ALBUM_COLUMN + " TEXT NOT NULL " + ");";
 
 	/** SQL statement for creating the playlist table. */
   private static final String PLAYLIST_TABLE_CREATE = 
@@ -139,10 +147,17 @@ public class UDJPartyProvider extends ContentProvider{
 
     TIME_ADDED_COLUMN + " TEXT DEFAULT CURRENT_TIMESTAMP);";
 
+
+  /** PLAYLIST_VIEW */
+
+  /** Constants used for various PlyalisView column names */
+  public static final String PLAYLIST_VIEW_ID = "_id";
+
+  /** SQL statement for creating the playlist view */
   private static final String PLAYLIST_VIEW_CREATE = 
     "CREATE VIEW " + PLAYLIST_VIEW_NAME + " " +
     "AS SELECT " +
-    PLAYLIST_TABLE_NAME + "._id AS _id, " + 
+    PLAYLIST_TABLE_NAME + "." + PLAYLIST_ID_COLUMN + " AS "+ PLAYLIST_VIEW_ID +", " + 
 
     PLAYLIST_TABLE_NAME + "." + PLAYLIST_LIBRARY_ID_COLUMN + " AS " +
     PLAYLIST_LIBRARY_ID_COLUMN + ", " +
@@ -166,10 +181,33 @@ public class UDJPartyProvider extends ContentProvider{
 
     "FROM " + PLAYLIST_TABLE_NAME + " INNER JOIN " + LIBRARY_TABLE_NAME + " " +
     " ON " + PLAYLIST_TABLE_NAME + "." + PLAYLIST_LIBRARY_ID_COLUMN + "=" +
-    LIBRARY_TABLE_NAME + "._id ORDER BY " + PLAYLIST_TABLE_NAME + "." +
+    LIBRARY_TABLE_NAME + "." + LIBRARY_ID_COLUMN + " ORDER BY " + PLAYLIST_TABLE_NAME + "." +
     VOTES_COLUMN + " DESC, " + PLAYLIST_TABLE_NAME + "." + TIME_ADDED_COLUMN + 
     ";";
+
+  /** PARTIES TABLE */
+
+  /** Constants for column names in the parties table */
+  private static final String PARTIES_ID_COLUMN = "_id";
+  private static final String PARTIES_NAME_COLUMN = "party_name";
+  private static final String PARTIES_STATE_COLUMN = "state";
+  private static final String PARTIES_SERVER_ID_COLUMN = "server_id";
+
+  /** Constants for the various states of a party in the parties table */
+  private static final String PARTY_NOT_LOGGED_IN = "not_loged_in";
+  private static final String PARTY_LOGGING_IN= "logging_in";
+  private static final String PARTY_LOGGED_IN= "logged_in";
+
+  /** Constant representing an invalid party server id */
+  private static final String INVALID_PARTY_SERVER_ID = "-1";
     
+  private static final String PARTIES_TABLE_CREATE = 
+    "CREATE TABLE " + PARTIES_TABLE_NAME + "(" + 
+    PARTIES_ID_COLUMN + " INTEGER PRIMARY KEY AUTOINCREMENT, " + 
+    PARTIES_NAME_COLUMN + " TEXT NOT NULL, " +
+    PARTIES_STATE_COLUMN + " TEXT NOT NULL DEFAULT '" + PARTY_NOT_LOGGED_IN + "'," +
+    PARTIES_SERVER_ID_COLUMN + " INTEGER DEFAULT " + INVALID_PARTY_SERVER_ID + ");";
+
 
 	/** Helper for opening up the actual database. */
   private PartyDBHelper dbOpenHelper;
@@ -193,6 +231,7 @@ public class UDJPartyProvider extends ContentProvider{
       db.execSQL(LIBRARY_TABLE_CREATE);
       db.execSQL(PLAYLIST_TABLE_CREATE);
       db.execSQL(PLAYLIST_VIEW_CREATE);
+      db.execSQL(PARTIES_TABLE_CREATE);
 
       //INSERT DUMMY SONGS FOR NOW
       db.execSQL("INSERT INTO " + LIBRARY_TABLE_NAME + 

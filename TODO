@@ -13,8 +13,10 @@ ANDROID APP
 -Parties without passwords
 -Get nearby parties
 -Be able to refresh near by parties
+-Handle responses from server indicating that the party is over.
 
 SERVER
 -If two users add the same song within a certain threshold of oneanother (e.g.
 the same song was added by two different users within 10 seconds of one another)
 just merge the song requests
+-If requests are made for a party that is over, notify client
