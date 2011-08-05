@@ -81,7 +81,8 @@ public class PartySelectorActivity extends Activity{
   }
 
   public void preformLogin(View view){
-
+    String partyName = ((EditText)findViewById(R.id.partyNameEdit)).getText();
+    String partyName = ((EditText)findViewById(R.id.party_password_edit)).getText();
   }
 }
 

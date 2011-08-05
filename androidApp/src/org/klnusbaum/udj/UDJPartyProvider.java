@@ -52,8 +52,6 @@ public class UDJPartyProvider extends ContentProvider{
   private static final String PLAYLIST_VIEW_NAME = "playlist_view";
   /** Name of the partiers table. */
   private static final String PARTIERS_TABLE_NAME = "partiers";
-  /** Name of the parties table. */
-  private static final String PARTIES_TABLE_NAME = "parties";
 
   /** URI for the playlist */
   public static final Uri PLAYLIST_URI = 
@@ -65,9 +63,6 @@ public class UDJPartyProvider extends ContentProvider{
 
   public static final Uri PARTIERS_URI =
     Uri.parse("content://org.klnusbaum.udj/partiers?serverSync=false");
-
-  public static final Uri PARTIES_URI =
-    Uri.parse("content://org.klnusbaum.udj/parties?serverSync=false");
 
   /** URI for the playlist */
   public static final Uri PLAYLIST_SYNC_URI = 
@@ -185,30 +180,6 @@ public class UDJPartyProvider extends ContentProvider{
     VOTES_COLUMN + " DESC, " + PLAYLIST_TABLE_NAME + "." + TIME_ADDED_COLUMN + 
     ";";
 
-  /** PARTIES TABLE */
-
-  /** Constants for column names in the parties table */
-  private static final String PARTIES_ID_COLUMN = "_id";
-  private static final String PARTIES_NAME_COLUMN = "party_name";
-  private static final String PARTIES_STATE_COLUMN = "state";
-  private static final String PARTIES_SERVER_ID_COLUMN = "server_id";
-
-  /** Constants for the various states of a party in the parties table */
-  private static final String PARTY_NOT_LOGGED_IN = "not_loged_in";
-  private static final String PARTY_LOGGING_IN= "logging_in";
-  private static final String PARTY_LOGGED_IN= "logged_in";
-
-  /** Constant representing an invalid party server id */
-  private static final String INVALID_PARTY_SERVER_ID = "-1";
-    
-  private static final String PARTIES_TABLE_CREATE = 
-    "CREATE TABLE " + PARTIES_TABLE_NAME + "(" + 
-    PARTIES_ID_COLUMN + " INTEGER PRIMARY KEY AUTOINCREMENT, " + 
-    PARTIES_NAME_COLUMN + " TEXT NOT NULL, " +
-    PARTIES_STATE_COLUMN + " TEXT NOT NULL DEFAULT '" + PARTY_NOT_LOGGED_IN + "'," +
-    PARTIES_SERVER_ID_COLUMN + " INTEGER DEFAULT " + INVALID_PARTY_SERVER_ID + ");";
-
-
 	/** Helper for opening up the actual database. */
   private PartyDBHelper dbOpenHelper;
 
@@ -231,7 +202,6 @@ public class UDJPartyProvider extends ContentProvider{
       db.execSQL(LIBRARY_TABLE_CREATE);
       db.execSQL(PLAYLIST_TABLE_CREATE);
       db.execSQL(PLAYLIST_VIEW_CREATE);
-      db.execSQL(PARTIES_TABLE_CREATE);
 
       //INSERT DUMMY SONGS FOR NOW
       db.execSQL("INSERT INTO " + LIBRARY_TABLE_NAME + 
