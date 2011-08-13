@@ -63,6 +63,8 @@ public class ServerConnection{
   public static final String PARAM_PASSWORD = "password";
   public static final String PARAM_LAST_UPDATE = "timestamp";
   public static final String PARAM_UPDATE_ARRAY = "updatearray";
+  public static final String PARAM_GET_PARTIES = "getParties"
+  public static final String PARAM_LOCATION = "location"
   public static final String SERVER_TIMESTAMP_FORMAT = "yyyy-mm-dd hh:mm:ss";
   public static final String SERVER_URL = "https://www.bazaarsolutions.org/udj";
   public static final String PLAYLIST_URI = 
@@ -198,5 +200,20 @@ public class ServerConnection{
       throw new IOException();
     }
     return toReturn;
+  }
+
+  public static List<Party> getNearbyParties(Account account, String authtoken)
+    throws
+    JSONException, ParseException, IOException, AuthenticationException
+  {
+    final ArrayList<NameValuePair> params = 
+      getEssentialParameters(account.name, authtoken, null);
+    params.add(new BasicNameValuePair(
+      PARAM_GET_PARTIES, "true");
+    //TODO Actually get location
+    params.add(new BasicNameValuePair(
+      PARAM_LOCATION, "unknown");
+    JSONArray parties = doPost(params, PLAYLIST_URI);
+    return PlaylistEntry.fromJSONArray(playlistEntries);
   }
 }
