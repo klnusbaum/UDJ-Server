@@ -36,4 +36,5 @@
     <string name="party_name_hint">Party Name</string>
     <string name="quit_title">Quit?</string>
     <string name="quit_message">Are you sure you want to leave the party?</string>
+    <string name="no_party_items">No parties nearby.</string>
 </resources>

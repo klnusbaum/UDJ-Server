@@ -206,7 +206,7 @@ public class ServerConnection{
     throws
     JSONException, ParseException, IOException, AuthenticationException
   {
-    final ArrayList<NameValuePair> params = 
+/*    final ArrayList<NameValuePair> params = 
       getEssentialParameters(account.name, authtoken, null);
     params.add(new BasicNameValuePair(
       PARAM_GET_PARTIES, "true");
@@ -214,6 +214,8 @@ public class ServerConnection{
     params.add(new BasicNameValuePair(
       PARAM_LOCATION, "unknown");
     JSONArray parties = doPost(params, PLAYLIST_URI);
-    return PlaylistEntry.fromJSONArray(playlistEntries);
+    return PlaylistEntry.fromJSONArray(playlistEntries);*/
+
   }
+
 }
