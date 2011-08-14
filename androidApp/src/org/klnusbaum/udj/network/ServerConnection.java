@@ -60,6 +60,7 @@ import org.klnusbaum.udj.containers.Party;
  */
 public class ServerConnection{
   
+  public static final String PARAM_PARTYID = "partyId";
   public static final String PARAM_USERNAME = "username";
   public static final String PARAM_PASSWORD = "password";
   public static final String PARAM_LAST_UPDATE = "timestamp";
@@ -137,11 +138,12 @@ public class ServerConnection{
   public static List<LibraryEntry> getLibraryUpdate(
     Account account,
     String authtoken, 
+    long partyId,
     GregorianCalendar lastUpdated)
     throws JSONException, ParseException, IOException, AuthenticationException
   {
     final ArrayList<NameValuePair> params = 
-      getEssentialParameters(account.name, authtoken, lastUpdated);
+      getEssentialParameters(account.name, authtoken, partyId, lastUpdated);
     JSONArray libraryEntries = doPost(params, LIBRARY_URI);
     return LibraryEntry.fromJSONArray(libraryEntries);
   }
@@ -149,24 +151,33 @@ public class ServerConnection{
   public static List<PlaylistEntry> getPlaylistUpdate(  
    Account account,
     String authtoken, 
+    long partyId,
     List<PlaylistEntry> toUpdate, 
     GregorianCalendar lastUpdated) throws
     JSONException, ParseException, IOException, AuthenticationException
   {
     final ArrayList<NameValuePair> params = 
-      getEssentialParameters(account.name, authtoken, lastUpdated);
+      getEssentialParameters(account.name, authtoken, partyId, lastUpdated);
     params.add(new BasicNameValuePair(
       PARAM_UPDATE_ARRAY, 
       PlaylistEntry.getJSONArray(toUpdate).toString()));
-    JSONArray playlistEntries = doPost(params, PLAYLIST_URI);
+
+    JSONArray playlistEntries =null;
+    if(toUpdate == null || toUpdate.isEmpty()){
+      playlistEntries = doGet(params, PLAYLIST_URI);
+    }
+    else{
+      playlistEntries = doPost(params, PLAYLIST_URI);
+    }
     return PlaylistEntry.fromJSONArray(playlistEntries);
   }
 
   private static ArrayList<NameValuePair> getEssentialParameters(
-    String name, String authtoken, GregorianCalendar lastUpdated)
+    String name, String authtoken, long partyId, GregorianCalendar lastUpdated)
   {
     ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
     ArrayList<PlaylistEntry> toReturn = new ArrayList<PlaylistEntry>();
+    params.add(new BasicNameValuePair(PARAM_PARTYID, partyId));
     params.add(new BasicNameValuePair(PARAM_USERNAME, name));
     params.add(new BasicNameValuePair(PARAM_PASSWORD, authtoken));
     if(lastUpdated != null){
@@ -187,6 +198,30 @@ public class ServerConnection{
     final HttpPost post = new HttpPost(uri);
     post.addHeader(entity.getContentType());
     post.setEntity(entity);
+    final HttpResponse resp = getHttpClient().execute(post);
+    final String response = EntityUtils.toString(resp.getEntity());
+    JSONArray toReturn = null;
+    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
+      //Get stuff from response 
+      toReturn = new JSONArray(response);
+    } 
+    else if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
+      throw new AuthenticationException();
+    }
+    else{
+      throw new IOException();
+    }
+    return toReturn;
+  }
+
+  public static JSONArray doGet(ArrayList<NameValuePair> params, String uri)
+    throws AuthenticationException, IOException, JSONException
+  {
+    HttpEntity entity = null;
+    entity = new UrlEncodedFormEntity(params);
+    final HttpGet get = new HttpGet(uri);
+    get.addHeader(entity.getContentType());
+    get.setEntity(entity);
     final HttpResponse resp = getHttpClient().execute(post);
     final String response = EntityUtils.toString(resp.getEntity());
     JSONArray toReturn = null;

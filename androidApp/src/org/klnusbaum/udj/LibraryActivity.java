@@ -47,9 +47,23 @@ public class LibraryActivity extends FragmentActivity{
   public void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
 
+    if(savedInstanceState != null){
+      partyId = savedInstanceState.getLong(PartyActivity.PARTY_ID_EXTRA);
+    }
+    else{
+      partyId = getIntent().getLongExtra(PartyActivity.PARTY_ID_EXTRA, Party.INVALID_PARTY_ID);
+      if(partyId == Party.INVALID_PARTY_ID){
+        setResult(Activity.RESULT_CANCELED);
+        finish();
+      }
+    }
+
     FragmentManager fm = getSupportFragmentManager();
     if(fm.findFragmentById(android.R.id.content) == null){
+      Bundle partyBundle = new Bundle();
+      partyBundle.putLong(PartyActivity.PARTY_ID_EXTRA, partyId);
       LibraryFragment list = new LibraryFragment();
+      list.setArguments(partyBundle);
       fm.beginTransaction().add(android.R.id.content, list).commit();
     }
   }
@@ -60,12 +74,24 @@ public class LibraryActivity extends FragmentActivity{
     /** Adapter used to help display the contents of the library. */
     LibraryAdapter libraryAdapter;
     
+    private long partyId;
+    
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
       super.onActivityCreated(savedInstanceState);
 
       setEmptyText(getActivity().getString(R.string.no_library_songs));
       //setHasOptionsMenu(true);
+
+      //TODO throw some kind of error if the party id is null. Although it never should be.
+      Bundle args = getArguements();
+      if(args.containsKey(PartyActivity.PARTY_ID_EXTRA)){
+        partyId = args.getLong(PartyActivity.PARTY_ID_EXTRA);
+      }
+      else{
+        getActivity().setResult(Activity.RESULT_CANCELED);
+        getActivity().finish();
+      }
 
       libraryAdapter = new LibraryAdapter(getActivity(), null);
       setListAdapter(libraryAdapter);
@@ -74,7 +100,13 @@ public class LibraryActivity extends FragmentActivity{
     }
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args){
-      return new CursorLoader(getActivity(), UDJPartyProvider.LIBRARY_URI, null, null, null, null);
+      return new CursorLoader(
+        getActivity(), 
+        UDJPartyProvider.LIBRARY_URI, 
+        null,
+        "partyId=?",
+        new String[] {String.valueOf(partyId)},
+        null);
     }
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data){

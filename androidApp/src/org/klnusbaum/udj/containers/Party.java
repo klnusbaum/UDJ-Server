@@ -30,10 +30,11 @@ import java.util.ArrayList;
 public class Party{
   public static final String NAME_PARAM = "name";
   public static final String ID_PARAM = "name";
+  public static final long INVALID_PARTY_ID = -1;
   private String name;
-  private int partyId;
+  private long partyId;
 
-  public Party(String name, int partyId){
+  public Party(String name, long partyId){
     this.name = name;
     this.partyId  = partyId;
   }
@@ -42,7 +43,7 @@ public class Party{
     return this.name;
   }
 
-  public int getPartyId(){
+  public long getPartyId(){
     return this.partyId;
   }
 
@@ -52,7 +53,7 @@ public class Party{
   {
     return new Party(
       jObj.getString(NAME_PARAM),
-      jObj.getInt(ID_PARAM));
+      jObj.getLong(ID_PARAM));
   }
 
   public static JSONObject getJSONObject(Party party)

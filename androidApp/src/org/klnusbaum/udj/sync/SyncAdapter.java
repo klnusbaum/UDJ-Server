@@ -61,7 +61,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 
   public static final String LIBRARY_SYNC_EXTRA = "library_sync";
   public static final String PLAYLIST_SYNC_EXTRA = "playlist_sync";
-  public static final String PARTIES_SYNC_EXTRA = "playlist_sync";
 
   private static final String[] playlistProjection = new String[]{
     UDJPartyProvider.PLAYLIST_ID_COLUMN, 
@@ -97,9 +96,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
   {
     boolean synclibrary = extras.getBoolean(LIBRARY_SYNC_EXTRA, false);
     boolean syncPlaylist = extras.getBoolean(PLAYLIST_SYNC_EXTRA, false);
-    boolean syncParties = extras.getBoolean(PARTIES_SYNC_EXTRA, false);
+    long partyId = extras.getLong(PARTY_ID_EXTRA, Party.INVALID_PARTY_ID);
     String authtoken = null;
     try{
+      if(partyId == Party.INVALID_PARTY_ID){
+        throw new OperationApplicationException("Not given a valid party id");
+      }
       //Get Authtoken
       authtoken = am.blockingGetAuthToken(
         account, context.getString(R.string.authtoken_type), true);
@@ -107,7 +109,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
       //Sync Library if requested
       if(synclibrary){
         List<LibraryEntry> updatedLibEntries = 
-          ServerConnection.getLibraryUpdate(account, authtoken, libraryLastUpdate);
+          ServerConnection.getLibraryUpdate(account, authtoken, partyId, libraryLastUpdate);
         RESTProcessor.processLibEntries(updatedLibEntries, account.name, context);
         libraryLastUpdate = (GregorianCalendar)GregorianCalendar.getInstance();
       }
@@ -124,7 +126,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
         //A retrieve it's response.
         List<PlaylistEntry> updatedPlaylistEntries =
           ServerConnection.getPlaylistUpdate(
-            account, authtoken, changedPlaylistEntries, playlistLastUpdate);
+            account, authtoken, partyId, changedPlaylistEntries, playlistLastUpdate);
   
         //Process the REST response from the server.
         RESTProcessor.processPlaylistEntries(
@@ -133,10 +135,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
         playlistLastUpdate = (GregorianCalendar)GregorianCalendar.getInstance();
       }
 
-      //Sync parties if requested
-      if(syncParties){
-        
-      }
     } 
     catch(final AuthenticatorException e){
       syncResult.stats.numParseExceptions++;

@@ -134,7 +134,8 @@ public class PartySelectorActivity extends FragmentActivity{
         getActivity().setResult(Activity.RESULT_CANCELED);
         getActivity().finish();
       }
-      Account[] udjAccounts = am.getAccountsByType(getString(R.string.account_type));
+      Account[] udjAccounts = 
+        am.getAccountsByType(getString(R.string.account_type));
       String username = data.getStringExtra(AuthActivity.USERNAME_EXTRA);
       boolean foundAddedUser;
       for(Account acc: udjAccounts){
@@ -199,6 +200,14 @@ public class PartySelectorActivity extends FragmentActivity{
       }
     }
     
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id){
+      Party partyClicked = (Party)getListView().getItemAtPosition(position);
+      Intent partyIntent = new Intent(getActivity(), PartyActivity.class);
+      partyIntent.putExtra(
+        PartyActivity.PARTY_ID_EXTRA, partyClicked.getPartyId());
+      startActivity(partyIntent);
+    }
   
     public Loader<List<Party> > onCreateLoader(int id, Bundle args){
       switch(id){

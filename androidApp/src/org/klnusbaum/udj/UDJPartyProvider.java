@@ -55,31 +55,15 @@ public class UDJPartyProvider extends ContentProvider{
 
   /** URI for the playlist */
   public static final Uri PLAYLIST_URI = 
-    Uri.parse("content://org.klnusbaum.udj/playlist?serverSync=false");
+    Uri.parse("content://org.klnusbaum.udj/playlist");
 
   /** URI for the Library */
   public static final Uri LIBRARY_URI = 
-    Uri.parse("content://org.klnusbaum.udj/library?serverSync=false");
+    Uri.parse("content://org.klnusbaum.udj/library");
 
   public static final Uri PARTIERS_URI =
-    Uri.parse("content://org.klnusbaum.udj/partiers?serverSync=false");
+    Uri.parse("content://org.klnusbaum.udj/partiers");
 
-  /** URI for the playlist */
-  public static final Uri PLAYLIST_SYNC_URI = 
-    Uri.parse("content://org.klnusbaum.udj/playlist?serverSync=true");
-
-  /** URI for the Library */
-  public static final Uri LIBRARY_SYNC_URI = 
-    Uri.parse("content://org.klnusbaum.udj/library?serverSync=true");
-
-  public static final Uri PARTIERS_SYNC_URI =
-    Uri.parse("content://org.klnusbaum.udj/partiers?serverSync=true");
-
-  public static final Uri PARTIES_SYNC_URI =
-    Uri.parse("content://org.klnusbaum.udj/parties?serverSync=true");
-
-  public static final Uri PARTIES_LOGIN_URI =
-    Uri.parse("content://org.klnusbaum.udj/parties?login=true");
 
   /**LIBRARY TABLE */
 
@@ -280,10 +264,14 @@ public class UDJPartyProvider extends ContentProvider{
     String selection, String[] selectionArgs, String sortOrder)
   {
     SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-    if(uri.equals(PLAYLIST_URI)){
+    if(!uri.authority().equals(getContext.getString(R.string.authority))){
+      throw new IllegalArgumentException("Unknown URI " + uri);
+    }
+
+    if(uri.getPath().equals(PLAYLIST_URI.getPath())){
       qb.setTables(PLAYLIST_VIEW_NAME); 
     }
-    else if(uri.equals(LIBRARY_URI)){
+    else if(uri.getPath().equals()(LIBRARY_URI.getPath())){
       qb.setTables(LIBRARY_TABLE_NAME); 
     }
     else{

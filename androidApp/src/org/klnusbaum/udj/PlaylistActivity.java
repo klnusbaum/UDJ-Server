@@ -39,20 +39,36 @@ import android.content.ContentValues;
 
 
 import org.klnusbaum.udj.R;
+import org.klnusbaum.udj.containers.Party;
 
 /**
  * Class used for displaying the contents of the Playlist.
  */
 public class PlaylistActivity extends FragmentActivity{
 
+  private long partyId;
+
   @Override
   public void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
-
+     
+    if(savedInstanceState != null){
+      partyId = savedInstanceState.getLong(PartyActivity.PARTY_ID_EXTRA);
+    }
+    else{
+      partyId = getIntent().getLongExtra(PartyActivity.PARTY_ID_EXTRA, Party.INVALID_PARTY_ID);
+      if(partyId == Party.INVALID_PARTY_ID){
+        setResult(Activity.RESULT_CANCELED);
+        finish();
+      }
+    }
 
     FragmentManager fm = getSupportFragmentManager();
     if(fm.findFragmentById(android.R.id.content) == null){
+      Bundle partyBundle = new Bundle();
+      partyBundle.putLong(PartyActivity.PARTY_ID_EXTRA, partyId);
       PlaylistFragment list = new PlaylistFragment();
+      list.setArguments(partyBundle);
       fm.beginTransaction().add(android.R.id.content, list).commit();
     }
 
@@ -63,6 +79,8 @@ public class PlaylistActivity extends FragmentActivity{
   {
 
     private static final int CURSOR_LOADER_ID = 0;
+
+    private long partyId;
     /**
      * Adapter used to help display the contents of the playlist.
      */
@@ -72,6 +90,15 @@ public class PlaylistActivity extends FragmentActivity{
     public void onActivityCreated(Bundle savedInstanceState){
       super.onActivityCreated(savedInstanceState);
       setEmptyText(getActivity().getString(R.string.no_playlist_items));
+      //TODO throw some kind of error if the party id is null. Although it never should be.
+      Bundle args = getArguements();
+      if(args.containsKey(PartyActivity.PARTY_ID_EXTRA)){
+        partyId = args.getLong(PartyActivity.PARTY_ID_EXTRA);
+      }
+      else{
+        getActivity().setResult(Activity.RESULT_CANCELED);
+        getActivity().finish();
+      }
 
       //setHasOptionsMenu(true)
       playlistAdapter = new PlaylistAdapter(getActivity(), null);
@@ -86,8 +113,8 @@ public class PlaylistActivity extends FragmentActivity{
         getActivity(), 
         UDJPartyProvider.PLAYLIST_URI, 
         null,
-        null,
-        null,
+        "partyId=?",
+        new String[] {String.valueOf(partyId)},
         null);
     }
 

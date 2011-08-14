@@ -38,38 +38,50 @@ import android.support.v4.app.DialogFragment;
 import java.util.HashMap;
 
 import org.klnusbaum.udj.auth.AuthActivity;
+import org.klnusbaum.udj.containers.Party;
 
 /**
  * The main activity display class.
  */
 public class PartyActivity extends FragmentActivity{
   
-  TabHost tabHost;
-  TabManager tabManager;
+  private TabHost tabHost;
+  private TabManager tabManager;
+  private long partyId;
 
+  public static final String PARTY_ID_EXTRA = "org.klnusbaum.udj.partyId";
   private static final String TAB_EXTRA = "org.klnusbaum.udj.tab";
 
   private static final String DIALOG_FRAG_TAG = "dialog";
-
 
   @Override
   protected void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
     
     setContentView(R.layout.tablayout);
+    if(savedInstanceState != null){
+      tabHost.setCurrentTabByTag(savedInstanceState.getString(TAB_EXTRA));
+      partyId = savedInstanceState.getLong(PARTY_ID_EXTRA);
+    }
+    else{
+      partyId = getIntent().getLongExtra(PARTY_ID_EXTRA, INVALID_PARTY_ID);
+      if(partyId == Party.INVALID_PARTY_ID){
+        setResult(Activity.RESULT_CANCELED);
+        finish();
+      }
+    }
     tabHost = (TabHost)findViewById(android.R.id.tabhost);
     tabHost.setup();
 
     tabManager = new TabManager(this, tabHost, R.id.realtabcontent);
     
+    Bundle partyBundle = new Bundle();
+    partyBundle.putLong(PARTY_ID_EXTRA, partyId);
     tabManager.addTab(tabHost.newTabSpec("playlist").setIndicator("Playlist"),
-      PlaylistActivity.PlaylistFragment.class, null);
+      PlaylistActivity.PlaylistFragment.class, partyBundle);
     tabManager.addTab(tabHost.newTabSpec("library").setIndicator("Library"),
-      LibraryActivity.LibraryFragment.class, null);
+      LibraryActivity.LibraryFragment.class, partyBundle);
 
-    if(savedInstanceState != null){
-      tabHost.setCurrentTabByTag(savedInstanceState.getString(TAB_EXTRA));
-    }
   }
 
 
@@ -77,6 +89,7 @@ public class PartyActivity extends FragmentActivity{
   protected void onSaveInstanceState(Bundle outState){
     super.onSaveInstanceState(outState);
     outState.putString(TAB_EXTRA, tabHost.getCurrentTabTag());
+    outState.putString(PARTY_ID_EXTRA, partyId);
   }
 
   @Override 
