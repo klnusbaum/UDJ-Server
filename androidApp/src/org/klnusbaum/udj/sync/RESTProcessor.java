@@ -29,6 +29,8 @@ import android.os.RemoteException;
 
 import org.klnusbaum.udj.R;
 import org.klnusbaum.udj.UDJPartyProvider;
+import org.klnusbaum.udj.containers.PlaylistEntry;
+import org.klnusbaum.udj.containers.LibraryEntry;
 
 public class RESTProcessor{
 

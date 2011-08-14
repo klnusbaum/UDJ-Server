@@ -41,6 +41,8 @@ import org.json.JSONException;
 import org.apache.http.auth.AuthenticationException;
 import org.apache.http.ParseException;
 
+import org.klnusbaum.udj.containers.PlaylistEntry;
+import org.klnusbaum.udj.containers.LibraryEntry;
 import org.klnusbaum.udj.network.ServerConnection;
 import org.klnusbaum.udj.UDJPartyProvider;
 import org.klnusbaum.udj.R;

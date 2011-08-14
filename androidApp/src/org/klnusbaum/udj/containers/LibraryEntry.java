@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.klnusbaum.udj.sync;
+package org.klnusbaum.udj.containers;
 
 import android.database.Cursor;
 
