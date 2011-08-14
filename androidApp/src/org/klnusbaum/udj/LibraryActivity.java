@@ -26,6 +26,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.database.Cursor;
 import android.content.ContentValues;
@@ -37,21 +38,28 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.util.Log;
 
+import org.klnusbaum.udj.containers.Party;;
+
 /**
  * An Activity which displays the party's current
  * available libary.
  */
 public class LibraryActivity extends FragmentActivity{
+
+  private long partyId;
   
   @Override
   public void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
 
+
+
     if(savedInstanceState != null){
-      partyId = savedInstanceState.getLong(PartyActivity.PARTY_ID_EXTRA);
+      partyId = savedInstanceState.getLong(Party.PARTY_ID_EXTRA);
     }
     else{
-      partyId = getIntent().getLongExtra(PartyActivity.PARTY_ID_EXTRA, Party.INVALID_PARTY_ID);
+      partyId = 
+        getIntent().getLongExtra(Party.PARTY_ID_EXTRA, Party.INVALID_PARTY_ID);
       if(partyId == Party.INVALID_PARTY_ID){
         setResult(Activity.RESULT_CANCELED);
         finish();
@@ -61,7 +69,7 @@ public class LibraryActivity extends FragmentActivity{
     FragmentManager fm = getSupportFragmentManager();
     if(fm.findFragmentById(android.R.id.content) == null){
       Bundle partyBundle = new Bundle();
-      partyBundle.putLong(PartyActivity.PARTY_ID_EXTRA, partyId);
+      partyBundle.putLong(Party.PARTY_ID_EXTRA, partyId);
       LibraryFragment list = new LibraryFragment();
       list.setArguments(partyBundle);
       fm.beginTransaction().add(android.R.id.content, list).commit();
@@ -84,9 +92,9 @@ public class LibraryActivity extends FragmentActivity{
       //setHasOptionsMenu(true);
 
       //TODO throw some kind of error if the party id is null. Although it never should be.
-      Bundle args = getArguements();
-      if(args.containsKey(PartyActivity.PARTY_ID_EXTRA)){
-        partyId = args.getLong(PartyActivity.PARTY_ID_EXTRA);
+      Bundle args = getArguments();
+      if(args.containsKey(Party.PARTY_ID_EXTRA)){
+        partyId = args.getLong(Party.PARTY_ID_EXTRA);
       }
       else{
         getActivity().setResult(Activity.RESULT_CANCELED);

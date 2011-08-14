@@ -36,6 +36,7 @@ import org.apache.http.auth.AuthenticationException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.NameValuePair;
 import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
@@ -68,7 +69,7 @@ public class ServerConnection{
   public static final String PARAM_GET_PARTIES = "getParties";
   public static final String PARAM_LOCATION = "location";
   public static final String SERVER_TIMESTAMP_FORMAT = "yyyy-mm-dd hh:mm:ss";
-  public static final String SERVER_URL = "https://www.bazaarsolutions.org/udj";
+  public static final String SERVER_URL = "http://www.bazaarsolutions.org/udj";
   public static final String PLAYLIST_URI = 
     SERVER_URL + "/playlist";
   public static final String LIBRARY_URI = 
@@ -164,7 +165,9 @@ public class ServerConnection{
 
     JSONArray playlistEntries =null;
     if(toUpdate == null || toUpdate.isEmpty()){
-      playlistEntries = doGet(params, PLAYLIST_URI);
+      //TODO we should actually do a get here because we're not changing 
+      //anything.
+      playlistEntries = doPost(params, PLAYLIST_URI);
     }
     else{
       playlistEntries = doPost(params, PLAYLIST_URI);
@@ -177,7 +180,7 @@ public class ServerConnection{
   {
     ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
     ArrayList<PlaylistEntry> toReturn = new ArrayList<PlaylistEntry>();
-    params.add(new BasicNameValuePair(PARAM_PARTYID, partyId));
+    params.add(new BasicNameValuePair(PARAM_PARTYID, String.valueOf(partyId)));
     params.add(new BasicNameValuePair(PARAM_USERNAME, name));
     params.add(new BasicNameValuePair(PARAM_PASSWORD, authtoken));
     if(lastUpdated != null){
@@ -214,7 +217,7 @@ public class ServerConnection{
     return toReturn;
   }
 
-  public static JSONArray doGet(ArrayList<NameValuePair> params, String uri)
+  /*public static JSONArray doGet(ArrayList<NameValuePair> params, String uri)
     throws AuthenticationException, IOException, JSONException
   {
     HttpEntity entity = null;
@@ -222,7 +225,7 @@ public class ServerConnection{
     final HttpGet get = new HttpGet(uri);
     get.addHeader(entity.getContentType());
     get.setEntity(entity);
-    final HttpResponse resp = getHttpClient().execute(post);
+    final HttpResponse resp = getHttpClient().execute(get);
     final String response = EntityUtils.toString(resp.getEntity());
     JSONArray toReturn = null;
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
@@ -236,7 +239,7 @@ public class ServerConnection{
       throw new IOException();
     }
     return toReturn;
-  }
+  }*/
 
   public static List<Party> getNearbyParties(Account account, String authtoken)
     throws

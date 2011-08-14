@@ -39,6 +39,7 @@ import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import java.io.IOException;
 import java.util.List;
@@ -95,11 +96,14 @@ public class PartySelectorActivity extends FragmentActivity{
       setListAdapter(partyAdpater);
       setListShown(false);
       am = AccountManager.get(getActivity());
-      account = savedInstanceState.getParcelable(ACCOUNT_EXTRA);
+      account = null;
+      if(savedInstanceState != null){
+        account = savedInstanceState.getParcelable(ACCOUNT_EXTRA);
+        password = savedInstanceState.getString(PASSWORD_EXTRA);
+      }
       if(account == null){
         getAccount();
       }
-      password = savedInstanceState.getString(PASSWORD_EXTRA);
     }
 
     private void getAccount(){
@@ -164,7 +168,7 @@ public class PartySelectorActivity extends FragmentActivity{
   
     private void getPassword(){
       //TODO throw error if account is some how not set yet.
-      if(password == null){
+      if(account != null && password == null){
         am.getAuthToken(
           account, 
           getString(R.string.authtoken_type), 
@@ -205,7 +209,7 @@ public class PartySelectorActivity extends FragmentActivity{
       Party partyClicked = (Party)getListView().getItemAtPosition(position);
       Intent partyIntent = new Intent(getActivity(), PartyActivity.class);
       partyIntent.putExtra(
-        PartyActivity.PARTY_ID_EXTRA, partyClicked.getPartyId());
+        Party.PARTY_ID_EXTRA, partyClicked.getPartyId());
       startActivity(partyIntent);
     }
   

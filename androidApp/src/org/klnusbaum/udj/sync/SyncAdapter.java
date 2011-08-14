@@ -43,6 +43,7 @@ import org.apache.http.ParseException;
 
 import org.klnusbaum.udj.containers.PlaylistEntry;
 import org.klnusbaum.udj.containers.LibraryEntry;
+import org.klnusbaum.udj.containers.Party;
 import org.klnusbaum.udj.network.ServerConnection;
 import org.klnusbaum.udj.UDJPartyProvider;
 import org.klnusbaum.udj.R;
@@ -96,7 +97,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
   {
     boolean synclibrary = extras.getBoolean(LIBRARY_SYNC_EXTRA, false);
     boolean syncPlaylist = extras.getBoolean(PLAYLIST_SYNC_EXTRA, false);
-    long partyId = extras.getLong(PARTY_ID_EXTRA, Party.INVALID_PARTY_ID);
+    long partyId = extras.getLong(Party.PARTY_ID_EXTRA, Party.INVALID_PARTY_ID);
     String authtoken = null;
     try{
       if(partyId == Party.INVALID_PARTY_ID){

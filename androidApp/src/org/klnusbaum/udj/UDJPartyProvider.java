@@ -264,14 +264,14 @@ public class UDJPartyProvider extends ContentProvider{
     String selection, String[] selectionArgs, String sortOrder)
   {
     SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-    if(!uri.authority().equals(getContext.getString(R.string.authority))){
+    if(!uri.getAuthority().equals(getContext().getString(R.string.authority))){
       throw new IllegalArgumentException("Unknown URI " + uri);
     }
 
     if(uri.getPath().equals(PLAYLIST_URI.getPath())){
       qb.setTables(PLAYLIST_VIEW_NAME); 
     }
-    else if(uri.getPath().equals()(LIBRARY_URI.getPath())){
+    else if(uri.getPath().equals(LIBRARY_URI.getPath())){
       qb.setTables(LIBRARY_TABLE_NAME); 
     }
     else{
