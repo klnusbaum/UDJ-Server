@@ -18,6 +18,15 @@
  */
 package org.klnusbaum.udj.containers;
 
+import java.util.ArrayList;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONException;
+
+import java.util.List;
+import java.util.ArrayList;
+
 public class Party{
   public static final String NAME_PARAM = "name";
   public static final String ID_PARAM = "name";
@@ -38,7 +47,7 @@ public class Party{
   }
 
 
-  public static PlaylistEntry valueOf(JSONObject jObj)
+  public static Party valueOf(JSONObject jObj)
     throws JSONException 
   {
     return new Party(

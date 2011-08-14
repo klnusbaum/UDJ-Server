@@ -51,8 +51,9 @@ import org.json.JSONException;
 
 
 import org.klnusbaum.udj.auth.AuthActivity;
-import org.klnusbaum.udj.sync.LibraryEntry;
-import org.klnusbaum.udj.sync.PlaylistEntry;
+import org.klnusbaum.udj.containers.LibraryEntry;
+import org.klnusbaum.udj.containers.PlaylistEntry;
+import org.klnusbaum.udj.containers.Party;
 
 /**
  * A connection to the UDJ server
@@ -63,8 +64,8 @@ public class ServerConnection{
   public static final String PARAM_PASSWORD = "password";
   public static final String PARAM_LAST_UPDATE = "timestamp";
   public static final String PARAM_UPDATE_ARRAY = "updatearray";
-  public static final String PARAM_GET_PARTIES = "getParties"
-  public static final String PARAM_LOCATION = "location"
+  public static final String PARAM_GET_PARTIES = "getParties";
+  public static final String PARAM_LOCATION = "location";
   public static final String SERVER_TIMESTAMP_FORMAT = "yyyy-mm-dd hh:mm:ss";
   public static final String SERVER_URL = "https://www.bazaarsolutions.org/udj";
   public static final String PLAYLIST_URI = 
