@@ -215,7 +215,10 @@ public class ServerConnection{
       PARAM_LOCATION, "unknown");
     JSONArray parties = doPost(params, PLAYLIST_URI);
     return PlaylistEntry.fromJSONArray(playlistEntries);*/
-
+    ArrayList<Party> toReturn = new ArrayList<Party>();
+    toReturn.add(new Party("Steve's party", 0));
+    toReturn.add(new Party("Kurts's party", 1));
+    return toReturn;
   }
 
 }

@@ -133,17 +133,17 @@ public class PartySelectorActivity extends FragmentActivity{
     }
   
     protected void onResume(){
-      if(password ==null){
-        getPassword();
-      }
+      getPassword();
     }
   
     private void getPassword(){
       //TODO throw error if account is some how not set yet.
-      am.getAuthToken(
-        account, 
-        getString(R.string.authtoken_type), 
-        null, this, this, null);
+      if(password == null){
+        am.getAuthToken(
+          account, 
+          getString(R.string.authtoken_type), 
+          null, this, this, null);
+      }
     }
 
     @Override
