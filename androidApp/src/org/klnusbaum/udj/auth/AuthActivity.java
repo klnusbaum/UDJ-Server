@@ -37,7 +37,6 @@ import org.klnusbaum.udj.R;
 public class AuthActivity extends AccountAuthenticatorActivity{
 
   /** Public constants used for identifing extras in bundles */
-  public static final String USERNAME_EXTRA = "username";
   public static final String AUTHTOKEN_TYPE_EXTRA = "auth_token_type";
   public static final String UPDATE_CREDS_EXTRA = "update credentials";
 
@@ -67,7 +66,7 @@ public class AuthActivity extends AccountAuthenticatorActivity{
     super.onCreate(savedInstanceState);
     am = AccountManager.get(this);
     final Intent intent = getIntent();
-    this.username = intent.getStringExtra(USERNAME_EXTRA);
+    this.username = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
     this.authTokenType = intent.getStringExtra(AUTHTOKEN_TYPE_EXTRA);
     addingNewAccount = (username == null); 
     confirmingCreds = intent.getBooleanExtra(UPDATE_CREDS_EXTRA, false);
@@ -100,8 +99,8 @@ public class AuthActivity extends AccountAuthenticatorActivity{
     final Intent resultIntent = new Intent();
     if(addingNewAccount){
       am.addAccountExplicitly(account, password, null);
-      ContentResolver.setSyncAutomatically(account, 
-        getString(R.string.authority), true);
+      /*ContentResolver.setSyncAutomatically(account, 
+        getString(R.string.authority), true);*/
       resultIntent.putExtra(AccountManager.KEY_ACCOUNT_NAME, username);
       resultIntent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, 
         getString(R.string.account_type));

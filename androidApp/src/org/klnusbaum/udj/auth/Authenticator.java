@@ -132,7 +132,7 @@ public class Authenticator extends AbstractAccountAuthenticator{
     Account account, String authTokenType, Bundle loginOptions)
   {
     final Intent updateIntent = new Intent(context, AuthActivity.class);
-    updateIntent.putExtra(AuthActivity.USERNAME_EXTRA, account.name);
+    updateIntent.putExtra(AccountManager.KEY_ACCOUNT_NAME, account.name);
     updateIntent.putExtra(AuthActivity.AUTHTOKEN_TYPE_EXTRA, authTokenType);
     updateIntent.putExtra(AuthActivity.UPDATE_CREDS_EXTRA, true);
     final Bundle updateBundle = new Bundle();

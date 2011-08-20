@@ -21,6 +21,7 @@ package org.klnusbaum.udj.network;
 import android.content.Context;
 import android.os.Handler;
 import android.accounts.Account;
+import android.util.Log;
 
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -245,6 +246,7 @@ public class ServerConnection{
     throws
     JSONException, ParseException, IOException, AuthenticationException
   {
+    Log.i("TAG", "IN GET NEARBY PARTIES!!!!!!!!");
 /*    final ArrayList<NameValuePair> params = 
       getEssentialParameters(account.name, authtoken, null);
     params.add(new BasicNameValuePair(

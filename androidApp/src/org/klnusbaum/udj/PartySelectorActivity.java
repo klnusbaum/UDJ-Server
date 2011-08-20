@@ -40,6 +40,7 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.List;
@@ -97,6 +98,7 @@ public class PartySelectorActivity extends FragmentActivity{
       setListShown(false);
       am = AccountManager.get(getActivity());
       account = null;
+      password = null;
       if(savedInstanceState != null){
         account = savedInstanceState.getParcelable(ACCOUNT_EXTRA);
         password = savedInstanceState.getString(PASSWORD_EXTRA);
@@ -128,7 +130,7 @@ public class PartySelectorActivity extends FragmentActivity{
   
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
-      switch(resultCode){
+      switch(requestCode){
         case ACCOUNT_REQUEST: onAddAccountResult(resultCode, data); break;
       }
     }
@@ -140,8 +142,8 @@ public class PartySelectorActivity extends FragmentActivity{
       }
       Account[] udjAccounts = 
         am.getAccountsByType(getString(R.string.account_type));
-      String username = data.getStringExtra(AuthActivity.USERNAME_EXTRA);
-      boolean foundAddedUser;
+      String username = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+      boolean foundAddedUser = false;
       for(Account acc: udjAccounts){
         if(acc.name.equals(username)){
           foundAddedUser = true;
@@ -187,10 +189,14 @@ public class PartySelectorActivity extends FragmentActivity{
         }
         else{
           password = bundle.getString(AccountManager.KEY_AUTHTOKEN);
-          Bundle loaderArgs = new Bundle();
+          final Bundle loaderArgs = new Bundle();
           loaderArgs.putParcelable(PartiesLoader.ACCOUNT_EXTRA, account);
           loaderArgs.putString(PartiesLoader.AUTHTOKEN_EXTRA, password);
-          getLoaderManager().restartLoader(PARTIES_LOADER, loaderArgs, this);
+          //getActivity().runOnUiThread(new Runnable(){
+            //public void run(){
+          getLoaderManager().restartLoader(PARTIES_LOADER, loaderArgs, ParyListFragment.this);
+            //}
+          //});
         }
       }
       catch(OperationCanceledException e){
@@ -238,6 +244,7 @@ public class PartySelectorActivity extends FragmentActivity{
     }
   
     public void onLoaderReset(Loader<List<Party> > loader){
+      Log.i("TAG", "IN RESTART!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       partyAdpater.clear();
     }
   } 
@@ -258,6 +265,7 @@ public class PartySelectorActivity extends FragmentActivity{
     
     public List<Party> loadInBackground(){
       try{
+        Log.i("TAG", "loading in background");
         return ServerConnection.getNearbyParties(account, authtoken);
       }
       catch(JSONException e){
