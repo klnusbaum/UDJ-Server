@@ -192,11 +192,8 @@ public class PartySelectorActivity extends FragmentActivity{
           final Bundle loaderArgs = new Bundle();
           loaderArgs.putParcelable(PartiesLoader.ACCOUNT_EXTRA, account);
           loaderArgs.putString(PartiesLoader.AUTHTOKEN_EXTRA, password);
-          //getActivity().runOnUiThread(new Runnable(){
-            //public void run(){
-          getLoaderManager().restartLoader(PARTIES_LOADER, loaderArgs, ParyListFragment.this);
-            //}
-          //});
+          getLoaderManager().restartLoader(
+            PARTIES_LOADER, loaderArgs, ParyListFragment.this);
         }
       }
       catch(OperationCanceledException e){
@@ -223,6 +220,7 @@ public class PartySelectorActivity extends FragmentActivity{
       switch(id){
   
       case PARTIES_LOADER:
+      Log.i("TAG", "GONNA FIND PARTIES LOADER!!>!>!>!>!>!>!!>!>>!>!!>>!!>>");
         //TODO enforce that the account and autoken aren't null;
         Account argAccount = args.getParcelable(PartiesLoader.ACCOUNT_EXTRA);
         String argAuthToken = args.getString(PartiesLoader.AUTHTOKEN_EXTRA);
@@ -232,6 +230,7 @@ public class PartySelectorActivity extends FragmentActivity{
     }
   
     public void onLoadFinished(Loader<List<Party> > loader, List<Party> data){
+      Log.i("TAG", "FINISHED LOADING!!>!>!>!>!>!>!!>!>>!>!!>>!!>>");
       for(Party p: data){
         partyAdpater.add(p);
       }
@@ -244,7 +243,6 @@ public class PartySelectorActivity extends FragmentActivity{
     }
   
     public void onLoaderReset(Loader<List<Party> > loader){
-      Log.i("TAG", "IN RESTART!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       partyAdpater.clear();
     }
   } 
@@ -256,17 +254,27 @@ public class PartySelectorActivity extends FragmentActivity{
     Account account;
     String authtoken;
     Context context;
- 
+    List<Party> parties;
+
     public PartiesLoader(Context context, Account account, String authtoken){
       super(context);
       this.account = account;
       this.authtoken = authtoken;
+      parties = null;
     }
     
+    @Override
+    protected void onStartLoading(){
+      if(takeContentChanged() || parties==null){
+        forceLoad();
+      }
+    }
+ 
     public List<Party> loadInBackground(){
+      Log.i("TAG", "LOADING IN BACKGROUND>>>>>>>>>>>>>>>>>>>>>>>>>>");
       try{
-        Log.i("TAG", "loading in background");
-        return ServerConnection.getNearbyParties(account, authtoken);
+        parties = ServerConnection.getNearbyParties(account, authtoken);
+        return parties;
       }
       catch(JSONException e){
         //TODO notify the user
