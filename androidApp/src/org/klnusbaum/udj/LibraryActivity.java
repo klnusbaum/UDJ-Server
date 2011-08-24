@@ -112,8 +112,10 @@ public class LibraryActivity extends FragmentActivity{
         getActivity(), 
         UDJPartyProvider.LIBRARY_URI, 
         null,
-        "partyId=?",
-        new String[] {String.valueOf(partyId)},
+        null,
+        null,
+        //"partyId=?",
+        //new String[] {String.valueOf(partyId)},
         null);
     }
 
