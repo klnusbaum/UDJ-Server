@@ -123,7 +123,7 @@ public class PartyActivity extends FragmentActivity{
               ((PartyActivity)getActivity()).doQuit();
             }
           })
-        .setPositiveButton(android.R.string.cancel,
+        .setNegativeButton(android.R.string.cancel,
           new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton){
               ((PartyActivity)getActivity()).dismissQuitDialog();

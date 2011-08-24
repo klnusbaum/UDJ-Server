@@ -115,8 +115,10 @@ public class PlaylistActivity extends FragmentActivity{
         getActivity(), 
         UDJPartyProvider.PLAYLIST_URI, 
         null,
-        "partyId=?",
-        new String[] {String.valueOf(partyId)},
+        null,
+        null,
+        //"partyId=?",
+        //new String[] {String.valueOf(partyId)},
         null);
     }
 
