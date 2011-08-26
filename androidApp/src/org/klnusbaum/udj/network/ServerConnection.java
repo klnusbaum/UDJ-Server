@@ -160,17 +160,16 @@ public class ServerConnection{
   {
     final ArrayList<NameValuePair> params = 
       getEssentialParameters(account.name, authtoken, partyId, lastUpdated);
-    params.add(new BasicNameValuePair(
-      PARAM_UPDATE_ARRAY, 
-      PlaylistEntry.getJSONArray(toUpdate).toString()));
-
     JSONArray playlistEntries =null;
     if(toUpdate == null || toUpdate.isEmpty()){
       //TODO we should actually do a get here because we're not changing 
       //anything.
-      playlistEntries = doPost(params, PLAYLIST_URI);
+      playlistEntries = doGet(params, PLAYLIST_URI);
     }
     else{
+      params.add(new BasicNameValuePair(
+        PARAM_UPDATE_ARRAY, 
+        PlaylistEntry.getJSONArray(toUpdate).toString()));
       playlistEntries = doPost(params, PLAYLIST_URI);
     }
     return PlaylistEntry.fromJSONArray(playlistEntries);
@@ -218,14 +217,10 @@ public class ServerConnection{
     return toReturn;
   }
 
-  /*public static JSONArray doGet(ArrayList<NameValuePair> params, String uri)
+  public static JSONArray doGet(ArrayList<NameValuePair> params, String uri)
     throws AuthenticationException, IOException, JSONException
   {
-    HttpEntity entity = null;
-    entity = new UrlEncodedFormEntity(params);
-    final HttpGet get = new HttpGet(uri);
-    get.addHeader(entity.getContentType());
-    get.setEntity(entity);
+    final HttpGet get = new HttpGet(uri + "?" + getParamString(params));
     final HttpResponse resp = getHttpClient().execute(get);
     final String response = EntityUtils.toString(resp.getEntity());
     JSONArray toReturn = null;
@@ -240,7 +235,15 @@ public class ServerConnection{
       throw new IOException();
     }
     return toReturn;
-  }*/
+  }
+
+  private static String getParamString(ArrayList<NameValuePair> params){
+    String toReturn = "";
+    for(NameValuePair np: params){
+      toReturn += np.getName() + "=" +np.getValue();
+    }
+    return toReturn;
+  }
 
   public static List<Party> getNearbyParties(Account account, String authtoken)
     throws
