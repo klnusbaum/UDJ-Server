@@ -1,14 +1,11 @@
 import web
 import json
+from Parties import RESTParty
 
 urls = (
-'/playlist', 'playlist'
+'/parties', 'RESTParty'
 )
 app = web.application(urls, globals())
-
-class playlist:
-  def GET(self):
-    return "Hello, world!"
 
 if __name__ == "__main__": 
   app.run()

@@ -220,7 +220,6 @@ public class PartySelectorActivity extends FragmentActivity{
       switch(id){
   
       case PARTIES_LOADER:
-      Log.i("TAG", "GONNA FIND PARTIES LOADER!!>!>!>!>!>!>!!>!>>!>!!>>!!>>");
         //TODO enforce that the account and autoken aren't null;
         Account argAccount = args.getParcelable(PartiesLoader.ACCOUNT_EXTRA);
         String argAuthToken = args.getString(PartiesLoader.AUTHTOKEN_EXTRA);
@@ -230,9 +229,13 @@ public class PartySelectorActivity extends FragmentActivity{
     }
   
     public void onLoadFinished(Loader<List<Party> > loader, List<Party> data){
-      Log.i("TAG", "FINISHED LOADING!!>!>!>!>!>!>!!>!>>!>!!>>!!>>");
-      for(Party p: data){
-        partyAdpater.add(p);
+      if(data == null){
+        setEmptyText(getString(R.string.no_party_items));
+      }
+      else{
+        for(Party p: data){
+          partyAdpater.add(p);
+        }
       }
       if(isResumed()){
         setListShown(true);
@@ -271,7 +274,6 @@ public class PartySelectorActivity extends FragmentActivity{
     }
  
     public List<Party> loadInBackground(){
-      Log.i("TAG", "LOADING IN BACKGROUND>>>>>>>>>>>>>>>>>>>>>>>>>>");
       try{
         parties = ServerConnection.getNearbyParties(account, authtoken);
         return parties;
@@ -280,6 +282,8 @@ public class PartySelectorActivity extends FragmentActivity{
         //TODO notify the user
       }
       catch(IOException e){
+        Log.i("TAG", "IO EXECPTION");
+        Log.i("TAG", e.getMessage());
         //TODO notify the user
       }
       catch(AuthenticationException e){

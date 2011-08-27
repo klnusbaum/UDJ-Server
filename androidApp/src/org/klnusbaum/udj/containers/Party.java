@@ -30,7 +30,7 @@ import java.util.ArrayList;
 public class Party{
   public static final String PARTY_ID_EXTRA = "org.klnusbaum.udj.party";
   public static final String NAME_PARAM = "name";
-  public static final String ID_PARAM = "name";
+  public static final String ID_PARAM = "id";
   public static final long INVALID_PARTY_ID = -1;
   private String name;
   private long partyId;

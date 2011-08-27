@@ -70,11 +70,15 @@ public class ServerConnection{
   public static final String PARAM_GET_PARTIES = "getParties";
   public static final String PARAM_LOCATION = "location";
   public static final String SERVER_TIMESTAMP_FORMAT = "yyyy-mm-dd hh:mm:ss";
-  public static final String SERVER_URL = "http://www.bazaarsolutions.org/udj";
+  //public static final String SERVER_URL = "http://www.bazaarsolutions.org/udj";
+  //THIS IS FOR TESTING AT THE MOMENT
+  public static final String SERVER_URL = "http://10.0.2.2:8081";
   public static final String PLAYLIST_URI = 
     SERVER_URL + "/playlist";
   public static final String LIBRARY_URI = 
     SERVER_URL + "/library";
+  public static final String PARTIES_URI =
+    SERVER_URL + "/parties";
   public static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
   private static HttpClient httpClient;
   
@@ -223,6 +227,7 @@ public class ServerConnection{
     final HttpGet get = new HttpGet(uri + "?" + getParamString(params));
     final HttpResponse resp = getHttpClient().execute(get);
     final String response = EntityUtils.toString(resp.getEntity());
+    Log.i("TAG", "RESPONSE \"" + response + "\"");
     JSONArray toReturn = null;
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
       //Get stuff from response 
@@ -249,20 +254,13 @@ public class ServerConnection{
     throws
     JSONException, ParseException, IOException, AuthenticationException
   {
-    Log.i("TAG", "IN GET NEARBY PARTIES!!!!!!!!");
-/*    final ArrayList<NameValuePair> params = 
-      getEssentialParameters(account.name, authtoken, null);
-    params.add(new BasicNameValuePair(
-      PARAM_GET_PARTIES, "true");
+    final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+    params.add(new BasicNameValuePair(PARAM_USERNAME, account.name));
+    params.add(new BasicNameValuePair(PARAM_PASSWORD, authtoken));
     //TODO Actually get location
-    params.add(new BasicNameValuePair(
-      PARAM_LOCATION, "unknown");
-    JSONArray parties = doPost(params, PLAYLIST_URI);
-    return PlaylistEntry.fromJSONArray(playlistEntries);*/
-    ArrayList<Party> toReturn = new ArrayList<Party>();
-    toReturn.add(new Party("Steve's party", 0));
-    toReturn.add(new Party("Kurts's party", 1));
-    return toReturn;
+    params.add(new BasicNameValuePair(PARAM_LOCATION, "unknown"));
+    JSONArray parties = doGet(params, PARTIES_URI);
+    return Party.fromJSONArray(parties);
   }
 
 }
