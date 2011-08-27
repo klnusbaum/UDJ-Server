@@ -161,12 +161,6 @@ public class PartySelectorActivity extends FragmentActivity{
       outState.putString(PASSWORD_EXTRA, password);
     }
   
-    /*@Override
-    public void onResume(){
-      super.onResume();
-      getPassword();
-    }*/
-  
     private void getPassword(){
       //TODO throw error if account is some how not set yet.
       if(account != null && password == null){
@@ -208,10 +202,10 @@ public class PartySelectorActivity extends FragmentActivity{
     
     @Override
     public void onListItemClick(ListView l, View v, int position, long id){
-      Party partyClicked = (Party)getListView().getItemAtPosition(position);
       Intent partyIntent = new Intent(getActivity(), PartyActivity.class);
       partyIntent.putExtra(
-        Party.PARTY_ID_EXTRA, partyClicked.getPartyId());
+        Party.PARTY_ID_EXTRA, 
+        partyAdpater.getPartyId(position));
       startActivity(partyIntent);
     }
   

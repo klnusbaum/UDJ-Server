@@ -42,4 +42,8 @@ public class PartyListAdapter extends ArrayAdapter<Party>{
     toReturn.setText(getItem(position).getName());
     return toReturn;
   }
+
+  public long getPartyId(int position){
+    return getItem(position).getPartyId();
+  }
 }
