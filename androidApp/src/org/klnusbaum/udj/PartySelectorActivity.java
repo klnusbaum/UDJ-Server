@@ -162,15 +162,17 @@ public class PartySelectorActivity extends FragmentActivity{
       outState.putString(PASSWORD_EXTRA, password);
     }
   
-    @Override
+    /*@Override
     public void onResume(){
       super.onResume();
       getPassword();
-    }
+    }*/
   
     private void getPassword(){
       //TODO throw error if account is some how not set yet.
+      Log.i("TAG", "GET PASSWORD>>>>>>>>>>>>>>>>>>>>>>>>");
       if(account != null && password == null){
+        Log.i("TAG", "Actually getting Authtoken>>>>>>>>>>>>>>>>>>>>>>>>");
         am.getAuthToken(
           account, 
           getString(R.string.authtoken_type), 
@@ -217,6 +219,7 @@ public class PartySelectorActivity extends FragmentActivity{
     }
   
     public Loader<List<Party> > onCreateLoader(int id, Bundle args){
+      Log.i("TAG", "GETTING LOADER>>>>>>>>>>>>>>>>>>>>>>>>");
       switch(id){
   
       case PARTIES_LOADER:
