@@ -38,7 +38,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
-import android.widget.ArrayAdapter;
+import android.widget.SimpleAdapter;
 import android.widget.ListView;
 import android.util.Log;
 
@@ -87,13 +87,12 @@ public class PartySelectorActivity extends FragmentActivity{
     private static final String ACCOUNT_EXTRA = "org.klnusbaum.udj.account";
     private static final String PASSWORD_EXTRA = "org.klnusbaum.udj.password";
     private static final int PARTIES_LOADER = 0;
-    private ArrayAdapter<String> partyAdpater;
+    private PartyListAdapter partyAdpater;
 
     public void onActivityCreated(Bundle savedInstanceState){
       super.onActivityCreated(savedInstanceState);
       setEmptyText(getActivity().getString(R.string.no_party_items));
-      partyAdpater = new ArrayAdapter<String>(
-        getActivity(), R.layout.party_item, R.id.item);
+      partyAdpater = new PartyListAdapter(getActivity());
       setListAdapter(partyAdpater);
       setListShown(false);
       am = AccountManager.get(getActivity());
@@ -228,14 +227,16 @@ public class PartySelectorActivity extends FragmentActivity{
     }
   
     public void onLoadFinished(Loader<List<Party> > loader, List<Party> data){
+
       if(data == null){
         setEmptyText(getString(R.string.party_load_error));
       }
       else{
         for(Party p: data){
-          partyAdpater.add(p.getName());
+          partyAdpater.add(p);
         }
       }
+
       if(isResumed()){
         setListShown(true);
       }
