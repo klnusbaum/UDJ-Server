@@ -87,12 +87,12 @@ public class PartySelectorActivity extends FragmentActivity{
     private static final String ACCOUNT_EXTRA = "org.klnusbaum.udj.account";
     private static final String PASSWORD_EXTRA = "org.klnusbaum.udj.password";
     private static final int PARTIES_LOADER = 0;
-    private ArrayAdapter<Party> partyAdpater;
+    private ArrayAdapter<String> partyAdpater;
 
     public void onActivityCreated(Bundle savedInstanceState){
       super.onActivityCreated(savedInstanceState);
       setEmptyText(getActivity().getString(R.string.no_party_items));
-      partyAdpater = new ArrayAdapter<Party>(
+      partyAdpater = new ArrayAdapter<String>(
         getActivity(), R.layout.party_item, R.id.item);
       setListAdapter(partyAdpater);
       setListShown(false);
@@ -170,9 +170,7 @@ public class PartySelectorActivity extends FragmentActivity{
   
     private void getPassword(){
       //TODO throw error if account is some how not set yet.
-      Log.i("TAG", "GET PASSWORD>>>>>>>>>>>>>>>>>>>>>>>>");
       if(account != null && password == null){
-        Log.i("TAG", "Actually getting Authtoken>>>>>>>>>>>>>>>>>>>>>>>>");
         am.getAuthToken(
           account, 
           getString(R.string.authtoken_type), 
@@ -219,9 +217,7 @@ public class PartySelectorActivity extends FragmentActivity{
     }
   
     public Loader<List<Party> > onCreateLoader(int id, Bundle args){
-      Log.i("TAG", "GETTING LOADER>>>>>>>>>>>>>>>>>>>>>>>>");
       switch(id){
-  
       case PARTIES_LOADER:
         //TODO enforce that the account and autoken aren't null;
         Account argAccount = args.getParcelable(PartiesLoader.ACCOUNT_EXTRA);
@@ -237,7 +233,7 @@ public class PartySelectorActivity extends FragmentActivity{
       }
       else{
         for(Party p: data){
-          partyAdpater.add(p);
+          partyAdpater.add(p.getName());
         }
       }
       if(isResumed()){
@@ -282,8 +278,6 @@ public class PartySelectorActivity extends FragmentActivity{
         return parties;
       }
       catch(JSONException e){
-        Log.i("TAG", "JSON EXECPTION");
-        Log.i("TAG", e.getMessage());
         //TODO notify the user
       }
       catch(IOException e){
