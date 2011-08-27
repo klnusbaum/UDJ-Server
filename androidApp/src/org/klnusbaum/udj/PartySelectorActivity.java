@@ -233,7 +233,7 @@ public class PartySelectorActivity extends FragmentActivity{
   
     public void onLoadFinished(Loader<List<Party> > loader, List<Party> data){
       if(data == null){
-        setEmptyText(getString(R.string.no_party_items));
+        setEmptyText(getString(R.string.party_load_error));
       }
       else{
         for(Party p: data){
@@ -282,11 +282,11 @@ public class PartySelectorActivity extends FragmentActivity{
         return parties;
       }
       catch(JSONException e){
+        Log.i("TAG", "JSON EXECPTION");
+        Log.i("TAG", e.getMessage());
         //TODO notify the user
       }
       catch(IOException e){
-        Log.i("TAG", "IO EXECPTION");
-        Log.i("TAG", e.getMessage());
         //TODO notify the user
       }
       catch(AuthenticationException e){

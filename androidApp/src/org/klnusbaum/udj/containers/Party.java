@@ -27,6 +27,8 @@ import org.json.JSONException;
 import java.util.List;
 import java.util.ArrayList;
 
+import android.util.Log;
+
 public class Party{
   public static final String PARTY_ID_EXTRA = "org.klnusbaum.udj.party";
   public static final String NAME_PARAM = "name";
@@ -80,6 +82,7 @@ public class Party{
   public static ArrayList<Party> fromJSONArray(JSONArray array)
     throws JSONException
   {
+    Log.i("TAG", "ARRAY CONTENTS: \"" + array.toString() + "\"");
     ArrayList<Party> toReturn = new ArrayList<Party>();
     for(int i=0; i < array.length(); ++i){
       toReturn.add(Party.valueOf(array.getJSONObject(i)));

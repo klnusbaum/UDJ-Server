@@ -227,7 +227,6 @@ public class ServerConnection{
     final HttpGet get = new HttpGet(uri + "?" + getParamString(params));
     final HttpResponse resp = getHttpClient().execute(get);
     final String response = EntityUtils.toString(resp.getEntity());
-    Log.i("TAG", "RESPONSE \"" + response + "\"");
     JSONArray toReturn = null;
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
       //Get stuff from response 
