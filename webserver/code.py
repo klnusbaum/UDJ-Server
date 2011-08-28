@@ -20,10 +20,12 @@ import web
 import json
 from Parties import RESTParty
 from Playlist import RESTPlaylist
+from Library import RESTLibrary
 
 urls = (
-'/parties', 'RESTParty'
-'/playlist', 'RESTPlaylist'
+"/parties", "RESTParty",
+"/playlist", "RESTPlaylist",
+"/library", "RESTLibrary",
 )
 app = web.application(urls, globals())
 

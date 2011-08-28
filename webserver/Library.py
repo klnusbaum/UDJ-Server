@@ -17,54 +17,69 @@ You should have received a copy of the GNU General Public License
 along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
 """
 import json
+import web
 
-class Library:
-  INVALID_SERVER_ID = -1
+class LibraryEntry:
   INVALID_LIB_ID = -1
-  DEFAULT_VOTE_NUM = 1
-  INVALID_TIME_ADDED = 'unknown'
-  SERVER_ID_PARAM = 'server_id'
-  VOTES_PARAM = 'votes'
-  LIBRARY_ID_PARAM = 'libid'
-  TIME_ADDED_PARAM = 'time_added'
+  DEFAULT_SONG_NAME = ''
+  DEFAULT_ARTIST_NAME = ''
+  DEFAULT_ALBUM_NAME= ''
+  DEFAULT_DELETED_STATUS = False
 
-  def __init__(self, server_id=INVALID_SERVER_ID, votes=DEFAULT_VOTE_NUM, libid=INVALID_LIB_ID, timeAdded=INVALID_TIME_ADDED):
-    self._serverId = server_id
-    self._votes = votes
-    self._libid = libid
-    self._timeAdded = timeAdded
+  LIB_ID_PARAM = "_id"
+  SONG_PARAM = "song"
+  ARTIST_PARAM = "artist"
+  ALBUM_PARAM = "album"
+  IS_DELETED_PARAM = "is_deleted"
 
-  def getServerId(self):
-    return self._serverId
 
-  def getVotes(self):
-    return self._votes
+  def __init__(self, lib_id=INVALID_LIB_ID, song=DEFAULT_SONG_NAME, artist=DEFAULT_ARTIST_NAME, album=DEFAULT_ALBUM_NAME, deleteStatus=DEFAULT_DELETED_STATUS):
+    self._libId = lib_id
+    self._song = song
+    self._artist = artist
+    self._album = album
+    self._deleteStatus = deleteStatus
 
   def getLibId(self):
-    return self._libid
+    return self._libId
 
-  def getTimeAdded(self):
-    return self._timeAdded
+  def getSong(self):
+    return self._song
+
+  def getArtist(self):
+    return self._artist
+
+  def getAlbum(self):
+    return self._album
+
+  def getDeleteStatus(self):
+    return self._deleteStatus
     
 class LibraryJSONEncoder(json.JSONEncoder):
   def default(self, obj):
-    if isinstance(obj, Playlist):
+    if isinstance(obj, LibraryEntry):
       return {
-        Playlist.SERVER_ID_PARAM : obj.getServerId(),
-        Playlist.VOTES_PARAM : obj.getVotes()
-        Playlist.LIBRARY_ID_PARAM : obj.getLibId(),
-        Playlist.TIME_ADDED_PARAM : obj.getTimeAdded()
+        LibraryEntry.LIB_ID_PARAM : obj.getLibId(),
+        LibraryEntry.SONG_PARAM : obj.getSong(),
+        LibraryEntry.ARTIST_PARAM : obj.getArtist(),
+        LibraryEntry.ALBUM_PARAM : obj.getAlbum(),
+        LibraryEntry.IS_DELETED_PARAM : obj.getDeleteStatus(),
       }
     else:
       return json.JSONEncoder.default(self, obj)
 
 class RESTLibrary:
   def GET(self):
-    p1 = Playlist(1, 
+    p1 = LibraryEntry(1, 'Good Day', 'Steve', 'Blue Harvest', False)
+    p2 = LibraryEntry(2, 'Blow', 'Steve', 'Blue Harvest', False)
+    p3 = LibraryEntry(3, 'Hardy Har', 'Nash', 'Cant wait', False)
+    p4 = LibraryEntry(4, 'Five', 'Nash', 'Cant wait', False)
     parray = list()
     parray.append(p1)
     parray.append(p2)
+    parray.append(p3)
+    parray.append(p4)
     web.header('Content-Type', 'application/json')
-    return json.dumps(parray, cls=PlaylistJSONEncoder)
+    return json.dumps(parray, cls=LibraryJSONEncoder)
 
 

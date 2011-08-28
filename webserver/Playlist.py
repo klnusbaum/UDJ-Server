@@ -17,8 +17,9 @@ You should have received a copy of the GNU General Public License
 along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
 """
 import json
+import web
 
-class Playlist:
+class PlaylistEntry:
   INVALID_SERVER_ID = -1
   INVALID_LIB_ID = -1
   DEFAULT_VOTE_NUM = 1
@@ -48,19 +49,20 @@ class Playlist:
     
 class PlaylistJSONEncoder(json.JSONEncoder):
   def default(self, obj):
-    if isinstance(obj, Playlist):
+    if isinstance(obj, PlaylistEntry):
       return {
-        Playlist.SERVER_ID_PARAM : obj.getServerId(),
-        Playlist.VOTES_PARAM : obj.getVotes()
-        Playlist.LIBRARY_ID_PARAM : obj.getLibId(),
-        Playlist.TIME_ADDED_PARAM : obj.getTimeAdded()
+        PlaylistEntry.SERVER_ID_PARAM : obj.getServerId(),
+        PlaylistEntry.VOTES_PARAM : obj.getVotes(),
+        PlaylistEntry.LIBRARY_ID_PARAM : obj.getLibId(),
+        PlaylistEntry.TIME_ADDED_PARAM : obj.getTimeAdded()
       }
     else:
       return json.JSONEncoder.default(self, obj)
 
 class RESTPlaylist:
   def GET(self):
-    p1 = Playlist(1, 
+    p1 = PlaylistEntry(1, 4, 1, '2011-08-27 22:40:30')
+    p2 = PlaylistEntry(2, 3, 4, '2011-08-27 22:39:30')
     parray = list()
     parray.append(p1)
     parray.append(p2)
