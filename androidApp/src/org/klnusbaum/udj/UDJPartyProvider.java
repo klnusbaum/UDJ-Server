@@ -35,8 +35,6 @@ import java.util.ArrayList;
 /**
  * Content provider used to maintain the content asociated
  * with the current party the user is logged into.
- * 
- * TODO Playlist table and library table should be joined to create a view.
  */
 public class UDJPartyProvider extends ContentProvider{
   
