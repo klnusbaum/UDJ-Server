@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -48,6 +49,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
+import org.apache.http.cookie.Cookie;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -79,12 +82,17 @@ public class ServerConnection{
     SERVER_URL + "/library";
   public static final String PARTIES_URI =
     SERVER_URL + "/parties";
+  public static final String AUTH_URI =
+    SERVER_URL + "/auth";
   public static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
-  private static HttpClient httpClient;
+
+  private static DefaultHttpClient httpClient;
+  private static String mostRecentUsername;
+  private static String mostRecentPassword;
   
 
 
-  public static HttpClient getHttpClient(){
+  public static DefaultHttpClient getHttpClient(){
     if(httpClient == null){
       httpClient = new DefaultHttpClient();
       final HttpParams params = httpClient.getParams();
@@ -94,6 +102,7 @@ public class ServerConnection{
     }
     return httpClient;
   }
+
   /**
    * Attempts to authenticate with ther UDJ server. Should
    * be used by the AuthActivity.
@@ -133,12 +142,38 @@ public class ServerConnection{
   public static boolean authenticate(String username, String password,
     Handler handler, final Context context)
   {
-/*    handler.post(new Runnable(){
-      public void run(){
-        ((AuthActivity) context).onAuthResult(true);
-      }
-    });*/
-    return true;
+    if(!needCookieRefresh(username, password)){
+      return true;
+    }
+
+    mostRecentUsername = username;
+    mostRecentPassword = password;
+    final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+    params.add(new BasicNameValuePair(PARAM_USERNAME, mostRecentUsername));
+    params.add(new BasicNameValuePair(PARAM_PASSWORD, mostRecentPassword));
+    try{
+      doPost(params, AUTH_URI);
+    }
+    catch(AuthenticationException e){
+      //TODO maybe do something?
+    }
+    catch(JSONException e){
+      //TODO maybe do something?
+    }
+    catch(IOException e){
+      //TODO maybe do something?
+    }
+
+    final boolean isCookieGood = hasValidCookie();
+
+    if(handler != null && context != null){
+      handler.post(new Runnable(){
+        public void run(){
+          ((AuthActivity) context).onAuthResult(isCookieGood, mostRecentUsername, mostRecentPassword);
+        }
+      });
+    }
+    return isCookieGood;
   }
 
   public static List<LibraryEntry> getLibraryUpdate(
@@ -260,6 +295,28 @@ public class ServerConnection{
     params.add(new BasicNameValuePair(PARAM_LOCATION, "unknown"));
     JSONArray parties = doGet(params, PARTIES_URI);
     return Party.fromJSONArray(parties);
+  }
+
+  private static boolean needCookieRefresh(String username, String password){
+    if(
+      mostRecentUsername == null ||
+      mostRecentPassword == null ||
+      !mostRecentUsername.equals(username) ||
+      !mostRecentPassword.equals(password)
+    )
+    {
+      return true;
+    }
+    return hasValidCookie();
+  }
+
+  private static boolean hasValidCookie(){
+    for(Cookie cookie: getHttpClient().getCookieStore().getCookies()){
+      if(!cookie.isExpired(new Date())){
+        return false;
+      }
+    }
+    return true;
   }
 
 }

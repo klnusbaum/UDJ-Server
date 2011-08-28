@@ -59,9 +59,6 @@ import org.klnusbaum.udj.containers.Party;
  */
 public class PartySelectorActivity extends FragmentActivity{
 
-
-
-
   @Override
   public void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
@@ -71,8 +68,6 @@ public class PartySelectorActivity extends FragmentActivity{
       ParyListFragment list = new ParyListFragment();
       fm.beginTransaction().add(android.R.id.content, list).commit();
     }
-
-
   }
 
   public static class ParyListFragment extends ListFragment
@@ -225,7 +220,6 @@ public class PartySelectorActivity extends FragmentActivity{
     }
   
     public void onLoadFinished(Loader<List<Party> > loader, List<Party> data){
-
       if(data == null){
         setEmptyText(getString(R.string.party_load_error));
       }

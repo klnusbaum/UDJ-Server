@@ -21,9 +21,9 @@
     <string name="app_name">UDJ</string>
     <string name="udj_name">UDJ</string>
     <string name="username_text">Username:</string>
-    <string name="username_hint">Username:</string>
+    <string name="username_hint">Username</string>
     <string name="password_text">Password:</string>
-    <string name="password_hint">Password:</string>
+    <string name="password_hint">Password</string>
     <string name="login_text">Login</string>
     <string name="authenticating">Logging In...</string>
     <string name="account_type">org.klnusbaum.udj</string>
@@ -38,4 +38,6 @@
     <string name="quit_message">Are you sure you want to leave the party?</string>
     <string name="no_party_items">No parties nearby.</string>
     <string name="party_load_error">Error loading parties. Please try again.</string>
+    <string name="login_error">Login Error</string>
+    <string name="login_error_message">Looks like there was a problem logging in. Can you try retyping your name and password please?</string>
 </resources>

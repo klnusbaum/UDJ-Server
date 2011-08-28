@@ -26,9 +26,15 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.EditText;
 import android.os.Bundle;
+import android.os.Handler;
+import android.content.DialogInterface;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.app.Dialog;
 import android.util.Log;
 
 import org.klnusbaum.udj.R;
+import org.klnusbaum.udj.network.ServerConnection;
 
 
 /**
@@ -39,6 +45,9 @@ public class AuthActivity extends AccountAuthenticatorActivity{
   /** Public constants used for identifing extras in bundles */
   public static final String AUTHTOKEN_TYPE_EXTRA = "auth_token_type";
   public static final String UPDATE_CREDS_EXTRA = "update credentials";
+
+  private static final short PROGRESS_DIALOG = 0;
+  private static final short LOGIN_ERROR_DIALOG = 1;
 
   /** Stores the current username */
   private String username;
@@ -61,6 +70,10 @@ public class AuthActivity extends AccountAuthenticatorActivity{
   /** Reference to the Account Manager */
   private AccountManager am;
 
+  private final Handler authHandler = new Handler();
+
+  private Thread authThread = null;
+
   @Override
   public void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
@@ -78,6 +91,37 @@ public class AuthActivity extends AccountAuthenticatorActivity{
     usernameEdit.setText(username);
    
   } 
+
+  @Override
+  protected Dialog onCreateDialog(int id){
+    switch(id){
+    case PROGRESS_DIALOG:
+      final ProgressDialog progDialog = new ProgressDialog(this);
+      progDialog.setMessage(getText(R.string.authenticating));
+      progDialog.setIndeterminate(true);
+      progDialog.setCancelable(true);
+      progDialog.setOnCancelListener(new DialogInterface.OnCancelListener(){
+        public void onCancel(DialogInterface dialog){
+          if(authThread != null){
+            authThread.interrupt();
+            finish();
+          }
+        }
+      });
+      return progDialog;
+    case LOGIN_ERROR_DIALOG:
+      AlertDialog.Builder builder = new AlertDialog.Builder(this);
+      builder = builder.setTitle(R.string.login_error)
+        .setMessage(R.string.login_error_message)
+        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener(){
+          public void onClick(DialogInterface dialog, int which){
+            dialog.dismiss();
+          }
+        });
+      return builder.create();
+    }
+    return null;
+  }
      
   /**
    * Activated when the login button is clicked, this method
@@ -91,23 +135,29 @@ public class AuthActivity extends AccountAuthenticatorActivity{
       username = usernameEdit.getText().toString();
     }
     String password = passwordEdit.getText().toString();
-    //TODO throw error is password is blank
-    
-    //TODO Acutually preform login stuff
+    //TODO throw error is password is blank, or better yet,
+    //don't let them click the login button until it's been filled in
+    showDialog(PROGRESS_DIALOG);
+
+    authThread = ServerConnection.attemptAuth(username, password, authHandler, this);
+  }
+
+  public void onAuthResult(boolean result, String username, String password){
+    if(!result){
+      showDialog(LOGIN_ERROR_DIALOG);
+      return;
+    }
     final Account account = 
       new Account(username, getString(R.string.account_type));
     final Intent resultIntent = new Intent();
     if(addingNewAccount){
       am.addAccountExplicitly(account, password, null);
-      /*ContentResolver.setSyncAutomatically(account, 
-        getString(R.string.authority), true);*/
       resultIntent.putExtra(AccountManager.KEY_ACCOUNT_NAME, username);
       resultIntent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, 
         getString(R.string.account_type));
       if(authTokenType != null &&
         authTokenType.equals(getString(R.string.authtoken_type)))
       {
-      
         resultIntent.putExtra(AccountManager.KEY_AUTHTOKEN, password);
         resultIntent.putExtra(AccountManager.KEY_ACCOUNT_NAME, username);
       }

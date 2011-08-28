@@ -29,5 +29,7 @@ urls = (
 )
 app = web.application(urls, globals())
 
+conn = psycopg2.connect("dbname=test user=tester")
+
 if __name__ == "__main__": 
   app.run()

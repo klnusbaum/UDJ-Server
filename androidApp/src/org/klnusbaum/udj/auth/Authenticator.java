@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import org.klnusbaum.udj.R;
+import org.klnusbaum.udj.network.ServerConnection;
 
 /**
  * Class used to authenticate with the UDJ server
@@ -100,14 +101,9 @@ public class Authenticator extends AbstractAccountAuthenticator{
       }
     }
     
-    //TODO Doesn't get here yet, but if it does we need to launch the
-    //AUTH_ACTIVITY and get the correct password.
-    final Bundle result = new Bundle();
-    result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
-    result.putString(AccountManager.KEY_ACCOUNT_TYPE, 
-      context.getString(R.string.account_type));
-    result.putString(AccountManager.KEY_AUTHTOKEN, "steve");
-    return result;
+    //TODO we need to actually return an bundle containing
+    //an intent to relaunch the auth activitiy if necessary.
+    return null;
   }
 
   @Override
@@ -148,10 +144,9 @@ public class Authenticator extends AbstractAccountAuthenticator{
    * @param password The password assocaited with the username
    * in question.
    */ 
-  private boolean isValidUserNameAndPassword(String username,
-    String password)
+  private boolean isValidUserNameAndPassword(
+    String username, String password)
   {
-    //TODO Implement this function
-    return true;
+    return ServerConnection.authenticate(username, password, null, null);
   }
 }
