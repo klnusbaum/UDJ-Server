@@ -82,7 +82,6 @@ public class Party{
   public static ArrayList<Party> fromJSONArray(JSONArray array)
     throws JSONException
   {
-    Log.i("TAG", "ARRAY CONTENTS: \"" + array.toString() + "\"");
     ArrayList<Party> toReturn = new ArrayList<Party>();
     for(int i=0; i < array.length(); ++i){
       toReturn.add(Party.valueOf(array.getJSONObject(i)));

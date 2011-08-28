@@ -29,6 +29,7 @@ import android.accounts.Account;
 import android.content.DialogInterface;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ContentResolver;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -39,6 +40,7 @@ import java.util.HashMap;
 
 import org.klnusbaum.udj.auth.AuthActivity;
 import org.klnusbaum.udj.containers.Party;
+import org.klnusbaum.udj.sync.SyncAdapter;
 
 /**
  * The main activity display class.
@@ -48,8 +50,11 @@ public class PartyActivity extends FragmentActivity{
   private TabHost tabHost;
   private TabManager tabManager;
   private long partyId;
+  private Account account;
+  private String authtoken;
 
   private static final String TAB_EXTRA = "org.klnusbaum.udj.tab";
+  public static final String ACCOUNT_EXTRA = "org.klnusbaum.udj.account";
 
   private static final String DIALOG_FRAG_TAG = "dialog";
 
@@ -61,14 +66,17 @@ public class PartyActivity extends FragmentActivity{
     if(savedInstanceState != null){
       tabHost.setCurrentTabByTag(savedInstanceState.getString(TAB_EXTRA));
       partyId = savedInstanceState.getLong(Party.PARTY_ID_EXTRA);
+      account = (Account)savedInstanceState.getParcelable(ACCOUNT_EXTRA);
     }
     else{
+      Intent intent = getIntent();
       partyId = 
-        getIntent().getLongExtra(Party.PARTY_ID_EXTRA, Party.INVALID_PARTY_ID);
+        intent.getLongExtra(Party.PARTY_ID_EXTRA, Party.INVALID_PARTY_ID);
       if(partyId == Party.INVALID_PARTY_ID){
         setResult(Activity.RESULT_CANCELED);
         finish();
       }
+      account = intent.getParcelableExtra(ACCOUNT_EXTRA);
     }
     tabHost = (TabHost)findViewById(android.R.id.tabhost);
     tabHost.setup();
@@ -82,6 +90,11 @@ public class PartyActivity extends FragmentActivity{
     tabManager.addTab(tabHost.newTabSpec("library").setIndicator("Library"),
       LibraryActivity.LibraryFragment.class, partyBundle);
 
+    Bundle syncParams = new Bundle();
+    syncParams.putLong(Party.PARTY_ID_EXTRA, partyId);
+    syncParams.putBoolean(SyncAdapter.LIBRARY_SYNC_EXTRA, true);
+    syncParams.putBoolean(SyncAdapter.PLAYLIST_SYNC_EXTRA, true);
+    ContentResolver.requestSync(account, getString(R.string.authority), syncParams);
   }
 
 

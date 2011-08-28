@@ -206,6 +206,10 @@ public class PartySelectorActivity extends FragmentActivity{
       partyIntent.putExtra(
         Party.PARTY_ID_EXTRA, 
         partyAdpater.getPartyId(position));
+      partyIntent.putExtra(
+        PartyActivity.ACCOUNT_EXTRA,
+        account);
+        
       startActivity(partyIntent);
     }
   

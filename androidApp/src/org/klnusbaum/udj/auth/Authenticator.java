@@ -64,7 +64,7 @@ public class Authenticator extends AbstractAccountAuthenticator{
   public Bundle confirmCredentials(AccountAuthenticatorResponse response,
     Account account, Bundle options)
   {
-    //TOD actually implement this method
+    //TODO actually implement this method
     final Bundle result = new Bundle();
     result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, true);
     return result;

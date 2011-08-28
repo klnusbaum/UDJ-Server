@@ -106,6 +106,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
       //Get Authtoken
       authtoken = am.blockingGetAuthToken(
         account, context.getString(R.string.authtoken_type), true);
+      if(authtoken == null){
+        //TODO throw exeception if authtoken is null
+      }
 
       //Sync Library if requested
       if(synclibrary){
