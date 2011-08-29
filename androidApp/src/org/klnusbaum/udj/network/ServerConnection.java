@@ -153,8 +153,10 @@ public class ServerConnection{
     final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
     params.add(new BasicNameValuePair(PARAM_USERNAME, mostRecentUsername));
     params.add(new BasicNameValuePair(PARAM_PASSWORD, mostRecentPassword));
+    boolean authWorked = false;
     try{
       doPost(params, AUTH_URI);
+      authWorked = hasValidCookie();
     }
     catch(AuthenticationException e){
       //TODO maybe do something?
@@ -166,16 +168,16 @@ public class ServerConnection{
       //TODO maybe do something?
     }
 
-    final boolean isCookieGood = hasValidCookie();
+    final boolean finalAuth = authWorked;
 
     if(handler != null && context != null){
       handler.post(new Runnable(){
         public void run(){
-          ((AuthActivity) context).onAuthResult(isCookieGood, mostRecentUsername, mostRecentPassword);
+          ((AuthActivity) context).onAuthResult(finalAuth, mostRecentUsername, mostRecentPassword);
         }
       });
     }
-    return isCookieGood;
+    return finalAuth;
   }
 
   public static List<LibraryEntry> getLibraryUpdate(
