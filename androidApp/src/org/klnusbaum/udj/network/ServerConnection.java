@@ -144,7 +144,9 @@ public class ServerConnection{
   public static boolean authenticate(String username, String password,
     Handler handler, final Context context)
   {
+
     if(!needCookieRefresh(username, password)){
+      returnToActivityIfNecessary(true, handler, context);
       return true;
     }
 
@@ -168,16 +170,20 @@ public class ServerConnection{
       //TODO maybe do something?
     }
 
-    final boolean finalAuth = authWorked;
+    returnToActivityIfNecessary(authWorked, handler, context);
+    return authWorked;
+  }
 
+  private static void returnToActivityIfNecessary(
+    final boolean authWorked, Handler handler, final Context context)
+  {
     if(handler != null && context != null){
       handler.post(new Runnable(){
         public void run(){
-          ((AuthActivity) context).onAuthResult(finalAuth, mostRecentUsername, mostRecentPassword);
+          ((AuthActivity) context).onAuthResult(authWorked, mostRecentUsername, mostRecentPassword);
         }
       });
     }
-    return finalAuth;
   }
 
   public static List<LibraryEntry> getLibraryUpdate(

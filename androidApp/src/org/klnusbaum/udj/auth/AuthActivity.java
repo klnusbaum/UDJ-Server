@@ -144,6 +144,7 @@ public class AuthActivity extends AccountAuthenticatorActivity{
 
   public void onAuthResult(boolean result, String username, String password){
     dismissDialog(PROGRESS_DIALOG);
+    removeDialog(PROGRESS_DIALOG);
     if(!result){
       showDialog(LOGIN_ERROR_DIALOG);
       return;
