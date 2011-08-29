@@ -133,6 +133,7 @@ public class PartySelectorActivity extends FragmentActivity{
       if(resultCode == Activity.RESULT_CANCELED){
         getActivity().setResult(Activity.RESULT_CANCELED);
         getActivity().finish();
+        return;
       }
       Account[] udjAccounts = 
         am.getAccountsByType(getString(R.string.account_type));
