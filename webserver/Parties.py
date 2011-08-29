@@ -18,6 +18,7 @@ along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
 """
 import json
 import web
+from Auth import Authenticator
 
 class Party:
   INVALID_PARTY_ID = -1
@@ -43,11 +44,16 @@ class PartyJSONEncoder(json.JSONEncoder):
   
 class RESTParty:
   def GET(self):
-    p1 = Party('1', 'Steve Party')
-    p2 = Party('2', 'Kurtis Party')
-    parray = list()
-    parray.append(p1)
-    parray.append(p2)
-    web.header('Content-Type', 'application/json')
-    return json.dumps(parray, cls=PartyJSONEncoder)
-
+    cookies = web.cookies()
+    if(Authenticator.isAuthenticated(cookies)):
+      p1 = Party('1', 'Steve Party')
+      p2 = Party('2', 'Kurtis Party')
+      parray = list()
+      parray.append(p1)
+      parray.append(p2)
+      web.header('Content-Type', 'application/json')
+      return json.dumps(parray, cls=PartyJSONEncoder)
+    else:
+      web.header('WWW-Authenticate')
+      web.ctx.status = '401 Unauthorized'
+      return None

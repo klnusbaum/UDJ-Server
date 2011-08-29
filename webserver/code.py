@@ -21,15 +21,16 @@ import json
 from Parties import RESTParty
 from Playlist import RESTPlaylist
 from Library import RESTLibrary
+from Auth import Authenticator
 
 urls = (
 "/parties", "RESTParty",
 "/playlist", "RESTPlaylist",
 "/library", "RESTLibrary",
+"/auth", "Authenticator"
 )
 app = web.application(urls, globals())
 
-conn = psycopg2.connect("dbname=test user=tester")
 
 if __name__ == "__main__": 
   app.run()

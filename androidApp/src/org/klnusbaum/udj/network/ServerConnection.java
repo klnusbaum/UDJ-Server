@@ -89,6 +89,8 @@ public class ServerConnection{
   private static DefaultHttpClient httpClient;
   private static String mostRecentUsername;
   private static String mostRecentPassword;
+
+  private static final String LOGIN_COOKIE_NAME = "LOGGED_IN";
   
 
 
@@ -312,7 +314,9 @@ public class ServerConnection{
 
   private static boolean hasValidCookie(){
     for(Cookie cookie: getHttpClient().getCookieStore().getCookies()){
-      if(!cookie.isExpired(new Date())){
+      if(cookie.getName().equals(LOGIN_COOKIE_NAME) &&
+        !cookie.isExpired(new Date()))
+      {
         return false;
       }
     }
