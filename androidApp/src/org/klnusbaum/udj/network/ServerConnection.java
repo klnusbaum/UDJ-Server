@@ -157,16 +157,15 @@ public class ServerConnection{
     params.add(new BasicNameValuePair(PARAM_PASSWORD, mostRecentPassword));
     boolean authWorked = false;
     try{
-      doPost(params, AUTH_URI);
+      doSimplePost(params, AUTH_URI);
       authWorked = hasValidCookie();
     }
     catch(AuthenticationException e){
-      //TODO maybe do something?
-    }
-    catch(JSONException e){
+      Log.e("TAG", "Auth exceptions");
       //TODO maybe do something?
     }
     catch(IOException e){
+      Log.e("TAG", "IOException exceptions");
       //TODO maybe do something?
     }
 
@@ -240,6 +239,20 @@ public class ServerConnection{
         PARAM_LAST_UPDATE, formatter.format(lastUpdated)));
     }
     return params;
+  }
+
+  public static void doSimplePost(ArrayList<NameValuePair> params, String uri)
+    throws AuthenticationException, IOException
+  {
+    HttpEntity entity = null;
+    entity = new UrlEncodedFormEntity(params);
+    final HttpPost post = new HttpPost(uri);
+    post.addHeader(entity.getContentType());
+    post.setEntity(entity);
+    final HttpResponse resp = getHttpClient().execute(post);
+    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
+      throw new AuthenticationException();
+    }
   }
 
   public static JSONArray doPost(ArrayList<NameValuePair> params, String uri)
@@ -317,18 +330,19 @@ public class ServerConnection{
     {
       return true;
     }
-    return hasValidCookie();
+    return !hasValidCookie();
   }
 
   private static boolean hasValidCookie(){
+    Log.i("TAG", "CHECKING COOKIES!");
     for(Cookie cookie: getHttpClient().getCookieStore().getCookies()){
       if(cookie.getName().equals(LOGIN_COOKIE_NAME) &&
         !cookie.isExpired(new Date()))
       {
-        return false;
+        return true;
       }
     }
-    return true;
+    return false;
   }
 
 }
