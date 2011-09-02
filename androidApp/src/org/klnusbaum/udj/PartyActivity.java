@@ -72,10 +72,10 @@ public class PartyActivity extends FragmentActivity{
       Intent intent = getIntent();
       partyId = 
         intent.getLongExtra(Party.PARTY_ID_EXTRA, Party.INVALID_PARTY_ID);
-      if(partyId == Party.INVALID_PARTY_ID){
+      /*if(partyId == Party.INVALID_PARTY_ID){
         setResult(Activity.RESULT_CANCELED);
         finish();
-      }
+      }*/
       account = intent.getParcelableExtra(ACCOUNT_EXTRA);
     }
     tabHost = (TabHost)findViewById(android.R.id.tabhost);
@@ -92,7 +92,7 @@ public class PartyActivity extends FragmentActivity{
 
     Bundle syncParams = new Bundle();
     syncParams.putLong(Party.PARTY_ID_EXTRA, partyId);
-    syncParams.putBoolean(SyncAdapter.LIBRARY_SYNC_EXTRA, true);
+    //syncParams.putBoolean(SyncAdapter.LIBRARY_SYNC_EXTRA, true);
     syncParams.putBoolean(SyncAdapter.PLAYLIST_SYNC_EXTRA, true);
     ContentResolver.requestSync(account, getString(R.string.authority), syncParams);
   }

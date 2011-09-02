@@ -272,12 +272,15 @@ public class PartySelectorActivity extends FragmentActivity{
         return parties;
       }
       catch(JSONException e){
+        Log.i("TAG", "JSON EXCEPTION " + e.getMessage());
         //TODO notify the user
       }
       catch(IOException e){
+        Log.i("TAG", "IO EXCEPTION " + e.getMessage());
         //TODO notify the user
       }
       catch(AuthenticationException e){
+        Log.i("TAG", "AUTH EXCEPTION " + e.getMessage());
         //TODO notify the user
       }
       return null;

@@ -50,8 +50,11 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.apache.http.cookie.Cookie;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.json.JSONException;
 
 
@@ -59,6 +62,7 @@ import org.klnusbaum.udj.auth.AuthActivity;
 import org.klnusbaum.udj.containers.LibraryEntry;
 import org.klnusbaum.udj.containers.PlaylistEntry;
 import org.klnusbaum.udj.containers.Party;
+import org.klnusbaum.udj.containers.AcousticsInfo;
 
 /**
  * A connection to the UDJ server
@@ -75,23 +79,24 @@ public class ServerConnection{
   public static final String SERVER_TIMESTAMP_FORMAT = "yyyy-mm-dd hh:mm:ss";
   //public static final String SERVER_URL = "http://www.bazaarsolutions.org/udj";
   //THIS IS FOR TESTING AT THE MOMENT
-  public static final String SERVER_URL = "http://10.0.2.2:8081";
+  public static final String SERVER_URL = "https://www-s.acm.uiuc.edu/acoustics";
   public static final String PLAYLIST_URI = 
     SERVER_URL + "/playlist";
   public static final String LIBRARY_URI = 
     SERVER_URL + "/library";
-  public static final String PARTIES_URI =
-    SERVER_URL + "/parties";
+  /*public static final String PARTIES_URI =
+    SERVER_URL + "/parties";*/
+  public static final String QUERY_URI =
+    SERVER_URL + "/json.pl";
   public static final String AUTH_URI =
-    SERVER_URL + "/auth";
+    SERVER_URL + "/www-data/auth";
   public static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
 
   private static DefaultHttpClient httpClient;
-  private static String mostRecentUsername;
-  private static String mostRecentPassword;
 
-  private static final String LOGIN_COOKIE_NAME = "LOGGED_IN";
+  private static final String LOGIN_COOKIE_NAME = "CGISESSID";
   
+  private static final AuthScope SERVER_AUTH_SCOPE = new AuthScope("www-s.acm.uiuc.edu", AuthScope.ANY_PORT);
 
 
   public static DefaultHttpClient getHttpClient(){
@@ -101,6 +106,8 @@ public class ServerConnection{
       HttpConnectionParams.setConnectionTimeout(params, REGISTRATION_TIMEOUT);
       HttpConnectionParams.setSoTimeout(params, REGISTRATION_TIMEOUT);
       ConnManagerParams.setTimeout(params, REGISTRATION_TIMEOUT);
+      /*httpClient.getAuthSchemes().register(
+        AuthPolicy.SPNEGO, new NegotiateSchemeFactory());*/
     }
     return httpClient;
   }
@@ -149,21 +156,21 @@ public class ServerConnection{
       returnToActivityIfNecessary(true, handler, context);
       return true;
     }
+    UsernamePasswordCredentials creds = 
+      new UsernamePasswordCredentials(username, password);
+    DefaultHttpClient client = getHttpClient();
+    client.getCredentialsProvider().setCredentials(SERVER_AUTH_SCOPE, creds);
 
-    mostRecentUsername = username;
-    mostRecentPassword = password;
-    final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-    params.add(new BasicNameValuePair(PARAM_USERNAME, mostRecentUsername));
-    params.add(new BasicNameValuePair(PARAM_PASSWORD, mostRecentPassword));
     boolean authWorked = false;
     try{
-      doSimplePost(params, AUTH_URI);
+      HttpGet get = new HttpGet(AUTH_URI);
+      HttpResponse resp = client.execute(get);
       authWorked = hasValidCookie();
     }
-    catch(AuthenticationException e){
+    /*catch(AuthenticationException e){
       Log.e("TAG", "Auth exceptions");
       //TODO maybe do something?
-    }
+    }*/
     catch(IOException e){
       Log.e("TAG", "IOException exceptions");
       //TODO maybe do something?
@@ -176,43 +183,45 @@ public class ServerConnection{
   private static void returnToActivityIfNecessary(
     final boolean authWorked, Handler handler, final Context context)
   {
+    UsernamePasswordCredentials creds = 
+      (UsernamePasswordCredentials)getHttpClient()
+      .getCredentialsProvider()
+      .getCredentials(SERVER_AUTH_SCOPE);
+    final String username = creds.getUserName();
+    final String password = creds.getPassword();
     if(handler != null && context != null){
       handler.post(new Runnable(){
         public void run(){
-          ((AuthActivity) context).onAuthResult(authWorked, mostRecentUsername, mostRecentPassword);
+          ((AuthActivity) context).onAuthResult(authWorked, username, password);
         }
       });
     }
   }
 
   public static List<LibraryEntry> getLibraryUpdate(
-    Account account,
-    String authtoken, 
     long partyId,
     GregorianCalendar lastUpdated)
     throws JSONException, ParseException, IOException, AuthenticationException
   {
     final ArrayList<NameValuePair> params = 
-      getEssentialParameters(account.name, authtoken, partyId, lastUpdated);
+      getEssentialParameters(partyId, lastUpdated);
     JSONArray libraryEntries = doPost(params, LIBRARY_URI);
     return LibraryEntry.fromJSONArray(libraryEntries);
   }
 
   public static List<PlaylistEntry> getPlaylistUpdate(  
-   Account account,
-    String authtoken, 
     long partyId,
     List<PlaylistEntry> toUpdate, 
     GregorianCalendar lastUpdated) throws
     JSONException, ParseException, IOException, AuthenticationException
   {
     final ArrayList<NameValuePair> params = 
-      getEssentialParameters(account.name, authtoken, partyId, lastUpdated);
-    JSONArray playlistEntries =null;
+      getEssentialParameters(partyId, lastUpdated);
+    JSONObject acousticsInfo =null;
     if(toUpdate == null || toUpdate.isEmpty()){
       //TODO we should actually do a get here because we're not changing 
       //anything.
-      playlistEntries = doGet(params, PLAYLIST_URI);
+      playlistEntries = new JSONObject(doGet(params, QUERY_URI));
     }
     else{
       params.add(new BasicNameValuePair(
@@ -220,17 +229,16 @@ public class ServerConnection{
         PlaylistEntry.getJSONArray(toUpdate).toString()));
       playlistEntries = doPost(params, PLAYLIST_URI);
     }
-    return PlaylistEntry.fromJSONArray(playlistEntries);
+    //return PlaylistEntry.fromJSONArray(playlistEntries);
+    return AcousticsInfo.getPlaylistEntries(acousticsInfo);
   }
 
   private static ArrayList<NameValuePair> getEssentialParameters(
-    String name, String authtoken, long partyId, GregorianCalendar lastUpdated)
+     long partyId, GregorianCalendar lastUpdated)
   {
     ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
     ArrayList<PlaylistEntry> toReturn = new ArrayList<PlaylistEntry>();
     params.add(new BasicNameValuePair(PARAM_PARTYID, String.valueOf(partyId)));
-    params.add(new BasicNameValuePair(PARAM_USERNAME, name));
-    params.add(new BasicNameValuePair(PARAM_PASSWORD, authtoken));
     if(lastUpdated != null){
       final SimpleDateFormat formatter =
         new SimpleDateFormat(SERVER_TIMESTAMP_FORMAT);
@@ -279,24 +287,21 @@ public class ServerConnection{
     return toReturn;
   }
 
-  public static JSONArray doGet(ArrayList<NameValuePair> params, String uri)
+  public static String doGet(ArrayList<NameValuePair> params, String uri)
     throws AuthenticationException, IOException, JSONException
   {
     final HttpGet get = new HttpGet(uri + "?" + getParamString(params));
     final HttpResponse resp = getHttpClient().execute(get);
-    final String response = EntityUtils.toString(resp.getEntity());
-    JSONArray toReturn = null;
-    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
-      //Get stuff from response 
-      toReturn = new JSONArray(response);
-    } 
+    String response = EntityUtils.toString(resp.getEntity());
+    if(resp.getStatusLine().getStatusCode() != HttpStatus.SC_UNAUTHORIZED){
+      return response;
+    }
     else if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
       throw new AuthenticationException();
     }
     else{
       throw new IOException();
     }
-    return toReturn;
   }
 
   private static String getParamString(ArrayList<NameValuePair> params){
@@ -312,20 +317,23 @@ public class ServerConnection{
     JSONException, ParseException, IOException, AuthenticationException
   {
     final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-    params.add(new BasicNameValuePair(PARAM_USERNAME, account.name));
-    params.add(new BasicNameValuePair(PARAM_PASSWORD, authtoken));
     //TODO Actually get location
     params.add(new BasicNameValuePair(PARAM_LOCATION, "unknown"));
-    JSONArray parties = doGet(params, PARTIES_URI);
-    return Party.fromJSONArray(parties);
+    JSONObject acousticsInfo = new JSONObject(doGet(params, QUERY_URI));
+    return AcousticsInfo.getParties(acousticsInfo);
   }
 
   private static boolean needCookieRefresh(String username, String password){
+    UsernamePasswordCredentials creds = 
+      (UsernamePasswordCredentials)getHttpClient()
+      .getCredentialsProvider()
+      .getCredentials(SERVER_AUTH_SCOPE);
     if(
-      mostRecentUsername == null ||
-      mostRecentPassword == null ||
-      !mostRecentUsername.equals(username) ||
-      !mostRecentPassword.equals(password)
+      creds == null ||
+      creds.getUserName() == null ||
+      !creds.getUserName().equals(username) ||
+      creds.getPassword() == null ||
+      !creds.getPassword().equals(username)
     )
     {
       return true;
@@ -334,10 +342,8 @@ public class ServerConnection{
   }
 
   private static boolean hasValidCookie(){
-    Log.i("TAG", "CHECKING COOKIES!");
     for(Cookie cookie: getHttpClient().getCookieStore().getCookies()){
-      if(cookie.getName().equals(LOGIN_COOKIE_NAME) &&
-        !cookie.isExpired(new Date()))
+      if(cookie.getName().equals(LOGIN_COOKIE_NAME))
       {
         return true;
       }
