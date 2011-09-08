@@ -59,6 +59,8 @@ import org.klnusbaum.udj.containers.Party;
  */
 public class PartySelectorActivity extends FragmentActivity{
 
+  private final Handler authHandler = new Handler();
+
   @Override
   public void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
@@ -198,6 +200,17 @@ public class PartySelectorActivity extends FragmentActivity{
     
     @Override
     public void onListItemClick(ListView l, View v, int position, long id){
+      ServerConnection.loginToParty(
+        position,
+        partyAdpater.getPartyName(position),
+        handler);
+      showDialog(PARTY_LOGIN_DIALOG);
+    }
+
+    public void onPartyLogin(boolean result, int position, String partyName){
+      //TODO handle is result is false
+      dismissDialog(PARTY_LOGIN_DIALOG);
+      removeDialog(PARTY_LOGIN_DIALOG);
       Intent partyIntent = new Intent(getActivity(), PartyActivity.class);
       partyIntent.putExtra(
         Party.PARTY_ID_EXTRA, 
@@ -286,6 +299,21 @@ public class PartySelectorActivity extends FragmentActivity{
       return null;
     }
 
+  }
+
+  public static class PartyLoadingDialog extends DialogFragment{
+
+    public static PartyLoadingDialog newInstance(){
+      PartyLoadingDialog frag = new PartyLoadingDialog();
+      return frag;
+    }
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState){
+      ProgessDialog toReturn = new ProgressDialog(getActivity());
+      toReturn.setMessage(getActivity().getString(R.string.loading_party));
+      return toReturn;
+    }
   }
 
 }

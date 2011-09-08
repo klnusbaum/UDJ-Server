@@ -90,13 +90,16 @@ public class ServerConnection{
     SERVER_URL + "/json.pl";
   public static final String AUTH_URI =
     SERVER_URL + "/www-data/auth";
+  public static final String CHANGE_PARTY_BASE_URI = 
+    QUERY_URI + "?mode=change_player;player_id=";
   public static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
 
   private static DefaultHttpClient httpClient;
 
   private static final String LOGIN_COOKIE_NAME = "CGISESSID";
   
-  private static final AuthScope SERVER_AUTH_SCOPE = new AuthScope("www-s.acm.uiuc.edu", AuthScope.ANY_PORT);
+  private static final AuthScope SERVER_AUTH_SCOPE = 
+    new AuthScope("www-s.acm.uiuc.edu", AuthScope.ANY_PORT);
 
 
   public static DefaultHttpClient getHttpClient(){
@@ -198,17 +201,6 @@ public class ServerConnection{
     }
   }
 
-  public static List<LibraryEntry> getLibraryUpdate(
-    long partyId,
-    GregorianCalendar lastUpdated)
-    throws JSONException, ParseException, IOException, AuthenticationException
-  {
-    final ArrayList<NameValuePair> params = 
-      getEssentialParameters(partyId, lastUpdated);
-    JSONArray libraryEntries = doPost(params, LIBRARY_URI);
-    return LibraryEntry.fromJSONArray(libraryEntries);
-  }
-
   public static List<PlaylistEntry> getPlaylistUpdate(  
     long partyId,
     List<PlaylistEntry> toUpdate, 
@@ -237,15 +229,15 @@ public class ServerConnection{
      long partyId, GregorianCalendar lastUpdated)
   {
     ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-    ArrayList<PlaylistEntry> toReturn = new ArrayList<PlaylistEntry>();
     params.add(new BasicNameValuePair(PARAM_PARTYID, String.valueOf(partyId)));
-    if(lastUpdated != null){
+    //TODO Needs to be changed for acoustics
+    /*if(lastUpdated != null){
       final SimpleDateFormat formatter =
         new SimpleDateFormat(SERVER_TIMESTAMP_FORMAT);
       formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
       params.add(new BasicNameValuePair(
         PARAM_LAST_UPDATE, formatter.format(lastUpdated)));
-    }
+    }*/
     return params;
   }
 
@@ -288,9 +280,9 @@ public class ServerConnection{
   }
 
   public static String doGet(ArrayList<NameValuePair> params, String uri)
-    throws AuthenticationException, IOException, JSONException
+    throws AuthenticationException, IOException
   {
-    final HttpGet get = new HttpGet(uri + "?" + getParamString(params));
+    final HttpGet get = new HttpGet(uri + getParamString(params));
     final HttpResponse resp = getHttpClient().execute(get);
     String response = EntityUtils.toString(resp.getEntity());
     if(resp.getStatusLine().getStatusCode() != HttpStatus.SC_UNAUTHORIZED){
@@ -305,9 +297,19 @@ public class ServerConnection{
   }
 
   private static String getParamString(ArrayList<NameValuePair> params){
-    String toReturn = "";
+    if(params == null){
+      return "";
+    }
+    String toReturn = "?";
+    boolean isFirst = true;
     for(NameValuePair np: params){
-      toReturn += np.getName() + "=" +np.getValue();
+      if(isFirst){
+        toReturn += np.getName() + "=" +np.getValue();
+        isFirst=false;
+      }
+      else{
+        toReturn += "&" + np.getName() + "=" +np.getValue();
+      }
     }
     return toReturn;
   }
@@ -351,4 +353,26 @@ public class ServerConnection{
     return false;
   }
 
+  public static void loginToParty(
+    int position, 
+    String partyName, 
+    Handler handler)
+  {
+    final boolean success = true;
+    try{
+      doGet(CHANGE_PARTY_BASE_URI+partyName, null); 
+    }
+    catch(AuthenticationException e){
+      success = false;
+    }
+    catch(IOException e){
+      success = false;
+    }
+    handler.post(new Runnable(){
+      public void run(){
+        ((PartySelectorActivity) context).onPartyLogin(
+          success, position, partyName);
+      }
+    });
+  }
 }

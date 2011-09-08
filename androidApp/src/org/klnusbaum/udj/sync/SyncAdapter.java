@@ -60,7 +60,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 
   private AccountManager am;
 
-  public static final String LIBRARY_SYNC_EXTRA = "library_sync";
   public static final String PLAYLIST_SYNC_EXTRA = "playlist_sync";
 
   private static final String[] playlistProjection = new String[]{
@@ -110,14 +109,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
         //TODO throw exeception if authtoken is null
       }
 
-      //Sync Library if requested
-      if(synclibrary){
-        List<LibraryEntry> updatedLibEntries = 
-          ServerConnection.getLibraryUpdate(account, authtoken, partyId, libraryLastUpdate);
-        RESTProcessor.processLibEntries(updatedLibEntries, account.name, context);
-        libraryLastUpdate = (GregorianCalendar)GregorianCalendar.getInstance();
-      }
-
       //Sync playlist if requested
       if(syncPlaylist){
 
@@ -130,7 +121,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
         //A retrieve it's response.
         List<PlaylistEntry> updatedPlaylistEntries =
           ServerConnection.getPlaylistUpdate(
-            account, authtoken, partyId, changedPlaylistEntries, playlistLastUpdate);
+            account, 
+            authtoken, 
+            partyId, 
+            changedPlaylistEntries, 
+            playlistLastUpdate);
   
         //Process the REST response from the server.
         RESTProcessor.processPlaylistEntries(
@@ -138,7 +133,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
   
         playlistLastUpdate = (GregorianCalendar)GregorianCalendar.getInstance();
       }
-
     } 
     catch(final AuthenticatorException e){
       syncResult.stats.numParseExceptions++;

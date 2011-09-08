@@ -46,4 +46,8 @@ public class PartyListAdapter extends ArrayAdapter<Party>{
   public long getPartyId(int position){
     return getItem(position).getPartyId();
   }
+
+  public long getPartyName(int position){
+    return getItem(position).getPartyName();
+  }
 }

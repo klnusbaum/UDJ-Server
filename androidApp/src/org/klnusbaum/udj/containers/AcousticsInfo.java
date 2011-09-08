@@ -21,6 +21,11 @@ public class AcousticsInfo{
   public static List<PlaylistEntry> getPlaylistEntries(JSONObject info)
     throws JSONException
   {
-    JSONArray 
+    ArrayList<PlaylistEntry> toReturn = new ArrayList<PlaylistEntry>();
+    JSONArray playlistArray = info.getJSONArray(PLAYLIST_PARAM);
+    for(int i=0; i<playlistArray.length(); ++i){
+      JSONObject currentObject = playlistArray.getJSONObject(i);
+
+    }
   }
 }
