@@ -82,4 +82,3 @@ class RESTLibrary:
     web.header('Content-Type', 'application/json')
     return json.dumps(parray, cls=LibraryJSONEncoder)
 
-

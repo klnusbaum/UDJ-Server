@@ -44,8 +44,7 @@ class PartyJSONEncoder(json.JSONEncoder):
   
 class RESTParty:
   def GET(self):
-    cookies = web.cookies()
-    if(Authenticator.isAuthenticated(cookies)):
+    if(session.loggedIn):
       p1 = Party('1', 'Steve Party')
       p2 = Party('2', 'Kurtis Party')
       parray = list()
@@ -54,6 +53,16 @@ class RESTParty:
       web.header('Content-Type', 'application/json')
       return json.dumps(parray, cls=PartyJSONEncoder)
     else:
-      web.header('WWW-Authenticate')
-      web.ctx.status = '401 Unauthorized'
+      Auth.doUnAuth()
       return None
+
+class PartyLogin:
+  def POST(self):
+    if(session.LOGGED_IN):
+      data = web.input()
+      #TODO actuall log them into the party
+      session.partyId = data.partyId
+      web.setcookie('partyId', data.partyId)
+    else:
+      Auth.doUnAuth()
+

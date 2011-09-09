@@ -139,7 +139,8 @@ public class AuthActivity extends AccountAuthenticatorActivity{
     //don't let them click the login button until it's been filled in
     showDialog(PROGRESS_DIALOG);
 
-    authThread = ServerConnection.attemptAuth(username, password, authHandler, this);
+    authThread = 
+      ServerConnection.attemptAuth(username, password, authHandler, this);
   }
 
   public void onAuthResult(boolean result, String username, String password){

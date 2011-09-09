@@ -18,19 +18,25 @@ along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
 """
 import web
 import json
+from Parties import Party
 from Parties import RESTParty
 from Playlist import RESTPlaylist
 from Library import RESTLibrary
 from Auth import Authenticator
+from Parties import PartyLogin
 
 urls = (
 "/parties", "RESTParty",
 "/playlist", "RESTPlaylist",
 "/library", "RESTLibrary",
-"/auth", "Authenticator"
+"/auth", "Authenticator" ,
+"/party_login", "PartyLogin"
 )
 app = web.application(urls, globals())
-
+#TODO need to set domain to www.bazaarsolutions.com
+session = web.session.Session(app, web.session.DiskStore('sessions'), 
+  initializer={'loggedIn' : 0, 'partyId' : Party.INVALID_PARTY_ID})
 
 if __name__ == "__main__": 
   app.run()
+

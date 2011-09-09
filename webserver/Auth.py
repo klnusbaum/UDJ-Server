@@ -23,41 +23,17 @@ class Authenticator:
   PASSWORD_PARAM = 'password'
   def POST(self):
     data = web.input()
-    if(Authenticator.isUserValid(data.username, data.password)):
-      #TODO need to set domain to www.bazaarsolutions.com
-      web.setcookie('LOGGED_IN', True, 43200)
-      web.setcookie('USERNAME', data.username)
-      web.setcookie('AUTH_HASH', Authenticator.getAuthHash(data.password))
+    if(isUserValid(data.username, data.password)):
+      web.session.loggedIn = 1
+      web.setcookie('loggedIn', True)
     else:
       return None
 
-  @staticmethod
-  def getAuthHash(username):
-    #TODO actually implement this
-    return 'blahblahblah'
-
-  @staticmethod
-  def isUserValid(username, password):
-    #TODO actually implement this
-    return True
-
-  @staticmethod
-  def isAuthenticated(cookies):
-    logged_in = False
-    authhash = None
-    username = ''
-    try:
-      logged_in = cookies.LOGGED_IN
-      userhash = cookies.AUTH_HASH
-      username = cookies.USERNAME
-    except:
-      return False
-    return (logged_in and
-      Authenticator.usernameMatchesHash(username, userhash))
-
-  @staticmethod
-  def usernameMatchesHash(username, userhash):
-    #TODO actually implement this
-    return True
-
+def doUnAuth():
+  web.header('WWW-Authenticate')
+  web.ctx.status = '401 Unauthorized'
+ 
+def isUserValid(username, password):
+  #TODO actually implement this
+  return True
 

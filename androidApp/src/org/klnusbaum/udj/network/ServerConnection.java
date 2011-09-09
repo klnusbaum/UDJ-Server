@@ -59,6 +59,7 @@ import org.klnusbaum.udj.auth.AuthActivity;
 import org.klnusbaum.udj.containers.LibraryEntry;
 import org.klnusbaum.udj.containers.PlaylistEntry;
 import org.klnusbaum.udj.containers.Party;
+import org.klnusbaum.udj.PartySelectorActivity;
 
 /**
  * A connection to the UDJ server
@@ -84,13 +85,16 @@ public class ServerConnection{
     SERVER_URL + "/parties";
   public static final String AUTH_URI =
     SERVER_URL + "/auth";
+  public static final String PARTY_LOGIN_URI =
+    SERVER_URL + "/party_login";
   public static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
 
   private static DefaultHttpClient httpClient;
   private static String mostRecentUsername;
   private static String mostRecentPassword;
 
-  private static final String LOGIN_COOKIE_NAME = "LOGGED_IN";
+  private static final String LOGIN_COOKIE_NAME = "loggedIn";
+  private static final String PARTY_ID_COOKIE_NAME = "partyId";
   
 
 
@@ -161,11 +165,11 @@ public class ServerConnection{
       authWorked = hasValidCookie();
     }
     catch(AuthenticationException e){
-      Log.e("TAG", "Auth exceptions");
+      Log.e("TAG", "Auth Auth exceptions");
       //TODO maybe do something?
     }
     catch(IOException e){
-      Log.e("TAG", "IOException exceptions");
+      Log.e("TAG", "Auth IOException exceptions");
       //TODO maybe do something?
     }
 
@@ -334,15 +338,65 @@ public class ServerConnection{
   }
 
   private static boolean hasValidCookie(){
-    Log.i("TAG", "CHECKING COOKIES!");
     for(Cookie cookie: getHttpClient().getCookieStore().getCookies()){
-      if(cookie.getName().equals(LOGIN_COOKIE_NAME) &&
-        !cookie.isExpired(new Date()))
-      {
+      if(cookie.getName().equals(LOGIN_COOKIE_NAME)){
         return true;
       }
     }
     return false;
   }
 
+  public static Thread loginToParty(
+    final long partyId,
+    final Handler messageHandler, 
+    final Context context)
+  {
+    final Thread t = new Thread(){
+      public void run(){
+        doPartyLogin(partyId, messageHandler, context);
+      }
+    };
+    t.start();
+    return t;
+  }
+
+  public static void doPartyLogin(
+    final long partyId,
+    final Handler handler, 
+    final Context context)
+  {
+    final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+    params.add(new BasicNameValuePair(PARAM_PARTYID, String.valueOf(partyId)));
+    params.add(new BasicNameValuePair(PARAM_USERNAME, mostRecentUsername));
+    try{
+      doSimplePost(params, PARAM_PARTYID);
+      
+    }
+    catch(AuthenticationException e){
+      Log.e("TAG", "Party login Auth exceptions");
+      //TODO maybe do something?
+    }
+    catch(IOException e){
+      Log.e("TAG", "Party login IOException exceptions");
+      //TODO maybe do something?
+    }
+   
+    handler.post(new Runnable(){
+      public void run(){
+        ((PartySelectorActivity)context).onPartySelection(
+          isValidParty(), partyId);
+      }
+    });
+  }
+
+  private static boolean isValidParty(){
+    for(Cookie cookie: getHttpClient().getCookieStore().getCookies()){
+      if(cookie.getName().equals(PARTY_ID_COOKIE_NAME) &&
+         !cookie.getValue().equals(String.valueOf(Party.INVALID_PARTY_ID)))
+      {
+        return true;
+      }
+    }
+    return false;
+  }
 }

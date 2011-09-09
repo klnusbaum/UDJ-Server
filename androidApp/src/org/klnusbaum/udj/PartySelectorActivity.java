@@ -41,6 +41,11 @@ import android.accounts.AccountManagerFuture;
 import android.widget.SimpleAdapter;
 import android.widget.ListView;
 import android.util.Log;
+import android.content.DialogInterface;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.app.Dialog;
+import android.os.Handler;
 
 import java.io.IOException;
 import java.util.List;
@@ -59,6 +64,13 @@ import org.klnusbaum.udj.containers.Party;
  */
 public class PartySelectorActivity extends FragmentActivity{
 
+  private static final int SELECTING_PARTY_DIALOG = 0;
+  private Thread selectPartyThread = null;
+  private final Handler selectionHandler = new Handler();
+  //TODO Moved this up here because we need it for the onPartySelection. 
+  //Not sure if this is the best place for it though...
+  private Account account;
+
   @Override
   public void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
@@ -70,13 +82,11 @@ public class PartySelectorActivity extends FragmentActivity{
     }
   }
 
-  public static class ParyListFragment extends ListFragment
-  implements 
+  public class ParyListFragment extends ListFragment implements 
     LoaderManager.LoaderCallbacks<List<Party> >,
     AccountManagerCallback<Bundle>
   {
     private AccountManager am;
-    private Account account;
     private String password;
     private static final int ACCOUNT_REQUEST = 0;
     private static final String ACCOUNT_EXTRA = "org.klnusbaum.udj.account";
@@ -198,17 +208,13 @@ public class PartySelectorActivity extends FragmentActivity{
     
     @Override
     public void onListItemClick(ListView l, View v, int position, long id){
-      Intent partyIntent = new Intent(getActivity(), PartyActivity.class);
-      partyIntent.putExtra(
-        Party.PARTY_ID_EXTRA, 
-        partyAdpater.getPartyId(position));
-      partyIntent.putExtra(
-        PartyActivity.ACCOUNT_EXTRA,
-        account);
-        
-      startActivity(partyIntent);
+      selectPartyThread = ServerConnection.loginToParty(
+        partyAdpater.getPartyId(position), 
+        selectionHandler, 
+        getActivity());
+      getActivity().showDialog(SELECTING_PARTY_DIALOG);
     }
-  
+
     public Loader<List<Party> > onCreateLoader(int id, Bundle args){
       switch(id){
       case PARTIES_LOADER:
@@ -285,5 +291,43 @@ public class PartySelectorActivity extends FragmentActivity{
 
   }
 
+  @Override
+  protected Dialog onCreateDialog(int id){
+    switch(id){
+    case SELECTING_PARTY_DIALOG:
+      final ProgressDialog progDialog = new ProgressDialog(this);
+      progDialog.setMessage(getText(R.string.logging_into_party));
+      progDialog.setIndeterminate(true);
+      progDialog.setCancelable(true);
+      progDialog.setOnCancelListener(new DialogInterface.OnCancelListener(){
+        public void onCancel(DialogInterface dialog){
+          if(selectPartyThread != null){
+            selectPartyThread.interrupt();
+            finish();
+          }
+        }
+      });
+      return progDialog;
+    default:
+      return null;
+    }
+  }
+  
+  public void onPartySelection(boolean success, long partyId){
+    dismissDialog(SELECTING_PARTY_DIALOG);
+    removeDialog(SELECTING_PARTY_DIALOG);
+    if(!success){
+      //TODO Handle bad login
+      return;
+    }
+    final Intent partyIntent = new Intent(this, PartyActivity.class);
+    partyIntent.putExtra(
+      Party.PARTY_ID_EXTRA, 
+      partyId);
+    partyIntent.putExtra(
+      PartyActivity.ACCOUNT_EXTRA,
+      account);
+    startActivity(partyIntent);
+  }
 }
 
