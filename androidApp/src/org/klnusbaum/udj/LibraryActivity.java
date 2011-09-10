@@ -181,7 +181,6 @@ public class LibraryActivity extends FragmentActivity{
           UDJPartyProvider.PLAYLIST_URI,
           values);
       }
-   
     }  
   }
 }
