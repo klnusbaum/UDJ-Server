@@ -145,6 +145,7 @@ public class PartyActivity extends FragmentActivity{
   private void doQuit(){
     dismissQuitDialog();
     setResult(Activity.RESULT_OK);
+    ContentResolver.cancelSync(account, getString(R.string.authority));
     finish();
   }
 

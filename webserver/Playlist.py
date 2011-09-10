@@ -25,15 +25,20 @@ from Parties import Party
 def addClientIds(parray, serverClientMap):
   toReturn = parray
   for item in toReturn:
-    if item.server_playlist_id in serverClientMap:
-      item.client_playlist_id = serverClientMap[item.server_playlist_id]
+    if item.getServerId() in serverClientMap:
+      item.setClientId( serverClientMap[item.getServerId()])
   return toReturn
 
 def processNewlyAdded(added, db):
   serverClientMap = dict()
   for newSong in added:
-    newServerId = db.insert('mainplaylist', libraryId=newSong.server_lib_id)
-    serverClientMap[newServerId] = newSong.client_playlist_id
+    #TODO HOLY FUCKING SHIT THIS COULD BIGHT US IN THE ASS
+    #There, now that I've got your attention. I just wanted to mention
+    #that I'm not 100% sure on whether or not the value returned by db.insert
+    #actually corresponds to the value in the server_playlist_id column.
+    #preliminary testings shows it does. We'll keep an eye on this.
+    newServerId = db.insert('mainplaylist', libraryId=newSong['server_lib_id'])
+    serverClientMap[newServerId] = newSong['client_playlist_id']
   return serverClientMap
   
 
@@ -46,13 +51,14 @@ def processVotedDown(votedDown, db):
   print 'Finish voting down processing'
 
 def processSyncInfo(syncinfo, db):
-  serverClientMap = processNewlyAdded(syncinfo.added, db)
-  processVotedUp(syncinfo.votedUp, db)
-  processVotedDown(syncinfo.votedDown, db)
+  print syncinfo.keys()
+  serverClientMap = processNewlyAdded(syncinfo['added'], db)
+  processVotedUp(syncinfo['votedUp'], db)
+  processVotedDown(syncinfo['votedDown'], db)
   return serverClientMap
 
 
-def getJSONObject(dbrow):
+def getObject(dbrow):
   isDel = False
   if(dbrow.isDeleted):
     isDel = true
@@ -67,10 +73,10 @@ def getJSONObject(dbrow):
     dbrow.timeAdded,
     isDel)
     
-def getJSONArrayFromResults(results):
+def getArrayFromResults(results):
   toReturn = []
   for result in results:
-    toReturn.append(getJSONObject(result))
+    toReturn.append(getObject(result))
   return toReturn
 
 
@@ -181,7 +187,7 @@ class RESTPlaylist:
       data = web.input()
       db = MahData.getDBConnection()
       results = db.select('main_playlist_view')
-      parray = getJSONArrayFromResults(results)
+      parray = getArrayFromResults(results)
       web.header('Content-Type', 'application/json')
       return json.dumps(parray, cls=PlaylistJSONEncoder)
     else:
@@ -191,12 +197,12 @@ class RESTPlaylist:
       web.ctx.session.loggedIn == 1 and
       web.ctx.session.loggedIn != Party.INVALID_PARTY_ID
     ):
-      data = web.input()
       db = MahData.getDBConnection()
-      serverClientMap = processSyncInfo(data.syncinfo, db)
+      jsonSyncInfo = json.loads(web.input().syncinfo)
+      serverClientMap = processSyncInfo(jsonSyncInfo, db)
       results = db.select('main_playlist_view')
-      parray = getJSONArrayFromResults(results)
-      parray = addClientIds(parray, data.syncinfo.added)
+      parray = getArrayFromResults(results)
+      parray = addClientIds(parray, jsonSyncInfo['added'])
       web.header('Content-Type', 'application/json')
       return json.dumps(parray, cls=PlaylistJSONEncoder)
     else:
