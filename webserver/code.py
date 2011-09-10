@@ -25,6 +25,8 @@ from Library import RESTLibrary
 from Auth import Authenticator
 from Parties import PartyLogin
 
+web.config.debug = False
+
 urls = (
 "/parties", "RESTParty",
 "/playlist", "RESTPlaylist",
@@ -33,9 +35,15 @@ urls = (
 "/party_login", "PartyLogin"
 )
 app = web.application(urls, globals())
-#TODO need to set domain to www.bazaarsolutions.com
 session = web.session.Session(app, web.session.DiskStore('sessions'), 
   initializer={'loggedIn' : 0, 'partyId' : Party.INVALID_PARTY_ID})
+
+def session_hook():
+  web.ctx.session = session
+
+app.add_processor(web.loadhook(session_hook))
+
+
 
 if __name__ == "__main__": 
   app.run()

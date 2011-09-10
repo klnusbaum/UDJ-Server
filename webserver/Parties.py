@@ -44,7 +44,7 @@ class PartyJSONEncoder(json.JSONEncoder):
   
 class RESTParty:
   def GET(self):
-    if(session.loggedIn):
+    if( web.ctx.session.loggedIn == 1 ):
       p1 = Party('1', 'Steve Party')
       p2 = Party('2', 'Kurtis Party')
       parray = list()
@@ -58,10 +58,10 @@ class RESTParty:
 
 class PartyLogin:
   def POST(self):
-    if(session.LOGGED_IN):
+    if(web.ctx.session.loggedIn == 1):
       data = web.input()
       #TODO actuall log them into the party
-      session.partyId = data.partyId
+      web.ctx.session.partyId = data.partyId
       web.setcookie('partyId', data.partyId)
     else:
       Auth.doUnAuth()

@@ -24,7 +24,8 @@ class Authenticator:
   def POST(self):
     data = web.input()
     if(isUserValid(data.username, data.password)):
-      web.session.loggedIn = 1
+      web.ctx.session.loggedIn = 1
+      #TODO need to set domain to www.bazaarsolutions.com
       web.setcookie('loggedIn', True)
     else:
       return None
