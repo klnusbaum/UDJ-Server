@@ -30,6 +30,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.database.Cursor;
 import android.content.ContentValues;
+import android.content.ContentResolver;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -37,8 +38,10 @@ import android.widget.ImageButton;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.util.Log;
+import android.accounts.Account;
 
 import org.klnusbaum.udj.containers.Party;;
+import org.klnusbaum.udj.sync.SyncAdapter;
 
 /**
  * An Activity which displays the party's current
@@ -66,6 +69,7 @@ public class LibraryActivity extends FragmentActivity{
       }
     }
 
+    //TODO before calling fragment, to get ID and give that to it.
     FragmentManager fm = getSupportFragmentManager();
     if(fm.findFragmentById(android.R.id.content) == null){
       Bundle partyBundle = new Bundle();
@@ -81,8 +85,10 @@ public class LibraryActivity extends FragmentActivity{
   {
     /** Adapter used to help display the contents of the library. */
     LibraryAdapter libraryAdapter;
+    Account account;
     
     private long partyId;
+
     
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
@@ -92,9 +98,14 @@ public class LibraryActivity extends FragmentActivity{
       //setHasOptionsMenu(true);
 
       //TODO throw some kind of error if the party id is null. Although it never should be.
+      //TODO throw some kind of error if the accout is null. Although it never should be.
       Bundle args = getArguments();
-      if(args.containsKey(Party.PARTY_ID_EXTRA)){
+      if(
+        args.containsKey(Party.PARTY_ID_EXTRA) && 
+        args.containsKey(PartyActivity.ACCOUNT_EXTRA))
+      {
         partyId = args.getLong(Party.PARTY_ID_EXTRA);
+        account = args.getParcelable(PartyActivity.ACCOUNT_EXTRA);
       }
       else{
         getActivity().setResult(Activity.RESULT_CANCELED);
@@ -180,6 +191,12 @@ public class LibraryActivity extends FragmentActivity{
         getActivity().getContentResolver().insert(
           UDJPartyProvider.PLAYLIST_URI,
           values);
+        Bundle syncParams = new Bundle();
+        syncParams.putBoolean(SyncAdapter.PLAYLIST_SYNC_EXTRA, true);
+        syncParams.putLong(Party.PARTY_ID_EXTRA, partyId);
+        syncParams.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        ContentResolver.requestSync(
+          account, getString(R.string.authority), syncParams);
       }
     }  
   }

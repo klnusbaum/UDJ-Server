@@ -95,7 +95,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
     ContentProviderClient provider, SyncResult syncResult)
   {
     final boolean syncPlaylist = extras.getBoolean(PLAYLIST_SYNC_EXTRA, false);
-    final String searchQuery = extras.getString(LIBRARY_SEARCH_QUERY_EXTRA);
     final long partyId = 
       extras.getLong(Party.PARTY_ID_EXTRA, Party.INVALID_PARTY_ID);
     String authtoken = null;

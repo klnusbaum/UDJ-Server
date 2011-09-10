@@ -94,6 +94,7 @@ public class PartyActivity extends FragmentActivity{
     
     Bundle partyBundle = new Bundle();
     partyBundle.putLong(Party.PARTY_ID_EXTRA, partyId);
+    partyBundle.putParcelable(ACCOUNT_EXTRA, account);
     tabManager.addTab(tabHost.newTabSpec("playlist").setIndicator("Playlist"),
       PlaylistActivity.PlaylistFragment.class, partyBundle);
     tabManager.addTab(tabHost.newTabSpec("library").setIndicator("Library"),

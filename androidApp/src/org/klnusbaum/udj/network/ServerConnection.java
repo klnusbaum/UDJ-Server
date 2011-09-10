@@ -232,13 +232,14 @@ public class ServerConnection{
     ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
     ArrayList<PlaylistEntry> toReturn = new ArrayList<PlaylistEntry>();
     params.add(new BasicNameValuePair(PARAM_PARTYID, String.valueOf(partyId)));
-    if(lastUpdated != null){
+    //TODO ACTUALLY GET THIS WORKING
+    /*if(lastUpdated != null){
       final SimpleDateFormat formatter =
         new SimpleDateFormat(SERVER_TIMESTAMP_FORMAT);
       formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
       params.add(new BasicNameValuePair(
         PARAM_LAST_UPDATE, formatter.format(lastUpdated)));
-    }
+    }*/
     return params;
   }
 
