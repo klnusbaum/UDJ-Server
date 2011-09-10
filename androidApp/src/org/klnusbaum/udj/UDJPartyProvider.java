@@ -46,8 +46,6 @@ public class UDJPartyProvider extends ContentProvider{
   private static final String LIBRARY_TABLE_NAME = "library";
 	/** Name of the playlist table. */
   private static final String PLAYLIST_TABLE_NAME = "playlist";
-  /** Name of the playlist view. */
-  private static final String PLAYLIST_VIEW_NAME = "playlist_view";
   /** Name of the partiers table. */
   private static final String PARTIERS_TABLE_NAME = "partiers";
 
@@ -199,7 +197,7 @@ public class UDJPartyProvider extends ContentProvider{
     }
 
     if(uri.getPath().equals(PLAYLIST_URI.getPath())){
-      qb.setTables(PLAYLIST_VIEW_NAME); 
+      qb.setTables(PLAYLIST_TABLE_NAME); 
     }
     else if(uri.getPath().equals(LIBRARY_URI.getPath())){
       qb.setTables(LIBRARY_TABLE_NAME); 
