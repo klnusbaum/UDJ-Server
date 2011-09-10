@@ -54,7 +54,6 @@ import org.klnusbaum.udj.R;
  */
 public class SyncAdapter extends AbstractThreadedSyncAdapter{
   private final Context context;
-  private GregorianCalendar libraryLastUpdate;
   private GregorianCalendar playlistLastUpdate;
   private GregorianCalendar partiesLastUpdate;
 
@@ -62,6 +61,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 
   public static final String LIBRARY_SYNC_EXTRA = "library_sync";
   public static final String PLAYLIST_SYNC_EXTRA = "playlist_sync";
+  public static final String LIBRARY_SEARCH_QUERY_EXTRA = "search_query";
 
   private static final String[] playlistProjection = new String[]{
     UDJPartyProvider.PLAYLIST_ID_COLUMN, 
@@ -95,9 +95,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
   public void onPerformSync(Account account, Bundle extras, String authority,
     ContentProviderClient provider, SyncResult syncResult)
   {
-    boolean synclibrary = extras.getBoolean(LIBRARY_SYNC_EXTRA, false);
-    boolean syncPlaylist = extras.getBoolean(PLAYLIST_SYNC_EXTRA, false);
-    long partyId = extras.getLong(Party.PARTY_ID_EXTRA, Party.INVALID_PARTY_ID);
+    final boolean synclibrary = extras.getBoolean(LIBRARY_SYNC_EXTRA, false);
+    final boolean syncPlaylist = extras.getBoolean(PLAYLIST_SYNC_EXTRA, false);
+    final String searchQuery = extras.getString(LIBRARY_SEARCH_QUERY_EXTRA);
+    final long partyId = 
+      extras.getLong(Party.PARTY_ID_EXTRA, Party.INVALID_PARTY_ID);
     String authtoken = null;
     try{
       if(partyId == Party.INVALID_PARTY_ID){
@@ -111,11 +113,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
       }
 
       //Sync Library if requested
-      if(synclibrary){
-        List<LibraryEntry> updatedLibEntries = 
-          ServerConnection.getLibraryUpdate(account, authtoken, partyId, libraryLastUpdate);
-        RESTProcessor.processLibEntries(updatedLibEntries, account.name, context);
-        libraryLastUpdate = (GregorianCalendar)GregorianCalendar.getInstance();
+      if(synclibrary && searchQuery != null && !searchQuery.equals("")){
+        List<LibraryEntry> libEntries = ServerConnection.libraryQuery(
+            partyId, 
+            searchQuery);
+        RESTProcessor.processLibEntries(
+          libEntries, account.name, context);
       }
 
       //Sync playlist if requested
@@ -130,7 +133,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
         //A retrieve it's response.
         List<PlaylistEntry> updatedPlaylistEntries =
           ServerConnection.getPlaylistUpdate(
-            account, authtoken, partyId, changedPlaylistEntries, playlistLastUpdate);
+            partyId, changedPlaylistEntries, playlistLastUpdate);
   
         //Process the REST response from the server.
         RESTProcessor.processPlaylistEntries(

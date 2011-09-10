@@ -62,13 +62,15 @@ public class UDJPartyProvider extends ContentProvider{
   public static final Uri PARTIERS_URI =
     Uri.parse("content://org.klnusbaum.udj/partiers");
 
+	/** Constants used for various Library and Playlist column names */
+  public static final String SONG_COLUMN = "song";
+  public static final String ARTIST_COLUMN = "artist";
+  public static final String ALBUM_COLUMN = "album";
+
 
   /**LIBRARY TABLE */
 
 	/** Constants used for various Library column names */
-  public static final String SONG_COLUMN = "song";
-  public static final String ARTIST_COLUMN = "artist";
-  public static final String ALBUM_COLUMN = "album";
   public static final String LIBRARY_ID_COLUMN = "_id";
 
 	/** SQL statement for creating the library table. */
@@ -111,10 +113,6 @@ public class UDJPartyProvider extends ContentProvider{
   private static final String PLAYLIST_TABLE_CREATE = 
     "CREATE TABLE " + PLAYLIST_TABLE_NAME + "("+
 		PLAYLIST_ID_COLUMN + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-
-    PLAYLIST_LIBRARY_ID_COLUMN + " INTEGER REFERENCES "+ 
-    LIBRARY_TABLE_NAME + "(" + LIBRARY_ID_COLUMN+") ON DELETE CASCADE, "+
-
     VOTES_COLUMN + " INTEGER NOT NULL DEFAULT 1, " +
     VOTE_STATUS_COLUMN + " TEXT NOT NULL DEFAULT '" + HASNT_VOTED +"', " +
     SYNC_STATE_COLUMN + " TEXT NOT NULL DEFAULT '" + SYNCED_MARK + "', " +
@@ -122,45 +120,11 @@ public class UDJPartyProvider extends ContentProvider{
     SERVER_PLAYLIST_ID_COLUMN + " INTEGER DEFAULT " + 
     String.valueOf(INVALID_SERVER_PLAYLIST_ID) + ", " +
 
-    TIME_ADDED_COLUMN + " TEXT DEFAULT CURRENT_TIMESTAMP);";
+    TIME_ADDED_COLUMN + " TEXT DEFAULT CURRENT_TIMESTAMP, " +
+		SONG_COLUMN + " TEXT NOT NULL, " +
+    ARTIST_COLUMN + " TEXT NOT NULL, " + 
+    ALBUM_COLUMN + " TEXT NOT NULL " + ");";
 
-
-  /** PLAYLIST_VIEW */
-
-  /** Constants used for various PlyalisView column names */
-  public static final String PLAYLIST_VIEW_ID = "_id";
-
-  /** SQL statement for creating the playlist view */
-  private static final String PLAYLIST_VIEW_CREATE = 
-    "CREATE VIEW " + PLAYLIST_VIEW_NAME + " " +
-    "AS SELECT " +
-    PLAYLIST_TABLE_NAME + "." + PLAYLIST_ID_COLUMN + " AS "+ PLAYLIST_VIEW_ID +", " + 
-
-    PLAYLIST_TABLE_NAME + "." + PLAYLIST_LIBRARY_ID_COLUMN + " AS " +
-    PLAYLIST_LIBRARY_ID_COLUMN + ", " +
-
-    PLAYLIST_TABLE_NAME + "." + SERVER_PLAYLIST_ID_COLUMN + " AS " + 
-    SERVER_PLAYLIST_ID_COLUMN + ", " + 
-
-    PLAYLIST_TABLE_NAME + "." + SYNC_STATE_COLUMN + " AS " + 
-    SYNC_STATE_COLUMN + ", " + 
-
-    PLAYLIST_TABLE_NAME + "." + VOTE_STATUS_COLUMN + " AS " + 
-    VOTE_STATUS_COLUMN + ", " + 
-
-    LIBRARY_TABLE_NAME + "." + SONG_COLUMN + " AS " + SONG_COLUMN + ", " +
-    LIBRARY_TABLE_NAME + "." + ARTIST_COLUMN + " AS " + ARTIST_COLUMN + ", " +
-    LIBRARY_TABLE_NAME + "." + ALBUM_COLUMN + " AS " + ALBUM_COLUMN + ", " +
-    PLAYLIST_TABLE_NAME + "." + VOTES_COLUMN + " AS " + VOTES_COLUMN + ", " +
-
-    PLAYLIST_TABLE_NAME + "." + TIME_ADDED_COLUMN + " AS " + 
-    TIME_ADDED_COLUMN + " " +
-
-    "FROM " + PLAYLIST_TABLE_NAME + " INNER JOIN " + LIBRARY_TABLE_NAME + " " +
-    " ON " + PLAYLIST_TABLE_NAME + "." + PLAYLIST_LIBRARY_ID_COLUMN + "=" +
-    LIBRARY_TABLE_NAME + "." + LIBRARY_ID_COLUMN + " ORDER BY " + PLAYLIST_TABLE_NAME + "." +
-    VOTES_COLUMN + " DESC, " + PLAYLIST_TABLE_NAME + "." + TIME_ADDED_COLUMN + 
-    ";";
 
 	/** Helper for opening up the actual database. */
   private PartyDBHelper dbOpenHelper;
@@ -183,38 +147,6 @@ public class UDJPartyProvider extends ContentProvider{
     public void onCreate(SQLiteDatabase db){
       db.execSQL(LIBRARY_TABLE_CREATE);
       db.execSQL(PLAYLIST_TABLE_CREATE);
-      db.execSQL(PLAYLIST_VIEW_CREATE);
-
-      //INSERT DUMMY SONGS FOR NOW
-      db.execSQL("INSERT INTO " + LIBRARY_TABLE_NAME + 
-      " (" + LIBRARY_ID_COLUMN + ", " + SONG_COLUMN + ", " +
-      ARTIST_COLUMN + ", " + ALBUM_COLUMN + ") VALUES (1, \"Good day\", \"Steve\","+
-      "\"Blue Harvest\");");
-      db.execSQL("INSERT INTO " + LIBRARY_TABLE_NAME + 
-      " (" + LIBRARY_ID_COLUMN + ", " + SONG_COLUMN + ", " +
-      ARTIST_COLUMN + ", " + ALBUM_COLUMN + ") VALUES (2, \"Blow\", \"Steve\","+
-      "\"Blue Harvest\");");
-      db.execSQL("INSERT INTO " + LIBRARY_TABLE_NAME + 
-      " (" + LIBRARY_ID_COLUMN + ", " + SONG_COLUMN + ", " +
-      ARTIST_COLUMN + ", " + ALBUM_COLUMN + ") VALUES (3, \"Hardy Har\", \"Nash\","+
-      "\"Cant Wait\");");
-      db.execSQL("INSERT INTO " + LIBRARY_TABLE_NAME + 
-      " (" + LIBRARY_ID_COLUMN + ", " + SONG_COLUMN + ", " +
-      ARTIST_COLUMN + ", " + ALBUM_COLUMN + ") VALUES (4, \"Five\", \"Nash\","+
-      "\"Cant Wait\");");
-
-      db.execSQL("INSERT INTO " + PLAYLIST_TABLE_NAME + 
-      " (" + PLAYLIST_ID_COLUMN + ", " +
-       PLAYLIST_LIBRARY_ID_COLUMN + ", "+ 
-      VOTES_COLUMN +
-      ") VALUES (1, 1, 4);");
-
-      db.execSQL("INSERT INTO " + PLAYLIST_TABLE_NAME + 
-      " (" + PLAYLIST_ID_COLUMN + ", " +
-       PLAYLIST_LIBRARY_ID_COLUMN + ", "+ 
-      VOTES_COLUMN + 
-      ") VALUES (2, 4, 3);");
-               
     }
 
     @Override

@@ -73,6 +73,7 @@ public class ServerConnection{
   public static final String PARAM_UPDATE_ARRAY = "updatearray";
   public static final String PARAM_GET_PARTIES = "getParties";
   public static final String PARAM_LOCATION = "location";
+  public static final String PARAM_LIB_QUERY = "search_query";
   public static final String SERVER_TIMESTAMP_FORMAT = "yyyy-mm-dd hh:mm:ss";
   //public static final String SERVER_URL = "http://www.bazaarsolutions.org/udj";
   //THIS IS FOR TESTING AT THE MOMENT
@@ -189,34 +190,31 @@ public class ServerConnection{
     }
   }
 
-  public static List<LibraryEntry> getLibraryUpdate(
-    Account account,
-    String authtoken, 
+  public static List<LibraryEntry> libraryQuery(
     long partyId,
-    GregorianCalendar lastUpdated)
+    String searchQuery)
     throws JSONException, ParseException, IOException, AuthenticationException
   {
     final ArrayList<NameValuePair> params = 
-      getEssentialParameters(account.name, authtoken, partyId, lastUpdated);
-    JSONArray libraryEntries = doPost(params, LIBRARY_URI);
+      getEssentialParameters(partyId, null);
+      params.add(new BasicNameValuePair(PARAM_LIB_QUERY, searchQuery));
+    JSONArray libraryEntries = new JSONArray(doGet(params, LIBRARY_URI));
     return LibraryEntry.fromJSONArray(libraryEntries);
   }
 
   public static List<PlaylistEntry> getPlaylistUpdate(  
-   Account account,
-    String authtoken, 
     long partyId,
     List<PlaylistEntry> toUpdate, 
     GregorianCalendar lastUpdated) throws
     JSONException, ParseException, IOException, AuthenticationException
   {
     final ArrayList<NameValuePair> params = 
-      getEssentialParameters(account.name, authtoken, partyId, lastUpdated);
+      getEssentialParameters(partyId, lastUpdated);
     JSONArray playlistEntries =null;
     if(toUpdate == null || toUpdate.isEmpty()){
       //TODO we should actually do a get here because we're not changing 
       //anything.
-      playlistEntries = doGet(params, PLAYLIST_URI);
+      playlistEntries = new JSONArray(doGet(params, PLAYLIST_URI));
     }
     else{
       params.add(new BasicNameValuePair(
@@ -228,13 +226,11 @@ public class ServerConnection{
   }
 
   private static ArrayList<NameValuePair> getEssentialParameters(
-    String name, String authtoken, long partyId, GregorianCalendar lastUpdated)
+    long partyId, GregorianCalendar lastUpdated)
   {
     ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
     ArrayList<PlaylistEntry> toReturn = new ArrayList<PlaylistEntry>();
     params.add(new BasicNameValuePair(PARAM_PARTYID, String.valueOf(partyId)));
-    params.add(new BasicNameValuePair(PARAM_USERNAME, name));
-    params.add(new BasicNameValuePair(PARAM_PASSWORD, authtoken));
     if(lastUpdated != null){
       final SimpleDateFormat formatter =
         new SimpleDateFormat(SERVER_TIMESTAMP_FORMAT);
@@ -283,24 +279,21 @@ public class ServerConnection{
     return toReturn;
   }
 
-  public static JSONArray doGet(ArrayList<NameValuePair> params, String uri)
-    throws AuthenticationException, IOException, JSONException
+  public static String doGet(ArrayList<NameValuePair> params, String uri)
+    throws AuthenticationException, IOException
   {
     final HttpGet get = new HttpGet(uri + "?" + getParamString(params));
     final HttpResponse resp = getHttpClient().execute(get);
     final String response = EntityUtils.toString(resp.getEntity());
-    JSONArray toReturn = null;
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
-      //Get stuff from response 
-      toReturn = new JSONArray(response);
-    } 
+      return response;
+    }
     else if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
       throw new AuthenticationException();
     }
     else{
       throw new IOException();
     }
-    return toReturn;
   }
 
   private static String getParamString(ArrayList<NameValuePair> params){
@@ -320,7 +313,7 @@ public class ServerConnection{
     params.add(new BasicNameValuePair(PARAM_PASSWORD, authtoken));
     //TODO Actually get location
     params.add(new BasicNameValuePair(PARAM_LOCATION, "unknown"));
-    JSONArray parties = doGet(params, PARTIES_URI);
+    JSONArray parties = new JSONArray(doGet(params, PARTIES_URI));
     return Party.fromJSONArray(parties);
   }
 
