@@ -30,9 +30,10 @@ class Authenticator:
     else:
       return None
 
-def doUnAuth():
-  web.header('WWW-Authenticate')
+def doUnAuth(message="Uh oh"):
+  web.header('WWW-Authenticate', 'text/html')
   web.ctx.status = '401 Unauthorized'
+  return message
  
 def isUserValid(username, password):
   #TODO actually implement this

@@ -369,7 +369,7 @@ public class ServerConnection{
     params.add(new BasicNameValuePair(PARAM_PARTYID, String.valueOf(partyId)));
     params.add(new BasicNameValuePair(PARAM_USERNAME, mostRecentUsername));
     try{
-      doSimplePost(params, PARAM_PARTYID);
+      doSimplePost(params,PARTY_LOGIN_URI);
       
     }
     catch(AuthenticationException e){

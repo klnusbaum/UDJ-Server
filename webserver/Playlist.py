@@ -18,6 +18,8 @@ along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
 """
 import json
 import web
+import Auth
+from Parties import Party
 
 class PlaylistEntry:
   INVALID_SERVER_ID = -1
@@ -61,11 +63,15 @@ class PlaylistJSONEncoder(json.JSONEncoder):
 
 class RESTPlaylist:
   def GET(self):
-    p1 = PlaylistEntry(1, 4, 1, '2011-08-27 22:40:30')
-    p2 = PlaylistEntry(2, 3, 4, '2011-08-27 22:39:30')
-    parray = list()
-    parray.append(p1)
-    parray.append(p2)
-    web.header('Content-Type', 'application/json')
-    return json.dumps(parray, cls=PlaylistJSONEncoder)
-
+    if( web.ctx.session.loggedIn == 1 or 
+      web.ctx.session.loggedIn != Party.INVALID_PARTY_ID):
+      p1 = PlaylistEntry(1, 4, 1, '2011-08-27 22:40:30')
+      p2 = PlaylistEntry(2, 3, 4, '2011-08-27 22:39:30')
+      parray = list()
+      parray.append(p1)
+      parray.append(p2)
+      web.header('Content-Type', 'application/json')
+      return json.dumps(parray, cls=PlaylistJSONEncoder)
+    else:
+      Auth.doUnAuth()
+  

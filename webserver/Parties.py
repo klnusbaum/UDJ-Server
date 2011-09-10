@@ -18,6 +18,7 @@ along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
 """
 import json
 import web
+import Auth
 from Auth import Authenticator
 
 class Party:
@@ -53,7 +54,7 @@ class RESTParty:
       web.header('Content-Type', 'application/json')
       return json.dumps(parray, cls=PartyJSONEncoder)
     else:
-      Auth.doUnAuth()
+      Auth.doUnAuth('Getting parties')
       return None
 
 class PartyLogin:
@@ -64,5 +65,5 @@ class PartyLogin:
       web.ctx.session.partyId = data.partyId
       web.setcookie('partyId', data.partyId)
     else:
-      Auth.doUnAuth()
+      return Auth.doUnAuth('Party Login')
 
