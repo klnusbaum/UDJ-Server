@@ -202,7 +202,7 @@ public class RESTProcessor{
     String[] selectionArgs = new String[] {String.valueOf(pe.getServerId())};
     final ContentProviderOperation.Builder deleteOp = 
       ContentProviderOperation.newDelete(UDJPartyProvider.PLAYLIST_URI)
-      .withSelection("WHERE " + UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN + "=?", selectionArgs);
+      .withSelection(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN + "=?", selectionArgs);
     batchOps.add(deleteOp.build());
   }
     
@@ -213,7 +213,7 @@ public class RESTProcessor{
     String[] selectionArgs = new String[] {String.valueOf(pe.getServerId())};
     final ContentProviderOperation.Builder updateBuilder = 
       ContentProviderOperation.newUpdate(UDJPartyProvider.PLAYLIST_URI)
-      .withSelection("WHERE " + UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN + "=?", selectionArgs)
+      .withSelection(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN + "=?", selectionArgs)
       .withValue(UDJPartyProvider.VOTES_COLUMN, pe.getVoteCount())
       .withValue(UDJPartyProvider.PRIORITY_COLUMN, pe.getPriority())
       .withValue(UDJPartyProvider.SYNC_STATE_COLUMN, UDJPartyProvider.SYNCED_MARK);
@@ -243,7 +243,7 @@ public class RESTProcessor{
     String[] selectionArgs = new String[] {String.valueOf(le.getServerId())};
     final ContentProviderOperation.Builder deleteOp = 
       ContentProviderOperation.newDelete(UDJPartyProvider.LIBRARY_URI)
-      .withSelection("WHERE " + UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN + "=?", selectionArgs);
+      .withSelection(UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN + "=?", selectionArgs);
     batchOps.add(deleteOp.build());
   }
     
@@ -254,7 +254,7 @@ public class RESTProcessor{
     String[] selectionArgs = new String[] {String.valueOf(le.getServerId())};
     final ContentProviderOperation.Builder updateBuilder = 
       ContentProviderOperation.newUpdate(UDJPartyProvider.LIBRARY_URI)
-      .withSelection("WHERE " + UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN + "=?", selectionArgs)
+      .withSelection(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN + "=?", selectionArgs)
       .withValue(UDJPartyProvider.SONG_COLUMN, le.getSong())
       .withValue(UDJPartyProvider.ARTIST_COLUMN, le.getArtist())
       .withValue(UDJPartyProvider.ALBUM_COLUMN, le.getAlbum());

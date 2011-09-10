@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import org.klnusbaum.udj.UDJPartyProvider;
 public class PlaylistEntry{
 
+  public static final String PLAYLIST_CLIENT_ID_PARAM = "client_playlist_id";
   private long serverId;
   private long libId;
   private int voteCount;
@@ -39,6 +40,7 @@ public class PlaylistEntry{
   private String album;
   private boolean isDeleted;
   private String timeAdded;
+  private long clientId;
 
   private static final String IS_DELETED_FLAG = "is_deleted";
 
@@ -62,6 +64,7 @@ public class PlaylistEntry{
     this.voteCount = voteCount;
     this.timeAdded = timeAdded;
     this.isDeleted = isDeleted;
+    this.clientId = Long.valueOf(UDJPartyProvider.INVALID_CLIENT_PLAYLIST_ID);
   }
 
   public long getServerId(){
@@ -100,6 +103,14 @@ public class PlaylistEntry{
     return isDeleted;
   }
 
+  public long getClientId(){
+    return clientId;
+  }
+
+  public void setClientId(long clientId){
+    this.clientId = clientId;
+  }
+
   public static PlaylistEntry valueOf(JSONObject jObj)
     throws JSONException 
   {
@@ -125,33 +136,39 @@ public class PlaylistEntry{
     return toReturn;
   }
 
-  /*public static PlaylistEntry valueOf(Cursor cur){
-    return new PlaylistEntry(
+  public static PlaylistEntry valueOf(Cursor cur){
+    PlaylistEntry toReturn = new PlaylistEntry(
       cur.getLong(cur.getColumnIndex(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN)),
       cur.getInt(cur.getColumnIndex(UDJPartyProvider.PRIORITY_COLUMN)),
-      cur.getLong(cur.getColumnIndex(UDJPartyProvider.LIBRARY_ID_COLUMN)),
+      cur.getLong(cur.getColumnIndex(UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN)),
       cur.getString(cur.getColumnIndex(UDJPartyProvider.SONG_COLUMN)),
       cur.getString(cur.getColumnIndex(UDJPartyProvider.ARTIST_COLUMN)),
       cur.getString(cur.getColumnIndex(UDJPartyProvider.ALBUM_COLUMN)),
       cur.getInt(cur.getColumnIndex(UDJPartyProvider.VOTES_COLUMN)),
       cur.getString(cur.getColumnIndex(UDJPartyProvider.TIME_ADDED_COLUMN)),
-  }*/
+      false);
+    toReturn.setClientId(cur.getColumnIndex(UDJPartyProvider.PLAYLIST_ID_COLUMN));
+    return toReturn;
+  }
 
-  /*public static JSONObject getJSONObject(PlaylistEntry pe)
+  public static JSONObject getJSONObject(PlaylistEntry pe)
     throws JSONException
   {
     JSONObject toReturn = new JSONObject();
-    toReturn.put(UDJPartyProvider.PLAYLIST_ID_COLUMN, pe.getPlId());
-    toReturn.put(UDJPartyProvider.PLAYLIST_LIBRARY_ID_COLUMN, pe.getLibId());
     toReturn.put(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN, pe.getServerId());
+    toReturn.put(UDJPartyProvider.PRIORITY_COLUMN, pe.getPriority());
+    toReturn.put(UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN, pe.getLibId());
+    toReturn.put(UDJPartyProvider.SONG_COLUMN, pe.getSong());
+    toReturn.put(UDJPartyProvider.ARTIST_COLUMN, pe.getArtist());
+    toReturn.put(UDJPartyProvider.ALBUM_COLUMN, pe.getAlbum());
     toReturn.put(UDJPartyProvider.VOTES_COLUMN, pe.getVoteCount());
-    toReturn.put(UDJPartyProvider.SYNC_STATE_COLUMN, pe.getSyncState());
     toReturn.put(UDJPartyProvider.TIME_ADDED_COLUMN, pe.getTimeAdded());
+    toReturn.put(PLAYLIST_CLIENT_ID_PARAM, pe.getClientId());
     return toReturn;
-  }*/
+  }
   
 
-  /*public static JSONArray getJSONArray(List<PlaylistEntry> entries)
+  public static JSONArray getJSONArray(List<PlaylistEntry> entries)
     throws JSONException
   {
     JSONArray toReturn = new JSONArray();
@@ -159,7 +176,7 @@ public class PlaylistEntry{
       toReturn.put(getJSONObject(pe));
     }
     return toReturn;
-  } */
+  }
   
 
 }

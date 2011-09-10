@@ -107,6 +107,7 @@ public class UDJPartyProvider extends ContentProvider{
 
   /** Constants used for representing invalid ids */
   public static final String INVALID_SERVER_PLAYLIST_ID = "-1";
+  public static final String INVALID_CLIENT_PLAYLIST_ID = "-1";
   public static final String DEFAULT_PRIORITY = "-1";
 
 	/** SQL statement for creating the playlist table. */

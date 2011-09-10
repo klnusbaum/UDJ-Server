@@ -63,19 +63,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
   public static final String PLAYLIST_SYNC_EXTRA = "playlist_sync";
   public static final String LIBRARY_SEARCH_QUERY_EXTRA = "search_query";
 
-  private static final String[] playlistProjection = new String[]{
+  /*private static final String[] playlistProjection = new String[]{
     UDJPartyProvider.PLAYLIST_ID_COLUMN, 
     UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN, 
-    UDJPartyProvider.SYNC_STATE_COLUMN};
+    UDJPartyProvider.SYNC_STATE_COLUMN};*/
   private static final String playlistWhereClause = 
-    UDJPartyProvider.SYNC_STATE_COLUMN + "=? OR " + 
-    UDJPartyProvider.SYNC_STATE_COLUMN + "=? OR " + 
     UDJPartyProvider.SYNC_STATE_COLUMN + "=?";
-  private static final String[] playlistWhereArgs = new String[]{
-    UDJPartyProvider.NEEDS_UP_VOTE, 
-    UDJPartyProvider.NEEDS_DOWN_VOTE, 
-    UDJPartyProvider.NEEDS_INSERT_MARK
-  };
 
   /**
    * Constructs a SyncAdapter.
@@ -115,14 +108,22 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 
         //Get a list of all the playlist entries we want the server
         // to update
-        List<PlaylistEntry> changedPlaylistEntries = 
-          getChangePlaylistEntries(provider);
-  
+        List<PlaylistEntry> addedEntries = getChangePlaylistEntries(
+            provider, UDJPartyProvider.NEEDS_INSERT_MARK);
+        List<PlaylistEntry> votedUpEntries = getChangePlaylistEntries(
+            provider, UDJPartyProvider.NEEDS_UP_VOTE);
+        List<PlaylistEntry> votedDownEntries = getChangePlaylistEntries(
+            provider, UDJPartyProvider.NEEDS_DOWN_VOTE);
+ 
         //Tell the server to do the update via REST
         //A retrieve it's response.
         List<PlaylistEntry> updatedPlaylistEntries =
           ServerConnection.getPlaylistUpdate(
-            partyId, changedPlaylistEntries, playlistLastUpdate);
+            partyId, 
+            addedEntries, 
+            votedUpEntries, 
+            votedDownEntries,
+            playlistLastUpdate);
         Log.i("TAG", "Number of pe's " + updatedPlaylistEntries.size());
   
         //Process the REST response from the server.
@@ -162,15 +163,15 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
   }
 
   private List<PlaylistEntry> 
-    getChangePlaylistEntries(ContentProviderClient provider)
+    getChangePlaylistEntries(ContentProviderClient provider, String whereArg)
     throws RemoteException
   {
 
     Cursor needsUpdating = provider.query(
       UDJPartyProvider.PLAYLIST_URI,
-      playlistProjection,
+      null,
       playlistWhereClause,
-      playlistWhereArgs,
+      new String[] {whereArg},
       null
     );
     List<PlaylistEntry> toReturn = 
@@ -179,7 +180,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
       new ArrayList<ContentProviderOperation>();*/
     while(needsUpdating.moveToNext()){
       //TODO actually impelement this correctly.
-      //toReturn.add(PlaylistEntry.valueOf(needsUpdating));
+      toReturn.add(PlaylistEntry.valueOf(needsUpdating));
 /*    batchOps.add(getChangeToUpdatingOperation(c.getInt(0), c.getString(2)));
       if(batchOps.size() == 50){
         provider.applyBatch(batchOps); 

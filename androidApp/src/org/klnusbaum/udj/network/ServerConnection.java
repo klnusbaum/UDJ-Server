@@ -52,6 +52,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.http.cookie.Cookie;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.json.JSONException;
 
 
@@ -70,7 +71,10 @@ public class ServerConnection{
   public static final String PARAM_USERNAME = "username";
   public static final String PARAM_PASSWORD = "password";
   public static final String PARAM_LAST_UPDATE = "timestamp";
-  public static final String PARAM_UPDATE_ARRAY = "updatearray";
+  public static final String PARAM_PLAYLIST_SYNC_INFO = "syncinfo";
+  public static final String PARAM_PLAYLIST_ADDED= "added";
+  public static final String PARAM_PLAYLIST_VOTED_UP= "votedUp";
+  public static final String PARAM_PLAYLIST_VOTED_DOWN = "votedDown";
   public static final String PARAM_GET_PARTIES = "getParties";
   public static final String PARAM_LOCATION = "location";
   public static final String PARAM_LIB_QUERY = "search_query";
@@ -88,6 +92,8 @@ public class ServerConnection{
     SERVER_URL + "/auth";
   public static final String PARTY_LOGIN_URI =
     SERVER_URL + "/party_login";
+  public static final String SYNC_PLAYLIST_URI =
+    SERVER_URL + "/sync_playlist";
   public static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
 
   private static DefaultHttpClient httpClient;
@@ -204,7 +210,9 @@ public class ServerConnection{
 
   public static List<PlaylistEntry> getPlaylistUpdate(  
     long partyId,
-    List<PlaylistEntry> toUpdate, 
+    List<PlaylistEntry> added, 
+    List<PlaylistEntry> votedUp, 
+    List<PlaylistEntry> votedDown, 
     GregorianCalendar lastUpdated) throws
     JSONException, ParseException, IOException, AuthenticationException
   {
@@ -212,16 +220,24 @@ public class ServerConnection{
     final ArrayList<NameValuePair> params = 
       getEssentialParameters(partyId, lastUpdated);
     JSONArray playlistEntries =null;
-    if(toUpdate == null || toUpdate.isEmpty()){
-      //TODO we should actually do a get here because we're not changing 
-      //anything.
+    if(nothingToUpdate(added, votedUp, votedDown)){
       playlistEntries = new JSONArray(doGet(params, PLAYLIST_URI));
     }
     else{
-      /*params.add(new BasicNameValuePair(
-        PARAM_UPDATE_ARRAY, 
-        PlaylistEntry.getJSONArray(toUpdate).toString()));
-      playlistEntries = doPost(params, PLAYLIST_URI);*/
+      Log.i("TAG", "Doing playlist sync!");
+      JSONObject syncInfo = new JSONObject();
+      syncInfo.put(
+        PARAM_PLAYLIST_ADDED, 
+        PlaylistEntry.getJSONArray(added));
+      syncInfo.put(
+        PARAM_PLAYLIST_VOTED_UP,
+        PlaylistEntry.getJSONArray(votedUp));
+      syncInfo.put(
+        PARAM_PLAYLIST_VOTED_DOWN,
+        PlaylistEntry.getJSONArray(votedDown));
+      params.add(new BasicNameValuePair(
+        PARAM_PLAYLIST_SYNC_INFO, syncInfo.toString()));
+      playlistEntries = doPost(params, SYNC_PLAYLIST_URI);
     }
     return PlaylistEntry.fromJSONArray(playlistEntries);
   }
@@ -394,4 +410,17 @@ public class ServerConnection{
     }
     return false;
   }
+
+  private static boolean nothingToUpdate(
+    List<PlaylistEntry> added,
+    List<PlaylistEntry> votedUp,
+    List<PlaylistEntry> votedDown)
+  {
+    return 
+      (added == null || added.isEmpty()) &&
+      (votedUp == null || votedUp.isEmpty()) &&
+      (votedDown == null || votedDown.isEmpty());
+
+  }
+
 }
