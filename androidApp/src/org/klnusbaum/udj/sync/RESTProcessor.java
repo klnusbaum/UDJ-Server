@@ -223,12 +223,17 @@ public class RESTProcessor{
   private static boolean 
     hasPlaylistEntry(PlaylistEntry pe, ContentResolver resolver)
   {
-    
+    if(
+      pe.getClientId() == 
+      Long.valueOf(UDJPartyProvider.INVALID_CLIENT_PLAYLIST_ID))
+    {
+      return false;
+    }
     Cursor c = resolver.query(
       UDJPartyProvider.PLAYLIST_URI, 
-      new String[] {"COUNT("+ UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN+ ")"},
-      UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN+ "=?",
-      new String[] {String.valueOf(pe.getServerId())},
+      new String[] {"COUNT("+ UDJPartyProvider.PLAYLIST_ID_COLUMN+ ")"},
+      UDJPartyProvider.PLAYLIST_ID_COLUMN+ "=?",
+      new String[] {String.valueOf(pe.getClientId())},
       null);
     c.moveToNext();
     boolean toReturn = c.getInt(0) > 0;
