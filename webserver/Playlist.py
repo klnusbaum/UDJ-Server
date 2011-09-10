@@ -22,6 +22,36 @@ import web
 import Auth
 from Parties import Party
 
+def addClientIds(parray, serverClientMap):
+  toReturn = parray
+  for item in toReturn:
+    if item.server_playlist_id in serverClientMap:
+      item.client_playlist_id = serverClientMap[item.server_playlist_id]
+  return toReturn
+
+def processNewlyAdded(added, db):
+  serverClientMap = dict()
+  for newSong in added:
+    newServerId = db.insert('mainplaylist', libraryId=newSong.server_lib_id)
+    serverClientMap[newServerId] = newSong.client_playlist_id
+  return serverClientMap
+  
+
+def processVotedUp(votedUp, db):
+  #TODO Finsish this methdo
+  print 'Finish voting up processing'
+
+def processVotedDown(votedDown, db):
+  #TODO Finsish this methdo
+  print 'Finish voting down processing'
+
+def processSyncInfo(syncinfo, db):
+  serverClientMap = processNewlyAdded(syncinfo.added, db)
+  processVotedUp(syncinfo.votedUp, db)
+  processVotedDown(syncinfo.votedDown, db)
+  return serverClientMap
+
+
 def getJSONObject(dbrow):
   isDel = False
   if(dbrow.isDeleted):
@@ -156,17 +186,19 @@ class RESTPlaylist:
       return json.dumps(parray, cls=PlaylistJSONEncoder)
     else:
       Auth.doUnAuth('Getting playlist')
-  """
   def POST(self):
     if( 
       web.ctx.session.loggedIn == 1 and
       web.ctx.session.loggedIn != Party.INVALID_PARTY_ID
     ):
-
-
+      data = web.input()
+      db = MahData.getDBConnection()
+      serverClientMap = processSyncInfo(data.syncinfo, db)
+      results = db.select('main_playlist_view')
+      parray = getJSONArrayFromResults(results)
+      parray = addClientIds(parray, data.syncinfo.added)
+      web.header('Content-Type', 'application/json')
+      return json.dumps(parray, cls=PlaylistJSONEncoder)
     else:
       Auth.doUnAuth('Syncing playlist')
-      """
-
-
   
