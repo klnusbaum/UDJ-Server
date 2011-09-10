@@ -174,7 +174,7 @@ public class UDJPartyProvider extends ContentProvider{
     SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
     //TODO actualy implement this method correctly
     if(uri.equals(LIBRARY_URI)){
-      return db.delete(LIBRARY_TABLE_NAME, "", null);
+      return db.delete(LIBRARY_TABLE_NAME, null, null);
     }
     return 0;
   }

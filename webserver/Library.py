@@ -18,6 +18,23 @@ along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
 """
 import json
 import web
+import MahData
+
+def getJSONObject(dbrow):
+  #p1 = LibraryEntry(1, 'Good Day', 'Steve', 'Blue Harvest', False)
+  isDel = False
+  if(dbrow.isDeleted):
+    isDel = True
+  return LibraryEntry(dbrow.id, dbrow.song, dbrow.artist, dbrow.album, isDel)
+
+
+def getJSONArrayFromResults(results):
+  toReturn = []
+  for result in results:
+    toReturn.append(getJSONObject(result))
+  return toReturn
+       
+  
 
 class LibraryEntry:
   INVALID_LIB_ID = -1
@@ -70,15 +87,10 @@ class LibraryJSONEncoder(json.JSONEncoder):
 
 class RESTLibrary:
   def GET(self):
-    p1 = LibraryEntry(1, 'Good Day', 'Steve', 'Blue Harvest', False)
-    p2 = LibraryEntry(2, 'Blow', 'Steve', 'Blue Harvest', False)
-    p3 = LibraryEntry(3, 'Hardy Har', 'Nash', 'Cant wait', False)
-    p4 = LibraryEntry(4, 'Five', 'Nash', 'Cant wait', False)
-    parray = list()
-    parray.append(p1)
-    parray.append(p2)
-    parray.append(p3)
-    parray.append(p4)
+    data = web.input()
+    db = MahData.getDBConnection()
+    results = db.select('library')
+    parray = getJSONArrayFromResults(results)
     web.header('Content-Type', 'application/json')
     return json.dumps(parray, cls=LibraryJSONEncoder)
 

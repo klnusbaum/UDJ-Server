@@ -18,6 +18,7 @@ along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
 """
 import web
 import json
+import MahData
 from Parties import Party
 from Parties import RESTParty
 from Playlist import RESTPlaylist
@@ -27,9 +28,52 @@ from Parties import PartyLogin
 
 web.config.debug = False
 
+def session_hook():
+  web.ctx.session = session
+
+def initDatabase(db):
+  db.query("DROP VIEW IF EXISTS main_playlist_view;")
+  db.query("DROP TABLE IF EXISTS mainplaylist;")
+  db.query("DROP TABLE IF EXISTS library;")
+  db.query("CREATE TABLE IF NOT EXISTS library "
+    "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
+ 	  "song TEXT NOT NULL, artist TEXT, album TEXT, "
+    "isDeleted BIT(0) DEFAULT '0');")
+  db.query("CREATE TABLE IF NOT EXISTS mainplaylist "
+ 	  "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
+ 	  "libraryId INTEGER REFERENCES library (id) ON DELETE CASCADE, "
+ 	  "voteCount INTEGER DEFAULT 1, "
+    "priority INTEGER DEFAULT 1, "
+ 	  "timeAdded TEXT DEFAULT CURRENT_TIMESTAMP, "
+    "isDeleted BIT(0) DEFAULT '0');")
+  db.query("CREATE VIEW IF NOT EXISTS main_playlist_view "
+    "AS SELECT "
+    "mainplaylist.id AS plId, "
+    "mainplaylist.libraryId AS libraryId, "
+    "library.song AS song, "
+    "library.artist AS artist, "
+    "library.album AS album, "
+    "mainplaylist.voteCount AS voteCount, "
+    "mainplaylist.priority AS priority, "
+    "mainplaylist.timeAdded AS timeAdded, "
+    "mainplaylist.isDeleted AS isDeleted "
+    "FROM mainplaylist INNER JOIN library ON "
+    "mainplaylist.libraryId = library.id ORDER BY priority DESC;")
+
+  db.insert('library', song="Good Day", artist="Steve", album="Blue Harvest")
+  db.insert('library', song="Blow", artist="Steve", album="Blue Harvest")
+  db.insert('library', song="Hardy Har", artist="Nash", album="Cant Wait")
+  db.insert('library', song="Five", artist="Nash", album="Cant Wait")
+
+  db.insert('mainplaylist', libraryId="1")
+  db.insert('mainplaylist', libraryId="2")
+
+
+
 urls = (
 "/parties", "RESTParty",
 "/playlist", "RESTPlaylist",
+"/sync_playlist", "RESTPlaylist",
 "/library", "RESTLibrary",
 "/auth", "Authenticator" ,
 "/party_login", "PartyLogin"
@@ -37,12 +81,10 @@ urls = (
 app = web.application(urls, globals())
 session = web.session.Session(app, web.session.DiskStore('sessions'), 
   initializer={'loggedIn' : 0, 'partyId' : Party.INVALID_PARTY_ID})
-
-def session_hook():
-  web.ctx.session = session
+db = MahData.getDBConnection()
+initDatabase(db)
 
 app.add_processor(web.loadhook(session_hook))
-
 
 
 if __name__ == "__main__": 

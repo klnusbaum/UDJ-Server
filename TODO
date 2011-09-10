@@ -28,3 +28,7 @@ just merge the song requests
 -Transmitting the IS_DELETED_PARAM every time could be expensive.
 It probably won't be changing that often so perhaps we should only transmit this
 if there's been a deletion. Othewise don't transmit it.
+
+
+OVERALL
+-Rdio and Spotify integration!!!!!!

@@ -16,14 +16,38 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
 """
+import MahData
 import json
 import web
 import Auth
 from Parties import Party
 
+def getJSONObject(dbrow):
+  isDel = False
+  if(dbrow.isDeleted):
+    isDel = true
+  return PlaylistEntry(
+    dbrow.plId,
+    dbrow.priority,
+    dbrow.libraryId,
+    dbrow.song,
+    dbrow.artist,
+    dbrow.album,
+    dbrow.voteCount,
+    dbrow.timeAdded,
+    isDel)
+    
+def getJSONArrayFromResults(results):
+  toReturn = []
+  for result in results:
+    toReturn.append(getJSONObject(result))
+  return toReturn
+
+
 class PlaylistEntry:
   INVALID_SERVER_ID = -1
   INVALID_LIB_ID = -1
+  INVALID_CLIENT_ID = -1
   DEFAULT_VOTE_NUM = 1
   INVALID_TIME_ADDED = 'unknown'
   IS_DELETED_DEFAULT=False
@@ -38,6 +62,7 @@ class PlaylistEntry:
   VOTES_PARAM = 'votes'
   TIME_ADDED_PARAM = 'time_added'
   IS_DELETED_PARAM = 'is_deleted'
+  CLIENT_ID_PARAM = 'client_playlist_id'
 
   def __init__(
     self, 
@@ -49,7 +74,8 @@ class PlaylistEntry:
     album='unknown',
     votes=DEFAULT_VOTE_NUM, 
     timeAdded=INVALID_TIME_ADDED,
-    isDeleted=IS_DELETED_DEFAULT
+    isDeleted=IS_DELETED_DEFAULT,
+    clientId=INVALID_CLIENT_ID
   ):
     self._serverId = server_id
     self._priority = priority
@@ -60,6 +86,7 @@ class PlaylistEntry:
     self._votes = votes
     self._timeAdded = timeAdded
     self._isDeleted = isDeleted
+    self._clientId = clientId
 
   def getServerId(self):
     return self._serverId
@@ -90,6 +117,12 @@ class PlaylistEntry:
 
   def getIsDeleted(self):
     return self._isDeleted
+
+  def setClientId(self, clientId):
+    self._clientId = clientId
+
+  def getClientId(self):
+    return self._clientId
     
 class PlaylistJSONEncoder(json.JSONEncoder):
   def default(self, obj):
@@ -103,7 +136,8 @@ class PlaylistJSONEncoder(json.JSONEncoder):
         PlaylistEntry.ALBUM_PARAM : obj.getAlbum(),
         PlaylistEntry.VOTES_PARAM : obj.getVotes(),
         PlaylistEntry.TIME_ADDED_PARAM : obj.getTimeAdded(),
-        PlaylistEntry.IS_DELETED_PARAM : obj.getIsDeleted()
+        PlaylistEntry.IS_DELETED_PARAM : obj.getIsDeleted(),
+        PlaylistEntry.CLIENT_ID_PARAM : obj.getClientId()
       }
     else:
       return json.JSONEncoder.default(self, obj)
@@ -114,15 +148,25 @@ class RESTPlaylist:
       web.ctx.session.loggedIn == 1 and
       web.ctx.session.loggedIn != Party.INVALID_PARTY_ID
     ):
-      p1 = PlaylistEntry(1, 2, 1,  'Hello', 'Steve', 'Blue Harvest', 1, 
-        '2011-08-27 22:40:30', False)
-      p2 = PlaylistEntry(2, 4, 2,  'Bark', 'Steve', 'Blue Harvest', 1, 
-        '2011-08-27 23:40:30', False)
-      parray = list()
-      parray.append(p1)
-      parray.append(p2)
+      data = web.input()
+      db = MahData.getDBConnection()
+      results = db.select('main_playlist_view')
+      parray = getJSONArrayFromResults(results)
       web.header('Content-Type', 'application/json')
       return json.dumps(parray, cls=PlaylistJSONEncoder)
     else:
       Auth.doUnAuth('Getting playlist')
+  """
+  def POST(self):
+    if( 
+      web.ctx.session.loggedIn == 1 and
+      web.ctx.session.loggedIn != Party.INVALID_PARTY_ID
+    ):
+
+
+    else:
+      Auth.doUnAuth('Syncing playlist')
+      """
+
+
   

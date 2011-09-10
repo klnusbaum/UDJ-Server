@@ -152,6 +152,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
       syncResult.stats.numParseExceptions++;
     }
     catch(final JSONException e){
+      Log.e("TAG", "JSON EXception!!!!");
+      Log.e("TAG", e.getMessage());
       syncResult.stats.numParseExceptions++;
     }
     catch(final RemoteException e){

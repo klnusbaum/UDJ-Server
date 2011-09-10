@@ -221,6 +221,7 @@ public class ServerConnection{
       getEssentialParameters(partyId, lastUpdated);
     JSONArray playlistEntries =null;
     if(nothingToUpdate(added, votedUp, votedDown)){
+      Log.i("TAG", "Doing playlist get!");
       playlistEntries = new JSONArray(doGet(params, PLAYLIST_URI));
     }
     else{
