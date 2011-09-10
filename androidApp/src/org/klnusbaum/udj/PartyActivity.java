@@ -28,9 +28,13 @@ import android.accounts.AccountManager;
 import android.accounts.Account;
 import android.content.DialogInterface;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.util.Log;
+import android.app.Dialog;
+import android.os.Handler;
+import android.app.SearchManager;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -42,6 +46,7 @@ import java.util.HashMap;
 import org.klnusbaum.udj.auth.AuthActivity;
 import org.klnusbaum.udj.containers.Party;
 import org.klnusbaum.udj.sync.SyncAdapter;
+import org.klnusbaum.udj.sync.RESTProcessor;
 
 /**
  * The main activity display class.
@@ -53,11 +58,14 @@ public class PartyActivity extends FragmentActivity{
   private long partyId;
   private Account account;
   private String authtoken;
+  private Thread searchThread = null;
+  private Handler messageHandler = new Handler();
 
   private static final String TAB_EXTRA = "org.klnusbaum.udj.tab";
   public static final String ACCOUNT_EXTRA = "org.klnusbaum.udj.account";
 
   private static final String DIALOG_FRAG_TAG = "dialog";
+  private static final int SEARCHING_DIALOG = 0;
 
   @Override
   protected void onCreate(Bundle savedInstanceState){
@@ -98,6 +106,25 @@ public class PartyActivity extends FragmentActivity{
     Log.i("TAG", "Requesting sync");
     ContentResolver.requestSync(
       account, getString(R.string.authority), syncParams);
+  }
+
+  @Override
+  protected void onNewIntent(Intent intent){
+    if(Intent.ACTION_SEARCH.equals(intent.getAction())){
+      String query = intent.getStringExtra(SearchManager.QUERY);
+      Thread searchThread = 
+        RESTProcessor.libQuery(query, partyId, messageHandler, this);
+      showDialog(SEARCHING_DIALOG);
+    }
+  }
+
+  public void onSearchResult(boolean result){
+    dismissDialog(SEARCHING_DIALOG);
+    removeDialog(SEARCHING_DIALOG);
+    if(!result){
+      Log.i("TAG", "Bad result");
+      //TODO handle bad results
+    }
   }
 
 
@@ -148,6 +175,28 @@ public class PartyActivity extends FragmentActivity{
         .create();
     }
   }
+
+  @Override
+  protected Dialog onCreateDialog(int id){
+    switch(id){
+    case SEARCHING_DIALOG:
+      final ProgressDialog progDialog = new ProgressDialog(this);
+      progDialog.setMessage(getText(R.string.searching_lib));
+      progDialog.setIndeterminate(true);
+      progDialog.setCancelable(true);
+      progDialog.setOnCancelListener(new DialogInterface.OnCancelListener(){
+        public void onCancel(DialogInterface dialog){
+          if(searchThread != null){
+            searchThread.interrupt();
+          }
+        }
+      });
+      return progDialog;
+    default:
+      return null;
+    }
+  }
+
 
 
   /** The following is taken from the android Support Demos */

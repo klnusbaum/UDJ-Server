@@ -20,6 +20,8 @@ package org.klnusbaum.udj.sync;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.io.IOException;
+
 import android.content.Context;
 import android.content.ContentResolver;
 import android.content.ContentProviderOperation;
@@ -27,22 +29,99 @@ import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.os.RemoteException;
 import android.util.Log;
+import android.os.Handler;
 
 import org.klnusbaum.udj.R;
 import org.klnusbaum.udj.UDJPartyProvider;
 import org.klnusbaum.udj.containers.PlaylistEntry;
 import org.klnusbaum.udj.containers.LibraryEntry;
+import org.klnusbaum.udj.PartyActivity;
+import org.klnusbaum.udj.network.ServerConnection;
+
+import org.json.JSONException;
+
+import org.apache.http.auth.AuthenticationException;
 
 public class RESTProcessor{
+  public static Thread libQuery(
+    final String query, 
+    final long partyId,
+    final Handler messageHandler, 
+    final Context context)
+  {
+    final Thread t = new Thread(){
+      public void run(){
+        doLibQuery(query, partyId,  messageHandler, context);
+      }
+    };
+    t.start();
+    return t;
+  }
+
+  private static void doLibQuery(
+    final String query, 
+    final long partyId,
+    final Handler handler, 
+    final Context context)
+  {
+    boolean success = true;
+    try{
+      List<LibraryEntry> searchResults =
+        ServerConnection.libraryQuery(partyId, query);
+      deleteAllLibEntries(context);
+      Log.i("TAG", "did delete");
+      processLibEntries(searchResults, context);
+      Log.i("TAG", "processed lib");
+    }
+    catch(AuthenticationException e){
+      Log.e("TAG", "Auth Exception");
+      Log.e("TAG", e.getMessage());
+      success = false;
+    }
+    catch(RemoteException e){
+      Log.e("TAG", "Remote Exception");
+      Log.e("TAG", e.getMessage());
+      success = false;
+    }
+    catch(OperationApplicationException e){
+      Log.e("TAG", "OperationApplicationException ");
+      Log.e("TAG", e.getMessage());
+      success = false;
+    }
+    catch(JSONException e){
+      Log.e("TAG", "JSON Exception");
+      Log.e("TAG", e.getMessage());
+      success = false;
+    }
+    catch(IOException e){
+      Log.e("TAG", "IO Exception");
+      Log.e("TAG", e.getMessage());
+      success = false;
+    }
+    final boolean finalSuccess = success;
+    handler.post(new Runnable(){
+      public void run(){
+        ((PartyActivity)context).onSearchResult(finalSuccess);
+      }
+    });
+  }
+
+  public static void deleteAllLibEntries(Context context)
+    throws RemoteException, OperationApplicationException
+  {
+    context.getContentResolver().delete(UDJPartyProvider.LIBRARY_URI,
+      null, null);
+  }
 
   public static void processLibEntries(
-    List<LibraryEntry> newEntries, String account, Context context)
+    List<LibraryEntry> newEntries, Context context)
     throws RemoteException, OperationApplicationException
   {
     final ContentResolver resolver = context.getContentResolver();
-    ArrayList<ContentProviderOperation> batchOps = new ArrayList<ContentProviderOperation>();
+    ArrayList<ContentProviderOperation> batchOps = 
+      new ArrayList<ContentProviderOperation>();
     for(LibraryEntry le: newEntries){
-      if(haveLibId(le.getLibId(), resolver)){
+      if(haveLibId(le.getServerId(), resolver)){
         if(le.getIsDeleted()){
           deleteLibraryEntry(le, batchOps);
         }
@@ -58,10 +137,15 @@ public class RESTProcessor{
         batchOps.clear();
       }
     }
+    if(batchOps.size() >= 0){
+      resolver.applyBatch(context.getString(R.string.authority), batchOps);
+      batchOps.clear();
+    }
+    resolver.notifyChange(UDJPartyProvider.LIBRARY_URI, null, true);
   }
 
   public static void processPlaylistEntries(
-    List<PlaylistEntry> newEntries, String account, Context context)
+    List<PlaylistEntry> newEntries, Context context)
     throws RemoteException, OperationApplicationException
   {
     Log.i("TAG", "Processing " + String.valueOf(newEntries.size()) 
@@ -89,6 +173,7 @@ public class RESTProcessor{
       resolver.applyBatch(context.getString(R.string.authority), batchOps);
       batchOps.clear();
     }
+    resolver.notifyChange(UDJPartyProvider.PLAYLIST_URI, null, true);
   }
 
 
@@ -146,17 +231,19 @@ public class RESTProcessor{
       new String[] {String.valueOf(pe.getServerId())},
       null);
     c.moveToNext();
-    return c.getInt(0) > 0;
+    boolean toReturn = c.getInt(0) > 0;
+    c.close();
+    return toReturn;
   }
 
   private static void deleteLibraryEntry(
     LibraryEntry le,
     ArrayList<ContentProviderOperation> batchOps)
   {
-    String[] selectionArgs = new String[] {String.valueOf(le.getLibId())};
+    String[] selectionArgs = new String[] {String.valueOf(le.getServerId())};
     final ContentProviderOperation.Builder deleteOp = 
       ContentProviderOperation.newDelete(UDJPartyProvider.LIBRARY_URI)
-      .withSelection("WHERE " + UDJPartyProvider.LIBRARY_ID_COLUMN + "=?", selectionArgs);
+      .withSelection("WHERE " + UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN + "=?", selectionArgs);
     batchOps.add(deleteOp.build());
   }
     
@@ -164,10 +251,10 @@ public class RESTProcessor{
     LibraryEntry le, 
     ArrayList<ContentProviderOperation> batchOps)
   {
-    String[] selectionArgs = new String[] {String.valueOf(le.getLibId())};
+    String[] selectionArgs = new String[] {String.valueOf(le.getServerId())};
     final ContentProviderOperation.Builder updateBuilder = 
       ContentProviderOperation.newUpdate(UDJPartyProvider.LIBRARY_URI)
-      .withSelection("WHERE " + UDJPartyProvider.LIBRARY_ID_COLUMN + "=?", selectionArgs)
+      .withSelection("WHERE " + UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN + "=?", selectionArgs)
       .withValue(UDJPartyProvider.SONG_COLUMN, le.getSong())
       .withValue(UDJPartyProvider.ARTIST_COLUMN, le.getArtist())
       .withValue(UDJPartyProvider.ALBUM_COLUMN, le.getAlbum());
@@ -180,7 +267,7 @@ public class RESTProcessor{
   {
     final ContentProviderOperation.Builder insertOp = 
       ContentProviderOperation.newInsert(UDJPartyProvider.LIBRARY_URI)
-      .withValue(UDJPartyProvider.LIBRARY_ID_COLUMN, le.getLibId())
+      .withValue(UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN, le.getServerId())
       .withValue(UDJPartyProvider.SONG_COLUMN, le.getSong())
       .withValue(UDJPartyProvider.ARTIST_COLUMN, le.getArtist())
       .withValue(UDJPartyProvider.ALBUM_COLUMN, le.getAlbum());
@@ -188,15 +275,18 @@ public class RESTProcessor{
   }
 
 
-  private static boolean haveLibId(int libId, ContentResolver resolver)
+  private static boolean haveLibId(int serverLibId, ContentResolver resolver)
     throws OperationApplicationException
   {
     Cursor c = resolver.query(
       UDJPartyProvider.LIBRARY_URI, 
-      new String[] {"COUNT("+ UDJPartyProvider.LIBRARY_ID_COLUMN+ ")"},
-      "WHERE " + UDJPartyProvider.LIBRARY_ID_COLUMN+ "=?",
-      new String[] {String.valueOf(libId)},
+      new String[] {"COUNT("+ UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN+ ")"},
+      UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN+ "=?",
+      new String[] {String.valueOf(serverLibId)},
       null);
-    return c.getCount() > 0;
+    c.moveToNext();
+    boolean toReturn = c.getInt(0) > 0;
+    c.close();
+    return toReturn;
   }
 }

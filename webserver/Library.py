@@ -26,22 +26,22 @@ class LibraryEntry:
   DEFAULT_ALBUM_NAME= ''
   DEFAULT_DELETED_STATUS = False
 
-  LIB_ID_PARAM = "_id"
+  SERVER_ID_PARAM = "server_lib_id"
   SONG_PARAM = "song"
   ARTIST_PARAM = "artist"
   ALBUM_PARAM = "album"
   IS_DELETED_PARAM = "is_deleted"
 
 
-  def __init__(self, lib_id=INVALID_LIB_ID, song=DEFAULT_SONG_NAME, artist=DEFAULT_ARTIST_NAME, album=DEFAULT_ALBUM_NAME, deleteStatus=DEFAULT_DELETED_STATUS):
-    self._libId = lib_id
+  def __init__(self, server_id=INVALID_LIB_ID, song=DEFAULT_SONG_NAME, artist=DEFAULT_ARTIST_NAME, album=DEFAULT_ALBUM_NAME, deleteStatus=DEFAULT_DELETED_STATUS):
+    self._server_id = server_id
     self._song = song
     self._artist = artist
     self._album = album
     self._deleteStatus = deleteStatus
 
-  def getLibId(self):
-    return self._libId
+  def getServerId(self):
+    return self._server_id
 
   def getSong(self):
     return self._song
@@ -59,7 +59,7 @@ class LibraryJSONEncoder(json.JSONEncoder):
   def default(self, obj):
     if isinstance(obj, LibraryEntry):
       return {
-        LibraryEntry.LIB_ID_PARAM : obj.getLibId(),
+        LibraryEntry.SERVER_ID_PARAM : obj.getServerId(),
         LibraryEntry.SONG_PARAM : obj.getSong(),
         LibraryEntry.ARTIST_PARAM : obj.getArtist(),
         LibraryEntry.ALBUM_PARAM : obj.getAlbum(),

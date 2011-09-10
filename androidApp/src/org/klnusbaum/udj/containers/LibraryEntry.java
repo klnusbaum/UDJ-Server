@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import org.klnusbaum.udj.UDJPartyProvider;
 
 public class LibraryEntry{
-  private int libId; 
+  private int serverId; 
   private String song;
   private String artist;
   private String album;
@@ -38,21 +38,21 @@ public class LibraryEntry{
   private static final String IS_DELETED_FLAG = "is_deleted";
 
   public LibraryEntry(
-    int libId, 
+    int serverId, 
     String song, 
     String artist,
     String album,
     boolean isDeleted)
   {
-    this.libId = libId;
+    this.serverId = serverId;
     this.song = song;
     this.artist = artist;
     this.album = album;
     this.isDeleted = isDeleted;
   }
 
-  public int getLibId(){
-    return libId;
+  public int getServerId(){
+    return serverId;
   }
   
   public String getSong(){
@@ -75,14 +75,25 @@ public class LibraryEntry{
     throws JSONException 
   {
     return new LibraryEntry(
-      jObj.getInt(UDJPartyProvider.LIBRARY_ID_COLUMN), 
+      jObj.getInt(UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN), 
       jObj.getString(UDJPartyProvider.SONG_COLUMN),
       jObj.getString(UDJPartyProvider.ARTIST_COLUMN),
       jObj.getString(UDJPartyProvider.ALBUM_COLUMN),
       jObj.getBoolean(IS_DELETED_FLAG));
   }
 
-  public static LibraryEntry valueOf(Cursor cur){
+  public static ArrayList<LibraryEntry> fromJSONArray(JSONArray array)
+    throws JSONException
+  {
+    ArrayList<LibraryEntry> toReturn = new ArrayList<LibraryEntry>();
+    for(int i=0; i < array.length(); ++i){
+      toReturn.add(LibraryEntry.valueOf(array.getJSONObject(i)));
+    }
+    return toReturn;
+  }
+  
+
+/*  public static LibraryEntry valueOf(Cursor cur){
     return new LibraryEntry(
       cur.getInt(cur.getColumnIndex(UDJPartyProvider.LIBRARY_ID_COLUMN)),
       cur.getString(cur.getColumnIndex(UDJPartyProvider.SONG_COLUMN)),
@@ -110,16 +121,6 @@ public class LibraryEntry{
       toReturn.put(getJSONObject(le));
     }
     return toReturn;
-  } 
+  } */
 
-  public static ArrayList<LibraryEntry> fromJSONArray(JSONArray array)
-    throws JSONException
-  {
-    ArrayList<LibraryEntry> toReturn = new ArrayList<LibraryEntry>();
-    for(int i=0; i < array.length(); ++i){
-      toReturn.add(LibraryEntry.valueOf(array.getJSONObject(i)));
-    }
-    return toReturn;
-  }
-  
 }

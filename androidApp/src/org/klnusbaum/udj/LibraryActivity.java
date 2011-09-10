@@ -107,6 +107,7 @@ public class LibraryActivity extends FragmentActivity{
       getLoaderManager().initLoader(0,null, this);
     }
 
+
     public Loader<Cursor> onCreateLoader(int id, Bundle args){
       return new CursorLoader(
         getActivity(), 
@@ -114,8 +115,6 @@ public class LibraryActivity extends FragmentActivity{
         null,
         null,
         null,
-        //"partyId=?",
-        //new String[] {String.valueOf(partyId)},
         null);
     }
 
@@ -132,6 +131,7 @@ public class LibraryActivity extends FragmentActivity{
     public void onLoaderReset(Loader<Cursor> loader){
       libraryAdapter.swapCursor(null);
     }
+
     private class LibraryAdapter extends CursorAdapter{
 
       public LibraryAdapter(Context context, Cursor c){
@@ -140,15 +140,18 @@ public class LibraryActivity extends FragmentActivity{
   
       @Override
       public void bindView(View view, Context context, Cursor cursor){
-        int libraryId = cursor.getInt(cursor.getColumnIndex(UDJPartyProvider.LIBRARY_ID_COLUMN));
+        int libraryId = cursor.getInt(
+          cursor.getColumnIndex(UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN));
        
         TextView songName =
           (TextView)view.findViewById(R.id.librarySongName);
-        songName.setText(cursor.getString(cursor.getColumnIndex(UDJPartyProvider.SONG_COLUMN)));
+        songName.setText(cursor.getString(
+          cursor.getColumnIndex(UDJPartyProvider.SONG_COLUMN)));
 
         TextView artistName =
           (TextView)view.findViewById(R.id.libraryArtistName);
-        artistName.setText(cursor.getString(cursor.getColumnIndex(UDJPartyProvider.ARTIST_COLUMN)));
+        artistName.setText(cursor.getString(
+          cursor.getColumnIndex(UDJPartyProvider.ARTIST_COLUMN)));
        
         ImageButton addSong = 
           (ImageButton)view.findViewById(R.id.lib_add_button);
@@ -169,16 +172,16 @@ public class LibraryActivity extends FragmentActivity{
       }
    
       private void addSongClick(View view){
-        String libId = view.getTag().toString(); 
+        String serverLibId = view.getTag().toString(); 
         ContentValues values = new ContentValues();
-        values.put(UDJPartyProvider.PLAYLIST_LIBRARY_ID_COLUMN,Integer.valueOf(libId) );
+        values.put(
+          UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN,
+          Integer.valueOf(serverLibId) );
         getActivity().getContentResolver().insert(
           UDJPartyProvider.PLAYLIST_URI,
           values);
       }
    
     }  
-   
   }
- 
 }

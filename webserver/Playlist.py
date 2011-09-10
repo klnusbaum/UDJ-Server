@@ -29,9 +29,9 @@ class PlaylistEntry:
   IS_DELETED_DEFAULT=False
   INVALID_PRIORITY = -1
 
-  SERVER_ID_PARAM = 'server_id'
+  SERVER_ID_PARAM = 'server_playlist_id'
   PRIORITY_PARAM = 'priority'
-  LIBRARY_ID_PARAM = 'lib_id'
+  LIBRARY_ID_PARAM = 'server_lib_id'
   SONG_PARAM = 'song'
   ARTIST_PARAM = 'artist'
   ALBUM_PARAM = 'album'

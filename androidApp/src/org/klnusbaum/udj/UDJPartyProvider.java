@@ -64,7 +64,7 @@ public class UDJPartyProvider extends ContentProvider{
   public static final String SONG_COLUMN = "song";
   public static final String ARTIST_COLUMN = "artist";
   public static final String ALBUM_COLUMN = "album";
-  public static final String SERVER_LIBRARY_ID_COLUMN = "lib_id";
+  public static final String SERVER_LIBRARY_ID_COLUMN = "server_lib_id";
 
 
   /**LIBRARY TABLE */
@@ -101,13 +101,13 @@ public class UDJPartyProvider extends ContentProvider{
   public static final String VOTES_COLUMN = "votes";
   public static final String PRIORITY_COLUMN = "priority";
   public static final String SYNC_STATE_COLUMN = "sync_state";
-  public static final String SERVER_PLAYLIST_ID_COLUMN ="server_id";
+  public static final String SERVER_PLAYLIST_ID_COLUMN ="server_playlist_id";
   public static final String TIME_ADDED_COLUMN ="time_added";
   public static final String VOTE_STATUS_COLUMN ="vote_status";
 
   /** Constants used for representing invalid ids */
-  public static final int INVALID_SERVER_PLAYLIST_ID = -1;
-  public static final int INVALID_PLAYLIST_ID = -1;
+  public static final String INVALID_SERVER_PLAYLIST_ID = "-1";
+  public static final String DEFAULT_PRIORITY = "-1";
 
 	/** SQL statement for creating the playlist table. */
   private static final String PLAYLIST_TABLE_CREATE = 
@@ -117,14 +117,15 @@ public class UDJPartyProvider extends ContentProvider{
     VOTE_STATUS_COLUMN + " TEXT NOT NULL DEFAULT '" + HASNT_VOTED +"', " +
     SYNC_STATE_COLUMN + " TEXT NOT NULL DEFAULT '" + SYNCED_MARK + "', " +
 
-    SERVER_PLAYLIST_ID_COLUMN + " INTEGER UNIQUE, " + 
+    SERVER_PLAYLIST_ID_COLUMN + " INTEGER DEFAULT " + INVALID_SERVER_PLAYLIST_ID
+      +" , " +
     
-    PRIORITY_COLUMN + " INTEGER, "+
+    PRIORITY_COLUMN + " INTEGER DEFAULT " + DEFAULT_PRIORITY +" , " +
     SERVER_LIBRARY_ID_COLUMN + " INTEGER UNIQUE, "+
-    TIME_ADDED_COLUMN + " TEXT, " +
-		SONG_COLUMN + " TEXT NOT NULL, " +
-    ARTIST_COLUMN + " TEXT NOT NULL, " + 
-    ALBUM_COLUMN + " TEXT NOT NULL " + ");";
+    TIME_ADDED_COLUMN + " TEXT DEFAULT CURRENT_TIME_STAMP, " +
+		SONG_COLUMN + " TEXT NOT NULL DEFAULT '', " +
+    ARTIST_COLUMN + " TEXT NOT NULL DEFAULT '', " + 
+    ALBUM_COLUMN + " TEXT NOT NULL DEFAULT ''" + ");";
 
 
 	/** Helper for opening up the actual database. */
@@ -169,6 +170,11 @@ public class UDJPartyProvider extends ContentProvider{
 
   @Override
   public int delete(Uri uri, String where, String[] whereArgs){
+    SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+    //TODO actualy implement this method correctly
+    if(uri.equals(LIBRARY_URI)){
+      return db.delete(LIBRARY_TABLE_NAME, "", null);
+    }
     return 0;
   }
 
@@ -178,8 +184,16 @@ public class UDJPartyProvider extends ContentProvider{
     if(uri.equals(PLAYLIST_URI)){
       long rowId = db.insert(PLAYLIST_TABLE_NAME, null, initialValues);
       if(rowId > 0){
-        getContext().getContentResolver().notifyChange(PLAYLIST_URI, null, true);
         return ContentUris.withAppendedId(PLAYLIST_URI, rowId); 
+      }
+      else{
+        throw new SQLException("Failed to insert " + uri);
+      }
+    }
+    else if(uri.equals(LIBRARY_URI)){
+      long rowId = db.insert(LIBRARY_TABLE_NAME, null, initialValues);
+      if(rowId > 0){
+        return ContentUris.withAppendedId(LIBRARY_URI, rowId); 
       }
       else{
         throw new SQLException("Failed to insert " + uri);
@@ -221,8 +235,13 @@ public class UDJPartyProvider extends ContentProvider{
   {
     SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
     if(uri.equals(PLAYLIST_URI)){
-      int numRowsChanged = db.update(PLAYLIST_TABLE_NAME, values, where, whereArgs);
-      getContext().getContentResolver().notifyChange(PLAYLIST_URI, null, true);
+      int numRowsChanged = 
+        db.update(PLAYLIST_TABLE_NAME, values, where, whereArgs);
+      return numRowsChanged;
+    }
+    else if(uri.equals(LIBRARY_URI)){
+      int numRowsChanged = 
+        db.update(LIBRARY_TABLE_NAME, values, where, whereArgs);
       return numRowsChanged;
     }
     return 0;

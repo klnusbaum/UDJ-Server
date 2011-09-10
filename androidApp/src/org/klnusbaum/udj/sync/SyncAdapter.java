@@ -60,7 +60,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 
   private AccountManager am;
 
-  public static final String LIBRARY_SYNC_EXTRA = "library_sync";
   public static final String PLAYLIST_SYNC_EXTRA = "playlist_sync";
   public static final String LIBRARY_SEARCH_QUERY_EXTRA = "search_query";
 
@@ -95,7 +94,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
   public void onPerformSync(Account account, Bundle extras, String authority,
     ContentProviderClient provider, SyncResult syncResult)
   {
-    final boolean synclibrary = extras.getBoolean(LIBRARY_SYNC_EXTRA, false);
     final boolean syncPlaylist = extras.getBoolean(PLAYLIST_SYNC_EXTRA, false);
     final String searchQuery = extras.getString(LIBRARY_SEARCH_QUERY_EXTRA);
     final long partyId = 
@@ -110,15 +108,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
         account, context.getString(R.string.authtoken_type), true);
       if(authtoken == null){
         //TODO throw exeception if authtoken is null
-      }
-
-      //Sync Library if requested
-      if(synclibrary && searchQuery != null && !searchQuery.equals("")){
-        List<LibraryEntry> libEntries = ServerConnection.libraryQuery(
-            partyId, 
-            searchQuery);
-        RESTProcessor.processLibEntries(
-          libEntries, account.name, context);
       }
 
       //Sync playlist if requested
@@ -139,7 +128,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
   
         //Process the REST response from the server.
         RESTProcessor.processPlaylistEntries(
-          updatedPlaylistEntries, account.name, context);
+          updatedPlaylistEntries, context);
   
         playlistLastUpdate = (GregorianCalendar)GregorianCalendar.getInstance();
       }

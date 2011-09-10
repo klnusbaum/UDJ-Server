@@ -303,7 +303,6 @@ public class PartySelectorActivity extends FragmentActivity{
         public void onCancel(DialogInterface dialog){
           if(selectPartyThread != null){
             selectPartyThread.interrupt();
-            finish();
           }
         }
       });
