@@ -64,6 +64,7 @@ public class UDJPartyProvider extends ContentProvider{
   public static final String SONG_COLUMN = "song";
   public static final String ARTIST_COLUMN = "artist";
   public static final String ALBUM_COLUMN = "album";
+  public static final String SERVER_LIBRARY_ID_COLUMN = "lib_id";
 
 
   /**LIBRARY TABLE */
@@ -75,6 +76,7 @@ public class UDJPartyProvider extends ContentProvider{
   private static final String LIBRARY_TABLE_CREATE = 
     "CREATE TABLE " + LIBRARY_TABLE_NAME + "("+
 		LIBRARY_ID_COLUMN + " INTEGER PRIMARY KEY, " +
+		SERVER_LIBRARY_ID_COLUMN + " INTEGER UNIQUE, " +
 		SONG_COLUMN + " TEXT NOT NULL, " +
     ARTIST_COLUMN + " TEXT NOT NULL, " + 
     ALBUM_COLUMN + " TEXT NOT NULL " + ");";
@@ -97,6 +99,7 @@ public class UDJPartyProvider extends ContentProvider{
 	/** Constants used for various Playlist column names */
   public static final String PLAYLIST_ID_COLUMN = "_id";
   public static final String VOTES_COLUMN = "votes";
+  public static final String PRIORITY_COLUMN = "priority";
   public static final String SYNC_STATE_COLUMN = "sync_state";
   public static final String SERVER_PLAYLIST_ID_COLUMN ="server_id";
   public static final String TIME_ADDED_COLUMN ="time_added";
@@ -114,10 +117,11 @@ public class UDJPartyProvider extends ContentProvider{
     VOTE_STATUS_COLUMN + " TEXT NOT NULL DEFAULT '" + HASNT_VOTED +"', " +
     SYNC_STATE_COLUMN + " TEXT NOT NULL DEFAULT '" + SYNCED_MARK + "', " +
 
-    SERVER_PLAYLIST_ID_COLUMN + " INTEGER DEFAULT " + 
-    String.valueOf(INVALID_SERVER_PLAYLIST_ID) + ", " +
-
-    TIME_ADDED_COLUMN + " TEXT DEFAULT CURRENT_TIMESTAMP, " +
+    SERVER_PLAYLIST_ID_COLUMN + " INTEGER UNIQUE, " + 
+    
+    PRIORITY_COLUMN + " INTEGER, "+
+    SERVER_LIBRARY_ID_COLUMN + " INTEGER UNIQUE, "+
+    TIME_ADDED_COLUMN + " TEXT, " +
 		SONG_COLUMN + " TEXT NOT NULL, " +
     ARTIST_COLUMN + " TEXT NOT NULL, " + 
     ALBUM_COLUMN + " TEXT NOT NULL " + ");";
@@ -223,5 +227,4 @@ public class UDJPartyProvider extends ContentProvider{
     }
     return 0;
   }
-
 }

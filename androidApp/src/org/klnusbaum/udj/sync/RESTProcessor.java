@@ -26,6 +26,7 @@ import android.content.ContentProviderOperation;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.os.RemoteException;
+import android.util.Log;
 
 import org.klnusbaum.udj.R;
 import org.klnusbaum.udj.UDJPartyProvider;
@@ -63,16 +64,17 @@ public class RESTProcessor{
     List<PlaylistEntry> newEntries, String account, Context context)
     throws RemoteException, OperationApplicationException
   {
+    Log.i("TAG", "Processing " + String.valueOf(newEntries.size()) 
+    + " entries");
     final ContentResolver resolver = context.getContentResolver();
-    ArrayList<ContentProviderOperation> batchOps = new ArrayList<ContentProviderOperation>();
+    ArrayList<ContentProviderOperation> batchOps = 
+      new ArrayList<ContentProviderOperation>();
     for(PlaylistEntry pe: newEntries){
-      if(pe.getSyncState() != UDJPartyProvider.NEEDS_INSERT_MARK){
-        if(pe.getIsDeleted()){
-          deletePlaylistEntry(pe, batchOps);
-        }
-        else{
-          updatePlaylistEntry(pe, batchOps);
-        }
+      if(pe.getIsDeleted()){
+        deletePlaylistEntry(pe, batchOps);
+      }
+      else if(hasPlaylistEntry(pe, resolver)){
+        updatePlaylistEntry(pe, batchOps);
       }
       else{
         insertPlaylistEntry(pe, batchOps);
@@ -83,7 +85,12 @@ public class RESTProcessor{
         batchOps.clear();
       }
     }  
+    if(batchOps.size() > 0){
+      resolver.applyBatch(context.getString(R.string.authority), batchOps);
+      batchOps.clear();
+    }
   }
+
 
   private static void insertPlaylistEntry(
     PlaylistEntry pe,
@@ -92,9 +99,13 @@ public class RESTProcessor{
     final ContentProviderOperation.Builder insertOp = 
       ContentProviderOperation.newInsert(UDJPartyProvider.PLAYLIST_URI)
       .withValue(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN, pe.getServerId())
-      .withValue(UDJPartyProvider.PLAYLIST_LIBRARY_ID_COLUMN, pe.getLibId())
+      .withValue(UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN, pe.getLibId())
       .withValue(UDJPartyProvider.TIME_ADDED_COLUMN, pe.getTimeAdded())
       .withValue(UDJPartyProvider.VOTES_COLUMN, pe.getVoteCount())
+      .withValue(UDJPartyProvider.SONG_COLUMN, pe.getSong())
+      .withValue(UDJPartyProvider.ARTIST_COLUMN, pe.getArtist())
+      .withValue(UDJPartyProvider.ALBUM_COLUMN, pe.getAlbum())
+      .withValue(UDJPartyProvider.PRIORITY_COLUMN, pe.getPriority())
       .withValue(UDJPartyProvider.SYNC_STATE_COLUMN, UDJPartyProvider.SYNCED_MARK);
     batchOps.add(insertOp.build());
   }
@@ -103,10 +114,10 @@ public class RESTProcessor{
     PlaylistEntry pe,
     ArrayList<ContentProviderOperation> batchOps)
   {
-    String[] selectionArgs = new String[] {String.valueOf(pe.getPlId())};
+    String[] selectionArgs = new String[] {String.valueOf(pe.getServerId())};
     final ContentProviderOperation.Builder deleteOp = 
       ContentProviderOperation.newDelete(UDJPartyProvider.PLAYLIST_URI)
-      .withSelection("WHERE " + UDJPartyProvider.PLAYLIST_ID_COLUMN + "=?", selectionArgs);
+      .withSelection("WHERE " + UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN + "=?", selectionArgs);
     batchOps.add(deleteOp.build());
   }
     
@@ -114,26 +125,28 @@ public class RESTProcessor{
     PlaylistEntry pe, 
     ArrayList<ContentProviderOperation> batchOps)
   {
-    String[] selectionArgs = new String[] {String.valueOf(pe.getPlId())};
+    String[] selectionArgs = new String[] {String.valueOf(pe.getServerId())};
     final ContentProviderOperation.Builder updateBuilder = 
       ContentProviderOperation.newUpdate(UDJPartyProvider.PLAYLIST_URI)
-      .withSelection("WHERE " + UDJPartyProvider.PLAYLIST_ID_COLUMN + "=?", selectionArgs)
+      .withSelection("WHERE " + UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN + "=?", selectionArgs)
       .withValue(UDJPartyProvider.VOTES_COLUMN, pe.getVoteCount())
-      .withValue(UDJPartyProvider.SYNC_STATE_COLUMN, UDJPartyProvider.SYNCED_MARK)
-      .withValue(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN, pe.getServerId());
+      .withValue(UDJPartyProvider.PRIORITY_COLUMN, pe.getPriority())
+      .withValue(UDJPartyProvider.SYNC_STATE_COLUMN, UDJPartyProvider.SYNCED_MARK);
     batchOps.add(updateBuilder.build());
   } 
 
-  private static boolean havePlId(int plId, ContentResolver resolver)
-    throws OperationApplicationException
+  private static boolean 
+    hasPlaylistEntry(PlaylistEntry pe, ContentResolver resolver)
   {
+    
     Cursor c = resolver.query(
       UDJPartyProvider.PLAYLIST_URI, 
-      new String[] {"COUNT("+ UDJPartyProvider.PLAYLIST_ID_COLUMN+ ")"},
-      "WHERE " + UDJPartyProvider.PLAYLIST_ID_COLUMN+ "=?",
-      new String[] {String.valueOf(plId)},
+      new String[] {"COUNT("+ UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN+ ")"},
+      UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN+ "=?",
+      new String[] {String.valueOf(pe.getServerId())},
       null);
-    return c.getCount() > 0;
+    c.moveToNext();
+    return c.getInt(0) > 0;
   }
 
   private static void deleteLibraryEntry(

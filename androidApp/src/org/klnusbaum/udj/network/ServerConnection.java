@@ -218,10 +218,10 @@ public class ServerConnection{
       playlistEntries = new JSONArray(doGet(params, PLAYLIST_URI));
     }
     else{
-      params.add(new BasicNameValuePair(
+      /*params.add(new BasicNameValuePair(
         PARAM_UPDATE_ARRAY, 
         PlaylistEntry.getJSONArray(toUpdate).toString()));
-      playlistEntries = doPost(params, PLAYLIST_URI);
+      playlistEntries = doPost(params, PLAYLIST_URI);*/
     }
     return PlaylistEntry.fromJSONArray(playlistEntries);
   }

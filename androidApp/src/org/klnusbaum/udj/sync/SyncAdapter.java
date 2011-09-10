@@ -95,7 +95,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
   public void onPerformSync(Account account, Bundle extras, String authority,
     ContentProviderClient provider, SyncResult syncResult)
   {
-    Log.i("TAG", "In on preform sycn");
     final boolean synclibrary = extras.getBoolean(LIBRARY_SYNC_EXTRA, false);
     final boolean syncPlaylist = extras.getBoolean(PLAYLIST_SYNC_EXTRA, false);
     final String searchQuery = extras.getString(LIBRARY_SEARCH_QUERY_EXTRA);
@@ -125,7 +124,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
       //Sync playlist if requested
       if(syncPlaylist){
 
-        Log.i("TAG", "SYNCING PLAYLIST IN sync adapter");
 
         //Get a list of all the playlist entries we want the server
         // to update
@@ -137,6 +135,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
         List<PlaylistEntry> updatedPlaylistEntries =
           ServerConnection.getPlaylistUpdate(
             partyId, changedPlaylistEntries, playlistLastUpdate);
+        Log.i("TAG", "Number of pe's " + updatedPlaylistEntries.size());
   
         //Process the REST response from the server.
         RESTProcessor.processPlaylistEntries(
@@ -191,7 +190,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
    /* ArrayList<ContentProviderOperation> batchOps = 
       new ArrayList<ContentProviderOperation>();*/
     while(needsUpdating.moveToNext()){
-      toReturn.add(PlaylistEntry.valueOf(needsUpdating));
+      //TODO actually impelement this correctly.
+      //toReturn.add(PlaylistEntry.valueOf(needsUpdating));
 /*    batchOps.add(getChangeToUpdatingOperation(c.getInt(0), c.getString(2)));
       if(batchOps.size() == 50){
         provider.applyBatch(batchOps); 

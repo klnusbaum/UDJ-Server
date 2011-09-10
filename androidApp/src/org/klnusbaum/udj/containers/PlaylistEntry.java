@@ -30,81 +30,114 @@ import java.util.ArrayList;
 import org.klnusbaum.udj.UDJPartyProvider;
 public class PlaylistEntry{
 
-  private int plId;
-  private int libId;
+  private long serverId;
+  private long libId;
   private int voteCount;
-  private int serverId;
-  private String syncState;
+  private int priority;
+  private String song;
+  private String artist;
+  private String album;
   private boolean isDeleted;
   private String timeAdded;
 
   private static final String IS_DELETED_FLAG = "is_deleted";
 
   public PlaylistEntry(
-    int plId,
-    int serverId,
-    int libId,
+    long serverId,
+    int priority,
+    long libId,
+    String song,
+    String artist,
+    String album,
     int voteCount,
-    String syncState,
-    boolean isDeleted,
-    String timeAdded)
+    String timeAdded,
+    boolean isDeleted)
   {
-    this.plId = plId;
-    this.libId = libId;
-    this.voteCount = voteCount;
     this.serverId = serverId;
-    this.syncState = syncState;
-    this.isDeleted = isDeleted;
+    this.priority = priority;
+    this.libId = libId;
+    this.song = song;
+    this.artist = artist;
+    this.album = album;
+    this.voteCount = voteCount;
     this.timeAdded = timeAdded;
+    this.isDeleted = isDeleted;
   }
 
-  public int getPlId(){
-    return plId;
+  public long getServerId(){
+    return serverId;
   } 
-  public int getLibId(){
+
+  public int getPriority(){
+    return priority;
+  }
+
+  public long getLibId(){
     return libId;
   } 
+
+  public String getSong(){
+    return song;
+  }
+
+  public String getArtist(){
+    return artist;
+  }
+
+  public String getAlbum(){
+    return album;
+  }
+
   public int getVoteCount(){
     return voteCount;
   } 
-  public String getSyncState(){
-    return syncState;
-  } 
-  public boolean getIsDeleted(){
-    return isDeleted;
-  }
+
   public String getTimeAdded(){
     return timeAdded;
   }
-  public int getServerId(){
-    return serverId;
+
+  public boolean getIsDeleted(){
+    return isDeleted;
   }
 
   public static PlaylistEntry valueOf(JSONObject jObj)
     throws JSONException 
   {
     return new PlaylistEntry(
-      jObj.optInt(UDJPartyProvider.PLAYLIST_ID_COLUMN, UDJPartyProvider.INVALID_PLAYLIST_ID), 
-      jObj.getInt(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN), 
-      jObj.getInt(UDJPartyProvider.PLAYLIST_LIBRARY_ID_COLUMN),
+      jObj.getLong(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN),
+      jObj.getInt(UDJPartyProvider.PRIORITY_COLUMN),
+      jObj.getLong(UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN),
+      jObj.getString(UDJPartyProvider.SONG_COLUMN),
+      jObj.getString(UDJPartyProvider.ARTIST_COLUMN),
+      jObj.getString(UDJPartyProvider.ALBUM_COLUMN),
       jObj.getInt(UDJPartyProvider.VOTES_COLUMN),
-      jObj.optString(UDJPartyProvider.SYNC_STATE_COLUMN),
-      jObj.getBoolean(IS_DELETED_FLAG),
-      jObj.getString(UDJPartyProvider.TIME_ADDED_COLUMN));
+      jObj.getString(UDJPartyProvider.TIME_ADDED_COLUMN),
+      jObj.getBoolean(IS_DELETED_FLAG));
   }
 
-  public static PlaylistEntry valueOf(Cursor cur){
+  public static ArrayList<PlaylistEntry> fromJSONArray(JSONArray array)
+    throws JSONException
+  {
+    ArrayList<PlaylistEntry> toReturn = new ArrayList<PlaylistEntry>();
+    for(int i=0; i < array.length(); ++i){
+      toReturn.add(PlaylistEntry.valueOf(array.getJSONObject(i)));
+    }
+    return toReturn;
+  }
+
+  /*public static PlaylistEntry valueOf(Cursor cur){
     return new PlaylistEntry(
-      cur.getInt(cur.getColumnIndex(UDJPartyProvider.PLAYLIST_ID_COLUMN)),
-      cur.getInt(cur.getColumnIndex(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN)),
-      cur.getInt(cur.getColumnIndex(UDJPartyProvider.PLAYLIST_LIBRARY_ID_COLUMN)),
+      cur.getLong(cur.getColumnIndex(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN)),
+      cur.getInt(cur.getColumnIndex(UDJPartyProvider.PRIORITY_COLUMN)),
+      cur.getLong(cur.getColumnIndex(UDJPartyProvider.LIBRARY_ID_COLUMN)),
+      cur.getString(cur.getColumnIndex(UDJPartyProvider.SONG_COLUMN)),
+      cur.getString(cur.getColumnIndex(UDJPartyProvider.ARTIST_COLUMN)),
+      cur.getString(cur.getColumnIndex(UDJPartyProvider.ALBUM_COLUMN)),
       cur.getInt(cur.getColumnIndex(UDJPartyProvider.VOTES_COLUMN)),
-      cur.getString(cur.getColumnIndex(UDJPartyProvider.SYNC_STATE_COLUMN)),
-      false,
-      cur.getString(cur.getColumnIndex(UDJPartyProvider.TIME_ADDED_COLUMN))); 
-  }
+      cur.getString(cur.getColumnIndex(UDJPartyProvider.TIME_ADDED_COLUMN)),
+  }*/
 
-  public static JSONObject getJSONObject(PlaylistEntry pe)
+  /*public static JSONObject getJSONObject(PlaylistEntry pe)
     throws JSONException
   {
     JSONObject toReturn = new JSONObject();
@@ -115,10 +148,10 @@ public class PlaylistEntry{
     toReturn.put(UDJPartyProvider.SYNC_STATE_COLUMN, pe.getSyncState());
     toReturn.put(UDJPartyProvider.TIME_ADDED_COLUMN, pe.getTimeAdded());
     return toReturn;
-  }
+  }*/
   
 
-  public static JSONArray getJSONArray(List<PlaylistEntry> entries)
+  /*public static JSONArray getJSONArray(List<PlaylistEntry> entries)
     throws JSONException
   {
     JSONArray toReturn = new JSONArray();
@@ -126,16 +159,7 @@ public class PlaylistEntry{
       toReturn.put(getJSONObject(pe));
     }
     return toReturn;
-  } 
+  } */
   
-  public static ArrayList<PlaylistEntry> fromJSONArray(JSONArray array)
-    throws JSONException
-  {
-    ArrayList<PlaylistEntry> toReturn = new ArrayList<PlaylistEntry>();
-    for(int i=0; i < array.length(); ++i){
-      toReturn.add(PlaylistEntry.valueOf(array.getJSONObject(i)));
-    }
-    return toReturn;
-  }
 
 }
