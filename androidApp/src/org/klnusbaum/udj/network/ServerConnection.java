@@ -208,6 +208,7 @@ public class ServerConnection{
     GregorianCalendar lastUpdated) throws
     JSONException, ParseException, IOException, AuthenticationException
   {
+    Log.i("TAG", "Doing playlist update");
     final ArrayList<NameValuePair> params = 
       getEssentialParameters(partyId, lastUpdated);
     JSONArray playlistEntries =null;

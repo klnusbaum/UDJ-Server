@@ -31,6 +31,7 @@ import android.accounts.AuthenticatorException;
 import android.database.Cursor;
 import android.os.RemoteException;
 import android.content.OperationApplicationException;
+import android.util.Log;
 
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -66,7 +67,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
   private static final String[] playlistProjection = new String[]{
     UDJPartyProvider.PLAYLIST_ID_COLUMN, 
     UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN, 
-    UDJPartyProvider.PLAYLIST_LIBRARY_ID_COLUMN, 
     UDJPartyProvider.SYNC_STATE_COLUMN};
   private static final String playlistWhereClause = 
     UDJPartyProvider.SYNC_STATE_COLUMN + "=? OR " + 
@@ -95,6 +95,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
   public void onPerformSync(Account account, Bundle extras, String authority,
     ContentProviderClient provider, SyncResult syncResult)
   {
+    Log.i("TAG", "In on preform sycn");
     final boolean synclibrary = extras.getBoolean(LIBRARY_SYNC_EXTRA, false);
     final boolean syncPlaylist = extras.getBoolean(PLAYLIST_SYNC_EXTRA, false);
     final String searchQuery = extras.getString(LIBRARY_SEARCH_QUERY_EXTRA);
@@ -123,6 +124,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter{
 
       //Sync playlist if requested
       if(syncPlaylist){
+
+        Log.i("TAG", "SYNCING PLAYLIST IN sync adapter");
 
         //Get a list of all the playlist entries we want the server
         // to update

@@ -98,7 +98,6 @@ public class UDJPartyProvider extends ContentProvider{
   public static final String PLAYLIST_ID_COLUMN = "_id";
   public static final String VOTES_COLUMN = "votes";
   public static final String SYNC_STATE_COLUMN = "sync_state";
-  public static final String PLAYLIST_LIBRARY_ID_COLUMN ="libid";
   public static final String SERVER_PLAYLIST_ID_COLUMN ="server_id";
   public static final String TIME_ADDED_COLUMN ="time_added";
   public static final String VOTE_STATUS_COLUMN ="vote_status";

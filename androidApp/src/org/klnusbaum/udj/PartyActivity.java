@@ -30,6 +30,7 @@ import android.content.DialogInterface;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentResolver;
+import android.util.Log;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -92,9 +93,11 @@ public class PartyActivity extends FragmentActivity{
 
     Bundle syncParams = new Bundle();
     syncParams.putLong(Party.PARTY_ID_EXTRA, partyId);
-    syncParams.putBoolean(SyncAdapter.LIBRARY_SYNC_EXTRA, true);
     syncParams.putBoolean(SyncAdapter.PLAYLIST_SYNC_EXTRA, true);
-    ContentResolver.requestSync(account, getString(R.string.authority), syncParams);
+    syncParams.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+    Log.i("TAG", "Requesting sync");
+    ContentResolver.requestSync(
+      account, getString(R.string.authority), syncParams);
   }
 
 
