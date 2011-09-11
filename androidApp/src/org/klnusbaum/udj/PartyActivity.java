@@ -146,6 +146,8 @@ public class PartyActivity extends FragmentActivity{
     dismissQuitDialog();
     setResult(Activity.RESULT_OK);
     ContentResolver.cancelSync(account, getString(R.string.authority));
+    getContentResolver().delete(UDJPartyProvider.PLAYLIST_URI, null, null);
+    getContentResolver().delete(UDJPartyProvider.LIBRARY_URI, null, null);
     finish();
   }
 

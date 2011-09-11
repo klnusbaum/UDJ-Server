@@ -151,6 +151,7 @@ public class RESTProcessor{
     Log.i("TAG", "Processing " + String.valueOf(newEntries.size()) 
     + " entries");
     final ContentResolver resolver = context.getContentResolver();
+    resolver.delete(UDJPartyProvider.PLAYLIST_URI, null, null);
     ArrayList<ContentProviderOperation> batchOps = 
       new ArrayList<ContentProviderOperation>();
     for(PlaylistEntry pe: newEntries){
