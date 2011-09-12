@@ -3,19 +3,29 @@
 #include <QDir>
 #include <QSqlQuery>
 #include <QVariant>
+#include <QNetworkAccessManager>
 
 namespace UDJ{
 
 
 UDJServerConnection::UDJServerConnection(){
-
+  netAccessManager = new QNetworkAccessManager(this);
+  cookieJar = netAccessManager->cookieJar();
+  connect(netAccessManager, SIGNAL(finished(QNetworkReply*)),
+    this, SLOT(recievedReply(QNetworkReply*)));
 }
 
 UDJServerConnection::~UDJServerConnection(){
 	musicdb.close();
 }
 
-void UDJServerConnection::startConnection(){
+void UDJServerConnection::startConnection(
+  const QString& username,
+  const QString& password
+)
+{
+
+  //TODO do all of this stuff in a seperate thread and return right away.
   QDir dbDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));  
   if(!dbDir.exists()){
     //TODO handle if this fails
@@ -132,7 +142,7 @@ void UDJServerConnection::startConnection(){
     "(libraryId) VALUES (new.libraryId);"
     "END;"),
 		setupQuery)
-
+  authenticate(username, password);
 }
 
 bool UDJServerConnection::clearMyLibrary(){
@@ -221,5 +231,43 @@ bool UDJServerConnection::kickUser(partierid_t toKick){
 	return true;
 	
 }
+
+void UDJServerConnection::authenticate(
+  const QString& username, 
+  const QString& password)
+{
+  QNetworkRequest authRequest(AUTH_URL);
+  QString data("username="+username+"&password="+password);
+  QBuffer dataBuffer;
+  dataBuffer.setData(data.toUtf8());
+  netAccessManager->post(authRequset, dataBuffer);
+}
+ 
+void UDJServerConnection::recievedReply(QNetworkReply *reply){
+  if(reply.request().url().path() == AUTH_URL.path()){
+    handleAuthReply(reply);
+  }
+  reply->deleteLater();
+}
+
+void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
+  if(haveValidCookie()){
+    emit connectionEstablished();
+  }
+  else{
+    emit unableToConnect("Bad username and password");
+  }
+}
+
+bool UDJServerConnection::haveValidCookie(){
+  QList<QNetworkCookie> authCookies = cookieJar->cookiesForUrl(AUTH_URL);
+  for(int i =0; i<authCookies.size(); ++i){
+    if(authCookies.at(i).name() == LOGIN_COOKIE){
+      return true;
+    }
+  }
+  return false;
+}
+
 
 }//end namespace

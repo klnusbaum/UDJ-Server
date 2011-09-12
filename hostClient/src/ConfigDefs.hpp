@@ -28,6 +28,9 @@ typedef long playlistid_t;
 typedef long partyid_t;
 typedef long partierid_t;
 
+extern QUrl SERVER_URL;
+extern QUrl AUTH_URL;
+
 
 } //end namespace
 

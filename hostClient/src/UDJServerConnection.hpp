@@ -23,6 +23,10 @@
 #include <QSqlDatabase>
 #include <QObject>
 
+class QNetworkAccessManager;
+class QNetworkReply;
+class QNetworkCookieJar;
+
 namespace UDJ{
 
 
@@ -39,7 +43,7 @@ public:
   /**
    * \brief Constructs a UDJServerConnection.
    */
-	UDJServerConnection();
+	UDJServerConnection(QString username, QString password);
   /**
    * \brief Constructs all necessary clean up when deallocating the
    * UDJServerConnection.
@@ -117,7 +121,6 @@ public:
 
   /** @name Modifiers */
   //@{
-
   /**
    * \brief Adds a song to the library associated with this server connection.
    *
@@ -175,6 +178,7 @@ public:
    */
 	bool kickUser(partierid_t toKick);
 
+
   //@}
 
 signals:
@@ -208,7 +212,14 @@ signals:
    */
 	void voteCountChanged(playlistid_t playlistId);
 
+  void connectionEstablished();
+  
+  void unableToConnect(const QString& errMessage);
+
   //@}
+
+private slots:
+  void recievedReply(QNetworkReply *reply);
 
 private:
   /** @name Private Members */
@@ -221,6 +232,10 @@ private:
   
   /** \brief Id of the party associated with this conneciton */
 	partyid_t partyId;
+
+  QNetworkAccessManager *netAccessManager;
+
+  QNetworkCookieJar *cookieJar;
 
   //@}
 
@@ -247,7 +262,12 @@ private:
     return musicDBName;
   }
 
+  void authenticate(QString username, QString password);
+
   //@}
+
+
+
 };
 
 
