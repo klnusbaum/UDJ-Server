@@ -241,12 +241,15 @@ void UDJServerConnection::authenticate(
 {
   QNetworkRequest authRequest(getAuthUrl());
   QString data("username="+username+"&password="+password);
-  QBuffer dataBuffer;
-  dataBuffer.setData(data.toUtf8());
-  netAccessManager->post(authRequest, &dataBuffer);
+  QBuffer *dataBuffer = new QBuffer();
+  dataBuffer->setData(data.toUtf8());
+  QNetworkReply *reply = netAccessManager->post(authRequest, dataBuffer);
+  dataBuffer->setParent(reply);
+  std::cout << "Just posted request\n";
 }
  
 void UDJServerConnection::recievedReply(QNetworkReply *reply){
+  std::cout << "Just reieved reply\n";
   if(reply->request().url().path() == getAuthUrl().path()){
     handleAuthReply(reply);
   }

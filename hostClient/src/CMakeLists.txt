@@ -27,7 +27,6 @@ SET(UDJ_SRCS
 	PlaylistModel.cpp
 	UDJServerConnection.cpp
 	PartiersView.cpp
-  ConfigDefs.cpp
 )
 
 SET(UDJ_HDRS 

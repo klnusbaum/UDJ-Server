@@ -266,6 +266,21 @@ private:
     static const QString loginCookieName("loggedIn");
     return loginCookieName;
   }
+  
+  static const QString& getServerUrlPath(){
+    static const QString SERVER_URL_PATH= "http://0.0.0.0:8081";
+    return SERVER_URL_PATH;
+  }
+
+  static const QUrl& getServerUrl(){
+    static const QUrl SERVER_URL(getServerUrlPath());
+    return SERVER_URL;
+  }
+  
+  static const QUrl& getAuthUrl(){
+    static const QUrl AUTH_URL(getServerUrlPath() + "/auth");
+    return AUTH_URL;
+  }
 
   void authenticate(const QString& username, const QString& password);
 
