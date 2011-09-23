@@ -61,7 +61,7 @@ public:
    *
    * @param serverConnection A connection to a UDJ server.
    */
-  MetaWindow(UDJServerConnection* serverConnection);
+  MetaWindow(QWidget *parent=0, Qt::WindowFlags flags=0);
 
   //@}
 

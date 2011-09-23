@@ -4,11 +4,14 @@
 #include <QSqlQuery>
 #include <QVariant>
 #include <QNetworkAccessManager>
+#include <QNetworkCookieJar>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QBuffer>
 
 namespace UDJ{
 
-
-UDJServerConnection::UDJServerConnection(){
+UDJServerConnection::UDJServerConnection(QObject *parent):QObject(parent){
   netAccessManager = new QNetworkAccessManager(this);
   cookieJar = netAccessManager->cookieJar();
   connect(netAccessManager, SIGNAL(finished(QNetworkReply*)),
@@ -236,22 +239,22 @@ void UDJServerConnection::authenticate(
   const QString& username, 
   const QString& password)
 {
-  QNetworkRequest authRequest(AUTH_URL);
+  QNetworkRequest authRequest(getAuthUrl());
   QString data("username="+username+"&password="+password);
   QBuffer dataBuffer;
   dataBuffer.setData(data.toUtf8());
-  netAccessManager->post(authRequset, dataBuffer);
+  netAccessManager->post(authRequest, &dataBuffer);
 }
  
 void UDJServerConnection::recievedReply(QNetworkReply *reply){
-  if(reply.request().url().path() == AUTH_URL.path()){
+  if(reply->request().url().path() == getAuthUrl().path()){
     handleAuthReply(reply);
   }
   reply->deleteLater();
 }
 
 void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
-  if(haveValidCookie()){
+  if(haveValidLoginCookie()){
     emit connectionEstablished();
   }
   else{
@@ -259,10 +262,10 @@ void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
   }
 }
 
-bool UDJServerConnection::haveValidCookie(){
-  QList<QNetworkCookie> authCookies = cookieJar->cookiesForUrl(AUTH_URL);
+bool UDJServerConnection::haveValidLoginCookie(){
+  QList<QNetworkCookie> authCookies = cookieJar->cookiesForUrl(getAuthUrl());
   for(int i =0; i<authCookies.size(); ++i){
-    if(authCookies.at(i).name() == LOGIN_COOKIE){
+    if(authCookies.at(i).name() == getLoginCookieName()){
       return true;
     }
   }

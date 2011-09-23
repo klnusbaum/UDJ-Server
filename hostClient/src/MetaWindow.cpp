@@ -31,6 +31,7 @@
 #include <QMenuBar>
 #include <QLabel>
 #include <QTime>
+#include <QInputDialog>
 #include "SettingsWidget.hpp"
 #include "MusicLibrary.hpp"
 #include "PlaylistView.hpp"
@@ -41,9 +42,10 @@
 namespace UDJ{
 
 
-MetaWindow::MetaWindow(UDJServerConnection* serverConnection):
-	serverConnection(serverConnection)
+MetaWindow::MetaWindow(QWidget *parent, Qt::WindowFlags flags)
+  :QMainWindow(parent,flags)
 {
+  serverConnection = new UDJServerConnection(this);
   audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
   mediaObject = new Phonon::MediaObject(this);
 
@@ -60,6 +62,12 @@ MetaWindow::MetaWindow(UDJServerConnection* serverConnection):
   createActions();
   setupUi();
   setupMenus();
+  bool ok;
+  QString username = QInputDialog::getText(this, tr("Username"), 
+    tr("Username:"), QLineEdit::Normal, "", &ok);
+  QString password = QInputDialog::getText(this, tr("Password"), 
+    tr("Password:"), QLineEdit::Normal, "", &ok);
+  serverConnection->startConnection(username, password);
 }
 
 void MetaWindow::tick(qint64 time){

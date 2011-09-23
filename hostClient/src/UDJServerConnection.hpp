@@ -43,7 +43,7 @@ public:
   /**
    * \brief Constructs a UDJServerConnection.
    */
-	UDJServerConnection(QString username, QString password);
+	UDJServerConnection(QObject *parent=NULL);
   /**
    * \brief Constructs all necessary clean up when deallocating the
    * UDJServerConnection.
@@ -58,7 +58,7 @@ public:
   /**
    * \brief Starts the connection to the server.
    */
-	void startConnection();
+	void startConnection(const QString& username, const QString& password);
 
   //@}
 
@@ -262,7 +262,16 @@ private:
     return musicDBName;
   }
 
-  void authenticate(QString username, QString password);
+  static const QString& getLoginCookieName(){
+    static const QString loginCookieName("loggedIn");
+    return loginCookieName;
+  }
+
+  void authenticate(const QString& username, const QString& password);
+
+  void handleAuthReply(QNetworkReply* reply);
+ 
+  bool haveValidLoginCookie();
 
   //@}
 

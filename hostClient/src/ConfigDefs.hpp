@@ -19,6 +19,7 @@
 
 #ifndef CONFIG_DEFS_HPP
 #define CONFIG_DEFS_HPP
+#include <QUrl>
 
 namespace UDJ{
 
@@ -28,8 +29,11 @@ typedef long playlistid_t;
 typedef long partyid_t;
 typedef long partierid_t;
 
-extern QUrl SERVER_URL;
-extern QUrl AUTH_URL;
+
+const QString& getServerUrlPath();
+const QUrl& getServerUrl();
+const QUrl& getAuthUrl();
+
 
 
 } //end namespace

@@ -24,11 +24,8 @@ int main(int argc, char* argv[]){
   QApplication app(argc, argv);
   app.setApplicationName("Udj");
   app.setQuitOnLastWindowClosed(true);
-	UDJ::UDJServerConnection* serverConnection = new UDJ::UDJServerConnection();	
-	serverConnection->startConnection();
-  UDJ::MetaWindow window(serverConnection);
+  UDJ::MetaWindow window;
   window.show();
   int toReturn = app.exec();
-	delete serverConnection;
 	return toReturn;
 }
