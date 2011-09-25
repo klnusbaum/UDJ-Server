@@ -32,11 +32,6 @@ def addClientIds(parray, serverClientMap):
 def processNewlyAdded(added, db):
   serverClientMap = dict()
   for newSong in added:
-    #TODO HOLY FUCKING SHIT THIS COULD BIGHT US IN THE ASS
-    #There, now that I've got your attention. I just wanted to mention
-    #that I'm not 100% sure on whether or not the value returned by db.insert
-    #actually corresponds to the value in the server_playlist_id column.
-    #preliminary testings shows it does. We'll keep an eye on this.
     newServerId = db.insert('mainplaylist', libraryId=newSong['server_lib_id'])
     serverClientMap[newServerId] = newSong['client_playlist_id']
   return serverClientMap

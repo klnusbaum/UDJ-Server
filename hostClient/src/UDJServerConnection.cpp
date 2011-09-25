@@ -162,7 +162,21 @@ bool UDJServerConnection::addSongToLibrary(
 	const QString& albumName,
 	const QString& filePath)
 {
+  bool goodInsert = 
+    insertSongIntoDB(songName, artistName, albumName, filePath);
+  if(!goodInsert){
+    return false:
+  }
+  addSongOnServer(songName, artistName, albumName, filePath);
+  return true;
+}
 
+bool UDJServerConnection::insertSongIntoDB(
+	const QString& songName,
+	const QString& artistName,
+	const QString& albumName,
+	const QString& filePath)
+{
   QSqlQuery addQuery("INSERT INTO library "
     "(song, artist, album, filePath) VALUES ( ?, ?, ?, ?)", musicdb);
   
@@ -177,6 +191,14 @@ bool UDJServerConnection::addSongToLibrary(
 	//TODO this should be based on what the above query returns.
 	return true;
 }
+
+bool UDJServerConnection::addSongOnServer(
+	const QString& songName,
+	const QString& artistName,
+	const QString& albumName,
+	const QString& filePath)
+{
+  const QString songJSON = getLibraryJsonEntry(songName, artistName, albumName);
 
 bool UDJServerConnection::alterVoteCount(playlistid_t plId, int difference){
 

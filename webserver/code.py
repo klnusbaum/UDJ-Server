@@ -25,6 +25,7 @@ from Playlist import RESTPlaylist
 from Library import RESTLibrary
 from Auth import Authenticator
 from Parties import PartyLogin
+from Library import AddLibSong
 
 web.config.debug = False
 
@@ -60,6 +61,7 @@ def initDatabase(db):
     "FROM mainplaylist INNER JOIN library ON "
     "mainplaylist.libraryId = library.id ORDER BY priority DESC;")
 
+"""
   db.insert('library', song="Good Day", artist="Steve", album="Blue Harvest")
   db.insert('library', song="Blow", artist="Steve", album="Blue Harvest")
   db.insert('library', song="Hardy Har", artist="Nash", album="Cant Wait")
@@ -67,6 +69,7 @@ def initDatabase(db):
 
   db.insert('mainplaylist', libraryId="1")
   db.insert('mainplaylist', libraryId="2")
+"""
 
 
 
@@ -76,7 +79,8 @@ urls = (
 "/sync_playlist", "RESTPlaylist",
 "/library", "RESTLibrary",
 "/auth", "Authenticator" ,
-"/party_login", "PartyLogin"
+"/party_login", "PartyLogin",
+"/add_song_to_library", "AddLibSong"
 )
 app = web.application(urls, globals())
 session = web.session.Session(app, web.session.DiskStore('sessions'), 

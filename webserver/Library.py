@@ -34,6 +34,13 @@ def getJSONArrayFromResults(results):
     toReturn.append(getJSONObject(result))
   return toReturn
        
+
+def addToLibrary(added, db):
+  db.insert('library', 
+    song=added['song'],
+    artist=added['artist'],
+    album=added['album'])
+  
   
 
 class LibraryEntry:
@@ -93,4 +100,12 @@ class RESTLibrary:
     parray = getJSONArrayFromResults(results)
     web.header('Content-Type', 'application/json')
     return json.dumps(parray, cls=LibraryJSONEncoder)
+
+class AddLibSong:
+  def PUT(self):
+    db = MahData.getDBConnection()
+    song = json.loads(web.input().to_add)
+    addToLibrary(song)
+    return
+    
 
