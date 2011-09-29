@@ -1,4 +1,21 @@
-#include "UDJServerConnection.hpp"
+/**
+ * Copyright 2011 Kurtis L. Nusbaum
+ * 
+ * This file is part of UDJ.
+ * 
+ * UDJ is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * UDJ is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
+ */
 #include <QDesktopServices>
 #include <QDir>
 #include <QSqlQuery>
@@ -8,6 +25,9 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QBuffer>
+#include "MusicLibrary.hpp"
+#include "UDJServerConnection.hpp"
+#include "JSONHelper.hpp"
 
 namespace UDJ{
 
@@ -162,21 +182,22 @@ bool UDJServerConnection::addSongToLibrary(
 	const QString& albumName,
 	const QString& filePath)
 {
-  bool goodInsert = 
-    insertSongIntoDB(songName, artistName, albumName, filePath);
-  if(!goodInsert){
-    return false:
+  libraryid_t hostid = 
+    addSongToLocalDB(songName, artistName, albumName, filePath);
+  if(hostid == MusicLibrary::getInvalidHostId()){
+    return false;
   }
-  addSongOnServer(songName, artistName, albumName, filePath);
+  addSongOnServer(songName, artistName, albumName, hostid);
   return true;
 }
 
-bool UDJServerConnection::insertSongIntoDB(
+libraryid_t UDJServerConnection::addSongToLocalDB(
 	const QString& songName,
 	const QString& artistName,
 	const QString& albumName,
 	const QString& filePath)
 {
+  libraryid_t toReturn = MusicLibrary::getInvalidHostId();
   QSqlQuery addQuery("INSERT INTO library "
     "(song, artist, album, filePath) VALUES ( ?, ?, ?, ?)", musicdb);
   
@@ -184,21 +205,26 @@ bool UDJServerConnection::insertSongIntoDB(
   addQuery.addBindValue(artistName);
   addQuery.addBindValue(albumName);
   addQuery.addBindValue(filePath);
-	EXEC_SQL(
+	EXEC_INSERT(
 		"Failed to add song " << songName.toStdString(), 
-		addQuery.exec(), 
-		addQuery)
+		addQuery,
+    toReturn)
 	//TODO this should be based on what the above query returns.
-	return true;
+	return toReturn;
 }
 
-bool UDJServerConnection::addSongOnServer(
+void UDJServerConnection::addSongOnServer(
 	const QString& songName,
 	const QString& artistName,
 	const QString& albumName,
-	const QString& filePath)
+	const libraryid_t hostId)
 {
-  const QString songJSON = getLibraryJsonEntry(songName, artistName, albumName);
+  const QByteArray songJSON = 
+    JSONHelper::getLibraryEntryJSON(songName, artistName, albumName, hostId);
+  QNetworkRequest addRequest(getLibAddSongUrl());
+  netAccessManager->post(addRequest, songJSON);
+  std::cout << "Just posted add\n";
+}
 
 bool UDJServerConnection::alterVoteCount(playlistid_t plId, int difference){
 
@@ -275,6 +301,9 @@ void UDJServerConnection::recievedReply(QNetworkReply *reply){
   if(reply->request().url().path() == getAuthUrl().path()){
     handleAuthReply(reply);
   }
+  else if(reply->request().url().path() == getLibAddSongUrl().path()){
+    handleAddSongReply(reply);
+  }
   reply->deleteLater();
 }
 
@@ -295,6 +324,19 @@ bool UDJServerConnection::haveValidLoginCookie(){
     }
   }
   return false;
+}
+
+void UDJServerConnection::handleAddSongReply(QNetworkReply *reply){
+  std::map<libraryid_t, libraryid_t> hostToServerIdMap =
+    JSONHelper::getHostToServerLibIdMap(reply);
+  updateServerIds(hostToServerIdMap); 
+}
+
+void UDJServerConnection::updateServerIds(
+  const std::map<libraryid_t, libraryid_t>& hostToServerIdMap)
+{
+
+
 }
 
 

@@ -84,6 +84,16 @@ public:
 
   //@}
 
+  static const libraryid_t& getInvalidHostId(){
+    static const libraryid_t invalidHostId = -1; 
+    return invalidHostId;
+  }
+
+  static const libraryid_t& getInvalidServerId(){
+    static const libraryid_t invalidServerId = -1; 
+    return invalidServerId;
+  }
+
 private:
   
   /** @name Private Members */

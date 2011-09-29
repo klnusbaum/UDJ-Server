@@ -29,13 +29,6 @@ typedef long playlistid_t;
 typedef long partyid_t;
 typedef long partierid_t;
 
-
-const QString& getServerUrlPath();
-const QUrl& getServerUrl();
-const QUrl& getAuthUrl();
-
-
-
 } //end namespace
 
 #ifdef UDJ_DEBUG_BUILD
@@ -48,10 +41,28 @@ const QUrl& getAuthUrl();
 		std::cerr << "SQL ERROR MESSAGE: '" << QSQLOBJECT.lastError().text().toStdString() << "'" << std::endl; \
 		std::cerr << std::endl; \
 	} \
- 
+
+#define EXEC_INSERT( MESSAGE, QSQLOBJECT, RESULT_VAR) \
+  QSQLOBJECT.exec(); \
+  if( QSQLOBJECT.lastError() != QSqlError::NoError ){ \
+    std::cerr << MESSAGE << std::endl; \
+		std::cerr << "SQL ERROR MESSAGE: '" << \
+    QSQLOBJECT.lastError().text().toStdString() << "'" << std::endl; \
+		std::cerr << std::endl; \
+  } \
+  else{ \
+    RESULT_VAR = QSQLOBJECT.lastInsertId().value<libraryid_t>(); \
+  }
+
 #else
+
 #define EXEC_SQL( MESSAGE, STMT, QSQLOBJECT) \
 	STMT;
+
+#define EXEC_INSERT( MESSAGE, QSQLOBJECT, RESULT_VAR) \
+  QSQLOBJECT.exec(); \
+  RESULT_VAR = QSQLOBJECT.lastInsertId().value<libraryid_t>();
+
 #endif
 
 
