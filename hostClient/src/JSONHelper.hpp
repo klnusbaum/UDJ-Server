@@ -19,8 +19,9 @@
 #ifndef JSON_HELPER_HPP
 #define JSON_HELPER_HPP
 #include "ConfigDefs.hpp"
+#include <map>
 
-class QNetworkRequest;
+class QNetworkReply;
 
 namespace UDJ{
 
@@ -32,19 +33,19 @@ public:
 	  const QString& songName,
 	  const QString& artistName,
 	  const QString& albumName,
-	  const libraryid_t hostId,
-    bool isDeleted=false);
+	  const libraryid_t& hostId,
+    const bool isDeleted=false);
 
   static const QByteArray getLibraryEntryJSON(
 	  const QString& songName,
 	  const QString& artistName,
 	  const QString& albumName,
-	  const libraryid_t hostId,
-    bool isDeleted,
+	  const libraryid_t& hostId,
+    const bool isDeleted,
     bool &success);
 
   static const std::map<libraryid_t, libraryid_t>
-    getHostToServerLibIdMap(QNetworkRequest *reply);
+    getHostToServerLibIdMap(QNetworkReply *reply);
 
 };
 

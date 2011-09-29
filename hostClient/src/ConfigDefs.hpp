@@ -44,7 +44,7 @@ typedef long partierid_t;
 
 #define EXEC_INSERT( MESSAGE, QSQLOBJECT, RESULT_VAR) \
   QSQLOBJECT.exec(); \
-  if( QSQLOBJECT.lastError() != QSqlError::NoError ){ \
+  if( QSQLOBJECT.lastError().type() != QSqlError::NoError ){ \
     std::cerr << MESSAGE << std::endl; \
 		std::cerr << "SQL ERROR MESSAGE: '" << \
     QSQLOBJECT.lastError().text().toStdString() << "'" << std::endl; \

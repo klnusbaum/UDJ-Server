@@ -17,18 +17,18 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "JSONHelper.hpp"
-#include <QNetworkRequest>
+#include <QNetworkReply>
 #include "MusicLibrary.hpp"
 #include "qt-json/json.h"
 
 namespace UDJ{
 
-static const QByteArray getLibraryEntryJSON(
+const QByteArray JSONHelper::getLibraryEntryJSON(
   const QString& songName,
   const QString& artistName,
   const QString& albumName,
-  const libraryid_t hostId,
-  bool isDeleted=false)
+  const libraryid_t& hostId,
+  const bool isDeleted)
 {
   bool success=true;
   return getLibraryEntryJSON(
@@ -37,14 +37,14 @@ static const QByteArray getLibraryEntryJSON(
     albumName, 
     hostId, 
     isDeleted,
-    success)
+    success);
 }
 
 const QByteArray JSONHelper::getLibraryEntryJSON(
   const QString& songName,
   const QString& artistName,
   const QString& albumName,
-  const libraryid_t hostId,
+  const libraryid_t& hostId,
   bool isDeleted,
   bool &success)
 {
@@ -52,18 +52,18 @@ const QByteArray JSONHelper::getLibraryEntryJSON(
   QVariantMap songData;
   songData["song"] = songName;
   songData["artist"] = artistName;
-  songData["album"] = album;
+  songData["album"] = albumName;
   songData["host_lib_id"] = QVariant::fromValue<libraryid_t>(hostId);
   songData["server_lib_id"] = 
     QVariant::fromValue<libraryid_t>(MusicLibrary::getInvalidServerId());
   songData["is_deleted"] = isDeleted ? "true" : "false";
-  return QtJson::Json 
+  return QtJson::Json::serialize(success);
 
 }
 
 
 const std::map<libraryid_t, libraryid_t>
-  JSONHelper::getHostToServerLibIdMap(QNetworkRequest *reply)
+  JSONHelper::getHostToServerLibIdMap(QNetworkReply *reply)
 {
   std::map<libraryid_t, libraryid_t> toReturn;
   return toReturn;
