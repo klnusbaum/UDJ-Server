@@ -2,7 +2,11 @@ HOST CLIENT
 -Enable seemless playback by queuing up songs that are about to be played.
 And what's more, songs should fade into one another. Like a real dj would.
 Sync the beat of the new song to the beat of the the one that is currently
-playing, fade into new song, then gradual return beat of new song to normal.
+playing, fade into 
+new song, then gradual return beat of new song to normal.
+-Handle the unable to connect signal in host client
+-Emit signal from UDJServerConnection is conneciotn is lost or 
+something...
 
 ANDROID APP
 -Make sure the purging of the library table is done when the party is over.
