@@ -219,10 +219,18 @@ void UDJServerConnection::addSongOnServer(
 	const QString& albumName,
 	const libraryid_t hostId)
 {
-  const QByteArray songJSON = 
-    JSONHelper::getLibraryEntryJSON(songName, artistName, albumName, hostId);
-  QNetworkRequest addRequest(getLibAddSongUrl());
-  netAccessManager->post(addRequest, songJSON);
+  bool success = true;
+
+  const QByteArray songJSON = JSONHelper::getLibraryEntryJSON(
+    songName, 
+    artistName,
+    albumName,
+    hostId,
+    false, 
+    success);
+  const QByteArray finalData = "to_add="+songJSON;
+  QNetworkRequest addSongRequest(getLibAddSongUrl());
+  netAccessManager->post(addSongRequest, finalData);
   std::cout << "Just posted add\n";
 }
 

@@ -30,6 +30,9 @@ just merge the song requests
 -Transmitting the IS_DELETED_PARAM every time could be expensive.
 It probably won't be changing that often so perhaps we should only transmit this
 if there's been a deletion. Othewise don't transmit it.
+-Make an admin URL so that I can do adminish stuff, like drop tables and what
+not.
+-Fix the post for adding a library song to a PUT.
 
 
 OVERALL

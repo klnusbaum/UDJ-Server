@@ -25,7 +25,6 @@ from Playlist import RESTPlaylist
 from Library import RESTLibrary
 from Auth import Authenticator
 from Parties import PartyLogin
-from Library import AddLibSong
 
 web.config.debug = False
 
@@ -38,6 +37,7 @@ def initDatabase(db):
   db.query("DROP TABLE IF EXISTS library;")
   db.query("CREATE TABLE IF NOT EXISTS library "
     "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
+    "hostId INTEGER, "
  	  "song TEXT NOT NULL, artist TEXT, album TEXT, "
     "isDeleted BIT(0) DEFAULT '0');")
   db.query("CREATE TABLE IF NOT EXISTS mainplaylist "
@@ -80,7 +80,7 @@ urls = (
 "/library", "RESTLibrary",
 "/auth", "Authenticator" ,
 "/party_login", "PartyLogin",
-"/add_song_to_library", "AddLibSong"
+"/add_songs_to_library", "RESTLibrary"
 )
 app = web.application(urls, globals())
 session = web.session.Session(app, web.session.DiskStore('sessions'), 

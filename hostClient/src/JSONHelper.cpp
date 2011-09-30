@@ -48,7 +48,6 @@ const QByteArray JSONHelper::getLibraryEntryJSON(
   bool isDeleted,
   bool &success)
 {
-  QVariantMap toAddMap;
   QVariantMap songData;
   songData["song"] = songName;
   songData["artist"] = artistName;
@@ -57,7 +56,11 @@ const QByteArray JSONHelper::getLibraryEntryJSON(
   songData["server_lib_id"] = 
     QVariant::fromValue<libraryid_t>(MusicLibrary::getInvalidServerId());
   songData["is_deleted"] = isDeleted ? "true" : "false";
-  return QtJson::Json::serialize(success);
+  
+  QVariantList toAddData;
+  toAddData.append(songData);
+  
+  return QtJson::Json::serialize(QVariant(toAddData),success);
 
 }
 
