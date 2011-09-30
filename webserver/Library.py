@@ -35,11 +35,20 @@ def getJSONArrayFromResults(results):
   return toReturn
        
 
+def addSongToLibrary(to_add, db):
+  idreturn = db.insert('library', 
+    song=to_add['song'],
+    artist=to_add['artist'],
+    album=to_add['album'],
+    hostId=to_add['host_lib_id'])
+  return db.select('library', dict(serverid=idreturn), where="id=$serverid")
+
+
 def addToLibrary(added, db):
-  db.insert('library', 
-    song=added['song'],
-    artist=added['artist'],
-    album=added['album'])
+  toReturn = set()
+  for toAdd in added:
+    toReturn.add(addSongToLibrary(toAdd, db))
+  return toReturn
   
   
 
@@ -101,11 +110,10 @@ class RESTLibrary:
     web.header('Content-Type', 'application/json')
     return json.dumps(parray, cls=LibraryJSONEncoder)
 
-class AddLibSong:
-  def PUT(self):
+  def POST(self):
     db = MahData.getDBConnection()
-    song = json.loads(web.input().to_add)
-    addToLibrary(song)
+    songs = json.loads(web.input().to_add)
+    addToLibrary(songs,db)
     return
     
 
