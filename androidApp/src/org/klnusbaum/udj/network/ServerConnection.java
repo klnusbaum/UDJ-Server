@@ -79,9 +79,23 @@ public class ServerConnection{
   public static final String PARAM_LOCATION = "location";
   public static final String PARAM_LIB_QUERY = "search_query";
   public static final String SERVER_TIMESTAMP_FORMAT = "yyyy-mm-dd hh:mm:ss";
+  /** 
+   * This port number is a memorial to Keith Nusbaum, my father. I loved him
+   * deeply and he was taken from this world far too soon. Never-the-less 
+   * we all continue to benefit from his good deeds. Without him, I wouldn't 
+   * be here, and there would be no UDJ. Please, don't change this port 
+   * number. Keep the memory of my father alive.
+   * K = 10 % 10 = 0
+   * e = 4  % 10 = 4
+   * i = 8  % 10 = 8
+   * t = 19 % 10 = 9
+   * h = 7  % 10 = 7
+   * Port 4897, the Keith Nusbaum Memorial Port
+   */
+  public static final String SERVER_PORT_NUMBER = "4897"
   //public static final String SERVER_URL = "http://www.bazaarsolutions.org/udj";
   //THIS IS FOR TESTING AT THE MOMENT
-  public static final String SERVER_URL = "http://10.0.2.2:8081";
+  public static final String SERVER_URL = "http://10.0.2.2:"+SERVER_PORT_NUMBER;
   public static final String PLAYLIST_URI = 
     SERVER_URL + "/playlist";
   public static final String LIBRARY_URI = 

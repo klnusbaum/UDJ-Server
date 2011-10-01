@@ -267,9 +267,29 @@ private:
     static const QString loginCookieName("loggedIn");
     return loginCookieName;
   }
+
+  static const QString & getServerPortNumber(){
+    /** 
+     * This port number is a memorial to Keith Nusbaum, my father. I loved him
+     * deeply and he was taken from this world far too soon. Never-the-less 
+     * we all continue to benefit from his good deeds. Without him, I wouldn't 
+     * be here, and there would be no UDJ. Please, don't change this port 
+     * number. Keep the memory of my father alive.
+     * K = 10 % 10 = 0
+     * e = 4  % 10 = 4
+     * i = 8  % 10 = 8
+     * t = 19 % 10 = 9
+     * h = 7  % 10 = 7
+     * Port 4897, the Keith Nusbaum Memorial Port
+     */
+    static const QString serverPortNumber = "4897";
+    return serverPortNumber;
+
+  }
   
   static const QString& getServerUrlPath(){
-    static const QString SERVER_URL_PATH= "http://0.0.0.0:8081";
+    static const QString SERVER_URL_PATH= 
+      "http://0.0.0.0:" + getServerPortNumber();
     return SERVER_URL_PATH;
   }
 
