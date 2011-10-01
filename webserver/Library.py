@@ -22,7 +22,12 @@ import MahData
 
 def getJSONObject(dbrow):
   return LibraryEntry(
-    dbrow.id, dbrow.song, dbrow.artist, dbrow.album, dbrow.isDeleted)
+    dbrow.id, 
+    dbrow.hostId, 
+    dbrow.song, 
+    dbrow.artist, 
+    dbrow.album, 
+    dbrow.isDeleted)
 
 
 def getJSONArrayFromResults(results):
@@ -43,7 +48,7 @@ def addSongToLibrary(to_add, db):
     where=web.db.sqlwhere({'id' : idreturn})
   )
   row = toReturn[0]
-  return LibraryEntry(row.id, row.song, row.artist, row.album, row.isDeleted)
+  return LibraryEntry(row.id, row.hostId, row.song, row.artist, row.album, row.isDeleted)
 
 
 def addToLibrary(added, db):
@@ -55,21 +60,32 @@ def addToLibrary(added, db):
   
 
 class LibraryEntry:
-  INVALID_LIB_ID = -1
+  INVALID_SERVER_LIB_ID = -1
+  INVALID_HOST_LIB_ID = -1
   DEFAULT_SONG_NAME = ''
   DEFAULT_ARTIST_NAME = ''
   DEFAULT_ALBUM_NAME= ''
   DEFAULT_DELETED_STATUS = False
 
   SERVER_ID_PARAM = "server_lib_id"
+  HOST_ID_PARAM = "host_lib_id"
   SONG_PARAM = "song"
   ARTIST_PARAM = "artist"
   ALBUM_PARAM = "album"
   IS_DELETED_PARAM = "is_deleted"
 
 
-  def __init__(self, server_id=INVALID_LIB_ID, song=DEFAULT_SONG_NAME, artist=DEFAULT_ARTIST_NAME, album=DEFAULT_ALBUM_NAME, deleteStatus=DEFAULT_DELETED_STATUS):
+  def __init__(
+    self, 
+    server_id=INVALID_SERVER_LIB_ID, 
+    host_id=INVALID_HOST_LIB_ID,
+    song=DEFAULT_SONG_NAME,
+    artist=DEFAULT_ARTIST_NAME,
+    album=DEFAULT_ALBUM_NAME,
+    deleteStatus=DEFAULT_DELETED_STATUS
+  ):
     self._server_id = server_id
+    self._host_id = host_id
     self._song = song
     self._artist = artist
     self._album = album
@@ -77,6 +93,9 @@ class LibraryEntry:
 
   def getServerId(self):
     return self._server_id
+
+  def getHostId(self):
+    return self._host_id
 
   def getSong(self):
     return self._song
@@ -95,6 +114,7 @@ class LibraryJSONEncoder(json.JSONEncoder):
     if isinstance(obj, LibraryEntry):
       return {
         LibraryEntry.SERVER_ID_PARAM : obj.getServerId(),
+        LibraryEntry.HOST_ID_PARAM : obj.getHostId(),
         LibraryEntry.SONG_PARAM : obj.getSong(),
         LibraryEntry.ARTIST_PARAM : obj.getArtist(),
         LibraryEntry.ALBUM_PARAM : obj.getAlbum(),

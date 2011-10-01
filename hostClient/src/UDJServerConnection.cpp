@@ -353,12 +353,17 @@ void UDJServerConnection::updateServerIds(
     ++it
   )
   { 
+    std::cout << "about to update with " << it->second << " and " << it->first
+      << std::endl;
 	  updateQuery.bindValue(0, QVariant::fromValue<libraryid_t>(it->second));
 	  updateQuery.bindValue(1, QVariant::fromValue<libraryid_t>(it->first));
+    std::cout << "0: " << updateQuery.boundValue(0).toString().toStdString() <<
+      " 1: " << updateQuery.boundValue(1).toString().toStdString() << std::endl;
 	  EXEC_SQL(
 		  "Updating server id didn't work!", 
 		  updateQuery.exec(), 
 		  updateQuery);
+   
   }
 }
 
