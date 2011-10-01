@@ -110,6 +110,7 @@ void UDJServerConnection::startConnection(
 		"Error creating library table", 
 		setupQuery.exec("CREATE TABLE IF NOT EXISTS library "
     "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
+    "server_lib_id INTEGER, "
    	"song TEXT NOT NULL, artist TEXT, album TEXT, filePath TEXT);"), 
 		setupQuery)	
 
@@ -343,8 +344,25 @@ void UDJServerConnection::handleAddSongReply(QNetworkReply *reply){
 void UDJServerConnection::updateServerIds(
   const std::map<libraryid_t, libraryid_t>& hostToServerIdMap)
 {
-
-
+	QSqlQuery updateQuery(
+		"UPDATE library "
+		"SET server_lib_id = ? "
+		"WHERE id = ? ", 
+		musicdb);
+  for(
+    std::map<libraryid_t, libraryid_t>::const_iterator it = 
+      hostToServerIdMap.begin();
+    it != hostToServerIdMap.end();
+    ++it
+  )
+  { 
+	  updateQuery.bindValue(0, QVariant::fromValue<libraryid_t>(it->second));
+	  updateQuery.bindValue(1, QVariant::fromValue<libraryid_t>(it->first));
+	  EXEC_SQL(
+		  "Updating server id didn't work!", 
+		  updateQuery.exec(), 
+		  updateQuery);
+  }
 }
 
 

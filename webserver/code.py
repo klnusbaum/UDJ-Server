@@ -61,17 +61,6 @@ def initDatabase(db):
     "FROM mainplaylist INNER JOIN library ON "
     "mainplaylist.libraryId = library.id ORDER BY priority DESC;")
 
-"""
-  db.insert('library', song="Good Day", artist="Steve", album="Blue Harvest")
-  db.insert('library', song="Blow", artist="Steve", album="Blue Harvest")
-  db.insert('library', song="Hardy Har", artist="Nash", album="Cant Wait")
-  db.insert('library', song="Five", artist="Nash", album="Cant Wait")
-
-  db.insert('mainplaylist', libraryId="1")
-  db.insert('mainplaylist', libraryId="2")
-"""
-
-
 
 urls = (
 "/parties", "RESTParty",

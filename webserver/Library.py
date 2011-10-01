@@ -21,11 +21,8 @@ import web
 import MahData
 
 def getJSONObject(dbrow):
-  #p1 = LibraryEntry(1, 'Good Day', 'Steve', 'Blue Harvest', False)
-  isDel = False
-  if(dbrow.isDeleted):
-    isDel = True
-  return LibraryEntry(dbrow.id, dbrow.song, dbrow.artist, dbrow.album, isDel)
+  return LibraryEntry(
+    dbrow.id, dbrow.song, dbrow.artist, dbrow.album, dbrow.isDeleted)
 
 
 def getJSONArrayFromResults(results):
@@ -41,13 +38,18 @@ def addSongToLibrary(to_add, db):
     artist=to_add['artist'],
     album=to_add['album'],
     hostId=to_add['host_lib_id'])
-  return db.select('library', dict(serverid=idreturn), where="id=$serverid")
+  toReturn = db.select(
+    'library', 
+    where=web.db.sqlwhere({'id' : idreturn})
+  )
+  row = toReturn[0]
+  return LibraryEntry(row.id, row.song, row.artist, row.album, row.isDeleted)
 
 
 def addToLibrary(added, db):
-  toReturn = set()
+  toReturn = []
   for toAdd in added:
-    toReturn.add(addSongToLibrary(toAdd, db))
+    toReturn.append(addSongToLibrary(toAdd, db))
   return toReturn
   
   
@@ -113,7 +115,7 @@ class RESTLibrary:
   def POST(self):
     db = MahData.getDBConnection()
     songs = json.loads(web.input().to_add)
-    addToLibrary(songs,db)
-    return
+    addedSongs = addToLibrary(songs,db)
+    return json.dumps(addedSongs, cls=LibraryJSONEncoder)
     
 

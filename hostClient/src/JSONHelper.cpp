@@ -69,6 +69,14 @@ const std::map<libraryid_t, libraryid_t>
   JSONHelper::getHostToServerLibIdMap(QNetworkReply *reply)
 {
   std::map<libraryid_t, libraryid_t> toReturn;
+  QByteArray responseData = reply->readAll(); 
+  QVariantList songsAdded = QtJson::Json::parse(responseData).toList();
+  QVariantMap currentSong;
+  for(int i=0;i<songsAdded.size(); ++i){
+    currentSong = songsAdded.at(i).toMap();
+    toReturn[currentSong["host_lib_id"].value<libraryid_t>()] = 
+      currentSong["server_lib_id"].value<libraryid_t>();
+  }
   return toReturn;
 }
 
