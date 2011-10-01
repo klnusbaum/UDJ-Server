@@ -2,11 +2,9 @@ HOST CLIENT
 -Enable seemless playback by queuing up songs that are about to be played.
 And what's more, songs should fade into one another. Like a real dj would.
 Sync the beat of the new song to the beat of the the one that is currently
-playing, fade into 
-new song, then gradual return beat of new song to normal.
+playing, fade into new song, then gradual return beat of new song to normal.
 -Handle the unable to connect signal in host client
--Emit signal from UDJServerConnection is conneciotn is lost or 
-something...
+-Emit signal from UDJServerConnection is conneciotn is lost or something...
 
 ANDROID APP
 -Make sure the purging of the library table is done when the party is over.
@@ -32,6 +30,9 @@ just merge the song requests
 -Transmitting the IS_DELETED_PARAM every time could be expensive.
 It probably won't be changing that often so perhaps we should only transmit this
 if there's been a deletion. Othewise don't transmit it.
+-Make an admin URL so that I can do adminish stuff, like drop tables and what
+not.
+-Fix the post for adding a library song to a PUT.
 
 
 OVERALL

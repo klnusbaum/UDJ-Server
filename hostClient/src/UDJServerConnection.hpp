@@ -22,6 +22,7 @@
 #include "ConfigDefs.hpp"
 #include <QSqlDatabase>
 #include <QObject>
+#include <map>
 
 class QNetworkAccessManager;
 class QNetworkReply;
@@ -282,11 +283,42 @@ private:
     return AUTH_URL;
   }
 
+  static const QUrl& getLibAddSongUrl(){
+    static const QUrl LIB_ADD_URL(getServerUrlPath() + "/add_songs_to_library");
+    return LIB_ADD_URL;
+  }
+
+  static const QString& getCreateLibraryQuery(){
+    static const QString createLibQuerey = "CREATE TABLE IF NOT EXISTS library "
+    "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
+    "server_lib_id INTEGER DEFAULT -1, "
+   	"song TEXT NOT NULL, artist TEXT, album TEXT, filePath TEXT);";
+    return createLibQuerey;
+
+  }
+
   void authenticate(const QString& username, const QString& password);
 
   void handleAuthReply(QNetworkReply* reply);
  
   bool haveValidLoginCookie();
+
+  libraryid_t addSongToLocalDB(
+		const QString& songName,
+		const QString& artistName,
+		const QString& ablumName,
+		const QString& filePath);
+
+  void addSongOnServer(
+		const QString& songName,
+		const QString& artistName,
+		const QString& ablumName,
+    const libraryid_t hostid);
+
+  void handleAddSongReply(QNetworkReply *reply);
+
+  void updateServerIds(
+    const std::map<libraryid_t, libraryid_t>& hostToServerIdMap);
 
   //@}
 

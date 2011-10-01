@@ -37,6 +37,7 @@ def initDatabase(db):
   db.query("DROP TABLE IF EXISTS library;")
   db.query("CREATE TABLE IF NOT EXISTS library "
     "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
+    "hostId INTEGER, "
  	  "song TEXT NOT NULL, artist TEXT, album TEXT, "
     "isDeleted BIT(0) DEFAULT '0');")
   db.query("CREATE TABLE IF NOT EXISTS mainplaylist "
@@ -60,15 +61,6 @@ def initDatabase(db):
     "FROM mainplaylist INNER JOIN library ON "
     "mainplaylist.libraryId = library.id ORDER BY priority DESC;")
 
-  db.insert('library', song="Good Day", artist="Steve", album="Blue Harvest")
-  db.insert('library', song="Blow", artist="Steve", album="Blue Harvest")
-  db.insert('library', song="Hardy Har", artist="Nash", album="Cant Wait")
-  db.insert('library', song="Five", artist="Nash", album="Cant Wait")
-
-  db.insert('mainplaylist', libraryId="1")
-  db.insert('mainplaylist', libraryId="2")
-
-
 
 urls = (
 "/parties", "RESTParty",
@@ -76,7 +68,8 @@ urls = (
 "/sync_playlist", "RESTPlaylist",
 "/library", "RESTLibrary",
 "/auth", "Authenticator" ,
-"/party_login", "PartyLogin"
+"/party_login", "PartyLogin",
+"/add_songs_to_library", "RESTLibrary"
 )
 app = web.application(urls, globals())
 session = web.session.Session(app, web.session.DiskStore('sessions'), 

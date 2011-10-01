@@ -27,11 +27,15 @@ SET(UDJ_SRCS
 	PlaylistModel.cpp
 	UDJServerConnection.cpp
 	PartiersView.cpp
+  JSONHelper.cpp
+  qt-json/json.cpp
 )
 
 SET(UDJ_HDRS 
   MusicFinder.hpp
 	ConfigDefs.hpp
+  JSONHelper.hpp
+  qt-json/json.h
 )
 
 SET(UDJ_MOC_HDRS 

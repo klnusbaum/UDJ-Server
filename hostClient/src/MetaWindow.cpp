@@ -117,6 +117,7 @@ void MetaWindow::setMusicDir(){
   musicLibrary->setMusicLibrary(newMusic, progress);
   musicLibrary->select();
   progress.setValue(numNewFiles);
+  
 }
 
 void MetaWindow::playlistClicked(const QModelIndex& index){
