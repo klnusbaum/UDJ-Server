@@ -288,6 +288,15 @@ private:
     return LIB_ADD_URL;
   }
 
+  static const QString& getCreateLibraryQuery(){
+    static const QString createLibQuerey = "CREATE TABLE IF NOT EXISTS library "
+    "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
+    "server_lib_id INTEGER DEFAULT -1, "
+   	"song TEXT NOT NULL, artist TEXT, album TEXT, filePath TEXT);";
+    return createLibQuerey;
+
+  }
+
   void authenticate(const QString& username, const QString& password);
 
   void handleAuthReply(QNetworkReply* reply);

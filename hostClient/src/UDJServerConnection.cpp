@@ -108,10 +108,7 @@ void UDJServerConnection::startConnection(
 
 	EXEC_SQL(
 		"Error creating library table", 
-		setupQuery.exec("CREATE TABLE IF NOT EXISTS library "
-    "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-    "server_lib_id INTEGER, "
-   	"song TEXT NOT NULL, artist TEXT, album TEXT, filePath TEXT);"), 
+		setupQuery.exec(getCreateLibraryQuery()), 
 		setupQuery)	
 
 	EXEC_SQL(
@@ -129,6 +126,7 @@ void UDJServerConnection::startConnection(
     "AS SELECT "
     "mainplaylist.id AS plId, "
     "mainplaylist.libraryId AS libraryId, "
+    "library.server_lib_id AS server_lib_id, "
     "library.song AS song, "
     "library.artist AS artist, "
     "library.album AS album, "
@@ -172,9 +170,7 @@ void UDJServerConnection::startConnection(
 bool UDJServerConnection::clearMyLibrary(){
   QSqlQuery workQuery(musicdb);
   workQuery.exec("DROP TABLE library");
-  workQuery.exec("CREATE TABLE IF NOT EXISTS library "
-  "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-  "song TEXT NOT NULL, artist TEXT, album TEXT, filePath TEXT)");  
+  workQuery.exec(getCreateLibraryQuery());  
 }
 
 bool UDJServerConnection::addSongToLibrary(
@@ -344,11 +340,12 @@ void UDJServerConnection::handleAddSongReply(QNetworkReply *reply){
 void UDJServerConnection::updateServerIds(
   const std::map<libraryid_t, libraryid_t>& hostToServerIdMap)
 {
-	QSqlQuery updateQuery(
+  QSqlQuery updateQuery(musicdb);
+	updateQuery.prepare(
 		"UPDATE library "
 		"SET server_lib_id = ? "
-		"WHERE id = ? ", 
-		musicdb);
+		"WHERE id = ? ;"
+		);
   for(
     std::map<libraryid_t, libraryid_t>::const_iterator it = 
       hostToServerIdMap.begin();
