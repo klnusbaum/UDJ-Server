@@ -30,15 +30,17 @@ import java.util.ArrayList;
 import org.klnusbaum.udj.UDJPartyProvider;
 
 public class LibraryEntry{
-  private int serverId; 
+  private long serverId; 
   private String song;
   private String artist;
   private String album;
   private boolean isDeleted;
-  private static final String IS_DELETED_FLAG = "is_deleted";
+  public static final String IS_DELETED_FLAG = "is_deleted";
+  public static final String SERVER_LIB_ID_PARAM = "server_lib_id";
+  public static final long INVALID_SERVER_LIB_ID = -1;
 
   public LibraryEntry(
-    int serverId, 
+    long serverId, 
     String song, 
     String artist,
     String album,
@@ -51,7 +53,7 @@ public class LibraryEntry{
     this.isDeleted = isDeleted;
   }
 
-  public int getServerId(){
+  public long getServerId(){
     return serverId;
   }
   
@@ -75,7 +77,7 @@ public class LibraryEntry{
     throws JSONException 
   {
     return new LibraryEntry(
-      jObj.getInt(UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN), 
+      jObj.getLong(SERVER_LIB_ID_PARAM), 
       jObj.getString(UDJPartyProvider.SONG_COLUMN),
       jObj.getString(UDJPartyProvider.ARTIST_COLUMN),
       jObj.getString(UDJPartyProvider.ALBUM_COLUMN),
@@ -93,16 +95,16 @@ public class LibraryEntry{
   }
   
 
-/*  public static LibraryEntry valueOf(Cursor cur){
+  public static LibraryEntry valueOf(Cursor cur){
     return new LibraryEntry(
-      cur.getInt(cur.getColumnIndex(UDJPartyProvider.LIBRARY_ID_COLUMN)),
+      cur.getLong(cur.getColumnIndex(UDJPartyProvider.LIBRARY_ID_COLUMN)),
       cur.getString(cur.getColumnIndex(UDJPartyProvider.SONG_COLUMN)),
       cur.getString(cur.getColumnIndex(UDJPartyProvider.ARTIST_COLUMN)),
       cur.getString(cur.getColumnIndex(UDJPartyProvider.ALBUM_COLUMN)),
       false);
   }
 
-  public static JSONObject getJSONObject(LibraryEntry pe)
+/*  public static JSONObject getJSONObject(LibraryEntry pe)
     throws JSONException
   {
     JSONObject toReturn = new JSONObject();

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.klnusbaum.udj.sync;
+package org.klnusbaum.udj.network;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -151,7 +151,6 @@ public class RESTProcessor{
     Log.i("TAG", "Processing " + String.valueOf(newEntries.size()) 
     + " entries");
     final ContentResolver resolver = context.getContentResolver();
-    resolver.delete(UDJPartyProvider.PLAYLIST_URI, null, null);
     ArrayList<ContentProviderOperation> batchOps = 
       new ArrayList<ContentProviderOperation>();
     for(PlaylistEntry pe: newEntries){

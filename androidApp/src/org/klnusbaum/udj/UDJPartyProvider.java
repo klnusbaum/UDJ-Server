@@ -64,7 +64,7 @@ public class UDJPartyProvider extends ContentProvider{
   public static final String SONG_COLUMN = "song";
   public static final String ARTIST_COLUMN = "artist";
   public static final String ALBUM_COLUMN = "album";
-  public static final String SERVER_LIBRARY_ID_COLUMN = "server_lib_id";
+  public static final String SERVER_LIBRARY_ID_COLUMN = "_id";
 
 
   /**LIBRARY TABLE */
@@ -75,7 +75,6 @@ public class UDJPartyProvider extends ContentProvider{
 	/** SQL statement for creating the library table. */
   private static final String LIBRARY_TABLE_CREATE = 
     "CREATE TABLE " + LIBRARY_TABLE_NAME + "("+
-		LIBRARY_ID_COLUMN + " INTEGER PRIMARY KEY, " +
 		SERVER_LIBRARY_ID_COLUMN + " INTEGER UNIQUE, " +
 		SONG_COLUMN + " TEXT NOT NULL, " +
     ARTIST_COLUMN + " TEXT NOT NULL, " + 
@@ -188,6 +187,7 @@ public class UDJPartyProvider extends ContentProvider{
     if(uri.equals(PLAYLIST_URI)){
       long rowId = db.insert(PLAYLIST_TABLE_NAME, null, initialValues);
       if(rowId > 0){
+        notifyChange(PLAYLIST_URI, null);
         return ContentUris.withAppendedId(PLAYLIST_URI, rowId); 
       }
       else{
@@ -197,6 +197,7 @@ public class UDJPartyProvider extends ContentProvider{
     else if(uri.equals(LIBRARY_URI)){
       long rowId = db.insert(LIBRARY_TABLE_NAME, null, initialValues);
       if(rowId > 0){
+        notifyChange(LIBRARY_URI, null);
         return ContentUris.withAppendedId(LIBRARY_URI, rowId); 
       }
       else{

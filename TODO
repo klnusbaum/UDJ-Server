@@ -20,6 +20,9 @@ ANDROID APP
 library in that case.
 -Switch all the dialogs to fragments and stop using the 
 depercated onCreateDialogs and what not.
+-We don't need to send a whole PlaylistEntry every time we're adding one, just
+the server_lib_id and the client_playlist_id, the rest should be derivable by
+ther server.
 
 SERVER
 -If two users add the same song within a certain threshold of oneanother (e.g.

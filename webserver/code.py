@@ -64,12 +64,12 @@ def initDatabase(db):
 
 urls = (
 "/parties", "RESTParty",
-"/playlist", "RESTPlaylist",
-"/sync_playlist", "RESTPlaylist",
-"/library", "RESTLibrary",
+"/playlist/get_playlist", "RESTPlaylist",
+"/playlist/add_songs", "RESTPlaylist",
+"/library/search_library", "RESTLibrary",
 "/auth", "Authenticator" ,
-"/party_login", "PartyLogin",
-"/add_songs_to_library", "RESTLibrary"
+"/party/party_login", "PartyLogin",
+"/library/add_songs", "RESTLibrary"
 )
 app = web.application(urls, globals())
 session = web.session.Session(app, web.session.DiskStore('sessions'), 

@@ -28,10 +28,12 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.klnusbaum.udj.UDJPartyProvider;
+
 public class PlaylistEntry{
 
   public static final String PLAYLIST_CLIENT_ID_PARAM = "client_playlist_id";
   private long serverId;
+  private long hostId;
   private long libId;
   private int voteCount;
   private int priority;

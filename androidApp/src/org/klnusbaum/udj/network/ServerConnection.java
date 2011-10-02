@@ -79,6 +79,7 @@ public class ServerConnection{
   public static final String PARAM_LOCATION = "location";
   public static final String PARAM_LIB_QUERY = "search_query";
   public static final String SERVER_TIMESTAMP_FORMAT = "yyyy-mm-dd hh:mm:ss";
+  public static final String PARAM_PLAYLIST_TO_ADD = "toAdd";
   /** 
    * This port number is a memorial to Keith Nusbaum, my father. I loved him
    * deeply and he was taken from this world far too soon. Never-the-less 
@@ -96,18 +97,34 @@ public class ServerConnection{
   //public static final String SERVER_URL = "http://www.bazaarsolutions.org/udj";
   //THIS IS FOR TESTING AT THE MOMENT
   public static final String SERVER_URL = "http://10.0.2.2:"+SERVER_PORT_NUMBER;
+
+
   public static final String PLAYLIST_URI = 
     SERVER_URL + "/playlist";
+  public static final String PLAYLIST_ADD_URI =
+    PLAYLIST_URI + "/add_songs";
+  public static final String PLAYLIST_GET_URI = 
+    PLAYLIST_URI + "/get_playlist";
+  public static final String PLAYLIST_VOTE_UP_URI=
+    PLAYLIST_URI + "/vote_up_songs";
+  public static final String PLAYLIST_VOTE_DOWN_URI=
+    PLAYLIST_URI + "/vote_down_songs";
+
   public static final String LIBRARY_URI = 
     SERVER_URL + "/library";
+  public static final String LIBRARY_QUERY_URI =
+    LIBRARY_URI + "/search_library";
+  public static final String LIBRARY_RANDOM_URI =
+    LIBRARY_URI + "/random";
+
   public static final String PARTIES_URI =
-    SERVER_URL + "/parties";
+    SERVER_URL + "/party/parties";
+  public static final String PARTY_LOGIN_URI =
+    SERVER_URL + "party/party_login";
+
   public static final String AUTH_URI =
     SERVER_URL + "/auth";
-  public static final String PARTY_LOGIN_URI =
-    SERVER_URL + "/party_login";
-  public static final String SYNC_PLAYLIST_URI =
-    SERVER_URL + "/sync_playlist";
+
   public static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
 
   private static DefaultHttpClient httpClient;
@@ -216,53 +233,49 @@ public class ServerConnection{
     throws JSONException, ParseException, IOException, AuthenticationException
   {
     final ArrayList<NameValuePair> params = 
-      getEssentialParameters(partyId, null);
+      getEssentialParameters(null);
       params.add(new BasicNameValuePair(PARAM_LIB_QUERY, searchQuery));
     JSONArray libraryEntries = new JSONArray(doGet(params, LIBRARY_URI));
     return LibraryEntry.fromJSONArray(libraryEntries);
   }
 
-  public static List<PlaylistEntry> getPlaylistUpdate(  
-    long partyId,
-    List<PlaylistEntry> added, 
-    List<PlaylistEntry> votedUp, 
-    List<PlaylistEntry> votedDown, 
+  public static List<PlaylistEntry> addSongToPlaylist(  
+    PlaylistEntry toAdd, 
     GregorianCalendar lastUpdated) throws
     JSONException, ParseException, IOException, AuthenticationException
   {
-    Log.i("TAG", "Doing playlist update");
-    final ArrayList<NameValuePair> params = 
-      getEssentialParameters(partyId, lastUpdated);
-    JSONArray playlistEntries =null;
-    if(nothingToUpdate(added, votedUp, votedDown)){
-      Log.i("TAG", "Doing playlist get!");
-      playlistEntries = new JSONArray(doGet(params, PLAYLIST_URI));
-    }
-    else{
-      Log.i("TAG", "Doing playlist sync!");
-      JSONObject syncInfo = new JSONObject();
-      syncInfo.put(
-        PARAM_PLAYLIST_ADDED, 
-        PlaylistEntry.getJSONArray(added));
-      syncInfo.put(
-        PARAM_PLAYLIST_VOTED_UP,
-        PlaylistEntry.getJSONArray(votedUp));
-      syncInfo.put(
-        PARAM_PLAYLIST_VOTED_DOWN,
-        PlaylistEntry.getJSONArray(votedDown));
-      params.add(new BasicNameValuePair(
-        PARAM_PLAYLIST_SYNC_INFO, syncInfo.toString()));
-      playlistEntries = doPost(params, SYNC_PLAYLIST_URI);
-    }
+    ArrayList<PlaylistEntry> toAddList = new ArrayList<PlaylistEntry>();
+    toAddList.add(toAdd);
+    return addSongsToPlaylist(toAddList);
+  }
+
+  public static List<PlaylistEntry> addSongsToPlaylist(  
+    List<PlaylistEntry> added, 
+    GregorianCalendar lastUpdated) throws
+    JSONException, ParseException, IOException, AuthenticationException
+  {
+    Log.i("TAG", "Doing playlist add.");
+    final ArrayList<NameValuePair> params = getEssentialParameters(lastUpdated);
+    JSONArray toAddArray = PlaylistEntry.getJSONArray(added);
+    params.add(new BasicNameValuePair(
+      PARAM_PLAYLIST_TO_ADD, toAddArray.toString()));
+    playlistEntries = doPost(params, PLAYLIST_ADD_URI);
+    return PlaylistEntry.fromJSONArray(playlistEntries);
+  }
+
+
+  public static List<PlaylistEntry> getPlaylist() throws
+    JSONException, ParseException, IOException, AuthenticationException
+  {
+    Log.i("TAG", "Getting playlist.");
+    playlistEntries = doGet(null, PLAYLIST_GET_URI);
     return PlaylistEntry.fromJSONArray(playlistEntries);
   }
 
   private static ArrayList<NameValuePair> getEssentialParameters(
-    long partyId, GregorianCalendar lastUpdated)
+    GregorianCalendar lastUpdated)
   {
     ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-    ArrayList<PlaylistEntry> toReturn = new ArrayList<PlaylistEntry>();
-    params.add(new BasicNameValuePair(PARAM_PARTYID, String.valueOf(partyId)));
     //TODO ACTUALLY GET THIS WORKING
     /*if(lastUpdated != null){
       final SimpleDateFormat formatter =
@@ -315,7 +328,7 @@ public class ServerConnection{
   public static String doGet(ArrayList<NameValuePair> params, String uri)
     throws AuthenticationException, IOException
   {
-    final HttpGet get = new HttpGet(uri + "?" + getParamString(params));
+    final HttpGet get = new HttpGet(uri + getParamString(params));
     final HttpResponse resp = getHttpClient().execute(get);
     final String response = EntityUtils.toString(resp.getEntity());
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
@@ -331,8 +344,11 @@ public class ServerConnection{
 
   private static String getParamString(ArrayList<NameValuePair> params){
     String toReturn = "";
-    for(NameValuePair np: params){
-      toReturn += np.getName() + "=" +np.getValue();
+    if(params != null){
+      toReturn += "?";
+      for(NameValuePair np: params){
+        toReturn += np.getName() + "=" +np.getValue();
+      }
     }
     return toReturn;
   }
