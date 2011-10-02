@@ -28,6 +28,7 @@ import android.support.v4.widget.CursorAdapter;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.content.Intent;
 import android.database.Cursor;
 import android.content.ContentValues;
 import android.content.ContentResolver;
@@ -43,6 +44,7 @@ import android.accounts.Account;
 import java.util.List;
 
 import org.klnusbaum.udj.containers.LibraryEntry;
+import org.klnusbaum.udj.network.PlaylistSyncService;
 
 
 /**
@@ -75,7 +77,7 @@ public class LibrarySearchActivity extends FragmentActivity{
     if(fm.findFragmentById(android.R.id.content) == null){
       Bundle queryBundle = new Bundle();
       queryBundle.putString(SEARCH_QUERY_EXTRA, searchQuery);
-      LibraryFragment list = new LibraryFragment();
+      LibrarySearchFragment list = new LibrarySearchFragment();
       list.setArguments(queryBundle);
       fm.beginTransaction().add(android.R.id.content, list).commit();
     }
@@ -90,13 +92,18 @@ public class LibrarySearchActivity extends FragmentActivity{
   
     private View.OnClickListener addSongToPlaylistListener =
       new View.OnClickListener(){
-        public void onClickView(View v){
-          long libId = v.getTag(LibrarySearchAdapter.LIB_ID_TAG);
+        public void onClick(View v){
+          LibraryEntry songToAdd = 
+            (LibraryEntry)v.getTag(LibrarySearchAdapter.LIB_ENTRY_TAG);
           Intent addSongIntent = new Intent(
             Intent.ACTION_INSERT,
             UDJPartyProvider.PLAYLIST_URI,
             getActivity(),
             PlaylistSyncService.class);
+          addSongIntent.putExtra(
+            PlaylistSyncService.LIB_ENTRY_EXTRA,
+            LibraryEntry.toBundle(songToAdd)
+          );
           getActivity().startService(addSongIntent);
         }
       };
@@ -110,7 +117,7 @@ public class LibrarySearchActivity extends FragmentActivity{
         searchQuery = savedInstanceState.getString(SEARCH_QUERY_EXTRA);
       }
       else{
-        Bundle args = getArguements();
+        Bundle args = getArguments();
         if(args != null){
           searchQuery = args.getString(SEARCH_QUERY_EXTRA);
         }
@@ -128,8 +135,8 @@ public class LibrarySearchActivity extends FragmentActivity{
     }
 
     public Loader<List<LibraryEntry>> onCreateLoader(int id, Bundle args){
-      if(id = LIB_SEARCH_LOADER_TAG){
-        String query = args.getString(LIB_SEARCH_LOADER_TAG);
+      if(id == LIB_SEARCH_LOADER_TAG){
+        String query = args.getString(SEARCH_QUERY_EXTRA);
         return new LibrarySearchLoader(getActivity(), query);
       }
       return null;
@@ -151,7 +158,7 @@ public class LibrarySearchActivity extends FragmentActivity{
       }
     }
 
-    public void onLoaderReset(Loader<Cursor> loader){
+    public void onLoaderReset(Loader<List<LibraryEntry>> loader){
       searchAdapter = new LibrarySearchAdapter(getActivity());
     }
   }

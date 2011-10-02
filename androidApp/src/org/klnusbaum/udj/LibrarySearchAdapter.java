@@ -20,10 +20,15 @@ package org.klnusbaum.udj;
 
 import android.widget.ListAdapter;
 import android.view.View;
+import android.view.ViewGroup;
 import android.content.Context;
 import android.widget.TextView;
 import android.widget.ImageButton;
 import android.database.DataSetObserver;
+
+import java.util.List;
+
+import org.klnusbaum.udj.containers.LibraryEntry;
 
 public class LibrarySearchAdapter implements ListAdapter{
 
@@ -31,7 +36,7 @@ public class LibrarySearchAdapter implements ListAdapter{
   private Context context;
   private View.OnClickListener addClickListener;
   public static final int LIB_ENTRY_VIEW_TYPE = 0;
-  public static final int LIB_ID_TAG = 0;
+  public static final int LIB_ENTRY_TAG = 0;
 
   public LibrarySearchAdapter(Context context){
     this.entries = null;
@@ -106,7 +111,8 @@ public class LibrarySearchAdapter implements ListAdapter{
     songView.setText(libEntry.getSong());
     artistView.setText(libEntry.getArtist());
     addButton.setOnClickListener(addClickListener);
-    addButton.setTag(LIB_ID_TAG, libEntry.getServerId());
+    addButton.setTag(LIB_ENTRY_TAG, libEntry);
+    return toReturn;
   }
 
   public int getViewTypeCount(){
@@ -117,7 +123,7 @@ public class LibrarySearchAdapter implements ListAdapter{
     return true;
   }
 
-  public boolean isEmptry(){
+  public boolean isEmpty(){
     if(entries != null){
       return entries.isEmpty();
     }

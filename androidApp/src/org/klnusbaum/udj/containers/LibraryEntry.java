@@ -19,6 +19,7 @@
 package org.klnusbaum.udj.containers;
 
 import android.database.Cursor;
+import android.os.Bundle;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -37,6 +38,9 @@ public class LibraryEntry{
   private boolean isDeleted;
   public static final String IS_DELETED_FLAG = "is_deleted";
   public static final String SERVER_LIB_ID_PARAM = "server_lib_id";
+  public static final String SONG_PARAM = "song";
+  public static final String ARTIST_PARAM = "artist";
+  public static final String ALBUM_PARAM = "album";
   public static final long INVALID_SERVER_LIB_ID = -1;
 
   public LibraryEntry(
@@ -78,9 +82,9 @@ public class LibraryEntry{
   {
     return new LibraryEntry(
       jObj.getLong(SERVER_LIB_ID_PARAM), 
-      jObj.getString(UDJPartyProvider.SONG_COLUMN),
-      jObj.getString(UDJPartyProvider.ARTIST_COLUMN),
-      jObj.getString(UDJPartyProvider.ALBUM_COLUMN),
+      jObj.getString(SONG_PARAM),
+      jObj.getString(ARTIST_PARAM),
+      jObj.getString(ALBUM_PARAM),
       jObj.getBoolean(IS_DELETED_FLAG));
   }
 
@@ -94,35 +98,24 @@ public class LibraryEntry{
     return toReturn;
   }
   
+  public static Bundle toBundle(LibraryEntry le){
+    Bundle toReturn = new Bundle();
+    toReturn.putLong(SERVER_LIB_ID_PARAM, le.getServerId());
+    toReturn.putString(SONG_PARAM, le.getSong());
+    toReturn.putString(ARTIST_PARAM, le.getArtist());
+    toReturn.putString(ALBUM_PARAM, le.getAlbum());
+    toReturn.putBoolean(IS_DELETED_FLAG, le.getIsDeleted());
+    return toReturn;
+  }
 
-  public static LibraryEntry valueOf(Cursor cur){
+  public static LibraryEntry fromBundle(Bundle bundle){
+    //TODO throw error is not all the keys are present.
     return new LibraryEntry(
-      cur.getLong(cur.getColumnIndex(UDJPartyProvider.LIBRARY_ID_COLUMN)),
-      cur.getString(cur.getColumnIndex(UDJPartyProvider.SONG_COLUMN)),
-      cur.getString(cur.getColumnIndex(UDJPartyProvider.ARTIST_COLUMN)),
-      cur.getString(cur.getColumnIndex(UDJPartyProvider.ALBUM_COLUMN)),
-      false);
+      bundle.getLong(SERVER_LIB_ID_PARAM),
+      bundle.getString(SONG_PARAM),
+      bundle.getString(ARTIST_PARAM),
+      bundle.getString(ALBUM_PARAM),
+      bundle.getBoolean(IS_DELETED_FLAG));
   }
-
-/*  public static JSONObject getJSONObject(LibraryEntry pe)
-    throws JSONException
-  {
-    JSONObject toReturn = new JSONObject();
-    toReturn.put(UDJPartyProvider.LIBRARY_ID_COLUMN, pe.getLibId());
-    toReturn.put(UDJPartyProvider.SONG_COLUMN, pe.getSong());
-    toReturn.put(UDJPartyProvider.ARTIST_COLUMN, pe.getArtist());
-    toReturn.put(UDJPartyProvider.ALBUM_COLUMN, pe.getAlbum());
-    return toReturn;
-  }
-
-  public static JSONArray getJSONArray(List<LibraryEntry> entries)
-    throws JSONException
-  {
-    JSONArray toReturn = new JSONArray();
-    for(LibraryEntry le: entries){
-      toReturn.put(getJSONObject(le));
-    }
-    return toReturn;
-  } */
-
+  
 }

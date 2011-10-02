@@ -39,14 +39,14 @@ import android.app.SearchManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.DialogFragment;
 
 import java.util.HashMap;
 
 import org.klnusbaum.udj.auth.AuthActivity;
 import org.klnusbaum.udj.containers.Party;
-import org.klnusbaum.udj.sync.SyncAdapter;
-import org.klnusbaum.udj.sync.RESTProcessor;
+import org.klnusbaum.udj.network.PlaylistSyncService;
 
 /**
  * The main activity display class.

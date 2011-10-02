@@ -19,11 +19,8 @@
 package org.klnusbaum.udj.network;
 
 
-import android.content.AbstractThreadedSyncAdapter;
-import android.content.SyncResult;
 import android.content.Context;
 import android.os.Bundle;
-import android.content.ContentProviderClient;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.OperationCanceledException;
@@ -33,6 +30,9 @@ import android.os.RemoteException;
 import android.content.OperationApplicationException;
 import android.util.Log;
 import android.app.IntentService;
+import android.content.ContentValues;
+import android.net.Uri;
+import android.content.Intent;
 
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -45,7 +45,6 @@ import org.apache.http.ParseException;
 
 import org.klnusbaum.udj.containers.PlaylistEntry;
 import org.klnusbaum.udj.containers.LibraryEntry;
-import org.klnusbaum.udj.containers.Party;
 import org.klnusbaum.udj.UDJPartyProvider;
 import org.klnusbaum.udj.R;
 
@@ -59,7 +58,7 @@ public class PlaylistSyncService extends IntentService{
   private AccountManager am;
 
   public static final String ACCOUNT_EXTRA = "account";
-  public static final String LIB_ID_EXTRA = "libId";
+  public static final String LIB_ENTRY_EXTRA = "libEntry";
   public static final String PLAYLIST_ID_EXTRA = "playlistId";
   public static final String SEARCH_QUERY_EXTRA = "search_query";
 
@@ -70,6 +69,10 @@ public class PlaylistSyncService extends IntentService{
     UDJPartyProvider.SYNC_STATE_COLUMN};*/
   private static final String playlistWhereClause = 
     UDJPartyProvider.SYNC_STATE_COLUMN + "=?";
+
+  public PlaylistSyncService(String name){
+    super(name);
+  }
 
   @Override
   public void onCreate(){
@@ -84,13 +87,17 @@ public class PlaylistSyncService extends IntentService{
     String action = intent.getAction();
     try{
       if(action.equals(Intent.ACTION_INSERT)){
-        long toAdd = intent.getLongExtra(
-          LIB_ID_EXTRA, LibraryEntry.INVALID_SERVER_LIB_ID);  
-        addSongToPlaylist(toAdd);
+        Bundle libEntryBundle = intent.getBundleExtra(
+          LIB_ENTRY_EXTRA);  
+        if(libEntryBundle == null){
+          //TODO throw error
+        }
+        addSongToPlaylist(LibraryEntry.fromBundle(libEntryBundle));
       }
       else if(action.equals(Intent.ACTION_VIEW)){
         updatePlaylist();
       }
+      playlistLastUpdate = new GregorianCalendar(); 
       //TODO something in the case of these failing.
     } 
     catch(final AuthenticatorException e){
@@ -104,12 +111,12 @@ public class PlaylistSyncService extends IntentService{
     }
     catch(final AuthenticationException e){
       authtoken = am.blockingGetAuthToken(
-        account, context.getString(R.string.authtoken_type), true);
+        account, getString(R.string.authtoken_type), true);
       if(authtoken == null){
         //TODO throw exeception if authtoken is null
       }
       am.invalidateAuthToken(
-        context.getString(R.string.account_type), authtoken);
+        getString(R.string.account_type), authtoken);
     }
     catch(final ParseException e){
     
@@ -128,12 +135,11 @@ public class PlaylistSyncService extends IntentService{
 
   private void updatePlaylist(){
     List<PlaylistEntry> serverResponse = 
-      ServerConnection.getPlaylist();
-    RESTProcessor.processPlaylistEntries(serverResponse);
+      ServerConnection.getPlaylist(playlistLastUpdate);
+    RESTProcessor.processPlaylistEntries(serverResponse, this);
   }
 
-  private void addSongToPlaylist(long libId){
-    Cursor songToAdd = getLibraryCursor(libId);
+  private void addSongToPlaylist(LibraryEntry songToAdd){
     ContentValues toInsertValues = getPlaylistInsertionValues(songToAdd);
     Uri insertedSong = getContentResolver().insert(
       UDJPartyProvider.PLAYLIST_URI,
@@ -141,46 +147,33 @@ public class PlaylistSyncService extends IntentService{
     Cursor playlistSong = getPlaylistCursor(insertedSong);
     PlaylistEntry toSendToServer = PlaylistEntry.valueOf(playlistSong);
     List<PlaylistEntry> serverResponse =
-      ServerConnection.addSongToPlaylist(toSendToServer);
-    RESTProcessor.processPlaylistEntries(serverResponse);
+      ServerConnection.addSongToPlaylist(toSendToServer, playlistLastUpdate);
+    RESTProcessor.processPlaylistEntries(serverResponse, this);
   }
 
-  private ContentValues getPlaylistInsertionValues(Cursor libraryCursor){
+  private ContentValues getPlaylistInsertionValues(LibraryEntry songToAdd){
     ContentValues toInsertValues = new ContentValues();
-    toInsertValues.put(SERVER_LIBRARY_ID_COLUMN, libraryCursor.getLong(
-      libraryCursor.getColumnIndex(UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN)));
-    toInsertValues.put(SONG_COLUMN, libraryCursor.getString(
-      libraryCursor.getColumnIndex(UDJPartyProvider.SONG_COLUMN)));
-    toInsertValues.put(ALBUM_COLUMN, libraryCursor.getString(
-      libraryCursor.getColumnIndex(UDJPartyProvider.ALBUM_COLUMN)));
-    toInsertValues.put(ARTIST_COLUMN, libraryCursor.getString(
-      libraryCursor.getColumnIndex(UDJPartyProvider.ARTIST_COLUMN)));
+    toInsertValues.put(
+      UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN, 
+      songToAdd.getServerId());
+    toInsertValues.put(
+      UDJPartyProvider.SONG_COLUMN,
+      songToAdd.getSong());
+    toInsertValues.put(
+      UDJPartyProvider.ARTIST_COLUMN,
+      songToAdd.getArtist());
+    toInsertValues.put(
+      UDJPartyProvider.ALBUM_COLUMN,
+      songToAdd.getAlbum());
     return toInsertValues;
-  }
-
-  private Cursor getLibraryCursor(long libId){
-    if(libId == LibraryEntry.INVALID_SERVER_LIB_ID){
-      //TODO throw some sort of error
-    }
-    Cursor librarySong = getContentResolver().query(
-      LIBRARY_URI,
-      null, 
-      SERVER_LIBRARY_ID_COLUMN + " = ?",
-      new String[]{String.valueOf(libId)}, 
-      null);
-    if(librarySong.getCount() == 0){
-      //TODO throw some sort of error
-    }
-    librarySong.moveToNext();
-    return librarySong;
   }
 
   private Cursor getPlaylistCursor(Uri songUri){
     String playlistId = songUri.getLastPathSegment();
     Cursor playlistSong = getContentResolver().query(
-      PLAYLIST_URI,
+      UDJPartyProvider.PLAYLIST_URI,
       null,
-      PLAYLIST_ID_COLUMN + " = ? ",
+      UDJPartyProvider.PLAYLIST_ID_COLUMN + " = ? ",
       new String[]{playlistId},
       null);
     if(playlistSong.getCount() == 0){

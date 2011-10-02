@@ -227,9 +227,7 @@ public class ServerConnection{
     }
   }
 
-  public static List<LibraryEntry> libraryQuery(
-    long partyId,
-    String searchQuery)
+  public static List<LibraryEntry> libraryQuery(String searchQuery)
     throws JSONException, ParseException, IOException, AuthenticationException
   {
     final ArrayList<NameValuePair> params = 
@@ -260,11 +258,12 @@ public class ServerConnection{
     params.add(new BasicNameValuePair(
       PARAM_PLAYLIST_TO_ADD, toAddArray.toString()));
     JSONArray returnedEntries = new JSONArray(doPost(params, PLAYLIST_ADD_URI));
-    return PlaylistEntry.fromJSONArray(playlistEntries);
+    return PlaylistEntry.fromJSONArray(returnedEntries);
   }
 
 
-  public static List<PlaylistEntry> getPlaylist() throws
+  public static List<PlaylistEntry> getPlaylist(GregorianCalendar lastUpdated)
+    throws
     JSONException, ParseException, IOException, AuthenticationException
   {
     Log.i("TAG", "Getting playlist.");

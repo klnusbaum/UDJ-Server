@@ -166,6 +166,9 @@ public class UDJPartyProvider extends ContentProvider{
         throw new SQLException("Failed to insert " + uri);
       }
     }
+    else{
+      throw new IllegalArgumentException("Unknown URI " + uri);
+    }
   }
   
   @Override

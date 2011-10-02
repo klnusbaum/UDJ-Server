@@ -20,6 +20,16 @@ package org.klnusbaum.udj;
 
 import android.support.v4.content.AsyncTaskLoader;
 
+import android.content.Context;
+
+import java.util.List;
+import java.io.IOException;
+
+import org.json.JSONException;
+
+import org.apache.http.auth.AuthenticationException;
+import org.apache.http.ParseException;
+
 import org.klnusbaum.udj.network.ServerConnection;
 import org.klnusbaum.udj.containers.LibraryEntry;
 
@@ -35,8 +45,23 @@ public class LibrarySearchLoader
 
   public List<LibraryEntry> loadInBackground(){
     if(query != null){
-      return List<LibraryEntry> searchResults =
-        ServerConnection.libraryQuery(query);
+      try{
+        return ServerConnection.libraryQuery(query);
+        //TODO do something to the potential errors
+      }
+      catch(JSONException e){
+
+      }
+      catch(ParseException e){
+
+      }
+      catch(IOException e){
+
+      }
+      catch(AuthenticationException e){
+
+      }
+      return null;
     }
     return null;
   }
