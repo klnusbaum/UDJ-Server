@@ -47,23 +47,9 @@ import org.klnusbaum.udj.containers.Party;
  */
 public class PlaylistActivity extends FragmentActivity{
 
-  private long partyId;
-
   @Override
   public void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
-     
-    if(savedInstanceState != null){
-      partyId = savedInstanceState.getLong(Party.PARTY_ID_EXTRA);
-    }
-    else{
-      partyId = 
-        getIntent().getLongExtra(Party.PARTY_ID_EXTRA, Party.INVALID_PARTY_ID);
-      if(partyId == Party.INVALID_PARTY_ID){
-        setResult(Activity.RESULT_CANCELED);
-        finish();
-      }
-    }
 
     FragmentManager fm = getSupportFragmentManager();
     if(fm.findFragmentById(android.R.id.content) == null){
@@ -82,7 +68,6 @@ public class PlaylistActivity extends FragmentActivity{
 
     private static final int CURSOR_LOADER_ID = 0;
 
-    private long partyId;
     /**
      * Adapter used to help display the contents of the playlist.
      */
@@ -92,17 +77,6 @@ public class PlaylistActivity extends FragmentActivity{
     public void onActivityCreated(Bundle savedInstanceState){
       super.onActivityCreated(savedInstanceState);
       setEmptyText(getActivity().getString(R.string.no_playlist_items));
-      //TODO throw some kind of error if the party id is null. Although it never should be.
-      Bundle args = getArguments();
-      if(args.containsKey(Party.PARTY_ID_EXTRA)){
-        partyId = args.getLong(Party.PARTY_ID_EXTRA);
-      }
-      else{
-        getActivity().setResult(Activity.RESULT_CANCELED);
-        getActivity().finish();
-      }
-
-      //setHasOptionsMenu(true)
       playlistAdapter = new PlaylistAdapter(getActivity(), null);
       setListAdapter(playlistAdapter);
       setListShown(false);
@@ -111,13 +85,21 @@ public class PlaylistActivity extends FragmentActivity{
     
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args){
-      return new CursorLoader(
+/*      return new CursorLoader(
         getActivity(), 
         UDJPartyProvider.PLAYLIST_URI, 
         null,
         UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN + " != ?",
         new String[]{UDJPartyProvider.INVALID_SERVER_PLAYLIST_ID},
+        null);*/
+      return new CursorLoader(
+        getActivity(), 
+        UDJPartyProvider.PLAYLIST_URI, 
+        null,
+        null,
+        null,
         null);
+
     }
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data){

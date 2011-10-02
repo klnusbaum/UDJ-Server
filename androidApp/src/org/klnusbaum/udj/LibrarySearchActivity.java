@@ -40,97 +40,96 @@ import android.view.LayoutInflater;
 import android.util.Log;
 import android.accounts.Account;
 
-import org.klnusbaum.udj.containers.Party;;
-import org.klnusbaum.udj.sync.SyncAdapter;
 
 /**
- * An Activity which displays the party's current
- * available libary.
+ * An Activity which displays the results of a library search.
  */
-public class LibraryActivity extends FragmentActivity{
+public class LibrarySearchActivity extends FragmentActivity{
 
-  private long partyId;
+  public static final String SEARCH_QUERY_EXTRA = "search_query";
+  private static final int LIB_SEARCH_LOADER_TAG = 0;
+  private String searchQuery;
+
   
   @Override
   public void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
-
-
-
+    searchQuery = null; 
     if(savedInstanceState != null){
-      partyId = savedInstanceState.getLong(Party.PARTY_ID_EXTRA);
+      searchQuery = savedInstanceState.getString(SEARCH_QUERY_EXTRA);
     }
     else{
-      partyId = 
-        getIntent().getLongExtra(Party.PARTY_ID_EXTRA, Party.INVALID_PARTY_ID);
-      if(partyId == Party.INVALID_PARTY_ID){
-        setResult(Activity.RESULT_CANCELED);
-        finish();
-      }
+      searchQuery = getIntent().getStringExtra(SEARCH_QUERY_EXTRA);
+    }
+
+    if(searchQuery == null){
+      //TODO throw some sort of error.
     }
 
     //TODO before calling fragment, to get ID and give that to it.
     FragmentManager fm = getSupportFragmentManager();
     if(fm.findFragmentById(android.R.id.content) == null){
-      Bundle partyBundle = new Bundle();
-      partyBundle.putLong(Party.PARTY_ID_EXTRA, partyId);
+      Bundle queryBundle = new Bundle();
+      queryBundle.putString(SEARCH_QUERY_EXTRA, searchQuery);
       LibraryFragment list = new LibraryFragment();
-      list.setArguments(partyBundle);
+      list.setArguments(queryBundle);
       fm.beginTransaction().add(android.R.id.content, list).commit();
     }
   }
 
-  public static class LibraryFragment extends ListFragment
-    implements LoaderManager.LoaderCallbacks<Cursor>
+  public static class LibrarySearchFragment extends ListFragment
+    implements LoaderManager.LoaderCallbacks<ArrayList<LibraryEntry>>
   {
     /** Adapter used to help display the contents of the library. */
-    LibraryAdapter libraryAdapter;
-    Account account;
-    
-    private long partyId;
-
+    LibrarySearchAdapter searchAdapter;
+    private String searchQuery;
     
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
       super.onActivityCreated(savedInstanceState);
+      searchQuery = null; 
+      if(savedInstanceState != null){
+        searchQuery = savedInstanceState.getString(SEARCH_QUERY_EXTRA);
+      }
+      else{
+        Bundle args = getArguements();
+        if(args != null){
+          searchQuery = args.getString(SEARCH_QUERY_EXTRA);
+        }
+      }
+  
+      if(searchQuery == null){
+          //TODO throw some sort of error.
+      }
 
       setEmptyText(getActivity().getString(R.string.no_library_songs));
       //setHasOptionsMenu(true);
 
-      //TODO throw some kind of error if the party id is null. Although it never should be.
-      //TODO throw some kind of error if the accout is null. Although it never should be.
-      Bundle args = getArguments();
-      if(
-        args.containsKey(Party.PARTY_ID_EXTRA) && 
-        args.containsKey(PartyActivity.ACCOUNT_EXTRA))
-      {
-        partyId = args.getLong(Party.PARTY_ID_EXTRA);
-        account = args.getParcelable(PartyActivity.ACCOUNT_EXTRA);
-      }
-      else{
-        getActivity().setResult(Activity.RESULT_CANCELED);
-        getActivity().finish();
-      }
-
-      libraryAdapter = new LibraryAdapter(getActivity(), null);
-      setListAdapter(libraryAdapter);
+      searchAdapter = new LibrarySearchAdapter(getActivity());
+      setListAdapter(searchAdapter);
       setListShown(false);
-      getLoaderManager().initLoader(0,null, this);
+      Bundle loaderArgs = new Bundle();
+      loaderArgs.putString(SEARCH_QUERY_EXTRA, searchQuery);
+      getLoaderManager().initLoader(LIB_SEARCH_LOADER_TAG, loaderArgs, this);
     }
 
 
-    public Loader<Cursor> onCreateLoader(int id, Bundle args){
-      return new CursorLoader(
-        getActivity(), 
-        UDJPartyProvider.LIBRARY_URI, 
-        null,
-        null,
-        null,
-        null);
+    public Loader<ArrayList<LibraryEntry>> onCreateLoader(int id, Bundle args){
+      if(id = LIB_SEARCH_LOADER_TAG){
+        String query = args.getString(LIB_SEARCH_LOADER_TAG);
+        if(query == null){
+          //TODO throw some sort of error
+        }
+        return new LibrarySearchLoader(query);
+      }
+      return null;
     }
 
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data){
-      libraryAdapter.swapCursor(data);
+    public void onLoadFinished(
+      Loader<ArrayList<LibraryEntry>> loader,
+      ArrayList<LibraryEntry> data)
+    {
+      searchAdapter = new LibrarySearchAdapter(getActivity(), data);
       if(isResumed()){
         setListShown(true);
       }
@@ -140,15 +139,11 @@ public class LibraryActivity extends FragmentActivity{
     }
 
     public void onLoaderReset(Loader<Cursor> loader){
-      libraryAdapter.swapCursor(null);
+      searchAdapter = new LibrarySearchAdapter(getActivity());
     }
 
-    private class LibraryAdapter extends CursorAdapter{
 
-      public LibraryAdapter(Context context, Cursor c){
-        super(context, c);
-      }
-  
+ /* 
       @Override
       public void bindView(View view, Context context, Cursor cursor){
         int libraryId = cursor.getInt(
@@ -198,6 +193,6 @@ public class LibraryActivity extends FragmentActivity{
         ContentResolver.requestSync(
           account, getString(R.string.authority), syncParams);
       }
-    }  
+    }  */
   }
 }

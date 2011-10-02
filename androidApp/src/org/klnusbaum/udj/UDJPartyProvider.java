@@ -42,8 +42,6 @@ public class UDJPartyProvider extends ContentProvider{
   private static final String DATABASE_NAME = "partydb.db";
 	/** Database version number */
   private static final int DATABASE_VERSION = 1;
-	/** Name of the library table. */
-  private static final String LIBRARY_TABLE_NAME = "library";
 	/** Name of the playlist table. */
   private static final String PLAYLIST_TABLE_NAME = "playlist";
   /** Name of the partiers table. */
@@ -53,33 +51,8 @@ public class UDJPartyProvider extends ContentProvider{
   public static final Uri PLAYLIST_URI = 
     Uri.parse("content://org.klnusbaum.udj/playlist");
 
-  /** URI for the Library */
-  public static final Uri LIBRARY_URI = 
-    Uri.parse("content://org.klnusbaum.udj/library");
-
   public static final Uri PARTIERS_URI =
     Uri.parse("content://org.klnusbaum.udj/partiers");
-
-	/** Constants used for various Library and Playlist column names */
-  public static final String SONG_COLUMN = "song";
-  public static final String ARTIST_COLUMN = "artist";
-  public static final String ALBUM_COLUMN = "album";
-  public static final String SERVER_LIBRARY_ID_COLUMN = "_id";
-
-
-  /**LIBRARY TABLE */
-
-	/** Constants used for various Library column names */
-  public static final String LIBRARY_ID_COLUMN = "_id";
-
-	/** SQL statement for creating the library table. */
-  private static final String LIBRARY_TABLE_CREATE = 
-    "CREATE TABLE " + LIBRARY_TABLE_NAME + "("+
-		SERVER_LIBRARY_ID_COLUMN + " INTEGER UNIQUE, " +
-		SONG_COLUMN + " TEXT NOT NULL, " +
-    ARTIST_COLUMN + " TEXT NOT NULL, " + 
-    ALBUM_COLUMN + " TEXT NOT NULL " + ");";
-
 
   /** PLAYLIST TABLE */
 
@@ -103,6 +76,10 @@ public class UDJPartyProvider extends ContentProvider{
   public static final String SERVER_PLAYLIST_ID_COLUMN ="server_playlist_id";
   public static final String TIME_ADDED_COLUMN ="time_added";
   public static final String VOTE_STATUS_COLUMN ="vote_status";
+  public static final String SONG_COLUMN = "song";
+  public static final String ARTIST_COLUMN = "artist";
+  public static final String ALBUM_COLUMN = "album";
+  public static final String SERVER_LIBRARY_ID_COLUMN = "_id";
 
   /** Constants used for representing invalid ids */
   public static final String INVALID_SERVER_PLAYLIST_ID = "-1";
@@ -147,7 +124,6 @@ public class UDJPartyProvider extends ContentProvider{
 
     @Override
     public void onCreate(SQLiteDatabase db){
-      db.execSQL(LIBRARY_TABLE_CREATE);
       db.execSQL(PLAYLIST_TABLE_CREATE);
     }
 
@@ -172,10 +148,7 @@ public class UDJPartyProvider extends ContentProvider{
   public int delete(Uri uri, String where, String[] whereArgs){
     SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
     //TODO actualy implement this method correctly
-    if(uri.equals(LIBRARY_URI)){
-      return db.delete(LIBRARY_TABLE_NAME, where, whereArgs);
-    }
-    else if(uri.equals(PLAYLIST_URI)){
+    if(uri.equals(PLAYLIST_URI)){
       return db.delete(PLAYLIST_TABLE_NAME, where, whereArgs);
     }
     return 0;
@@ -187,25 +160,11 @@ public class UDJPartyProvider extends ContentProvider{
     if(uri.equals(PLAYLIST_URI)){
       long rowId = db.insert(PLAYLIST_TABLE_NAME, null, initialValues);
       if(rowId > 0){
-        notifyChange(PLAYLIST_URI, null);
         return ContentUris.withAppendedId(PLAYLIST_URI, rowId); 
       }
       else{
         throw new SQLException("Failed to insert " + uri);
       }
-    }
-    else if(uri.equals(LIBRARY_URI)){
-      long rowId = db.insert(LIBRARY_TABLE_NAME, null, initialValues);
-      if(rowId > 0){
-        notifyChange(LIBRARY_URI, null);
-        return ContentUris.withAppendedId(LIBRARY_URI, rowId); 
-      }
-      else{
-        throw new SQLException("Failed to insert " + uri);
-      }
-    }
-    else{
-      throw new IllegalArgumentException("Unknown URI " + uri);
     }
   }
   
@@ -220,9 +179,6 @@ public class UDJPartyProvider extends ContentProvider{
 
     if(uri.getPath().equals(PLAYLIST_URI.getPath())){
       qb.setTables(PLAYLIST_TABLE_NAME); 
-    }
-    else if(uri.getPath().equals(LIBRARY_URI.getPath())){
-      qb.setTables(LIBRARY_TABLE_NAME); 
     }
     else{
       throw new IllegalArgumentException("Unknown URI " + uri);
@@ -242,11 +198,6 @@ public class UDJPartyProvider extends ContentProvider{
     if(uri.equals(PLAYLIST_URI)){
       int numRowsChanged = 
         db.update(PLAYLIST_TABLE_NAME, values, where, whereArgs);
-      return numRowsChanged;
-    }
-    else if(uri.equals(LIBRARY_URI)){
-      int numRowsChanged = 
-        db.update(LIBRARY_TABLE_NAME, values, where, whereArgs);
       return numRowsChanged;
     }
     return 0;

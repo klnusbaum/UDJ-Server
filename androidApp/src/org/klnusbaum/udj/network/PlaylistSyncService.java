@@ -52,9 +52,8 @@ import org.klnusbaum.udj.R;
 /**
  * Adapter used to sync up with the UDJ server.
  */
-public class SyncService extends IntentService{
+public class PlaylistSyncService extends IntentService{
   private GregorianCalendar playlistLastUpdate;
-  private GregorianCalendar partiesLastUpdate;
 
   private AccountManager am;
 
@@ -90,10 +89,6 @@ public class SyncService extends IntentService{
       }
       else if(action.equals(Intent.ACTION_VIEW)){
         updatePlaylist();
-      }
-      else if(action.equals(Intent.ACTION_SEARCH)){
-        String query = intent.getStringExtra(SEARCH_QUERY_EXTRA);
-        searchLibrary(query);
       }
       //TODO something in the case of these failing.
     } 
@@ -191,11 +186,5 @@ public class SyncService extends IntentService{
     }
     playlistSong.moveToNext();
     return playlistSong;
-  }
-
-
-  private void searchLibrary(String searchQuery){
-
-
   }
 }

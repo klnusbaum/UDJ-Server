@@ -57,7 +57,7 @@
         </activity>
 
         <activity android:name="PlaylistActivity"/>
-        <activity android:name="LibraryActivity"/>
+        <activity android:name="LibrarySearchActivity"/>
 
         <activity android:name=".auth.AuthActivity"/>
       
@@ -72,7 +72,7 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
-        <service android:name=".network.SyncService"/>
+        <service android:name=".network.PlaylistSyncService"/>
         <provider android:name="org.klnusbaum.udj.UDJPartyProvider"
           android:authorities="org.klnusbaum.udj"
         />

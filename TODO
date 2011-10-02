@@ -7,7 +7,6 @@ playing, fade into new song, then gradual return beat of new song to normal.
 -Emit signal from UDJServerConnection is conneciotn is lost or something...
 
 ANDROID APP
--Make sure the purging of the library table is done when the party is over.
 -Compress all data before sending it to the phone and then uncompress it.
 -Users should be able to remove songs they added form the playlist
 (You know, say they accidentally double added a song)
@@ -23,6 +22,7 @@ depercated onCreateDialogs and what not.
 -We don't need to send a whole PlaylistEntry every time we're adding one, just
 the server_lib_id and the client_playlist_id, the rest should be derivable by
 ther server.
+-Grey out playlist items that haven't been succesfully added to the server yet.
 
 SERVER
 -If two users add the same song within a certain threshold of oneanother (e.g.
@@ -36,6 +36,7 @@ if there's been a deletion. Othewise don't transmit it.
 -Make an admin URL so that I can do adminish stuff, like drop tables and what
 not.
 -Fix the post for adding a library song to a PUT.
+-If a song is requested to be added to the playlist and has the same host_client_id and adder_id it should be discarded as a duplicate
 
 
 OVERALL
