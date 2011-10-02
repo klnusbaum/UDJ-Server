@@ -1,0 +1,6 @@
+1. User selects some operation to be preformed.
+2. Activity creates intent with inforation about the operation to be preformed.
+3. Sents intent to SyncService
+4. Service makes modifications to the LocalDB.
+5. Service communicates request to server.
+6. REST processors processes server resposne.

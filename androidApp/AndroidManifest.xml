@@ -24,9 +24,6 @@
 
 		<uses-sdk android:minSdkVersion="7"/>
 
-    <uses-permission android:name="android.permission.READ_SYNC_STATS" />
-    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
-    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
@@ -75,20 +72,9 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
-        <service
-          android:name=".sync.SyncService"
-          android:exported="true"
-        >
-          <intent-filter>
-            <action android:name="android.content.SyncAdapter" />
-          </intent-filter>
-          <meta-data
-            android:name="android.content.SyncAdapter"
-            android:resource="@xml/syncadapter" />
-        </service>
+        <service android:name=".network.SyncService"/>
         <provider android:name="org.klnusbaum.udj.UDJPartyProvider"
           android:authorities="org.klnusbaum.udj"
         />
-
     </application>
 </manifest> 
