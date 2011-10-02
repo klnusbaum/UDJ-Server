@@ -109,12 +109,12 @@ public class UDJPartyProvider extends ContentProvider{
   private PartyDBHelper dbOpenHelper;
 
 	/**
-	 * A class for helping open a HostsDB.
+	 * A class for helping open a PartDB.
 	 */
   private class PartyDBHelper extends SQLiteOpenHelper{
 
 		/**
-		 * Constructs a new HostsDBOpenHelper object.
+		 * Constructs a new PartyDBHelper object.
 		 *
 	 	 * @param context The context in which the HostsDBOpenHelper is used.
 	 	 */

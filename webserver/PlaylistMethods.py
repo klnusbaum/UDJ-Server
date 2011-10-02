@@ -19,8 +19,8 @@ along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
 import MahData
 import json
 import web
-import Auth
-from Parties import Party
+import AuthMethods
+from PartyMethods import Party
 
 def addClientIds(parray, serverClientMap):
   toReturn = parray
@@ -173,7 +173,7 @@ class PlaylistJSONEncoder(json.JSONEncoder):
     else:
       return json.JSONEncoder.default(self, obj)
 
-class RESTPlaylist:
+class Playlist:
   def GET(self):
     if( 
       web.ctx.session.loggedIn == 1 and
@@ -202,4 +202,13 @@ class RESTPlaylist:
       return json.dumps(parray, cls=PlaylistJSONEncoder)
     else:
       Auth.doUnAuth('Syncing playlist')
+
+class VoteUpSongs:
+  def POST(self):
+    #TODO actually impelment this
+    return None
   
+class VoteDownSongs:
+  def POST(self):
+    #TODO actually impelment this
+    return None

@@ -101,10 +101,7 @@ public class ServerConnection{
 
   public static final String PLAYLIST_URI = 
     SERVER_URL + "/playlist";
-  public static final String PLAYLIST_ADD_URI =
-    PLAYLIST_URI + "/add_songs";
-  public static final String PLAYLIST_GET_URI = 
-    PLAYLIST_URI + "/get_playlist";
+
   public static final String PLAYLIST_VOTE_UP_URI=
     PLAYLIST_URI + "/vote_up_songs";
   public static final String PLAYLIST_VOTE_DOWN_URI=
@@ -120,7 +117,7 @@ public class ServerConnection{
   public static final String PARTIES_URI =
     SERVER_URL + "/party/parties";
   public static final String PARTY_LOGIN_URI =
-    SERVER_URL + "party/party_login";
+    SERVER_URL + "/party/party_login";
 
   public static final String AUTH_URI =
     SERVER_URL + "/auth";
@@ -233,7 +230,7 @@ public class ServerConnection{
     final ArrayList<NameValuePair> params = 
       getEssentialParameters(null);
       params.add(new BasicNameValuePair(PARAM_LIB_QUERY, searchQuery));
-    JSONArray libraryEntries = new JSONArray(doGet(params, LIBRARY_URI));
+    JSONArray libraryEntries = new JSONArray(doGet(params, LIBRARY_QUERY_URI));
     return LibraryEntry.fromJSONArray(libraryEntries);
   }
 
@@ -257,7 +254,7 @@ public class ServerConnection{
     JSONArray toAddArray = PlaylistEntry.getJSONArray(added);
     params.add(new BasicNameValuePair(
       PARAM_PLAYLIST_TO_ADD, toAddArray.toString()));
-    JSONArray returnedEntries = new JSONArray(doPost(params, PLAYLIST_ADD_URI));
+    JSONArray returnedEntries = new JSONArray(doPost(params, PLAYLIST_URI));
     return PlaylistEntry.fromJSONArray(returnedEntries);
   }
 
@@ -267,7 +264,7 @@ public class ServerConnection{
     JSONException, ParseException, IOException, AuthenticationException
   {
     Log.i("TAG", "Getting playlist.");
-    JSONArray returnedEntries = new JSONArray(doGet(null, PLAYLIST_GET_URI));
+    JSONArray returnedEntries = new JSONArray(doGet(null, PLAYLIST_URI));
     return PlaylistEntry.fromJSONArray(returnedEntries);
   }
 

@@ -19,12 +19,21 @@ along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
 import web
 import json
 import MahData
-from Parties import Party
-from Parties import RESTParty
-from Playlist import RESTPlaylist
-from Library import RESTLibrary
-from Auth import Authenticator
-from Parties import PartyLogin
+from PartyMethods import Party
+
+
+from AuthMethods import Authenticator
+from PartyMethods import PartyLocator
+from PartyMethods import PartyLogin
+from PartyMethods import PartyUsers
+from PartyMethods import KickUsers
+from PlaylistMethods import Playlist
+from PlaylistMethods import VoteUpSongs
+from PlaylistMethods import VoteDownSongs
+from LibraryMethods import LibrarySearch
+from LibraryMethods import LibraryRandom
+from LibraryMethods import Library
+
 
 web.config.debug = False
 
@@ -63,14 +72,19 @@ def initDatabase(db):
 
 
 urls = (
-"/parties", "RESTParty",
-"/playlist/get_playlist", "RESTPlaylist",
-"/playlist/add_songs", "RESTPlaylist",
-"/library/search_library", "RESTLibrary",
-"/auth", "Authenticator" ,
+"/auth", "Authenticator",
+"/party/parties", "PartyLocator",
 "/party/party_login", "PartyLogin",
-"/library/add_songs", "RESTLibrary"
+"/party/party_users", "PartyUsers",
+"/party/kick_user", "KickUser",
+"/playlist", "Playlist",
+"/playlist/vote_up_songs", "VoteUpSongs",
+"/playlist/vote_down_songs", "VoteDownSongs",
+"/library/search_library", "LibrarySearch",
+"/library/random", "LibraryRandom",
+"/library", "Library"
 )
+
 app = web.application(urls, globals())
 session = web.session.Session(app, web.session.DiskStore('sessions'), 
   initializer={'loggedIn' : 0, 'partyId' : Party.INVALID_PARTY_ID})

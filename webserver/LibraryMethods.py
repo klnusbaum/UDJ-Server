@@ -123,7 +123,7 @@ class LibraryJSONEncoder(json.JSONEncoder):
     else:
       return json.JSONEncoder.default(self, obj)
 
-class RESTLibrary:
+class LibrarySearch:
   def GET(self):
     data = web.input()
     db = MahData.getDBConnection()
@@ -132,10 +132,16 @@ class RESTLibrary:
     web.header('Content-Type', 'application/json')
     return json.dumps(parray, cls=LibraryJSONEncoder)
 
+class Library:
   def POST(self):
     db = MahData.getDBConnection()
     songs = json.loads(web.input().to_add)
     addedSongs = addToLibrary(songs,db)
+    web.header('Content-Type', 'application/json')
     return json.dumps(addedSongs, cls=LibraryJSONEncoder)
     
+class LibraryRandom:
+  def GET(self):
+    #TODO actually implement this
+    return None
 

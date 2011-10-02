@@ -18,8 +18,8 @@ along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
 """
 import json
 import web
-import Auth
-from Auth import Authenticator
+import AuthMethods
+from AuthMethods import Authenticator
 
 class Party:
   INVALID_PARTY_ID = -1
@@ -43,7 +43,7 @@ class PartyJSONEncoder(json.JSONEncoder):
     else:
       return json.JSONEncoder.default(self, obj)
   
-class RESTParty:
+class PartyLocator:
   def GET(self):
     if( web.ctx.session.loggedIn == 1 ):
       p1 = Party('1', 'Steve Party')
@@ -54,7 +54,7 @@ class RESTParty:
       web.header('Content-Type', 'application/json')
       return json.dumps(parray, cls=PartyJSONEncoder)
     else:
-      Auth.doUnAuth('Getting parties')
+      AuthMethods.doUnAuth('Getting parties')
       return None
 
 class PartyLogin:
@@ -66,4 +66,14 @@ class PartyLogin:
       web.setcookie('partyId', data.partyId)
     else:
       return Auth.doUnAuth('Party Login')
+
+class PartyUsers:
+  def GET(self):
+    #TODO implement this method
+    return None
+
+class KickUsers:
+  def POST(self):
+    #TODO IMPLEMENT THIS METHOD
+    return None
 
