@@ -100,23 +100,18 @@ public class PlaylistSyncService extends IntentService{
       playlistLastUpdate = new GregorianCalendar(); 
       //TODO something in the case of these failing.
     } 
-    catch(final AuthenticatorException e){
-
-    } 
-    catch(final OperationCanceledException e){
-
-    }
     catch(final IOException e){
 
     }
     catch(final AuthenticationException e){
-      authtoken = am.blockingGetAuthToken(
+      //TODO figure out how the hell to take care of this
+      /*authtoken = am.blockingGetAuthToken(
         account, getString(R.string.authtoken_type), true);
       if(authtoken == null){
         //TODO throw exeception if authtoken is null
       }
       am.invalidateAuthToken(
-        getString(R.string.account_type), authtoken);
+        getString(R.string.account_type), authtoken);*/
     }
     catch(final ParseException e){
     
@@ -133,13 +128,18 @@ public class PlaylistSyncService extends IntentService{
     }
   }
 
-  private void updatePlaylist(){
+  private void updatePlaylist()
+    throws JSONException, ParseException, IOException, AuthenticationException,
+    RemoteException, OperationApplicationException
+  {
     List<PlaylistEntry> serverResponse = 
       ServerConnection.getPlaylist(playlistLastUpdate);
     RESTProcessor.processPlaylistEntries(serverResponse, this);
   }
 
-  private void addSongToPlaylist(LibraryEntry songToAdd){
+  private void addSongToPlaylist(LibraryEntry songToAdd)
+    throws JSONException, ParseException, IOException, AuthenticationException
+  {
     ContentValues toInsertValues = getPlaylistInsertionValues(songToAdd);
     Uri insertedSong = getContentResolver().insert(
       UDJPartyProvider.PLAYLIST_URI,
@@ -148,7 +148,16 @@ public class PlaylistSyncService extends IntentService{
     PlaylistEntry toSendToServer = PlaylistEntry.valueOf(playlistSong);
     List<PlaylistEntry> serverResponse =
       ServerConnection.addSongToPlaylist(toSendToServer, playlistLastUpdate);
-    RESTProcessor.processPlaylistEntries(serverResponse, this);
+    try{
+      RESTProcessor.processPlaylistEntries(serverResponse, this);
+    }
+    catch(RemoteException e){
+
+    }
+    catch(OperationApplicationException e){
+
+    }
+
   }
 
   private ContentValues getPlaylistInsertionValues(LibraryEntry songToAdd){
