@@ -32,6 +32,7 @@ import android.database.Cursor;
 import android.os.RemoteException;
 import android.content.OperationApplicationException;
 import android.util.Log;
+import android.app.IntentService;
 
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -71,7 +72,7 @@ public class PlaylistSyncService extends IntentService{
     UDJPartyProvider.SYNC_STATE_COLUMN + "=?";
 
   @Override
-  public onCreate(){
+  public void onCreate(){
     super.onCreate();
     am = AccountManager.get(this);
   }
@@ -146,13 +147,14 @@ public class PlaylistSyncService extends IntentService{
 
   private ContentValues getPlaylistInsertionValues(Cursor libraryCursor){
     ContentValues toInsertValues = new ContentValues();
-    toInsertValues.put(SERVER_LIBRARY_ID_COLUMN, libId);
+    toInsertValues.put(SERVER_LIBRARY_ID_COLUMN, libraryCursor.getLong(
+      libraryCursor.getColumnIndex(UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN)));
     toInsertValues.put(SONG_COLUMN, libraryCursor.getString(
-      libraryCursor.getColumnIndex(UDJPartyProvider.SONG_COLUMN);
+      libraryCursor.getColumnIndex(UDJPartyProvider.SONG_COLUMN)));
     toInsertValues.put(ALBUM_COLUMN, libraryCursor.getString(
-      libraryCursor.getColumnIndex(UDJPartyProvider.ALBUM_COLUMN);
+      libraryCursor.getColumnIndex(UDJPartyProvider.ALBUM_COLUMN)));
     toInsertValues.put(ARTIST_COLUMN, libraryCursor.getString(
-      libraryCursor.getColumnIndex(UDJPartyProvider.ARTIST_COLUMN);
+      libraryCursor.getColumnIndex(UDJPartyProvider.ARTIST_COLUMN)));
     return toInsertValues;
   }
 
@@ -179,7 +181,7 @@ public class PlaylistSyncService extends IntentService{
       PLAYLIST_URI,
       null,
       PLAYLIST_ID_COLUMN + " = ? ",
-      new String[]{playlistId}
+      new String[]{playlistId},
       null);
     if(playlistSong.getCount() == 0){
       //TODO throw some kind of error

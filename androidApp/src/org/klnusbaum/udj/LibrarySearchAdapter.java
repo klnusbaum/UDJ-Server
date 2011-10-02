@@ -25,7 +25,7 @@ import android.widget.TextView;
 import android.widget.ImageButton;
 import android.database.DataSetObserver;
 
-public class LibrarySearchAdapater implements ListAdapater{
+public class LibrarySearchAdapter implements ListAdapter{
 
   private List<LibraryEntry> entries;
   private Context context;
@@ -33,13 +33,13 @@ public class LibrarySearchAdapater implements ListAdapater{
   public static final int LIB_ENTRY_VIEW_TYPE = 0;
   public static final int LIB_ID_TAG = 0;
 
-  LibrarySearchAdpater(Context context){
+  public LibrarySearchAdapter(Context context){
     this.entries = null;
     this.addClickListener = null;
     this.context = context;
   }
 
-  LibrarySearchAdapater(
+  public LibrarySearchAdapter(
     Context context, 
     List<LibraryEntry> entries,
     View.OnClickListener addClickListener

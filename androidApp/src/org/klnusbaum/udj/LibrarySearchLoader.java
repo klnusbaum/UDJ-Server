@@ -26,8 +26,18 @@ import org.klnusbaum.udj.containers.LibraryEntry;
 public class LibrarySearchLoader 
   extends AsyncTaskLoader<List<LibraryEntry>>
 {
+  private String query;
+
+  public LibrarySearchLoader(Context context, String query){
+    super(context);
+    this.query = query;
+  }
+
   public List<LibraryEntry> loadInBackground(){
-    return List<LibraryEntry> searchResults =
-      ServerConnection.libraryQuery(query);
+    if(query != null){
+      return List<LibraryEntry> searchResults =
+        ServerConnection.libraryQuery(query);
+    }
+    return null;
   }
 }

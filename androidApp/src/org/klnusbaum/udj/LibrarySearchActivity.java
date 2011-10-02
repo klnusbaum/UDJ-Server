@@ -40,6 +40,10 @@ import android.view.LayoutInflater;
 import android.util.Log;
 import android.accounts.Account;
 
+import java.util.List;
+
+import org.klnusbaum.udj.containers.LibraryEntry;
+
 
 /**
  * An Activity which displays the results of a library search.
@@ -83,6 +87,20 @@ public class LibrarySearchActivity extends FragmentActivity{
     /** Adapter used to help display the contents of the library. */
     LibrarySearchAdapter searchAdapter;
     private String searchQuery;
+  
+    private View.OnClickListener addSongToPlaylistListener =
+      new View.OnClickListener(){
+        public void onClickView(View v){
+          long libId = v.getTag(LibrarySearchAdapter.LIB_ID_TAG);
+          Intent addSongIntent = new Intent(
+            Intent.ACTION_INSERT,
+            UDJPartyProvider.PLAYLIST_URI,
+            getActivity(),
+            PlaylistSyncService.class);
+          getActivity().startService(addSongIntent);
+        }
+      };
+
     
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
@@ -97,10 +115,6 @@ public class LibrarySearchActivity extends FragmentActivity{
           searchQuery = args.getString(SEARCH_QUERY_EXTRA);
         }
       }
-  
-      if(searchQuery == null){
-          //TODO throw some sort of error.
-      }
 
       setEmptyText(getActivity().getString(R.string.no_library_songs));
       //setHasOptionsMenu(true);
@@ -113,14 +127,10 @@ public class LibrarySearchActivity extends FragmentActivity{
       getLoaderManager().initLoader(LIB_SEARCH_LOADER_TAG, loaderArgs, this);
     }
 
-
     public Loader<List<LibraryEntry>> onCreateLoader(int id, Bundle args){
       if(id = LIB_SEARCH_LOADER_TAG){
         String query = args.getString(LIB_SEARCH_LOADER_TAG);
-        if(query == null){
-          //TODO throw some sort of error
-        }
-        return new LibrarySearchLoader(query);
+        return new LibrarySearchLoader(getActivity(), query);
       }
       return null;
     }
@@ -129,7 +139,10 @@ public class LibrarySearchActivity extends FragmentActivity{
       Loader<List<LibraryEntry>> loader,
       List<LibraryEntry> data)
     {
-      searchAdapter = new LibrarySearchAdapter(getActivity(), data);
+      searchAdapter = new LibrarySearchAdapter(
+        getActivity(), 
+        data,
+        addSongToPlaylistListener);
       if(isResumed()){
         setListShown(true);
       }
@@ -141,58 +154,5 @@ public class LibrarySearchActivity extends FragmentActivity{
     public void onLoaderReset(Loader<Cursor> loader){
       searchAdapter = new LibrarySearchAdapter(getActivity());
     }
-
-
- /* 
-      @Override
-      public void bindView(View view, Context context, Cursor cursor){
-        int libraryId = cursor.getInt(
-          cursor.getColumnIndex(UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN));
-       
-        TextView songName =
-          (TextView)view.findViewById(R.id.librarySongName);
-        songName.setText(cursor.getString(
-          cursor.getColumnIndex(UDJPartyProvider.SONG_COLUMN)));
-
-        TextView artistName =
-          (TextView)view.findViewById(R.id.libraryArtistName);
-        artistName.setText(cursor.getString(
-          cursor.getColumnIndex(UDJPartyProvider.ARTIST_COLUMN)));
-       
-        ImageButton addSong = 
-          (ImageButton)view.findViewById(R.id.lib_add_button);
-        addSong.setTag(String.valueOf(libraryId));
-        addSong.setOnClickListener(new View.OnClickListener(){
-          public void onClick(View v){
-            addSongClick(v);
-          }
-        });
-      }
-   
-      @Override
-      public View newView(Context context, Cursor cursor, ViewGroup parent){
-        LayoutInflater inflater = (LayoutInflater)context.getSystemService(
-          Context.LAYOUT_INFLATER_SERVICE);
-        View itemView = inflater.inflate(R.layout.library_list_item, null);
-        return itemView;
-      }
-   
-      private void addSongClick(View view){
-        String serverLibId = view.getTag().toString(); 
-        ContentValues values = new ContentValues();
-        values.put(
-          UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN,
-          Integer.valueOf(serverLibId) );
-        getActivity().getContentResolver().insert(
-          UDJPartyProvider.PLAYLIST_URI,
-          values);
-        Bundle syncParams = new Bundle();
-        syncParams.putBoolean(SyncAdapter.PLAYLIST_SYNC_EXTRA, true);
-        syncParams.putLong(Party.PARTY_ID_EXTRA, partyId);
-        syncParams.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        ContentResolver.requestSync(
-          account, getString(R.string.authority), syncParams);
-      }
-    }  */
   }
 }

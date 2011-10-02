@@ -93,7 +93,7 @@ public class ServerConnection{
    * h = 7  % 10 = 7
    * Port 4897, the Keith Nusbaum Memorial Port
    */
-  public static final String SERVER_PORT_NUMBER = "4897"
+  public static final String SERVER_PORT_NUMBER = "4897";
   //public static final String SERVER_URL = "http://www.bazaarsolutions.org/udj";
   //THIS IS FOR TESTING AT THE MOMENT
   public static final String SERVER_URL = "http://10.0.2.2:"+SERVER_PORT_NUMBER;
@@ -246,7 +246,7 @@ public class ServerConnection{
   {
     ArrayList<PlaylistEntry> toAddList = new ArrayList<PlaylistEntry>();
     toAddList.add(toAdd);
-    return addSongsToPlaylist(toAddList);
+    return addSongsToPlaylist(toAddList, lastUpdated);
   }
 
   public static List<PlaylistEntry> addSongsToPlaylist(  
@@ -259,7 +259,7 @@ public class ServerConnection{
     JSONArray toAddArray = PlaylistEntry.getJSONArray(added);
     params.add(new BasicNameValuePair(
       PARAM_PLAYLIST_TO_ADD, toAddArray.toString()));
-    playlistEntries = doPost(params, PLAYLIST_ADD_URI);
+    JSONArray returnedEntries = new JSONArray(doPost(params, PLAYLIST_ADD_URI));
     return PlaylistEntry.fromJSONArray(playlistEntries);
   }
 
@@ -268,8 +268,8 @@ public class ServerConnection{
     JSONException, ParseException, IOException, AuthenticationException
   {
     Log.i("TAG", "Getting playlist.");
-    playlistEntries = doGet(null, PLAYLIST_GET_URI);
-    return PlaylistEntry.fromJSONArray(playlistEntries);
+    JSONArray returnedEntries = new JSONArray(doGet(null, PLAYLIST_GET_URI));
+    return PlaylistEntry.fromJSONArray(returnedEntries);
   }
 
   private static ArrayList<NameValuePair> getEssentialParameters(
@@ -301,9 +301,10 @@ public class ServerConnection{
     }
   }
 
-  public static JSONArray doPost(ArrayList<NameValuePair> params, String uri)
-    throws AuthenticationException, IOException, JSONException
+  public static String doPost(ArrayList<NameValuePair> params, String uri)
+    throws AuthenticationException, IOException
   {
+    String toReturn = null;
     HttpEntity entity = null;
     entity = new UrlEncodedFormEntity(params);
     final HttpPost post = new HttpPost(uri);
@@ -311,10 +312,8 @@ public class ServerConnection{
     post.setEntity(entity);
     final HttpResponse resp = getHttpClient().execute(post);
     final String response = EntityUtils.toString(resp.getEntity());
-    JSONArray toReturn = null;
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
-      //Get stuff from response 
-      toReturn = new JSONArray(response);
+      toReturn = response;
     } 
     else if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
       throw new AuthenticationException();
