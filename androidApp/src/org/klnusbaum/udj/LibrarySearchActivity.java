@@ -78,7 +78,7 @@ public class LibrarySearchActivity extends FragmentActivity{
   }
 
   public static class LibrarySearchFragment extends ListFragment
-    implements LoaderManager.LoaderCallbacks<ArrayList<LibraryEntry>>
+    implements LoaderManager.LoaderCallbacks<List<LibraryEntry>>
   {
     /** Adapter used to help display the contents of the library. */
     LibrarySearchAdapter searchAdapter;
@@ -114,7 +114,7 @@ public class LibrarySearchActivity extends FragmentActivity{
     }
 
 
-    public Loader<ArrayList<LibraryEntry>> onCreateLoader(int id, Bundle args){
+    public Loader<List<LibraryEntry>> onCreateLoader(int id, Bundle args){
       if(id = LIB_SEARCH_LOADER_TAG){
         String query = args.getString(LIB_SEARCH_LOADER_TAG);
         if(query == null){
@@ -126,8 +126,8 @@ public class LibrarySearchActivity extends FragmentActivity{
     }
 
     public void onLoadFinished(
-      Loader<ArrayList<LibraryEntry>> loader,
-      ArrayList<LibraryEntry> data)
+      Loader<List<LibraryEntry>> loader,
+      List<LibraryEntry> data)
     {
       searchAdapter = new LibrarySearchAdapter(getActivity(), data);
       if(isResumed()){

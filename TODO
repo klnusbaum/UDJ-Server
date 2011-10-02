@@ -7,7 +7,8 @@ playing, fade into new song, then gradual return beat of new song to normal.
 -Emit signal from UDJServerConnection is conneciotn is lost or something...
 
 ANDROID APP
--Compress all data before sending it to the phone and then uncompress it.
+-IMPORTANT: SWITCH TO HttpURLConnection. This will give us automatic caching
+compression
 -Users should be able to remove songs they added form the playlist
 (You know, say they accidentally double added a song)
 -Indicator on playlist of songs you've added

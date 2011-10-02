@@ -32,7 +32,7 @@
     <string name="sync_broadcast">org.klnusbaum.udj.SYNC_FINISHED</string>
     <string name="auth_token_label">password</string>
     <string name="no_playlist_items">There are currently no items in the playlist</string>
-    <string name="no_library_songs">No Search Results</string>
+    <string name="no_library_songs">No Results To Display</string>
     <string name="party_name_label">Name of party:</string>
     <string name="party_name_hint">Party Name</string>
     <string name="quit_title">Quit?</string>
