@@ -24,6 +24,10 @@ depercated onCreateDialogs and what not.
 the server_lib_id and the client_playlist_id, the rest should be derivable by
 ther server.
 -Grey out playlist items that haven't been succesfully added to the server yet.
+-Once library search results have been obtained, we should save them if the
+activity get's paused, that way when it's resumed we can just load 'em right
+back up again without having to requery the server!!!!!! I'm so smart....
+-Improve the LibrarySearchLoader to cache results for searches. The AsyncTaskLoader documentation has an example of this.
 
 SERVER
 -If two users add the same song within a certain threshold of oneanother (e.g.

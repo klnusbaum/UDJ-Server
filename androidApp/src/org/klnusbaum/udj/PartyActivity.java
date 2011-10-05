@@ -76,8 +76,8 @@ public class PartyActivity extends FragmentActivity{
   @Override
   protected void onNewIntent(Intent intent){
     if(Intent.ACTION_SEARCH.equals(intent.getAction())){
-      String query = intent.getStringExtra(SearchManager.QUERY);
-      //TODO actual search stuff
+      intent.setClass(this, LibrarySearchActivity.class);
+      startActivity(intent);
     }
   }
 

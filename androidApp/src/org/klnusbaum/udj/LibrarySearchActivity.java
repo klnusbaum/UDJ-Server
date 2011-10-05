@@ -40,6 +40,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.util.Log;
 import android.accounts.Account;
+import android.app.SearchManager;
 
 import java.util.List;
 
@@ -65,7 +66,7 @@ public class LibrarySearchActivity extends FragmentActivity{
       searchQuery = savedInstanceState.getString(SEARCH_QUERY_EXTRA);
     }
     else{
-      searchQuery = getIntent().getStringExtra(SEARCH_QUERY_EXTRA);
+      searchQuery = getIntent().getStringExtra(SearchManager.QUERY);
     }
 
     if(searchQuery == null){
@@ -137,6 +138,7 @@ public class LibrarySearchActivity extends FragmentActivity{
     public Loader<List<LibraryEntry>> onCreateLoader(int id, Bundle args){
       if(id == LIB_SEARCH_LOADER_TAG){
         String query = args.getString(SEARCH_QUERY_EXTRA);
+        Log.i("TAG", "Gonna get loader with query: " + query);
         return new LibrarySearchLoader(getActivity(), query);
       }
       return null;

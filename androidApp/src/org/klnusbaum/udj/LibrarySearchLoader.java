@@ -21,6 +21,7 @@ package org.klnusbaum.udj;
 import android.support.v4.content.AsyncTaskLoader;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.List;
 import java.io.IOException;
@@ -44,6 +45,7 @@ public class LibrarySearchLoader
   }
 
   public List<LibraryEntry> loadInBackground(){
+    Log.i("TAG", "IN LOAD IN BACKGROUND!");
     if(query != null){
       try{
         return ServerConnection.libraryQuery(query);
@@ -64,5 +66,10 @@ public class LibrarySearchLoader
       return null;
     }
     return null;
+  }
+
+  @Override
+  protected void onStartLoading(){
+    forceLoad();
   }
 }
