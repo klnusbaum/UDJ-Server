@@ -79,7 +79,7 @@ public class UDJPartyProvider extends ContentProvider{
   public static final String SONG_COLUMN = "song";
   public static final String ARTIST_COLUMN = "artist";
   public static final String ALBUM_COLUMN = "album";
-  public static final String SERVER_LIBRARY_ID_COLUMN = "_id";
+  public static final String SERVER_LIBRARY_ID_COLUMN = "server_lib_id";
 
   /** Constants used for representing invalid ids */
   public static final String INVALID_SERVER_PLAYLIST_ID = "-1";

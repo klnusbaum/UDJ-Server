@@ -53,31 +53,14 @@ import org.klnusbaum.udj.R;
  * Adapter used to sync up with the UDJ server.
  */
 public class PlaylistSyncService extends IntentService{
-  private GregorianCalendar playlistLastUpdate;
-
-  private AccountManager am;
 
   public static final String ACCOUNT_EXTRA = "account";
   public static final String LIB_ENTRY_EXTRA = "libEntry";
   public static final String PLAYLIST_ID_EXTRA = "playlistId";
   public static final String SEARCH_QUERY_EXTRA = "search_query";
 
-
-  /*private static final String[] playlistProjection = new String[]{
-    UDJPartyProvider.PLAYLIST_ID_COLUMN, 
-    UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN, 
-    UDJPartyProvider.SYNC_STATE_COLUMN};*/
-  private static final String playlistWhereClause = 
-    UDJPartyProvider.SYNC_STATE_COLUMN + "=?";
-
-  public PlaylistSyncService(String name){
-    super(name);
-  }
-
-  @Override
-  public void onCreate(){
-    super.onCreate();
-    am = AccountManager.get(this);
+  public PlaylistSyncService(){
+    super("PlaylistSyncService");
   }
 
   @Override
@@ -97,7 +80,6 @@ public class PlaylistSyncService extends IntentService{
       else if(action.equals(Intent.ACTION_VIEW)){
         updatePlaylist();
       }
-      playlistLastUpdate = new GregorianCalendar(); 
       //TODO something in the case of these failing.
     } 
     catch(final IOException e){
@@ -133,7 +115,7 @@ public class PlaylistSyncService extends IntentService{
     RemoteException, OperationApplicationException
   {
     List<PlaylistEntry> serverResponse = 
-      ServerConnection.getPlaylist(playlistLastUpdate);
+      ServerConnection.getPlaylist(null);
     RESTProcessor.processPlaylistEntries(serverResponse, this);
   }
 
@@ -147,7 +129,7 @@ public class PlaylistSyncService extends IntentService{
     Cursor playlistSong = getPlaylistCursor(insertedSong);
     PlaylistEntry toSendToServer = PlaylistEntry.valueOf(playlistSong);
     List<PlaylistEntry> serverResponse =
-      ServerConnection.addSongToPlaylist(toSendToServer, playlistLastUpdate);
+      ServerConnection.addSongToPlaylist(toSendToServer, null);
     try{
       RESTProcessor.processPlaylistEntries(serverResponse, this);
     }
