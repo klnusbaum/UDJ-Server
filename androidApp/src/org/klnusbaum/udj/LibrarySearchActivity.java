@@ -138,7 +138,6 @@ public class LibrarySearchActivity extends FragmentActivity{
     public Loader<List<LibraryEntry>> onCreateLoader(int id, Bundle args){
       if(id == LIB_SEARCH_LOADER_TAG){
         String query = args.getString(SEARCH_QUERY_EXTRA);
-        Log.i("TAG", "Gonna get loader with query: " + query);
         return new LibrarySearchLoader(getActivity(), query);
       }
       return null;
@@ -148,10 +147,17 @@ public class LibrarySearchActivity extends FragmentActivity{
       Loader<List<LibraryEntry>> loader,
       List<LibraryEntry> data)
     {
+      if(data != null){
+        Log.i("TAG", "Size of data: " + data.size());
+      }
+      else{
+        Log.i("TAG", "Data returned was null");
+      }
       searchAdapter = new LibrarySearchAdapter(
         getActivity(), 
         data,
         addSongToPlaylistListener);
+      getListView().invalidateViews();  
       if(isResumed()){
         setListShown(true);
       }

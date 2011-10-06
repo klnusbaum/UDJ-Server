@@ -313,6 +313,8 @@ void UDJServerConnection::recievedReply(QNetworkReply *reply){
 }
 
 void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
+  QString stringreply(reply->readAll());
+  std::cout << stringreply.toStdString() << std::endl;
   if(haveValidLoginCookie()){
     emit connectionEstablished();
   }

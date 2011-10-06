@@ -304,7 +304,7 @@ private:
   }
 
   static const QUrl& getLibAddSongUrl(){
-    static const QUrl LIB_ADD_URL(getServerUrlPath() + "/add_songs_to_library");
+    static const QUrl LIB_ADD_URL(getServerUrlPath() + "/library");
     return LIB_ADD_URL;
   }
 

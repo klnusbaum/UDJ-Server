@@ -20,6 +20,7 @@ package org.klnusbaum.udj.containers;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -92,7 +93,8 @@ public class LibraryEntry{
     throws JSONException
   {
     ArrayList<LibraryEntry> toReturn = new ArrayList<LibraryEntry>();
-    for(int i=0; i < array.length(); ++i){
+    for(int i=0; i < array.length(); i++){
+      Log.i("TAG", "Seralizing: " + array.getJSONObject(i).toString());
       toReturn.add(LibraryEntry.valueOf(array.getJSONObject(i)));
     }
     return toReturn;
