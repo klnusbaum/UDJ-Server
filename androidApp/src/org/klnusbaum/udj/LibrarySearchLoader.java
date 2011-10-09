@@ -45,7 +45,6 @@ public class LibrarySearchLoader
   }
 
   public List<LibraryEntry> loadInBackground(){
-    Log.i("TAG", "IN LOAD IN BACKGROUND!");
     if(query != null){
       try{
         return ServerConnection.libraryQuery(query);

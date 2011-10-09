@@ -108,6 +108,12 @@ class LibraryEntry:
 
   def getDeleteStatus(self):
     return self._deleteStatus
+  
+  def getDeleteStatusString(self):
+    if(self._deleteStatus):
+      return "true"
+    else:
+      return "false"
     
 class LibraryJSONEncoder(json.JSONEncoder):
   def default(self, obj):
@@ -118,7 +124,7 @@ class LibraryJSONEncoder(json.JSONEncoder):
         LibraryEntry.SONG_PARAM : obj.getSong(),
         LibraryEntry.ARTIST_PARAM : obj.getArtist(),
         LibraryEntry.ALBUM_PARAM : obj.getAlbum(),
-        LibraryEntry.IS_DELETED_PARAM : obj.getDeleteStatus(),
+        LibraryEntry.IS_DELETED_PARAM : obj.getDeleteStatusString(),
       }
     else:
       return json.JSONEncoder.default(self, obj)
