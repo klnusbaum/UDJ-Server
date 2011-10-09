@@ -95,7 +95,7 @@ public class LibrarySearchActivity extends FragmentActivity{
       new View.OnClickListener(){
         public void onClick(View v){
           LibraryEntry songToAdd = 
-            (LibraryEntry)v.getTag(LibrarySearchAdapter.LIB_ENTRY_TAG);
+            (LibraryEntry)v.getTag(R.id.LIB_ENTRY_VIEW_TAG);
           Intent addSongIntent = new Intent(
             Intent.ACTION_INSERT,
             UDJPartyProvider.PLAYLIST_URI,
@@ -157,7 +157,7 @@ public class LibrarySearchActivity extends FragmentActivity{
         getActivity(), 
         data,
         addSongToPlaylistListener);
-      getListView().invalidateViews();  
+      setListAdapter(searchAdapter);
       if(isResumed()){
         setListShown(true);
       }

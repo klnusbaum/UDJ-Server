@@ -65,7 +65,7 @@ class PartyLogin:
       web.ctx.session.partyId = data.partyId
       web.setcookie('partyId', data.partyId)
     else:
-      return Auth.doUnAuth('Party Login')
+      return AuthMethods.doUnAuth('Party Login')
 
 class PartyUsers:
   def GET(self):

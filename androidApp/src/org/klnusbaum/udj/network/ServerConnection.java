@@ -231,6 +231,8 @@ public class ServerConnection{
       getEssentialParameters(null);
       params.add(new BasicNameValuePair(PARAM_LIB_QUERY, searchQuery));
     JSONArray libraryEntries = new JSONArray(doGet(params, LIBRARY_QUERY_URI));
+    Log.i("TAG", "Server connection got a json array of length: " + 
+      libraryEntries.length());
     return LibraryEntry.fromJSONArray(libraryEntries);
   }
 

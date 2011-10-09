@@ -78,7 +78,6 @@
     </target>
 -->
 
-
     <!-- Execute the Android Setup task that will setup some properties
          specific to the target, and import the build rules files.
 

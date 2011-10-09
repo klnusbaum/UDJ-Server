@@ -186,7 +186,7 @@ class Playlist:
       web.header('Content-Type', 'application/json')
       return json.dumps(parray, cls=PlaylistJSONEncoder)
     else:
-      Auth.doUnAuth('Getting playlist')
+      AuthMethods.doUnAuth('Getting playlist')
   def POST(self):
     if( 
       web.ctx.session.loggedIn == 1 and
@@ -201,7 +201,7 @@ class Playlist:
       web.header('Content-Type', 'application/json')
       return json.dumps(parray, cls=PlaylistJSONEncoder)
     else:
-      Auth.doUnAuth('Syncing playlist')
+      AuthMethods.doUnAuth('Syncing playlist')
 
 class VoteUpSongs:
   def POST(self):

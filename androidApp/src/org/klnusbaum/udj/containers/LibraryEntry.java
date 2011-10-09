@@ -81,6 +81,7 @@ public class LibraryEntry{
   public static LibraryEntry valueOf(JSONObject jObj)
     throws JSONException 
   {
+    Log.i("TAG", "In actual value of");
     return new LibraryEntry(
       jObj.getLong(SERVER_LIB_ID_PARAM), 
       jObj.getString(SONG_PARAM),
@@ -92,12 +93,25 @@ public class LibraryEntry{
   public static ArrayList<LibraryEntry> fromJSONArray(JSONArray array)
     throws JSONException
   {
-    ArrayList<LibraryEntry> toReturn = new ArrayList<LibraryEntry>();
-    for(int i=0; i < array.length(); i++){
-      Log.i("TAG", "Seralizing: " + array.getJSONObject(i).toString());
-      toReturn.add(LibraryEntry.valueOf(array.getJSONObject(i)));
-    }
+    Log.i("TAG", "Given JSON Array to serialize of size: " + array.length());
+    ArrayList<LibraryEntry> toReturn = 
+      new ArrayList<LibraryEntry>();
+    toReturn.add(new LibraryEntry(1, "Blah1", "art1", "al1", false));
+    toReturn.add(new LibraryEntry(2, "Blah2", "art1", "al1", false));
+    toReturn.add(new LibraryEntry(3, "Blah3", "art1", "al1", false));
+    toReturn.add(new LibraryEntry(4, "Blah4", "art2", "al1", false));
+    toReturn.add(new LibraryEntry(5, "Blah5", "art2", "al1", false));
+    toReturn.add(new LibraryEntry(6, "Blah6", "art3", "al1", false));
+    toReturn.add(new LibraryEntry(7, "Blah7", "art3", "al1", false));
     return toReturn;
+    /*int i;
+    for(i=0;i < array.length(); i++){
+      Log.i("TAG", "Seralizing: " + array.getJSONObject(i).toString());
+      toReturn.set(i,LibraryEntry.valueOf(array.getJSONObject(i)));
+      Log.i("TAG", "Just added: " + toReturn.get(i).toString());
+    }
+      Log.i("TAG", "Done with loop, i was : " + i);
+    return toReturn;*/
   }
   
   public static Bundle toBundle(LibraryEntry le){
@@ -118,6 +132,10 @@ public class LibraryEntry{
       bundle.getString(ARTIST_PARAM),
       bundle.getString(ALBUM_PARAM),
       bundle.getBoolean(IS_DELETED_FLAG));
+  }
+
+  public String toString(){
+    return "Song name: " + getSong();
   }
   
 }

@@ -25,6 +25,7 @@ import android.content.Context;
 import android.widget.TextView;
 import android.widget.ImageButton;
 import android.database.DataSetObserver;
+import android.view.LayoutInflater;
 
 import java.util.List;
 
@@ -36,7 +37,6 @@ public class LibrarySearchAdapter implements ListAdapter{
   private Context context;
   private View.OnClickListener addClickListener;
   public static final int LIB_ENTRY_VIEW_TYPE = 0;
-  public static final int LIB_ENTRY_TAG = 0;
 
   public LibrarySearchAdapter(Context context){
     this.entries = null;
@@ -100,7 +100,10 @@ public class LibrarySearchAdapter implements ListAdapter{
     LibraryEntry libEntry = getLibraryEntry(position);
     View toReturn = convertView;
     if(toReturn == null){
-      toReturn = View.inflate(context, R.layout.library_list_item, parent);
+      //toReturn = View.inflate(context, R.layout.library_list_item, null);
+      LayoutInflater inflater = (LayoutInflater)context.getSystemService(
+        Context.LAYOUT_INFLATER_SERVICE);
+      toReturn = inflater.inflate(R.layout.library_list_item, null);
     }
 
     TextView songView = (TextView)toReturn.findViewById(R.id.librarySongName);
@@ -111,7 +114,7 @@ public class LibrarySearchAdapter implements ListAdapter{
     songView.setText(libEntry.getSong());
     artistView.setText(libEntry.getArtist());
     addButton.setOnClickListener(addClickListener);
-    addButton.setTag(LIB_ENTRY_TAG, libEntry);
+    addButton.setTag(R.id.LIB_ENTRY_VIEW_TAG, libEntry);
     return toReturn;
   }
 
