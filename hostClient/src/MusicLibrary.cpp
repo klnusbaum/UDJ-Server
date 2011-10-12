@@ -51,6 +51,7 @@ void MusicLibrary::setMusicLibrary(QList<Phonon::MediaSource> songs, QProgressDi
     }
     addSong(songs[i]);
   }
+  select();
 }
 
 void MusicLibrary::addSong(Phonon::MediaSource song){
@@ -60,6 +61,7 @@ void MusicLibrary::addSong(Phonon::MediaSource song){
   	getArtistName(song),
   	getAlbumName(song),
   	song.fileName());
+  select();
 }
 
 QString MusicLibrary::getSongName(Phonon::MediaSource song) const{

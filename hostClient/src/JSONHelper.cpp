@@ -70,7 +70,7 @@ const std::map<libraryid_t, libraryid_t>
 {
   std::map<libraryid_t, libraryid_t> toReturn;
   QByteArray responseData = reply->readAll(); 
-  std::cout << "Response Data " << QString(responseData).toStdString() <<std::endl;
+  //std::cout << "Response Data " << QString(responseData).toStdString() <<std::endl;
   QVariantList songsAdded = QtJson::Json::parse(responseData).toList();
   QVariantMap currentSong;
   for(int i=0;i<songsAdded.size(); ++i){

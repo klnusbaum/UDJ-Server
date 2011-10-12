@@ -115,9 +115,7 @@ void MetaWindow::setMusicDir(){
   QProgressDialog progress("Loading Library...", "Cancel", 0, numNewFiles, this); 
   progress.setWindowModality(Qt::WindowModal);
   musicLibrary->setMusicLibrary(newMusic, progress);
-  musicLibrary->select();
   progress.setValue(numNewFiles);
-  
 }
 
 void MetaWindow::playlistClicked(const QModelIndex& index){

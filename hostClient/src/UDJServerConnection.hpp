@@ -92,8 +92,9 @@ public:
    * @return The name of the table in the musicdb that contains information
    * about the music library associated with the server connection.
    */
-	inline QString getLibraryTableName(){
-		return "library";
+	static const QString& getLibraryTableName(){
+    static const QString libraryTableName = "library";
+    return libraryTableName;
 	}
 
   /**
@@ -309,7 +310,7 @@ private:
   }
 
   static const QString& getCreateLibraryQuery(){
-    static const QString createLibQuerey = "CREATE TABLE IF NOT EXISTS library "
+    static const QString createLibQuerey = "CREATE TABLE IF NOT EXISTS " + getLibraryTableName() +
     "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
     "server_lib_id INTEGER DEFAULT -1, "
    	"song TEXT NOT NULL, artist TEXT, album TEXT, filePath TEXT);";

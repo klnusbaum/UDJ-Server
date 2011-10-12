@@ -60,16 +60,16 @@ void UDJServerConnection::startConnection(
 
   QSqlQuery setupQuery(musicdb);
 
-	EXEC_SQL(
+	/*EXEC_SQL(
 		"Error creating party table",
 		setupQuery.exec("CREATE TABLE IF NOT EXISTS parties "
 		"(id INTEGER PRIMARY KEY AUTOINCREMENT, "
 		"name TEXT NOT NULL);"),
-		setupQuery)
+		setupQuery)*/
 
-	setupQuery.exec("select id from parties where name='defaultParty'");
+	/*setupQuery.exec("select id from parties where name='defaultParty'");
 	setupQuery.next();
-	partyId = setupQuery.value(0).value<partyid_t>();
+	partyId = setupQuery.value(0).value<partyid_t>();*/
 	
 	//TODO enforce currentParty refering to a party in the party table
 	EXEC_SQL(
@@ -206,7 +206,6 @@ libraryid_t UDJServerConnection::addSongToLocalDB(
 		"Failed to add song " << songName.toStdString(), 
 		addQuery,
     toReturn)
-	//TODO this should be based on what the above query returns.
 	return toReturn;
 }
 
@@ -228,7 +227,7 @@ void UDJServerConnection::addSongOnServer(
   const QByteArray finalData = "to_add="+songJSON;
   QNetworkRequest addSongRequest(getLibAddSongUrl());
   netAccessManager->post(addSongRequest, finalData);
-  std::cout << "Just posted add\n";
+  //std::cout << "Just posted add\n";
 }
 
 bool UDJServerConnection::alterVoteCount(playlistid_t plId, int difference){
@@ -298,11 +297,11 @@ void UDJServerConnection::authenticate(
   dataBuffer->setData(data.toUtf8());
   QNetworkReply *reply = netAccessManager->post(authRequest, dataBuffer);
   dataBuffer->setParent(reply);
-  std::cout << "Just posted request\n";
+  //std::cout << "Just posted request\n";
 }
  
 void UDJServerConnection::recievedReply(QNetworkReply *reply){
-  std::cout << "Just reieved reply\n";
+  //std::cout << "Just reieved reply\n";
   if(reply->request().url().path() == getAuthUrl().path()){
     handleAuthReply(reply);
   }
@@ -314,7 +313,7 @@ void UDJServerConnection::recievedReply(QNetworkReply *reply){
 
 void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
   QString stringreply(reply->readAll());
-  std::cout << stringreply.toStdString() << std::endl;
+  //std::cout << stringreply.toStdString() << std::endl;
   if(haveValidLoginCookie()){
     emit connectionEstablished();
   }
@@ -355,12 +354,12 @@ void UDJServerConnection::updateServerIds(
     ++it
   )
   { 
-    std::cout << "about to update with " << it->second << " and " << it->first
-      << std::endl;
+    //std::cout << "about to update with " << it->second << " and " << it->first
+      //<< std::endl;
 	  updateQuery.bindValue(0, QVariant::fromValue<libraryid_t>(it->second));
 	  updateQuery.bindValue(1, QVariant::fromValue<libraryid_t>(it->first));
-    std::cout << "0: " << updateQuery.boundValue(0).toString().toStdString() <<
-      " 1: " << updateQuery.boundValue(1).toString().toStdString() << std::endl;
+    //std::cout << "0: " << updateQuery.boundValue(0).toString().toStdString() <<
+      //" 1: " << updateQuery.boundValue(1).toString().toStdString() << std::endl;
 	  EXEC_SQL(
 		  "Updating server id didn't work!", 
 		  updateQuery.exec(), 
