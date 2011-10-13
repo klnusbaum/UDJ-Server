@@ -29,6 +29,7 @@
 #include <phonon/audiooutput.h>
 #include <QSqlTableModel>
 #include "MusicLibrary.hpp"
+#include "LibraryModel.hpp"
 #include "UDJServerConnection.hpp"
 
 class QTabWidget;
@@ -162,6 +163,8 @@ private:
   /** \brief Causes the application to quit. */
   QAction *quitAction;
 //  QFileSystemWatcher* fileWatcher;
+
+  LibraryModel *libraryModel;
 
 
   QPushButton *loginButton;

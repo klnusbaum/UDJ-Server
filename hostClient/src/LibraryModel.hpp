@@ -19,18 +19,23 @@
 #ifndef LIBRARY_MODEL_HPP
 #define LIBRARY_MODEL_HPP
 #include <QSqlTableModel>
+#include "MusicLibrary.hpp"
+#include <phonon/mediasource.h>
 
 
 namespace UDJ{
 
-class MusicLibrary;
 
 class LibraryModel : public QSqlTableModel{
+Q_OBJECT
 public:
   LibraryModel(QObject *parent, MusicLibrary *library);
+  QString getSongNameFromSource(
+    const Phonon::MediaSource &source) const;
 
 private slots:
   void refresh();
+private:
   MusicLibrary *library;
 };
 

@@ -27,12 +27,11 @@
 
 namespace UDJ{
 
-PlaylistView::PlaylistView(UDJServerConnection* serverConnection, MusicLibrary* musicLibrary, QWidget* parent):
+PlaylistView::PlaylistView(MusicLibrary* musicLibrary, QWidget* parent):
   QTableView(parent),
-  musicLibrary(musicLibrary),
-  serverConnection(serverConnection)
+  musicLibrary(musicLibrary)
 {
-  playlistModel = new PlaylistModel(serverConnection, this);
+  playlistModel = new PlaylistModel(musicLibrary, this);
   horizontalHeader()->setStretchLastSection(true);
   setItemDelegateForColumn(6, new PlaylistDelegate(this));
   setModel(playlistModel);
@@ -48,7 +47,7 @@ QString PlaylistView::getFilePath(const QModelIndex& songIndex) const{
 }
 
 void PlaylistView::addSongToPlaylist(const QModelIndex& libraryIndex){
-  libraryid_t libraryId = musicLibrary->data(
+  libraryid_t libraryId = model()->data(
     libraryIndex.sibling(libraryIndex.row(),0)).value<libraryid_t>();
 	if(! playlistModel->addSongToPlaylist(libraryId)){
 		//TODO display error message

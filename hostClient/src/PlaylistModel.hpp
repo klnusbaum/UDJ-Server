@@ -91,8 +91,8 @@ private:
   /** @name Private Members */
   //@{
 
-  /** \brief The connection to the UDJ server. */
-	MusicLibrary* serverConnection;
+  /** \brief The music library. */
+	MusicLibrary* musicLibrary;
 
   //@}
 };

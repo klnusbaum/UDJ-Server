@@ -28,6 +28,7 @@ SET(UDJ_SRCS
 	UDJServerConnection.cpp
 	PartiersView.cpp
   JSONHelper.cpp
+  LibraryModel.cpp
   qt-json/json.cpp
 )
 
@@ -49,6 +50,7 @@ SET(UDJ_MOC_HDRS
 	DifferenceSpinner.hpp
 	UDJServerConnection.hpp
 	PartiersView.hpp
+  LibraryModel.hpp
 )
 
 QT4_WRAP_CPP(MOC_SRCS ${UDJ_MOC_HDRS})

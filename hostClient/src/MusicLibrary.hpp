@@ -113,6 +113,8 @@ public:
    * @return True if kicking the partier was successful, false otherwise.
    */
 	bool kickUser(partierid_t toKick);
+
+  void clearMyLibrary();
   //@}
 
   static const libraryid_t& getInvalidHostId(){
@@ -250,7 +252,8 @@ private:
   //@}
 
 private slots:
-  void updateServerIds(const UDJServerConnection::server_host_id_map& hostToServerIdMap);
+  void updateServerIds(const std::map<libraryid_t, libraryid_t> 
+    hostToServerIdMap);
 
 };
 

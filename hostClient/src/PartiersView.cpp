@@ -1,5 +1,5 @@
 #include "PartiersView.hpp"
-#include "UDJServerConnection.hpp"
+#include "MusicLibrary.hpp"
 #include <QSqlRelationalTableModel>
 #include <QHeaderView>
 #include <QAction>
@@ -9,15 +9,15 @@
 namespace UDJ{
 
 PartiersView::PartiersView(
-	UDJServerConnection* serverConnection,
+	MusicLibrary *musicLibrary,
 	QWidget* parent):
 	QTableView(parent),
-	serverConnection(serverConnection)
+	musicLibrary(musicLibrary)
 {
 	partiersModel = new QSqlRelationalTableModel(
 		this, 
-		serverConnection->getMusicDB());
-	partiersModel->setTable(serverConnection->getPartiersTableName());
+		musicLibrary->getDatabaseConnection());
+	partiersModel->setTable(MusicLibrary::getPartiersTableName());
   partiersModel->select();
 	//TODO make this more dependent on the data from the server connection
   partiersModel->setHeaderData(0, Qt::Horizontal, "id");
@@ -41,7 +41,7 @@ void PartiersView::contextMenuEvent(QContextMenuEvent* e){
   if(selected->text() == "Kick Partier"){
     QModelIndex indexToBoot = indexAt(e->pos());
 		partierid_t toBoot = getPartierId(indexToBoot);
-		if(serverConnection->kickUser(toBoot)){
+		if(musicLibrary->kickUser(toBoot)){
 			partiersModel->select();
 		}
 		else{

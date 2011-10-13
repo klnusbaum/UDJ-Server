@@ -18,6 +18,10 @@
  */
 #include "MusicLibrary.hpp"
 #include <QDir>
+#include <QDesktopServices>
+#include <QDir>
+#include <QSqlQuery>
+#include <QVariant>
 
 namespace UDJ{
 
@@ -26,12 +30,12 @@ MusicLibrary::MusicLibrary(UDJServerConnection *serverConnection, QObject *paren
  :QObject(parent),serverConnection(serverConnection)
 {
   metaDataGetter = new Phonon::MediaObject(this);
+  setupDB();
   connect(
     serverConnection,
-    SIGNAL(serverIdsUpdate(const UDJServerConnection::server_host_id_map&)),
+    SIGNAL(serverIdsUpdate(const std::map<libraryid_t, libraryid_t>)),
     this,
-    SLOT(updateServerIds(const UDJServerConnection::server_host_id_map&)));
-  setupDB();
+    SLOT(updateServerIds(const std::map<libraryid_t, libraryid_t>)));
 }
 
 void MusicLibrary::setupDB(){
@@ -59,7 +63,7 @@ void MusicLibrary::setupDB(){
 	partyId = setupQuery.value(0).value<partyid_t>();*/
 	
 	//TODO enforce currentParty refering to a party in the party table
-	EXEC_SQL(
+	/*EXEC_SQL(
 		"Error creating users table",
 		setupQuery.exec("CREATE TABLE IF NOT EXISTS users "
 		"(id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -90,7 +94,7 @@ void MusicLibrary::setupDB(){
 		"UPDATE users SET inParty=0, currentParty=-1 "
 		"where users.id = old.id; "
 		"END;"),
-		setupQuery)
+		setupQuery)*/
 	
 
 	EXEC_SQL(
@@ -153,9 +157,10 @@ void MusicLibrary::setupDB(){
 		setupQuery)
 }
 
-bool MusicLibrary::clearMyLibrary(){
+void MusicLibrary::clearMyLibrary(){
   QSqlQuery workQuery(database);
   workQuery.exec("DELETE FROM " + getLibraryTableName());
+  //TODO inform the server of the cleared library
 }
 
 void MusicLibrary::setMusicLibrary(QList<Phonon::MediaSource> songs, QProgressDialog& progress){
@@ -168,7 +173,7 @@ void MusicLibrary::setMusicLibrary(QList<Phonon::MediaSource> songs, QProgressDi
     }
     addSong(songs[i]);
   }
-  select();
+  emit songsAdded();
 }
 
 void MusicLibrary::addSong(Phonon::MediaSource song){
@@ -185,11 +190,11 @@ void MusicLibrary::addSong(Phonon::MediaSource song){
   addQuery.addBindValue(songName);
   addQuery.addBindValue(artistName);
   addQuery.addBindValue(albumName);
-  addQuery.addBindValue(filePath);
+  addQuery.addBindValue(fileName);
 	EXEC_INSERT(
 		"Failed to add song " << songName.toStdString(), 
 		addQuery,
-    toReturn)
+    hostId)
   //TODO should do error checking at this point and make sure hostId is valid
 	serverConnection->addLibSongOnServer(songName, artistName, albumName, hostId);
 }
@@ -225,18 +230,8 @@ QString MusicLibrary::getAlbumName(Phonon::MediaSource song) const{
   }
 }
 
-QString MusicLibrary::getSongNameFromSource(const Phonon::MediaSource &source) const{
-  QString filename = source.fileName();
-  for(int i =0; i < rowCount(); ++i){
-    if(data(index(i,4)).toString() == filename){
-      return data(index(i,1)).toString();
-    }
-  }
-  return "";
-}
-
 void MusicLibrary::updateServerIds(
-  const UDJServerConnection::server_host_id_map& hostToServerIdMap)
+  const std::map<libraryid_t, libraryid_t> hostToServerIdMap)
 {
   QSqlQuery updateQuery(database);
 	updateQuery.prepare(
@@ -278,6 +273,7 @@ bool MusicLibrary::alterVoteCount(playlistid_t plId, int difference){
 		updateQuery.exec(), 
 		updateQuery);
 	//TODO return value should be based on success of above query.
+  //TODO inform the server of the altered vote count
 	return true;
 }
 
@@ -292,6 +288,7 @@ bool MusicLibrary::addSongToPlaylist(libraryid_t libraryId){
 		insertQuery)
 	//TODO this value should instead be based on the result of the
 	//above sql query.
+  //TODO inform the server of the song being added from the playlist
 	return true;
 }
 
@@ -305,6 +302,7 @@ bool MusicLibrary::removeSongFromPlaylist(playlistid_t plId){
 		removeQuery.exec(),
 		removeQuery)
 	//TODO this value should be based on above result
+  //TODO inform the server of the song being removed from the playlist
 	return true;
 }
 
@@ -317,8 +315,13 @@ bool MusicLibrary::kickUser(partierid_t toKick){
 		removeQuery.exec(),
 		removeQuery)
 	//TODO this value should be based on above result
+  //TODO inform the server of the user being kicked
 	return true;
 	
+}
+
+QSqlDatabase MusicLibrary::getDatabaseConnection(){
+  return database;
 }
 
 

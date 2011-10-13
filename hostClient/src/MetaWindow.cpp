@@ -37,6 +37,7 @@
 #include "PlaylistView.hpp"
 #include "LibraryView.hpp"
 #include "PartiersView.hpp"
+#include "LibraryModel.hpp"
 
 
 namespace UDJ{
@@ -70,7 +71,7 @@ void MetaWindow::tick(qint64 time){
 }
 
 void MetaWindow::sourceChanged(const Phonon::MediaSource &source){
-	songTitle->setText(musicLibrary->getSongNameFromSource(source));
+	songTitle->setText(libraryModel->getSongNameFromSource(source));
 }
 
 void MetaWindow::stateChanged(Phonon::State newState, Phonon::State oldState){
@@ -194,19 +195,19 @@ void MetaWindow::setupUi(){
   playBackLayout->addWidget(volumeSlider);
 
   musicLibrary = new MusicLibrary(serverConnection, this);
-  LibraryModel *libraryModel = new LibraryModel(this, musicLibrary->getDatabaseConnection());
+  libraryModel = new LibraryModel(this, musicLibrary);
   libraryView = new LibraryView(libraryModel, this);
 
-  mainPlaylist = new PlaylistView(serverConnection, musicLibrary, this);
+  mainPlaylist = new PlaylistView(musicLibrary, this);
 
-  partiersView = new PartiersView(serverConnection,this);
+ // partiersView = new PartiersView(serverConnection,this);
 
   settingsWidget = new SettingsWidget(this);
   
   QTabWidget* tabWidget = new QTabWidget(this);
   tabWidget->addTab(mainPlaylist, tr("Playlist"));
   tabWidget->addTab(libraryView, tr("Music Library"));
-  tabWidget->addTab(partiersView, tr("Partiers"));
+//  tabWidget->addTab(partiersView, tr("Partiers"));
   tabWidget->addTab(settingsWidget, tr("Settings"));
   
 
@@ -243,9 +244,9 @@ void MetaWindow::setupUi(){
 
   connect(
     loginButton,
-    SLOT(clicked(bool)),
+    SIGNAL(clicked(bool)),
     this,
-    doLogin()
+    SLOT(doLogin())
   );
 }
 

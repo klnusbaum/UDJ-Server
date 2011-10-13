@@ -16,16 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <QDesktopServices>
-#include <QDir>
-#include <QSqlQuery>
-#include <QVariant>
 #include <QNetworkAccessManager>
 #include <QNetworkCookieJar>
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QBuffer>
-#include "MusicLibrary.hpp"
 #include "UDJServerConnection.hpp"
 #include "JSONHelper.hpp"
 

@@ -22,8 +22,8 @@
 namespace UDJ{
 
 
-LibraryModel::LibraryModel(QObject *parent, MusicLibrary library):
-  QSqlTableModel(parent, library->getDbConnection())
+LibraryModel::LibraryModel(QObject *parent, MusicLibrary *library):
+  QSqlTableModel(parent, library->getDatabaseConnection())
 {
   setTable(MusicLibrary::getLibraryTableName());
   select();
@@ -34,11 +34,21 @@ LibraryModel::LibraryModel(QObject *parent, MusicLibrary library):
   setHeaderData(2, Qt::Horizontal, "Artist");
   setHeaderData(3, Qt::Horizontal, "Album");
   setHeaderData(4, Qt::Horizontal, "filepath");
-  connect(db, SIGNAL(songsAdded()), this, SLOT(refresh()));
+  connect(library, SIGNAL(songsAdded()), this, SLOT(refresh()));
 }
 
 void LibraryModel::refresh(){
   select();
+}
+
+QString LibraryModel::getSongNameFromSource(const Phonon::MediaSource &source) const{
+  QString filename = source.fileName();
+  for(int i =0; i < rowCount(); ++i){
+    if(data(index(i,4)).toString() == filename){
+      return data(index(i,1)).toString();
+    }
+  }
+  return "";
 }
 
 

@@ -21,16 +21,17 @@
 #include <QHeaderView>
 #include <QContextMenuEvent>
 #include <QMenu>
+#include "LibraryModel.hpp"
 	
 
 namespace UDJ{
 
 
-LibraryView::LibraryView(MusicLibrary* musicLibrary, QWidget* parent):QTableView(parent){
+LibraryView::LibraryView(LibraryModel *model, QWidget* parent):QTableView(parent){
   setEditTriggers(QAbstractItemView::NoEditTriggers);
   verticalHeader()->hide();
   horizontalHeader()->setStretchLastSection(true);
-  setModel(musicLibrary);
+  setModel(model);
   setColumnHidden(0,true);
   setColumnHidden(4,true);
   setSelectionBehavior(QAbstractItemView::SelectRows);

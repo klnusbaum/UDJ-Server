@@ -42,12 +42,11 @@ public:
   /**
    * \brief Constructs a PlaylistView
    *
-   * @param serverConnection Connection to the UDJ server
    * @param musicLibrary The music library containing music that might be
    * added to the playlist.
    * @param parent The parent widget.
    */
-  PlaylistView(UDJServerConnection* serverConnection, MusicLibrary* musicLibrary, QWidget* parent=0);
+  PlaylistView(MusicLibrary* musicLibrary, QWidget* parent=0);
 
   //@}
 
@@ -107,8 +106,6 @@ private:
    */
   MusicLibrary* musicLibrary;
 
-  /** \brief The connection to the UDJ server */
-	UDJServerConnection* serverConnection;
 
   /** \brief The model containing the playlist data */
   PlaylistModel* playlistModel;

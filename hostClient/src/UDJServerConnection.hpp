@@ -38,13 +38,6 @@ namespace UDJ{
 class UDJServerConnection : public QObject{
 Q_OBJECT
 public:
-
-  /** @name Typedefs */
-  //@{
-
-  typedef std::map<libraryid_t, libraryid_t> server_host_id_map;
-
-  //@}
   
   /** @name Constructor(s) and Destructor */
   //@{
@@ -103,6 +96,9 @@ public:
 
 signals:
 
+  /** @name Signals */
+  //@{
+
   /**
    * \brief Emitted when a partier leaves.
    *
@@ -136,7 +132,8 @@ signals:
   
   void unableToConnect(const QString& errMessage);
 
-  void serverIdsUpdate(const server_host_id_map& hostToServerIdMap);
+  void serverIdsUpdate(const std::map<libraryid_t, libraryid_t> 
+    hostToServerIdMap);
 
   //@}
 

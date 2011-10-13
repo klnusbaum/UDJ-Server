@@ -27,7 +27,7 @@ class QContextMenuEvent;
 
 namespace UDJ{
 
-class UDJServerConnection;
+class MusicLibrary;
 
 /** \brief Class for displayins a list of partiers who are currently attending
  * the party.
@@ -43,7 +43,7 @@ public:
    * @param serverConnection The connection to the UDJ server.
    * @param parent The parent widget.
    */
-	PartiersView(UDJServerConnection* serverConnection, QWidget* parent=0);
+	PartiersView(MusicLibrary *musicLibrary, QWidget* parent=0);
 
   //@}
 
@@ -62,8 +62,7 @@ private:
   /** @name Private Members */
   //@{
 
-  /** \brief The connection to the UDJ server. */
-	UDJServerConnection* serverConnection;
+  MusicLibrary *musicLibrary;
 
   /** \brief The model backing this view. */
 	QSqlRelationalTableModel* partiersModel;

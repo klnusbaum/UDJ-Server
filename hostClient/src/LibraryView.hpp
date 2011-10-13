@@ -24,8 +24,7 @@ class QContextMenuEvent;
 
 namespace UDJ{
 
-
-class MusicLibrary;
+class LibraryModel;
 
 /** \brief A class for viewing the current contents of the users music library.
 */
@@ -41,7 +40,7 @@ public:
    * present
    * @param parent The parent widget
    */
-  LibraryView(MusicLibrary* musicLibrary, QWidget* parent=0);
+  LibraryView(LibraryModel *model, QWidget* parent=0);
 
   //@}
 signals:

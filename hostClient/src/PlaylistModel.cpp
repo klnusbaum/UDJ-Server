@@ -24,7 +24,7 @@ PlaylistModel::PlaylistModel(
 	MusicLibrary* library,
 	QObject* parent):
 	QSqlRelationalTableModel(parent, library->getDatabaseConnection()),
-	MusicLibrary(library)
+	musicLibrary(library)
 {
   setTable(MusicLibrary::getMainPlaylistTableName());
   select();
@@ -56,7 +56,7 @@ bool PlaylistModel::updateVoteCount(const QModelIndex& index, int difference){
 	}
 	const QModelIndex plIdIndex = index.sibling(index.row(), 0);
 	playlistid_t plId = data(plIdIndex).value<playlistid_t>();
-	if(library->alterVoteCount(plId, difference)){
+	if(musicLibrary->alterVoteCount(plId, difference)){
 		select();
 	}
 	else{
@@ -65,7 +65,7 @@ bool PlaylistModel::updateVoteCount(const QModelIndex& index, int difference){
 }
 
 bool PlaylistModel::addSongToPlaylist(libraryid_t libraryId){
-	bool success = library->addSongToPlaylist(libraryId);
+	bool success = musicLibrary->addSongToPlaylist(libraryId);
 	if(success){
 		select();
 	}
@@ -74,7 +74,7 @@ bool PlaylistModel::addSongToPlaylist(libraryid_t libraryId){
 
 bool PlaylistModel::removeSongFromPlaylist(const QModelIndex& index){
 	playlistid_t plId = data(index.sibling(index.row(), 0)).value<playlistid_t>();
-	bool toReturn = library->removeSongFromPlaylist(plId);
+	bool toReturn = musicLibrary->removeSongFromPlaylist(plId);
 	if(toReturn){
 		select();
 	}
