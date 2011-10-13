@@ -21,14 +21,15 @@
 namespace UDJ{
 
 PlaylistModel::PlaylistModel(
-	UDJServerConnection* serverConnection,
+	MusicLibrary* library,
 	QObject* parent):
-	QSqlRelationalTableModel(parent, serverConnection->getMusicDB()),
-	serverConnection(serverConnection)
+	QSqlRelationalTableModel(parent, library->getDatabaseConnection()),
+	MusicLibrary(library)
 {
-  setTable(serverConnection->getMainPlaylistTableName());
+  setTable(MusicLibrary::getMainPlaylistTableName());
   select();
-	//Need to make this more dependent on the info from the UDJServerConnection
+	//Need to make this more dependent on the info from the Music Library, i.e. Music Library needs to say what
+  //the valid columns are
   setHeaderData(0, Qt::Horizontal, "playlist id");
   setHeaderData(1, Qt::Horizontal, "library id");
   setHeaderData(2, Qt::Horizontal, "Song");
@@ -55,7 +56,7 @@ bool PlaylistModel::updateVoteCount(const QModelIndex& index, int difference){
 	}
 	const QModelIndex plIdIndex = index.sibling(index.row(), 0);
 	playlistid_t plId = data(plIdIndex).value<playlistid_t>();
-	if(serverConnection->alterVoteCount(plId, difference)){
+	if(library->alterVoteCount(plId, difference)){
 		select();
 	}
 	else{
@@ -64,7 +65,7 @@ bool PlaylistModel::updateVoteCount(const QModelIndex& index, int difference){
 }
 
 bool PlaylistModel::addSongToPlaylist(libraryid_t libraryId){
-	bool success = serverConnection->addSongToPlaylist(libraryId);
+	bool success = library->addSongToPlaylist(libraryId);
 	if(success){
 		select();
 	}
@@ -73,7 +74,7 @@ bool PlaylistModel::addSongToPlaylist(libraryid_t libraryId){
 
 bool PlaylistModel::removeSongFromPlaylist(const QModelIndex& index){
 	playlistid_t plId = data(index.sibling(index.row(), 0)).value<playlistid_t>();
-	bool toReturn = serverConnection->removeSongFromPlaylist(plId);
+	bool toReturn = library->removeSongFromPlaylist(plId);
 	if(toReturn){
 		select();
 	}

@@ -18,7 +18,6 @@
  */
 #ifndef MUSIC_LIBRARY_HPP
 #define MUSIC_LIBRARY_HPP
-#include <QSqlTableModel>
 #include <QSqlDatabase>
 #include <phonon/mediaobject.h>
 #include <phonon/mediasource.h>
@@ -28,8 +27,9 @@
 
 namespace UDJ{
 
+
 /** \brief A model representing the Hosts Music Library */
-class MusicLibrary : public QSqlTableModel{
+class MusicLibrary : public QObject{
 Q_OBJECT
 public:
 
@@ -41,10 +41,7 @@ public:
    * @param serverConnection Connection to the UDJ server.
    * @param parent The parent widget.
    */
-  MusicLibrary(UDJServerConnection* serverConnection, QWidget* parent=0);
-
-  /** \brief Does clean up when a Music Library is deallocated. */
-  ~MusicLibrary();
+  MusicLibrary(UDJServerConnection *serverConnection, QObject *parent=0);
 
   //@}
 
@@ -82,6 +79,40 @@ public:
    */
   QString getSongNameFromSource(const Phonon::MediaSource &source) const;
 
+  QSqlDatabase getDatabaseConnection();
+
+  /**
+   * \brief Alters the vote count associated with a specific song.
+   *
+   * @param plId Id of the song whose vote count is to be altered.
+   * @param difference The amount by which the vote count should be altered.
+   * @return True if the altering was sucessful, false otherwise.
+   */
+	bool alterVoteCount(playlistid_t plId, int difference);
+
+  /**
+   * \brief Adds the specified song to the playlist.
+   *
+   * @param libraryId Id of the song to add to the playlist.
+   * @return True if the addition of the song was sucessful, false otherwise.
+   */
+	bool addSongToPlaylist(playlistid_t libraryId);
+
+  /**
+   * \brief Removes the specified song from the playlist.
+   *
+   * @param libraryId Id of the song to remove the playlist.
+   * @return True if the removal of the song was sucessful, false otherwise.
+   */
+	bool removeSongFromPlaylist(playlistid_t plId);
+
+  /**
+   * Kicks the given user from the party associated with this connection.
+   *
+   * @param toKick The id of the partier to kick.
+   * @return True if kicking the partier was successful, false otherwise.
+   */
+	bool kickUser(partierid_t toKick);
   //@}
 
   static const libraryid_t& getInvalidHostId(){
@@ -94,15 +125,57 @@ public:
     return invalidServerId;
   }
 
+  /**
+   * \brief Gets the name of the table in the musicdb that contains information
+   * about the music library associated with the server conneciton.
+   *
+   * @return The name of the table in the musicdb that contains information
+   * about the music library associated with the server connection.
+   */
+	static const QString& getLibraryTableName(){
+    static const QString libraryTableName = "library";
+    return libraryTableName;
+	}
+
+  /**
+   * \brief Gets the name of the table in the musicdb that contains information
+   * about the playlist associated with the server conneciton.
+   *
+   * @return The name of the table in the musicdb that contains information
+   * about the playlist associated with the server connection.
+   */
+	static const QString& getMainPlaylistTableName(){
+    static const QString mainPlaylistName = "main_playlist_view";
+    return mainPlaylistName;
+	}
+
+  /**
+   * \brief Gets the name of the table in the musicdb that contains information
+   * about the partiers associated with the server conneciton.
+   *
+   * @return The name of the table in the musicdb that contains information
+   * about the partiers associated with the server connection.
+   */
+	static const QString& getPartiersTableName(){
+		static const QString partiersTableName = "my_partiers";
+    return partiersTableName;
+	}
+
+signals:
+  void songsAdded();
+
 private:
   
   /** @name Private Members */
   //@{
 
+  /** \brief Connection to the UDJ server */
+  UDJServerConnection *serverConnection;
   /** \brief Object used to determine metadata of MediaSources. */
   Phonon::MediaObject* metaDataGetter;
-  /** \brief The connection to the UDJ server. */
-	UDJServerConnection* serverConnection;
+  /** \brief Actual database connection */
+  QSqlDatabase database;
+
   
   //@}
 
@@ -142,7 +215,43 @@ private:
    */
   QString getAlbumName(Phonon::MediaSource song) const;
 
+  /**
+   * \brief Retrieves the name of the connection to the musicdb.
+   *
+   * @return The name of the connection to the musicdb.
+   */
+  static const QString& getMusicDBConnectionName(){
+    static const QString musicDBConnectionName("musicdbConn");
+    return musicDBConnectionName;
+  }
+
+  /**
+   * \brief Retrieves the name of the music database.
+   *
+   * @return The name of the the music database.
+   */
+  static const QString& getMusicDBName(){
+    static const QString musicDBName("musicdb");
+    return musicDBName;
+  }
+
+  static const QString& getCreateLibraryQuery(){
+    static const QString createLibQuerey = "CREATE TABLE IF NOT EXISTS " + 
+      getLibraryTableName() +
+    "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
+    "server_lib_id INTEGER DEFAULT -1, "
+   	"song TEXT NOT NULL, artist TEXT, album TEXT, filePath TEXT);";
+    return createLibQuerey;
+
+  }
+
+  void setupDB();
+
   //@}
+
+private slots:
+  void updateServerIds(const UDJServerConnection::server_host_id_map& hostToServerIdMap);
+
 };
 
 

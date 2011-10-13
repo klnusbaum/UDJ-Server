@@ -114,6 +114,8 @@ private slots:
    * current song.
    */
    void finished();
+
+   void doLogin();
   
   //@}
 
@@ -161,6 +163,8 @@ private:
   QAction *quitAction;
 //  QFileSystemWatcher* fileWatcher;
 
+
+  QPushButton *loginButton;
   //@}
 
   /** @name Private Functions */

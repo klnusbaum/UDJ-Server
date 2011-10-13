@@ -20,7 +20,7 @@
 #define PLAYLIST_MODEL_HPP
 
 #include <QSqlRelationalTableModel>
-#include "UDJServerConnection.hpp"
+#include "MusicLibrary.hpp"
 
 namespace UDJ{
 
@@ -39,7 +39,7 @@ public:
    * @param serverConnection The connection the the UDJ server.
    * @param parent The parent QObject.
    */
-	PlaylistModel(UDJServerConnection* serverConnection, QObject* parent=0);
+	PlaylistModel(MusicLibrary *library, QObject* parent=0);
 
   //@}
 
@@ -92,7 +92,7 @@ private:
   //@{
 
   /** \brief The connection to the UDJ server. */
-	UDJServerConnection* serverConnection;
+	MusicLibrary* serverConnection;
 
   //@}
 };

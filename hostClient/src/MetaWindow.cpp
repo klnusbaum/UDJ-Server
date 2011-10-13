@@ -62,12 +62,6 @@ MetaWindow::MetaWindow(QWidget *parent, Qt::WindowFlags flags)
   createActions();
   setupUi();
   setupMenus();
-  bool ok;
-  QString username = QInputDialog::getText(this, tr("Username"), 
-    tr("Username:"), QLineEdit::Normal, "", &ok);
-  QString password = QInputDialog::getText(this, tr("Password"), 
-    tr("Password:"), QLineEdit::Normal, "", &ok);
-  serverConnection->startConnection(username, password);
 }
 
 void MetaWindow::tick(qint64 time){
@@ -200,7 +194,8 @@ void MetaWindow::setupUi(){
   playBackLayout->addWidget(volumeSlider);
 
   musicLibrary = new MusicLibrary(serverConnection, this);
-  libraryView = new LibraryView(musicLibrary, this);
+  LibraryModel *libraryModel = new LibraryModel(this, musicLibrary->getDatabaseConnection());
+  libraryView = new LibraryView(libraryModel, this);
 
   mainPlaylist = new PlaylistView(serverConnection, musicLibrary, this);
 
@@ -214,12 +209,15 @@ void MetaWindow::setupUi(){
   tabWidget->addTab(partiersView, tr("Partiers"));
   tabWidget->addTab(settingsWidget, tr("Settings"));
   
+
+  loginButton = new QPushButton(tr("Login"), this);
   
   QVBoxLayout *mainLayout = new QVBoxLayout;
 	mainLayout->addLayout(infoLayout);
   mainLayout->addLayout(seekerLayout);
   mainLayout->addLayout(playBackLayout);
   mainLayout->addWidget(tabWidget);
+  mainLayout->addWidget(loginButton, Qt::AlignRight);
 
   QWidget* widget = new QWidget;
   widget->setLayout(mainLayout);
@@ -242,6 +240,13 @@ void MetaWindow::setupUi(){
     SIGNAL(activated(const QModelIndex&)),
     this,
     SLOT(playlistClicked(const QModelIndex&)));
+
+  connect(
+    loginButton,
+    SLOT(clicked(bool)),
+    this,
+    doLogin()
+  );
 }
 
 void MetaWindow::setupMenus(){
@@ -251,6 +256,15 @@ void MetaWindow::setupMenus(){
   musicMenu->addAction(quitAction);
 }
 
+void MetaWindow::doLogin(){
+  bool ok;
+  loginButton->setDisabled(true);
+  QString username = QInputDialog::getText(this, tr("Username"), 
+    tr("Username:"), QLineEdit::Normal, "", &ok);
+  QString password = QInputDialog::getText(this, tr("Password"), 
+    tr("Password:"), QLineEdit::Normal, "", &ok);
+  serverConnection->startConnection(username, password);
+}
 
 
 } //end namespace

@@ -38,6 +38,14 @@ namespace UDJ{
 class UDJServerConnection : public QObject{
 Q_OBJECT
 public:
+
+  /** @name Typedefs */
+  //@{
+
+  typedef std::map<libraryid_t, libraryid_t> server_host_id_map;
+
+  //@}
+  
   /** @name Constructor(s) and Destructor */
   //@{
 
@@ -45,11 +53,6 @@ public:
    * \brief Constructs a UDJServerConnection.
    */
 	UDJServerConnection(QObject *parent=NULL);
-  /**
-   * \brief Constructs all necessary clean up when deallocating the
-   * UDJServerConnection.
-   */
-	~UDJServerConnection();
 
   //@}
 
@@ -67,15 +70,6 @@ public:
   //@{
 
   /**
-   * \brief Retrieves the database stoing all the music information.
-   *
-   * @return The database storing all music information.
-   */
-	inline QSqlDatabase getMusicDB(){
-		return musicdb;
-	}	
-
-  /**
    * \brief Retrieves the id of the party associated with this server 
    * connection.
    *
@@ -85,60 +79,10 @@ public:
 		return partyId;
 	}
 
-  /**
-   * \brief Gets the name of the table in the musicdb that contains information
-   * about the music library associated with the server conneciton.
-   *
-   * @return The name of the table in the musicdb that contains information
-   * about the music library associated with the server connection.
-   */
-	static const QString& getLibraryTableName(){
-    static const QString libraryTableName = "library";
-    return libraryTableName;
-	}
-
-  /**
-   * \brief Gets the name of the table in the musicdb that contains information
-   * about the playlist associated with the server conneciton.
-   *
-   * @return The name of the table in the musicdb that contains information
-   * about the playlist associated with the server connection.
-   */
-	inline QString getMainPlaylistTableName(){
-		return "main_playlist_view";
-	}
-
-  /**
-   * \brief Gets the name of the table in the musicdb that contains information
-   * about the partiers associated with the server conneciton.
-   *
-   * @return The name of the table in the musicdb that contains information
-   * about the partiers associated with the server connection.
-   */
-	inline QString getPartiersTableName(){
-		return "my_partiers";
-	}
-
   //@}
 
   /** @name Modifiers */
   //@{
-  /**
-   * \brief Adds a song to the library associated with this server connection.
-   *
-   * @param songName Name of the song to be added to the library.
-   * @param artistName Name of the artist of the song to be added to the
-   * the library.
-   * @param albumName The name of the album of the song to be added to the
-   * library.
-   * @param filePath The filePath of the song to be added to the library.
-   * @return True if the song was sucessfully added, false otherwise.
-   */
-	bool addSongToLibrary(
-		const QString& songName,
-		const QString& artistName,
-		const QString& ablumName,
-		const QString& filePath);
 	
   /**
    * \brief Removes all songs from the library associated with this conneciton.
@@ -147,38 +91,12 @@ public:
    */
 	bool clearMyLibrary();
 	
-  /**
-   * \brief Alters the vote count associated with a specific song.
-   *
-   * @param plId Id of the song whose vote count is to be altered.
-   * @param difference The amount by which the vote count should be altered.
-   * @return True if the altering was sucessful, false otherwise.
-   */
-	bool alterVoteCount(playlistid_t plId, int difference);
 
-  /**
-   * \brief Adds the specified song to the playlist.
-   *
-   * @param libraryId Id of the song to add to the playlist.
-   * @return True if the addition of the song was sucessful, false otherwise.
-   */
-	bool addSongToPlaylist(playlistid_t libraryId);
-
-  /**
-   * \brief Removes the specified song from the playlist.
-   *
-   * @param libraryId Id of the song to remove the playlist.
-   * @return True if the removal of the song was sucessful, false otherwise.
-   */
-	bool removeSongFromPlaylist(playlistid_t plId);
-
-  /**
-   * Kicks the given user from the party associated with this connection.
-   *
-   * @param toKick The id of the partier to kick.
-   * @return True if kicking the partier was successful, false otherwise.
-   */
-	bool kickUser(partierid_t toKick);
+  void addLibSongOnServer(
+		const QString& songName,
+		const QString& artistName,
+		const QString& ablumName,
+    const libraryid_t hostid);
 
 
   //@}
@@ -218,7 +136,10 @@ signals:
   
   void unableToConnect(const QString& errMessage);
 
+  void serverIdsUpdate(const server_host_id_map& hostToServerIdMap);
+
   //@}
+
 
 private slots:
   void recievedReply(QNetworkReply *reply);
@@ -227,11 +148,8 @@ private:
   /** @name Private Members */
   //@{
 
-  /** \brief The database containing all the information associated with this 
-   * server connection
-   */
-	QSqlDatabase musicdb;
-  
+  bool isLoggedIn;
+
   /** \brief Id of the party associated with this conneciton */
 	partyid_t partyId;
 
@@ -239,30 +157,11 @@ private:
 
   QNetworkCookieJar *cookieJar;
 
+
   //@}
 
   /** @name Private Function */
   //@{
-
-  /**
-   * \brief Retrieves the name of the connection to the musicdb.
-   *
-   * @return The name of the connection to the musicdb.
-   */
-  static const QString& getMusicDBConnectionName(){
-    static const QString musicDBConnectionName("musicdbConn");
-    return musicDBConnectionName;
-  }
-
-  /**
-   * \brief Retrieves the name of the music database.
-   *
-   * @return The name of the the music database.
-   */
-  static const QString& getMusicDBName(){
-    static const QString musicDBName("musicdb");
-    return musicDBName;
-  }
 
   static const QString& getLoginCookieName(){
     static const QString loginCookieName("loggedIn");
@@ -309,14 +208,6 @@ private:
     return LIB_ADD_URL;
   }
 
-  static const QString& getCreateLibraryQuery(){
-    static const QString createLibQuerey = "CREATE TABLE IF NOT EXISTS " + getLibraryTableName() +
-    "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-    "server_lib_id INTEGER DEFAULT -1, "
-   	"song TEXT NOT NULL, artist TEXT, album TEXT, filePath TEXT);";
-    return createLibQuerey;
-
-  }
 
   void authenticate(const QString& username, const QString& password);
 
@@ -324,22 +215,8 @@ private:
  
   bool haveValidLoginCookie();
 
-  libraryid_t addSongToLocalDB(
-		const QString& songName,
-		const QString& artistName,
-		const QString& ablumName,
-		const QString& filePath);
-
-  void addSongOnServer(
-		const QString& songName,
-		const QString& artistName,
-		const QString& ablumName,
-    const libraryid_t hostid);
-
   void handleAddSongReply(QNetworkReply *reply);
 
-  void updateServerIds(
-    const std::map<libraryid_t, libraryid_t>& hostToServerIdMap);
 
   //@}
 
