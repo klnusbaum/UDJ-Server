@@ -28,16 +28,6 @@ PlaylistModel::PlaylistModel(
 {
   setTable(MusicLibrary::getPlaylistViewName());
   select();
-	//Need to make this more dependent on the info from the Music Library, i.e. Music Library needs to say what
-  //the valid columns are
-  setHeaderData(0, Qt::Horizontal, "playlist id");
-  setHeaderData(1, Qt::Horizontal, "library id");
-  setHeaderData(2, Qt::Horizontal, "Song");
-  setHeaderData(3, Qt::Horizontal, "Artist");
-  setHeaderData(4, Qt::Horizontal, "Album");
-  setHeaderData(5, Qt::Horizontal, "Filepath");
-  setHeaderData(6, Qt::Horizontal, "Votes");
-  setHeaderData(7, Qt::Horizontal, "Time Added");
   setEditStrategy(QSqlTableModel::OnFieldChange);
 }
 

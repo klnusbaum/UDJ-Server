@@ -32,9 +32,6 @@ LibraryView::LibraryView(LibraryModel *model, QWidget* parent):QTableView(parent
   verticalHeader()->hide();
   horizontalHeader()->setStretchLastSection(true);
   setModel(model);
-  setColumnHidden(0,true);
-  setColumnHidden(1,true);
-  setColumnHidden(5,true);
   setSelectionBehavior(QAbstractItemView::SelectRows);
 }
 

@@ -166,8 +166,8 @@ private:
 
   LibraryModel *libraryModel;
 
-
   QPushButton *loginButton;
+
   //@}
 
   /** @name Private Functions */

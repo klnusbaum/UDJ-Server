@@ -36,9 +36,6 @@ PlaylistView::PlaylistView(MusicLibrary* musicLibrary, LibraryModel *libraryMode
   horizontalHeader()->setStretchLastSection(true);
   setItemDelegateForColumn(6, new PlaylistDelegate(this));
   setModel(playlistModel);
-  setColumnHidden(0,true);
-  setColumnHidden(1,true);
-  setColumnHidden(5,true);
   setSelectionBehavior(QAbstractItemView::SelectRows);
 }
   

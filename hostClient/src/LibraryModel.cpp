@@ -28,13 +28,6 @@ LibraryModel::LibraryModel(QObject *parent, MusicLibrary *library):
   setTable(MusicLibrary::getLibraryTableName());
   select();
 
-	//Make this more dependent up what serverConnection is telling us.
-  setHeaderData(0, Qt::Horizontal, "id");
-  setHeaderData(1, Qt::Horizontal, "server id");
-  setHeaderData(2, Qt::Horizontal, "Song");
-  setHeaderData(3, Qt::Horizontal, "Artist");
-  setHeaderData(4, Qt::Horizontal, "Album");
-  setHeaderData(5, Qt::Horizontal, "filepath");
   connect(library, SIGNAL(songsAdded()), this, SLOT(refresh()));
 }
 
