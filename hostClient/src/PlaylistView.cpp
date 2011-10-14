@@ -23,13 +23,14 @@
 #include <QSqlField>
 #include "PlaylistDelegate.hpp"
 #include "PlaylistModel.hpp"
-#include "UDJServerConnection.hpp"
+#include "LibraryModel.hpp"
 
 namespace UDJ{
 
-PlaylistView::PlaylistView(MusicLibrary* musicLibrary, QWidget* parent):
+PlaylistView::PlaylistView(MusicLibrary* musicLibrary, LibraryModel *libraryModel, QWidget* parent):
   QTableView(parent),
-  musicLibrary(musicLibrary)
+  musicLibrary(musicLibrary),
+  libraryModel(libraryModel)
 {
   playlistModel = new PlaylistModel(musicLibrary, this);
   horizontalHeader()->setStretchLastSection(true);
@@ -47,7 +48,7 @@ QString PlaylistView::getFilePath(const QModelIndex& songIndex) const{
 }
 
 void PlaylistView::addSongToPlaylist(const QModelIndex& libraryIndex){
-  libraryid_t libraryId = model()->data(
+  libraryid_t libraryId = libraryModel->data(
     libraryIndex.sibling(libraryIndex.row(),0)).value<libraryid_t>();
 	if(! playlistModel->addSongToPlaylist(libraryId)){
 		//TODO display error message

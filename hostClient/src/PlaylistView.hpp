@@ -27,7 +27,7 @@ namespace UDJ{
 
 class MusicLibrary;
 class PlaylistModel;
-class UDJServerConnection;
+class LibraryModel;
 
 /**
  * \brief Used to view the items in a PlaylistModel
@@ -46,7 +46,7 @@ public:
    * added to the playlist.
    * @param parent The parent widget.
    */
-  PlaylistView(MusicLibrary* musicLibrary, QWidget* parent=0);
+  PlaylistView(MusicLibrary* musicLibrary, LibraryModel *libraryModel, QWidget* parent=0);
 
   //@}
 
@@ -106,9 +106,11 @@ private:
    */
   MusicLibrary* musicLibrary;
 
+  LibraryModel* libraryModel;
 
   /** \brief The model containing the playlist data */
   PlaylistModel* playlistModel;
+
 
   //@}
 

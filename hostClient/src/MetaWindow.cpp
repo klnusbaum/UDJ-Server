@@ -198,7 +198,7 @@ void MetaWindow::setupUi(){
   libraryModel = new LibraryModel(this, musicLibrary);
   libraryView = new LibraryView(libraryModel, this);
 
-  mainPlaylist = new PlaylistView(musicLibrary, this);
+  mainPlaylist = new PlaylistView(musicLibrary, libraryModel, this);
 
  // partiersView = new PartiersView(serverConnection,this);
 
