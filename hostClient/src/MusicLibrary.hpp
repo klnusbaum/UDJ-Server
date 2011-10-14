@@ -106,16 +106,11 @@ public:
    */
 	bool removeSongFromPlaylist(playlistid_t plId);
 
-  /**
-   * Kicks the given user from the party associated with this connection.
-   *
-   * @param toKick The id of the partier to kick.
-   * @return True if kicking the partier was successful, false otherwise.
-   */
-	bool kickUser(partierid_t toKick);
-
   void clearMyLibrary();
   //@}
+
+  /** @name Public Constants */
+  //@{
 
   static const libraryid_t& getInvalidHostId(){
     static const libraryid_t invalidHostId = -1; 
@@ -141,18 +136,6 @@ public:
 
   /**
    * \brief Gets the name of the table in the musicdb that contains information
-   * about the playlist associated with the server conneciton.
-   *
-   * @return The name of the table in the musicdb that contains information
-   * about the playlist associated with the server connection.
-   */
-	static const QString& getMainPlaylistTableName(){
-    static const QString mainPlaylistName = "main_playlist_view";
-    return mainPlaylistName;
-	}
-
-  /**
-   * \brief Gets the name of the table in the musicdb that contains information
    * about the partiers associated with the server conneciton.
    *
    * @return The name of the table in the musicdb that contains information
@@ -162,9 +145,80 @@ public:
 		static const QString partiersTableName = "my_partiers";
     return partiersTableName;
 	}
+  
+  static const QString& getPlaylistTableName(){
+    static const QString playlistTableName = "playlist";
+    return playlistTableName;
+  }
 
+  static const QString& getPlaylistViewName(){
+    static const QString playlistViewName = "playlist_view";
+    return playlistViewName;
+  }
+
+  static const QString& getPlaylistIdColName(){
+    static const QString playlistIdColName = "id";
+    return playlistIdColName;
+  }
+
+  static const QString& getPlaylistLibIdColName(){
+    static const QString playlistLibIdColName = "lib_id";
+    return playlistLibIdColName;
+  }
+
+  static const QString& getVoteCountColName(){
+    static const QString playlistVoteCountColName = "vote_count";
+    return playlistVoteCountColName;
+  }
+
+  static const QString& getTimeAddedColName(){
+    static const QString playlistTimeAddedColName = "time_added";
+    return playlistTimeAddedColName;
+  }
+
+  static const QString& getDefaultVoteCount(){
+    static const QString defaultVoteCount = "1";
+    return defaultVoteCount;
+  }
+
+  static const QString& getLibIdColName(){
+    static const QString libIdColName = "id";
+    return libIdColName;
+  }
+
+  static const QString& getServerLibIdColName(){
+    static const QString serverLibIdColName = "server_lib_id";
+    return serverLibIdColName;
+  }
+
+  static const QString getLibSongColName(){
+    static const QString libSongColName = "song";
+    return libSongColName;
+  }
+
+  static const QString getLibArtistColName(){
+    static const QString libArtistColName = "artist";
+    return libArtistColName;
+  }
+  
+  static const QString getLibAlbumColName(){
+    static const QString libAlbumColName = "album";
+    return libAlbumColName;
+  }
+
+  static const QString getLibFileColName(){
+    static const QString libFileColName = "file_path";
+    return libFileColName;
+  }
+
+
+ //@}
+
+/** @name Signals */
+//@{
 signals:
   void songsAdded();
+//@}
 
 private:
   
@@ -217,6 +271,12 @@ private:
    */
   QString getAlbumName(Phonon::MediaSource song) const;
 
+  void setupDB();
+
+  //@}
+
+  /** @name Private Constants */
+  //@{
   /**
    * \brief Retrieves the name of the connection to the musicdb.
    *
@@ -237,24 +297,106 @@ private:
     return musicDBName;
   }
 
-  static const QString& getCreateLibraryQuery(){
-    static const QString createLibQuerey = "CREATE TABLE IF NOT EXISTS " + 
-      getLibraryTableName() +
-    "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-    "server_lib_id INTEGER DEFAULT -1, "
-   	"song TEXT NOT NULL, artist TEXT, album TEXT, filePath TEXT);";
-    return createLibQuerey;
 
+
+  static const QString& getCreateLibraryQuery(){
+    static const QString createLibQuerey = 
+      "CREATE TABLE IF NOT EXISTS " + 
+      getLibraryTableName() +
+      "(" + getLibIdColName() + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+
+      getServerLibIdColName() + " INTEGER DEFAULT " + 
+        getInvalidServerId() + ", " +
+
+   	  getLibSongColName() + " TEXT NOT NULL, " +
+      getLibArtistColName() + " TEXT, "+
+      getLibAlbumColName() + " TEXT, " + 
+      getLibFileColName() + " TEXT);";
+    return createLibQuerey;
   }
 
-  void setupDB();
 
-  //@}
+  static const QString& getCreatePlaylistQuery(){
+    static const QString createPlaylistQuery = 
+      "CREATE TABLE IF NOT EXISTS " +
+      getPlaylistTableName() +  "(" +
+   	  getPlaylistIdColName() + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+   	  getPlaylistLibIdColName() + " INTEGER REFERENCES library(" + 
+        getLibIdColName()+ ") ON DELETE CASCADE, " +
+   	  getVoteCountColName() + " INTEGER DEFAULT " +getDefaultVoteCount() + "," +
+   	  getTimeAddedColName() + " TEXT DEFAULT CURRENT_TIMESTAMP);";
+    return createPlaylistQuery;
+  }
 
+  static const QString& getCreatePlaylistViewQuery(){
+    static const QString createPlaylistViewQuery = 
+      "CREATE VIEW IF NOT EXISTS "+getPlaylistViewName() + " " + 
+      "AS SELECT * FROM " + getPlaylistTableName() + " INNER JOIN " +
+      getLibraryTableName() + " ON " + getPlaylistTableName() + "." +
+      getPlaylistLibIdColName() + "=" + getLibraryTableName() + "." +
+      getLibIdColName() +";";
+    return createPlaylistViewQuery;
+  }
+
+  static const QString& getPlaylistUpdateTriggerName(){
+    static const QString playlistUpdateTriggerName = "updateVotes";
+    return playlistUpdateTriggerName;
+  }
+
+  static const QString& getPlaylistUpdateTriggerQuery(){
+    static const QString playlistUpdateTriggerQuery =
+  	"CREATE TRIGGER IF NOT EXISTS " +getPlaylistUpdateTriggerName() + " "
+    "INSTEAD OF "
+    "UPDATE ON " + getPlaylistViewName() + " BEGIN "
+    "UPDATE " + getPlaylistTableName() + " SET " + getVoteCountColName() + 
+    "=new."+getVoteCountColName() + " "
+    "WHERE  " + getPlaylistIdColName() + "=old." + getPlaylistIdColName() +";"
+    "END;";
+    return playlistUpdateTriggerQuery;
+  }
+
+  static const QString& getPlaylistDeleteTriggerName(){
+    static const QString playlistDeleteTriggerName = "deleteSongFromPlaylist";
+    return playlistDeleteTriggerName;
+  }
+
+  static const QString& getPlaylistDeleteTriggerQuery(){
+    static const QString playlistDeleteTriggerQuery =
+		  "CREATE TRIGGER IF NOT EXISTS " + getPlaylistDeleteTriggerName() + " "
+		  "INSTEAD OF DELETE ON " +getPlaylistViewName() +  " "
+		  "BEGIN "
+		  "DELETE FROM " + getPlaylistTableName() + " "
+		  "where " + getPlaylistIdColName() +  " "
+      "= old." + getPlaylistIdColName() +";"
+		  "END;";
+    return playlistDeleteTriggerQuery;
+  }
+
+  static const QString& getPlaylistInsertTriggerName(){
+    static const QString playlistInsertTriggerName = "insertSongInPlaylist";
+    return playlistInsertTriggerName;
+  }
+
+  static const QString& getPlaylistInsertTriggerQuery(){
+    static const QString playlistInsertTriggerQuery = 
+  	"CREATE TRIGGER IF NOT EXISTS " + getPlaylistInsertTriggerName() + " "
+    "INSTEAD OF "
+    "INSERT ON " + getPlaylistViewName() + " BEGIN "
+    "INSERT INTO " + getPlaylistTableName() + " "
+    "(" + getPlaylistLibIdColName() + ") VALUES (new." +
+    getPlaylistLibIdColName() + ");"
+    "END;";
+    return playlistInsertTriggerQuery;
+  }
+
+ //@}
+
+/** @name Private Slots */
+//@{
 private slots:
   void updateServerIds(const std::map<libraryid_t, libraryid_t> 
     hostToServerIdMap);
-
+//@}
 };
 
 

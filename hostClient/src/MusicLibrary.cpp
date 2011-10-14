@@ -51,109 +51,34 @@ void MusicLibrary::setupDB(){
 
   QSqlQuery setupQuery(database);
 
-	/*EXEC_SQL(
-		"Error creating party table",
-		setupQuery.exec("CREATE TABLE IF NOT EXISTS parties "
-		"(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-		"name TEXT NOT NULL);"),
-		setupQuery)*/
-
-	/*setupQuery.exec("select id from parties where name='defaultParty'");
-	setupQuery.next();
-	partyId = setupQuery.value(0).value<partyid_t>();*/
-	
-	//TODO enforce currentParty refering to a party in the party table
-	/*EXEC_SQL(
-		"Error creating users table",
-		setupQuery.exec("CREATE TABLE IF NOT EXISTS users "
-		"(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-		"first_name TEXT NOT NULL, "
-		"last_name TEXT NOT NULL, "
-		"gender TEXT NOT NULL, "
-		"birthday TEXT, "
-		"inParty INTEGER CHECK (inParty = 0 OR inParty = 1), "
-		"hostingParty INTEGER CHECK (hostingParty = 0 OR hostingParty = 1), "
-		"currentParty INTEGER);"),
-		setupQuery)
-
-
-	EXEC_SQL(
-		"Error creating partiers view",
-  	setupQuery.exec("CREATE VIEW IF NOT EXISTS my_partiers "
-    "AS SELECT "
-    "id, "
-		"first_name "
-    "FROM users where currentParty = " +QString::number(partyId) +";"),
-		setupQuery)
-
-	EXEC_SQL(
-		"Error creating delete trigger for kicking partiers.",
-		setupQuery.exec("CREATE TRIGGER IF NOT EXISTS kickPartier "
-		"INSTEAD OF DELETE ON my_partiers "
-		"BEGIN "
-		"UPDATE users SET inParty=0, currentParty=-1 "
-		"where users.id = old.id; "
-		"END;"),
-		setupQuery)*/
-	
-
 	EXEC_SQL(
 		"Error creating library table", 
 		setupQuery.exec(getCreateLibraryQuery()), 
 		setupQuery)	
 
 	EXEC_SQL(
-		"Error creating mainplaylist table.", 
-		setupQuery.exec("CREATE TABLE IF NOT EXISTS mainplaylist "
-   	"(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-   	"libraryId INTEGER REFERENCES library (id) ON DELETE CASCADE, "
-   	"voteCount INTEGER DEFAULT 1, "
-   	"timeAdded TEXT DEFAULT CURRENT_TIMESTAMP);"),
+		"Error creating playlist table.", 
+		setupQuery.exec(getCreatePlaylistQuery()),
 		setupQuery)	
 
 	EXEC_SQL(
-		"Error creating main_playlist_view view.",
-  	setupQuery.exec("CREATE VIEW IF NOT EXISTS main_playlist_view "
-    "AS SELECT "
-    "mainplaylist.id AS plId, "
-    "mainplaylist.libraryId AS libraryId, "
-    "library.server_lib_id AS server_lib_id, "
-    "library.song AS song, "
-    "library.artist AS artist, "
-    "library.album AS album, "
-    "library.filePath AS filePath, "
-    "mainplaylist.voteCount AS voteCount, "
-    "mainplaylist.timeAdded AS timeAdded "
-    "FROM mainplaylist INNER JOIN library ON "
-    "mainplaylist.libraryId = library.id ORDER BY mainplaylist.voteCount DESC, mainplaylist.timeAdded;"),
+		"Error creating playlist view.",
+  	setupQuery.exec(getCreatePlaylistViewQuery()),
 		setupQuery)
 
 	EXEC_SQL(
-		"Error creating update trigger for main_playlist_view.",
-  	setupQuery.exec("CREATE TRIGGER IF NOT EXISTS updateVotes INSTEAD OF "
-    "UPDATE ON main_playlist_view BEGIN "
-    "UPDATE mainplaylist SET voteCount=new.voteCount "
-    "WHERE  mainplaylist.id = old.plId;"
-    "END;"),
+		"Error creating update trigger for playlist view.",
+  	setupQuery.exec(getPlaylistUpdateTriggerQuery()),
 		setupQuery)
 
 	EXEC_SQL(
-		"Error creating delete trigger for main_playlist_view.",
-		setupQuery.exec("CREATE TRIGGER IF NOT EXISTS deleteSongFromPlaylist "
-		"INSTEAD OF DELETE ON main_playlist_view "
-		"BEGIN "
-		"DELETE FROM mainplaylist "
-		"where mainplaylist.id = old.plId; "
-		"END;"),
+		"Error creating delete trigger for playlist view.",
+		setupQuery.exec(getPlaylistDeleteTriggerQuery()),
 		setupQuery)
 
 	EXEC_SQL(
-		"Error creating insert trigger for main_playlist_view.",
-  	setupQuery.exec("CREATE TRIGGER IF NOT EXISTS insertOnPlaylist INSTEAD OF "
-    "INSERT ON main_playlist_view BEGIN "
-    "INSERT INTO mainplaylist "
-    "(libraryId) VALUES (new.libraryId);"
-    "END;"),
+		"Error creating insert trigger for playlist view.",
+  	setupQuery.exec(getPlaylistInsertTriggerQuery()),
 		setupQuery)
 }
 
@@ -184,8 +109,12 @@ void MusicLibrary::addSong(Phonon::MediaSource song){
   QString fileName = song.fileName();
 
   libraryid_t hostId = MusicLibrary::getInvalidHostId();
-  QSqlQuery addQuery("INSERT INTO library "
-    "(song, artist, album, filePath) VALUES ( ?, ?, ?, ?)", database);
+  QSqlQuery addQuery("INSERT INTO "+getLibraryTableName()+ 
+    "("+
+    getLibSongColName() + ","+
+    getLibArtistColName() + ","+
+    getLibAlbumColName() + ","+
+    getLibFileColName() + ") VALUES ( ?, ?, ?, ?)", database);
   
   addQuery.addBindValue(songName);
   addQuery.addBindValue(artistName);
@@ -235,9 +164,9 @@ void MusicLibrary::updateServerIds(
 {
   QSqlQuery updateQuery(database);
 	updateQuery.prepare(
-		"UPDATE library "
-		"SET server_lib_id = ? "
-		"WHERE id = ? ;"
+		"UPDATE " + getLibraryTableName() + " "
+		"SET " + getServerLibIdColName() + " = ? "
+		"WHERE " +getLibIdColName() + " = ? ;"
 		);
   for(
     std::map<libraryid_t, libraryid_t>::const_iterator it = 
@@ -278,8 +207,8 @@ bool MusicLibrary::alterVoteCount(playlistid_t plId, int difference){
 }
 
 bool MusicLibrary::addSongToPlaylist(libraryid_t libraryId){
-	QSqlQuery insertQuery("INSERT INTO " + getMainPlaylistTableName() +" "
-		"(libraryId) VALUES ( ? );", database);
+	QSqlQuery insertQuery("INSERT INTO " + getPlaylistTableName() +" "
+		"("+getPlaylistLibIdColName()+") VALUES ( ? );", database);
 	insertQuery.addBindValue(QVariant::fromValue(libraryId));
 	
 	EXEC_SQL(
@@ -293,8 +222,8 @@ bool MusicLibrary::addSongToPlaylist(libraryid_t libraryId){
 }
 
 bool MusicLibrary::removeSongFromPlaylist(playlistid_t plId){
-	QSqlQuery removeQuery("DELETE FROM " + getMainPlaylistTableName() + " "
-		"WHERE plId = ? ;", database);
+	QSqlQuery removeQuery("DELETE FROM " + getPlaylistTableName() + " "
+		"WHERE " + getPlaylistIdColName() +" = ? ;", database);
 	removeQuery.addBindValue(QVariant::fromValue(plId));
 	
 	EXEC_SQL(
@@ -304,20 +233,6 @@ bool MusicLibrary::removeSongFromPlaylist(playlistid_t plId){
 	//TODO this value should be based on above result
   //TODO inform the server of the song being removed from the playlist
 	return true;
-}
-
-bool MusicLibrary::kickUser(partierid_t toKick){
-	QSqlQuery removeQuery("DELETE FROM " + getPartiersTableName() + " "
-		"WHERE id = ? ;", database);
-	removeQuery.addBindValue(QVariant::fromValue(toKick));
-	EXEC_SQL(
-		"Kicking partier failed", 
-		removeQuery.exec(),
-		removeQuery)
-	//TODO this value should be based on above result
-  //TODO inform the server of the user being kicked
-	return true;
-	
 }
 
 QSqlDatabase MusicLibrary::getDatabaseConnection(){

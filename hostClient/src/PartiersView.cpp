@@ -38,7 +38,7 @@ void PartiersView::contextMenuEvent(QContextMenuEvent* e){
 
   QAction* selected = 
     QMenu::exec(getContextMenuActions(), e->globalPos());
-  if(selected->text() == "Kick Partier"){
+  /*if(selected->text() == "Kick Partier"){
     QModelIndex indexToBoot = indexAt(e->pos());
 		partierid_t toBoot = getPartierId(indexToBoot);
 		if(musicLibrary->kickUser(toBoot)){
@@ -48,7 +48,7 @@ void PartiersView::contextMenuEvent(QContextMenuEvent* e){
 			//TODO
 			//Tell host that there was a problem kicking ths user.
 		}
-  }
+  }*/
 }
 
 partierid_t PartiersView::getPartierId(const QModelIndex& index) const{

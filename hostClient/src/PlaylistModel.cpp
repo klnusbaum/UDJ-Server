@@ -26,7 +26,7 @@ PlaylistModel::PlaylistModel(
 	QSqlRelationalTableModel(parent, library->getDatabaseConnection()),
 	musicLibrary(library)
 {
-  setTable(MusicLibrary::getMainPlaylistTableName());
+  setTable(MusicLibrary::getPlaylistViewName());
   select();
 	//Need to make this more dependent on the info from the Music Library, i.e. Music Library needs to say what
   //the valid columns are
