@@ -17,15 +17,14 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <QApplication>
-#include "MetaWindow.hpp"
-#include "UDJServerConnection.hpp"
+#include "LoginWidget.hpp"
 
 int main(int argc, char* argv[]){
   QApplication app(argc, argv);
   app.setApplicationName("Udj");
   app.setQuitOnLastWindowClosed(true);
-  UDJ::MetaWindow window;
-  window.show();
+  UDJ::LoginWidget loginWidget;
+  loginWidget.show();
   int toReturn = app.exec();
 	return toReturn;
 }

@@ -62,7 +62,10 @@ public:
    *
    * @param serverConnection A connection to a UDJ server.
    */
-  MetaWindow(QWidget *parent=0, Qt::WindowFlags flags=0);
+  MetaWindow(
+    UDJServerConnection *serverConnection,
+    QWidget *parent=0, 
+    Qt::WindowFlags flags=0);
 
   //@}
 
@@ -116,7 +119,6 @@ private slots:
    */
    void finished();
 
-   void doLogin();
   
   //@}
 
@@ -166,7 +168,6 @@ private:
 
   LibraryModel *libraryModel;
 
-  QPushButton *loginButton;
 
   //@}
 

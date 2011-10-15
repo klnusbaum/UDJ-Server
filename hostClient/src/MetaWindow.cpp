@@ -43,10 +43,14 @@
 namespace UDJ{
 
 
-MetaWindow::MetaWindow(QWidget *parent, Qt::WindowFlags flags)
-  :QMainWindow(parent,flags)
+MetaWindow::MetaWindow(
+  UDJServerConnection *serverConnection, 
+  QWidget *parent, 
+  Qt::WindowFlags flags)
+  :QMainWindow(parent,flags),
+  serverConnection(serverConnection)
 {
-  serverConnection = new UDJServerConnection(this);
+  serverConnection->setParent(this);
   audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
   mediaObject = new Phonon::MediaObject(this);
 
@@ -211,14 +215,12 @@ void MetaWindow::setupUi(){
   tabWidget->addTab(settingsWidget, tr("Settings"));
   
 
-  loginButton = new QPushButton(tr("Login"), this);
   
   QVBoxLayout *mainLayout = new QVBoxLayout;
 	mainLayout->addLayout(infoLayout);
   mainLayout->addLayout(seekerLayout);
   mainLayout->addLayout(playBackLayout);
   mainLayout->addWidget(tabWidget);
-  mainLayout->addWidget(loginButton, Qt::AlignRight);
 
   QWidget* widget = new QWidget;
   widget->setLayout(mainLayout);
@@ -242,12 +244,6 @@ void MetaWindow::setupUi(){
     this,
     SLOT(playlistClicked(const QModelIndex&)));
 
-  connect(
-    loginButton,
-    SIGNAL(clicked(bool)),
-    this,
-    SLOT(doLogin())
-  );
 }
 
 void MetaWindow::setupMenus(){
@@ -255,16 +251,6 @@ void MetaWindow::setupMenus(){
   musicMenu->addAction(setMusicDirAction);
   musicMenu->addSeparator();
   musicMenu->addAction(quitAction);
-}
-
-void MetaWindow::doLogin(){
-  bool ok;
-  loginButton->setDisabled(true);
-  QString username = QInputDialog::getText(this, tr("Username"), 
-    tr("Username:"), QLineEdit::Normal, "", &ok);
-  QString password = QInputDialog::getText(this, tr("Password"), 
-    tr("Password:"), QLineEdit::Normal, "", &ok);
-  serverConnection->startConnection(username, password);
 }
 
 

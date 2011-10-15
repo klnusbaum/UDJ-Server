@@ -30,6 +30,7 @@ SET(UDJ_SRCS
   JSONHelper.cpp
   LibraryModel.cpp
   qt-json/json.cpp
+  LoginWidget.cpp
 )
 
 SET(UDJ_HDRS 
@@ -51,6 +52,7 @@ SET(UDJ_MOC_HDRS
 	UDJServerConnection.hpp
 	PartiersView.hpp
   LibraryModel.hpp
+  LoginWidget.hpp
 )
 
 QT4_WRAP_CPP(MOC_SRCS ${UDJ_MOC_HDRS})
@@ -60,3 +62,4 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 ADD_EXECUTABLE(UDJ ${UDJ_SRCS} ${MOC_SRCS} ${UDJ_MOD_HDRS} ${UDJ_HDRS})
 TARGET_LINK_LIBRARIES(UDJ ${QT_LIBRARIES} ${QT_PHONON_LIBRARY})
+
