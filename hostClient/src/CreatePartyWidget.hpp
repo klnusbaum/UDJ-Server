@@ -16,29 +16,33 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef PARTY_WIDGET_HPP
-#define PARTY_WIDGET_HPP
+#ifndef CREATE_PARTY_WIDGET_HPP
+#define CREATE_PARTY_WIDGET_HPP
 #include <QWidget>
 
-class QStackedWidget;
-namespace UDJ{
+class QLineEdit;
+class QPushButton;
+class QLabel;
 
-class CreatePartyWidget;
+namespace UDJ{
 
 class MusicLibrary;
 
-class PartyWidget : public QWidget{
+class CreatePartyWidget : public QWidget{
 Q_OBJECT
 public:
-  PartyWidget(MusicLibrary *musicLibrary, QWidget *parent=0);
+  CreatePartyWidget(MusicLibrary *musicLibrary, QWidget *parent=0);
 private:
-  MusicLibrary *musicLibrary;
   void setupUi();
-  QStackedWidget *mainContent;
-  CreatePartyWidget *creatorWidget;
+  QLineEdit *nameEdit;
+  QLineEdit *passwordEdit;
+  QLineEdit *locationEdit;
+  QLabel *createLabel;
+  QPushButton *createPartyButton;
+  MusicLibrary *musicLibrary;
 };
 
+}//end namspace UDJ
 
-}//end namespace UDJ
 
-#endif //PARTY_WIDGET_HPP
+#endif //CREATE_PARTY_WIDGET_HPP

@@ -57,7 +57,7 @@ def getObject(dbrow):
   isDel = False
   if(dbrow.isDeleted):
     isDel = true
-  return PlaylistEntry(
+  return ActivePlaylistEntry(
     dbrow.plId,
     dbrow.priority,
     dbrow.libraryId,
@@ -173,7 +173,7 @@ class ActivePlaylistJSONEncoder(json.JSONEncoder):
     else:
       return json.JSONEncoder.default(self, obj)
 
-class Playlist:
+class ActivePlaylist:
   def GET(self):
     if( 
       web.ctx.session.loggedIn == 1 and

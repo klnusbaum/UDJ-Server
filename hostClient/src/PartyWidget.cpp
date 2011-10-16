@@ -18,8 +18,9 @@
  */
 #include "PartyWidget.hpp"
 #include "MusicLibrary.hpp"
-#include <QLabel>
+#include "CreatePartyWidget.hpp"
 #include <QVBoxLayout>
+#include <QStackedWidget>
 
 
 namespace UDJ{
@@ -31,8 +32,12 @@ PartyWidget::PartyWidget(MusicLibrary *musicLibrary, QWidget *parent)
 }
 
 void PartyWidget::setupUi(){
+  creatorWidget = new CreatePartyWidget(musicLibrary);
+  creatorWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+  mainContent = new QStackedWidget(this);
+  mainContent->addWidget(creatorWidget);
   QVBoxLayout *mainLayout = new QVBoxLayout;
-  mainLayout->addWidget(new QLabel("Party Widget place holder"));
+  mainLayout->addWidget(mainContent);
   setLayout(mainLayout);
 }
 

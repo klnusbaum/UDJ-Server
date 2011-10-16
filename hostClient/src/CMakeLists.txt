@@ -34,6 +34,7 @@ SET(UDJ_SRCS
   LoginWidget.cpp
   ActivityList.cpp
   PartyWidget.cpp
+  CreatePartyWidget.cpp
 )
 
 SET(UDJ_HDRS 
@@ -59,7 +60,9 @@ SET(UDJ_MOC_HDRS
   ActivityList.hpp
   PlaybackWidget.hpp
   PartyWidget.hpp
+  CreatePartyWidget.hpp
 )
+
 
 QT4_WRAP_CPP(MOC_SRCS ${UDJ_MOC_HDRS})
 
