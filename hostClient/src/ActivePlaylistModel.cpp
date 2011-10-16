@@ -26,7 +26,7 @@ ActivePlaylistModel::ActivePlaylistModel(
 	QSqlRelationalTableModel(parent, library->getDatabaseConnection()),
 	musicLibrary(library)
 {
-  setTable(MusicLibrary::getPlaylistViewName());
+  setTable(MusicLibrary::getActivePlaylistViewName());
   select();
   setEditStrategy(QSqlTableModel::OnFieldChange);
 }

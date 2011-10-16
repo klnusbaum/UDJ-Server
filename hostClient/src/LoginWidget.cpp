@@ -91,6 +91,7 @@ void LoginWidget::startMainGUI(){
   loginProgress->setValue(1);
   MetaWindow *metaWindow = new MetaWindow(serverConnection);
   metaWindow->show();
+  serverConnection->setParent(metaWindow);
   close();
 }
 
