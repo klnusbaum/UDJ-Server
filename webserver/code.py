@@ -27,9 +27,9 @@ from PartyMethods import PartyLocator
 from PartyMethods import PartyLogin
 from PartyMethods import PartyUsers
 from PartyMethods import KickUsers
-from PlaylistMethods import Playlist
-from PlaylistMethods import VoteUpSongs
-from PlaylistMethods import VoteDownSongs
+from ActivePlaylistMethods import ActivePlaylist
+from ActivePlaylistMethods import VoteUpSongs
+from ActivePlaylistMethods import VoteDownSongs
 from LibraryMethods import LibrarySearch
 from LibraryMethods import LibraryRandom
 from LibraryMethods import Library
@@ -77,9 +77,9 @@ urls = (
 "/party/party_login", "PartyLogin",
 "/party/party_users", "PartyUsers",
 "/party/kick_user", "KickUser",
-"/playlist", "Playlist",
-"/playlist/vote_up_songs", "VoteUpSongs",
-"/playlist/vote_down_songs", "VoteDownSongs",
+"/active_playlist", "ActivePlaylist",
+"/active_playlist/vote_up_songs", "VoteUpSongs",
+"/active_playlist/vote_down_songs", "VoteDownSongs",
 "/library/search_library", "LibrarySearch",
 "/library/random", "LibraryRandom",
 "/library", "Library"

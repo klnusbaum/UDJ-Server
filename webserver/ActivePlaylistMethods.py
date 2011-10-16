@@ -75,7 +75,7 @@ def getArrayFromResults(results):
   return toReturn
 
 
-class PlaylistEntry:
+class ActivePlaylistEntry:
   INVALID_SERVER_ID = -1
   INVALID_LIB_ID = -1
   INVALID_CLIENT_ID = -1
@@ -155,20 +155,20 @@ class PlaylistEntry:
   def getClientId(self):
     return self._clientId
     
-class PlaylistJSONEncoder(json.JSONEncoder):
+class ActivePlaylistJSONEncoder(json.JSONEncoder):
   def default(self, obj):
     if isinstance(obj, PlaylistEntry):
       return {
-        PlaylistEntry.SERVER_ID_PARAM : obj.getServerId(),
-        PlaylistEntry.PRIORITY_PARAM : obj.getPriority(),
-        PlaylistEntry.LIBRARY_ID_PARAM : obj.getLibId(),
-        PlaylistEntry.SONG_PARAM : obj.getSong(),
-        PlaylistEntry.ARTIST_PARAM : obj.getArtist(),
-        PlaylistEntry.ALBUM_PARAM : obj.getAlbum(),
-        PlaylistEntry.VOTES_PARAM : obj.getVotes(),
-        PlaylistEntry.TIME_ADDED_PARAM : obj.getTimeAdded(),
-        PlaylistEntry.IS_DELETED_PARAM : obj.getIsDeleted(),
-        PlaylistEntry.CLIENT_ID_PARAM : obj.getClientId()
+        ActivePlaylistEntry.SERVER_ID_PARAM : obj.getServerId(),
+        ActivePlaylistEntry.PRIORITY_PARAM : obj.getPriority(),
+        ActivePlaylistEntry.LIBRARY_ID_PARAM : obj.getLibId(),
+        ActivePlaylistEntry.SONG_PARAM : obj.getSong(),
+        ActivePlaylistEntry.ARTIST_PARAM : obj.getArtist(),
+        ActivePlaylistEntry.ALBUM_PARAM : obj.getAlbum(),
+        ActivePlaylistEntry.VOTES_PARAM : obj.getVotes(),
+        ActivePlaylistEntry.TIME_ADDED_PARAM : obj.getTimeAdded(),
+        ActivePlaylistEntry.IS_DELETED_PARAM : obj.getIsDeleted(),
+        ActivePlaylistEntry.CLIENT_ID_PARAM : obj.getClientId()
       }
     else:
       return json.JSONEncoder.default(self, obj)
@@ -184,9 +184,9 @@ class Playlist:
       results = db.select('main_playlist_view')
       parray = getArrayFromResults(results)
       web.header('Content-Type', 'application/json')
-      return json.dumps(parray, cls=PlaylistJSONEncoder)
+      return json.dumps(parray, cls=ActivePlaylistJSONEncoder)
     else:
-      AuthMethods.doUnAuth('Getting playlist')
+      AuthMethods.doUnAuth('Getting active playlist')
   def POST(self):
     if( 
       web.ctx.session.loggedIn == 1 and
