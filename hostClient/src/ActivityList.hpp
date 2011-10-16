@@ -21,6 +21,8 @@
 #include <QTreeView>
 #include "ConfigDefs.hpp"
 
+class QStandardItemModel;
+
 namespace UDJ{
 
 
@@ -37,9 +39,26 @@ signals:
   void playlistClicked(playlistid_t playlistId);
 
 private:
-  MusicLibrary *library;
-  void setupUi();
+  static const QString& getLibraryTitle(){
+    static const QString libraryTitle(tr("Library"));
+    return libraryTitle;
+  }
 
+  static const QString& getPartyTitle(){
+    static const QString partyTitle(tr("Party"));
+    return partyTitle;
+  }
+
+  static const QString& getPlaylistTitle(){
+    static const QString playlistTitle(tr("Playlist"));
+    return playlistTitle;
+  }
+
+  MusicLibrary *library;
+  QStandardItemModel *model;
+  void setupUi();
+private slots:
+  void itemClicked(const QModelIndex& index);
 };
 
 

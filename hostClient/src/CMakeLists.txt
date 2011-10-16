@@ -33,6 +33,7 @@ SET(UDJ_SRCS
   qt-json/json.cpp
   LoginWidget.cpp
   ActivityList.cpp
+  PartyWidget.cpp
 )
 
 SET(UDJ_HDRS 
@@ -57,6 +58,7 @@ SET(UDJ_MOC_HDRS
   LoginWidget.hpp
   ActivityList.hpp
   PlaybackWidget.hpp
+  PartyWidget.hpp
 )
 
 QT4_WRAP_CPP(MOC_SRCS ${UDJ_MOC_HDRS})

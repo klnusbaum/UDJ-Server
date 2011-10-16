@@ -28,16 +28,33 @@ namespace UDJ{
 ActivityList::ActivityList(MusicLibrary *library, QWidget *parent):
   QTreeView(parent), library(library)
 {
- setupUi(); 
+  setupUi(); 
+  connect(
+    this,
+    SIGNAL(clicked(const QModelIndex&)),
+    this,
+    SLOT(itemClicked(const QModelIndex&)));
 }
 
+void ActivityList::itemClicked(const QModelIndex& index){
+  if(!index.parent().isValid()){
+    QStandardItem *clickedItem = model->itemFromIndex(index);
+    QString title = clickedItem->text();
+    if(title == getLibraryTitle()){
+      emit libraryClicked();
+    }
+    else if(title == getPartyTitle()){
+      emit partyClicked();
+    }
+  }
+}
 
 void ActivityList::setupUi(){
-  QStandardItemModel *itemModel = new QStandardItemModel(this);
-  itemModel->appendRow(new QStandardItem(tr("Library")));
-  itemModel->appendRow(new QStandardItem(tr("Party")));
-  itemModel->appendRow(new QStandardItem(tr("Playlist")));
-  setModel(itemModel);
+  model = new QStandardItemModel(this);
+  model->appendRow(new QStandardItem(getLibraryTitle()));
+  model->appendRow(new QStandardItem(getPartyTitle()));
+  model->appendRow(new QStandardItem(getPlaylistTitle()));
+  setModel(model);
   header()->hide();
 }
 

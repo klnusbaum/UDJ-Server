@@ -38,6 +38,7 @@
 #include "PartiersView.hpp"
 #include "LibraryModel.hpp"
 #include "ActivityList.hpp"
+#include "PartyWidget.hpp"
 
 
 namespace UDJ{
@@ -92,23 +93,13 @@ void MetaWindow::setupUi(){
   libraryModel = new LibraryModel(this, musicLibrary);
   libraryView = new LibraryView(libraryModel, this);
 
-  mainPlaylist = new PlaylistView(musicLibrary, libraryModel, this);
-
- // partiersView = new PartiersView(serverConnection,this);
-
-  settingsWidget = new SettingsWidget(this);
-  
-  QTabWidget* tabWidget = new QTabWidget(this);
-  tabWidget->addTab(mainPlaylist, tr("Playlist"));
-  tabWidget->addTab(libraryView, tr("Music Library"));
-//  tabWidget->addTab(partiersView, tr("Partiers"));
-  tabWidget->addTab(settingsWidget, tr("Settings"));
-  
+  partyWidget = new PartyWidget(musicLibrary, this);
+ 
   activityList = new ActivityList(musicLibrary);
  
-  QHBoxLayout *contentLayout = new QHBoxLayout;
+  contentLayout = new QHBoxLayout;
   contentLayout->addWidget(activityList);
-  contentLayout->addWidget(tabWidget,6);
+  contentLayout->addWidget(libraryView,getMainContentStretch());
   
   QVBoxLayout *mainLayout = new QVBoxLayout;
   mainLayout->addLayout(contentLayout,6);
@@ -121,20 +112,22 @@ void MetaWindow::setupUi(){
   setWindowTitle("UDJ");
 
   connect(
-    libraryView, 
-    SIGNAL(activated(const QModelIndex&)), 
-    mainPlaylist, 
-    SLOT(addSongToPlaylist(const QModelIndex&)));
-  connect(
-    libraryView, 
-    SIGNAL(songAddRequest(const QModelIndex&)), 
-    mainPlaylist, 
-    SLOT(addSongToPlaylist(const QModelIndex&)));
-  connect(
-    mainPlaylist,
-    SIGNAL(activated(const QModelIndex&)),
+    activityList,
+    SIGNAL(libraryClicked()),
     this,
-    SLOT(playlistClicked(const QModelIndex&)));
+    SLOT(displayLibrary()));
+
+  connect(
+    activityList,
+    SIGNAL(partyClicked()),
+    this,
+    SLOT(displayPartyWidget()));
+
+  connect(
+    activityList,
+    SIGNAL(playlistClicked(playlistid_t)),
+    this,
+    SLOT(displayPlaylist(playlistid_t)));
 
   resize(800,600);
 }
@@ -153,6 +146,25 @@ void MetaWindow::setupMenus(){
   musicMenu->addAction(setMusicDirAction);
   musicMenu->addSeparator();
   musicMenu->addAction(quitAction);
+}
+
+
+void MetaWindow::displayLibrary(){
+  switchOutMainContent(libraryView);
+}
+
+void MetaWindow::displayPartyWidget(){
+  switchOutMainContent(partyWidget);
+}
+
+void MetaWindow::displayPlaylist(playlistid_t playlist){
+
+}
+
+void MetaWindow::switchOutMainContent(QWidget *newMainContent){
+  contentLayout->removeWidget(contentLayout->itemAt(1)->widget());
+  contentLayout->addWidget(newMainContent, getMainContentStretch());
+  contentLayout->invalidate();
 }
 
 

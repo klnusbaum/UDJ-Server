@@ -32,6 +32,7 @@ class QTabWidget;
 class QPushButton;
 class QAction;
 class QLabel;
+class QHBoxLayout;
 class QSplitter;
 
 namespace UDJ{
@@ -41,6 +42,7 @@ class PlaylistView;
 class LibraryView;
 class PartiersView;
 class ActivityList;
+class PartyWidget;
 
 /**
  * \brief A class that is the main point of interaction with the user. 
@@ -84,6 +86,12 @@ private slots:
    */
   void playlistClicked(const QModelIndex& index);
 
+  void displayLibrary();
+
+  void displayPartyWidget();
+
+  void displayPlaylist(playlistid_t playlist);
+
   
   //@}
 
@@ -117,11 +125,15 @@ private:
 
   LibraryModel *libraryModel;
 
-  QSplitter *mainWidget;
+  QWidget *mainWidget;
   
   ActivityList *activityList;
 
   PlaybackWidget *playbackWidget;
+
+  PartyWidget *partyWidget;
+
+  QHBoxLayout *contentLayout;
 
 
   //@}
@@ -135,6 +147,13 @@ private:
   void setupMenus();
 
   void createActions();
+
+  void switchOutMainContent(QWidget *newMainContent);
+
+  static const int& getMainContentStretch(){
+    static const int mainContentStretch = 6;
+    return mainContentStretch;
+  }
   
   //@}
 
