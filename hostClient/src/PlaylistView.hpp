@@ -50,27 +50,10 @@ public:
 
   //@}
 
-  /** @name Getters and Setters */
-  //@{
-
-  /** 
-   * \brief Retrieves the file path of the song located at the given song
-   * index.
-   *
-   * @param songIndex The index of the song whose file path id desired.
-   * @return The file path of the song at the given song index.
-   */
   QString getFilePath(const QModelIndex& songIndex) const;
 
-  /**
-   * \brief Retrieves the next song to be played and removes it from the
-   * playlist.
-   *
-   * @return The next song to be played.
-   */
-  Phonon::MediaSource getAndRemoveNextSong();
+  static bool isVotesColumn(int columnIndex);
 
-  //@}
 
 public slots:
 

@@ -17,6 +17,7 @@
 
 SET(UDJ_SRCS 
   main.cpp 
+  PlaybackWidget.cpp
   MetaWindow.cpp 
   MusicFinder.cpp 
   SettingsWidget.cpp 
@@ -31,6 +32,7 @@ SET(UDJ_SRCS
   LibraryModel.cpp
   qt-json/json.cpp
   LoginWidget.cpp
+  ActivityList.cpp
 )
 
 SET(UDJ_HDRS 
@@ -53,6 +55,8 @@ SET(UDJ_MOC_HDRS
 	PartiersView.hpp
   LibraryModel.hpp
   LoginWidget.hpp
+  ActivityList.hpp
+  PlaybackWidget.hpp
 )
 
 QT4_WRAP_CPP(MOC_SRCS ${UDJ_MOC_HDRS})

@@ -22,20 +22,17 @@
 #include <QTableView>
 #include <QSqlDatabase>
 //#include <QFileSystemWatcher>
-#include <phonon/audiooutput.h>
-#include <phonon/seekslider.h>
-#include <phonon/mediaobject.h>
-#include <phonon/volumeslider.h>
-#include <phonon/audiooutput.h>
 #include <QSqlTableModel>
 #include "MusicLibrary.hpp"
 #include "LibraryModel.hpp"
 #include "UDJServerConnection.hpp"
+#include "PlaybackWidget.hpp"
 
 class QTabWidget;
 class QPushButton;
 class QAction;
 class QLabel;
+class QSplitter;
 
 namespace UDJ{
 
@@ -43,6 +40,7 @@ class SettingsWidget;
 class PlaylistView;
 class LibraryView;
 class PartiersView;
+class ActivityList;
 
 /**
  * \brief A class that is the main point of interaction with the user. 
@@ -75,28 +73,6 @@ private slots:
   //@{
 
   /**
-   * \brief Handles whenever the state of the primary
-   * MediaObject is changed. 
-   *
-   * @param newState The new state of the primary MediaObject.
-   * @parma oldState The old state of the primary MediaObject.
-   */
-  void stateChanged(Phonon::State newState, Phonon::State oldState);
-  
-  /** \brief Called when ever the primary MediaObject "ticks" 
-   *
-   * @param time The current time of the primary MediaObject.
-   */
-  void tick(qint64 time);
-
-  /**
-   * \brief Called whenever media source of the primary MediaObject is changed.
-   *
-   * @param source The new source of the primary MediaObject.
-   */
-  void sourceChanged(const Phonon::MediaSource &source);
-
-  /**
    * \brief Set's the users music library to a user selected directory.
    */
   void setMusicDir();
@@ -108,17 +84,6 @@ private slots:
    */
   void playlistClicked(const QModelIndex& index);
 
-  /**
-   * \brief Called whenever the current song being played is about to finish.
-   */
-  void aboutToFinish();
-
-  /**
-   * \brief Called when the primary media object has finished playing it's
-   * current song.
-   */
-   void finished();
-
   
   //@}
 
@@ -126,20 +91,8 @@ private:
   /** @name Private Members */
   //@{
   
-  /** \brief Used to display the name of the currently playing song. */
-	QLabel *songTitle;
-  /** \bried Used to display the time played of the current song. */
-  QLabel *timeLabel;
   /** \brief The main widget holding all the various tabs in the display. */
   QTabWidget *tabs;
-  /** \brief The main seeker to change the songs current playback position. */
-  Phonon::SeekSlider *seekSlider;
-  /** \brief The primary media object used for song playback. */
-  Phonon::MediaObject *mediaObject;
-  /** \brief The primary audioOutput device used for song playback. */
-  Phonon::AudioOutput *audioOutput;
-  /** \brief The volume slider used to control playback volume. */
-  Phonon::VolumeSlider *volumeSlider;
   /** \brief Used to display the contents of the users media library */
   LibraryView* libraryView;
   /** \brief Used to display the current song playlist. */
@@ -154,19 +107,21 @@ private:
   /** \brief A connection with the UDJ server */
 	UDJServerConnection* serverConnection;
 
-  /** \brief Causes playback to start */
-  QAction *playAction;
-  /** \brief Pauses playback */
-  QAction *pauseAction;
-  /** \brief Stops playback */
-  QAction *stopAction;
   /** \brief Triggers selection of music directory. */
   QAction *setMusicDirAction;
+ 
   /** \brief Causes the application to quit. */
   QAction *quitAction;
+ 
 //  QFileSystemWatcher* fileWatcher;
 
   LibraryModel *libraryModel;
+
+  QSplitter *mainWidget;
+  
+  ActivityList *activityList;
+
+  PlaybackWidget *playbackWidget;
 
 
   //@}
@@ -174,12 +129,12 @@ private:
   /** @name Private Functions */
   //@{
 
-  /** \brief Sets up all the actions used by the MetaWindow. */
-  void createActions();
   /** \brief Sets up all the MetaWindow's UI components. */
   void setupUi();
   /** \brief Sets up the MetaWindow's menus. */
   void setupMenus();
+
+  void createActions();
   
   //@}
 

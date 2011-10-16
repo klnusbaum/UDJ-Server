@@ -59,7 +59,9 @@ public:
    * @param progress A progress dialog to be updated as the music library
    * is updated.
    */
-  void setMusicLibrary(QList<Phonon::MediaSource> songs, QProgressDialog& progress);
+  void setMusicLibrary(
+    QList<Phonon::MediaSource> songs, 
+    QProgressDialog& progress);
 
   /**
    * \brief Adds a single song to the music library.
@@ -107,6 +109,11 @@ public:
 	bool removeSongFromPlaylist(playlistid_t plId);
 
   void clearMyLibrary();
+
+  Phonon::MediaSource getNextSongToPlay();
+  
+  Phonon::MediaSource takeNextSongToPlay();
+  
   //@}
 
   /** @name Public Constants */
@@ -176,9 +183,19 @@ public:
     return playlistTimeAddedColName;
   }
 
+  static const QString& getPriorityColName(){
+    static const QString priorityColName = "priority";
+    return priorityColName;
+  }
+
   static const QString& getDefaultVoteCount(){
     static const QString defaultVoteCount = "1";
     return defaultVoteCount;
+  }
+
+  static const QString& getDefaultPriority(){
+    static const QString defaultPriority = "1";
+    return defaultPriority;
   }
 
   static const QString& getLibIdColName(){
@@ -324,6 +341,7 @@ private:
    	  getPlaylistLibIdColName() + " INTEGER REFERENCES library(" + 
         getLibIdColName()+ ") ON DELETE CASCADE, " +
    	  getVoteCountColName() + " INTEGER DEFAULT " +getDefaultVoteCount() + "," +
+      getPriorityColName() + " INTEGER DEFAULT " +getDefaultPriority() + "," +
    	  getTimeAddedColName() + " TEXT DEFAULT CURRENT_TIMESTAMP);";
     return createPlaylistQuery;
   }
@@ -334,7 +352,9 @@ private:
       "AS SELECT * FROM " + getPlaylistTableName() + " INNER JOIN " +
       getLibraryTableName() + " ON " + getPlaylistTableName() + "." +
       getPlaylistLibIdColName() + "=" + getLibraryTableName() + "." +
-      getLibIdColName() +";";
+      getLibIdColName() +" " 
+      "ORDER BY " +getPriorityColName() + " DESC, " +
+      getTimeAddedColName() +" DESC;";
     return createPlaylistViewQuery;
   }
 

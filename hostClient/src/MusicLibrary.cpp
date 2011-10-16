@@ -239,5 +239,38 @@ QSqlDatabase MusicLibrary::getDatabaseConnection(){
   return database;
 }
 
+Phonon::MediaSource MusicLibrary::getNextSongToPlay(){
+  QSqlQuery nextSongQuery("SELECT " + getLibFileColName() + " FROM " +
+    getPlaylistViewName() + " LIMIT 1;");
+  EXEC_SQL(
+    "Getting next song failed",
+    nextSongQuery.exec(),
+    nextSongQuery)
+  //TODO handle is this returns false
+  nextSongQuery.first();
+  return Phonon::MediaSource(nextSongQuery.value(0).toString());
+}
+
+Phonon::MediaSource MusicLibrary::takeNextSongToPlay(){
+  QSqlQuery nextSongQuery(
+    "SELECT " + getLibFileColName() + ", " + getPlaylistIdColName() +" FROM " +
+    getPlaylistViewName() + " LIMIT 1;");
+  EXEC_SQL(
+    "Getting next song in take failed",
+    nextSongQuery.exec(),
+    nextSongQuery)
+  nextSongQuery.first();
+  QString filePath = nextSongQuery.value(0).toString();
+  playlistid_t  toDeleteId  = nextSongQuery.value(1).value<playlistid_t>();
+  
+  QSqlQuery deleteNextSongQuery(
+    "DELETE FROM " + getPlaylistViewName() + " WHERE " + 
+    getPlaylistIdColName() + "=" +QString::number(toDeleteId) + ";");
+  EXEC_SQL(
+    "Error deleting song in takeNextSong",
+    deleteNextSongQuery.exec(),
+    deleteNextSongQuery)
+  return Phonon::MediaSource(filePath);
+}
 
 } //end namespace

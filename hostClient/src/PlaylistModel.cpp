@@ -70,4 +70,10 @@ bool PlaylistModel::removeSongFromPlaylist(const QModelIndex& index){
 	}
 }
 
+QString PlaylistModel::getFilePath(const QModelIndex& songIndex) const{
+  QModelIndex filePathIndex = 
+    songIndex.sibling(songIndex.row(), getFilePathColIndex());
+  return data(filePathIndex).toString();
+}
+
 } //end namespace

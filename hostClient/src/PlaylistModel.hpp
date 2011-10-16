@@ -85,9 +85,15 @@ public:
    */
 	bool removeSongFromPlaylist(const QModelIndex& index);
 
+  QString getFilePath(const QModelIndex& songIndex) const;
+
   //@}
 private:
 
+  static const int& getFilePathColIndex(){
+    static const int filePathColIndex = 9;
+    return filePathColIndex;
+  }
   /** @name Private Members */
   //@{
 

@@ -23,21 +23,21 @@
 #include <QAction>
 #include <QTabWidget>
 #include <QPushButton>
-#include <QToolBar>
-#include <QStyle>
 #include <QFileDialog>
 #include <QProgressDialog>
-#include "MusicFinder.hpp"
 #include <QMenuBar>
 #include <QLabel>
-#include <QTime>
 #include <QInputDialog>
+#include <QSplitter>
+#include <QGridLayout>
 #include "SettingsWidget.hpp"
+#include "MusicFinder.hpp"
 #include "MusicLibrary.hpp"
 #include "PlaylistView.hpp"
 #include "LibraryView.hpp"
 #include "PartiersView.hpp"
 #include "LibraryModel.hpp"
+#include "ActivityList.hpp"
 
 
 namespace UDJ{
@@ -51,53 +51,10 @@ MetaWindow::MetaWindow(
   serverConnection(serverConnection)
 {
   serverConnection->setParent(this);
-  audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
-  mediaObject = new Phonon::MediaObject(this);
-
-  mediaObject->setTickInterval(1000);
-  connect(mediaObject, SIGNAL(tick(qint64)), this, SLOT(tick(qint64)));
-  connect(mediaObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)),
-    this, SLOT(stateChanged(Phonon::State, Phonon::State)));
-  connect(mediaObject, SIGNAL(currentSourceChanged(Phonon::MediaSource)),
-    this, SLOT(sourceChanged(Phonon::MediaSource)));
-  connect(mediaObject, SIGNAL(finished()), this, SLOT(finished()));
-
-  Phonon::createPath(mediaObject, audioOutput);
 
   createActions();
   setupUi();
   setupMenus();
-}
-
-void MetaWindow::tick(qint64 time){
-	QTime tickTime(0, (time/60000)%60, (time/1000)%60);
-	timeLabel->setText(tickTime.toString("mm:ss"));
-}
-
-void MetaWindow::sourceChanged(const Phonon::MediaSource &source){
-	songTitle->setText(libraryModel->getSongNameFromSource(source));
-}
-
-void MetaWindow::stateChanged(Phonon::State newState, Phonon::State oldState){
-  switch(newState){
-  case Phonon::PlayingState:
-    playAction->setEnabled(false);   
-    pauseAction->setEnabled(true);   
-    stopAction->setEnabled(true);   
-    break;
-  case Phonon::StoppedState:
-    playAction->setEnabled(true);   
-    pauseAction->setEnabled(false);   
-    stopAction->setEnabled(false);   
-    break;
-  case Phonon::PausedState:
-    playAction->setEnabled(true);   
-    pauseAction->setEnabled(false);   
-    stopAction->setEnabled(true);   
-    break;
-  default:
-    break;
-  }
 }
 
 void MetaWindow::setMusicDir(){
@@ -106,97 +63,30 @@ void MetaWindow::setMusicDir(){
     tr("Pick you music folder"),
     QDir::homePath(),
     QFileDialog::ShowDirsOnly);
-  QList<Phonon::MediaSource> newMusic = MusicFinder::findMusicInDir(musicDir.absolutePath());   
+  QList<Phonon::MediaSource> newMusic = 
+    MusicFinder::findMusicInDir(musicDir.absolutePath());   
   if(newMusic.isEmpty()){
     return;
   }
   int numNewFiles = newMusic.size();
-  QProgressDialog progress("Loading Library...", "Cancel", 0, numNewFiles, this); 
+  QProgressDialog progress(
+    "Loading Library...", "Cancel", 0, numNewFiles, this); 
   progress.setWindowModality(Qt::WindowModal);
   musicLibrary->setMusicLibrary(newMusic, progress);
   progress.setValue(numNewFiles);
 }
 
 void MetaWindow::playlistClicked(const QModelIndex& index){
-  if(index.column() == 6){
+  if(PlaylistView::isVotesColumn(index.column())){
     return;
   }
-  mediaObject->stop();
-  mediaObject->setCurrentSource(mainPlaylist->getFilePath(index));
-  mediaObject->play();
+  playbackWidget->changeSong(mainPlaylist->getFilePath(index));
 	mainPlaylist->removeSong(index);
 }
 
-void MetaWindow::aboutToFinish(){
-  QModelIndex nextIndex = mainPlaylist->model()->index(0,0);
-  if(nextIndex.isValid()){
-    mediaObject->enqueue(
-      Phonon::MediaSource(mainPlaylist->getFilePath(nextIndex)));
-  }
-}
-
-void MetaWindow::finished(){
-  if(mainPlaylist->model()->rowCount() > 0){
-    Phonon::MediaSource newSong = mainPlaylist->getAndRemoveNextSong(); 
-    mediaObject->setCurrentSource(newSong);
-    mediaObject->play();
-  }
-}
-
-void MetaWindow::createActions(){
-  playAction = new QAction(style()->standardIcon(QStyle::SP_MediaPlay),
-    tr("Play"), this);
-  playAction->setShortcut(tr("Ctrl+P"));
-  pauseAction = new QAction(style()->standardIcon(QStyle::SP_MediaPause),
-    tr("Pause"), this);
-  pauseAction->setShortcut(tr("Ctrl+A"));
-  pauseAction->setEnabled(false);
-  stopAction = new QAction(style()->standardIcon(QStyle::SP_MediaStop),
-    tr("Stop"), this);
-  stopAction->setShortcut(tr("Ctrl+S"));
-  stopAction->setEnabled(false);
-
-  setMusicDirAction = new QAction(tr("S&et Music Directory"), this);
-  setMusicDirAction->setShortcut(tr("Ctrl+E"));
-
-  quitAction = new QAction(tr("&Quit"), this);
-  quitAction->setShortcuts(QKeySequence::Quit);
-  
-  connect(playAction, SIGNAL(triggered()), mediaObject, SLOT(play()));
-  connect(pauseAction, SIGNAL(triggered()), mediaObject, SLOT(pause()));
-  connect(stopAction, SIGNAL(triggered()), mediaObject, SLOT(stop()));
-  connect(quitAction, SIGNAL(triggered()), this, SLOT(close()));
-  connect(setMusicDirAction, SIGNAL(triggered()), this, SLOT(setMusicDir()));
-}
-
 void MetaWindow::setupUi(){
-	songTitle = new QLabel(this);
-	timeLabel = new QLabel("--:--", this);
 
-  QToolBar *bar = new QToolBar;
-  bar->addAction(playAction);  
-  bar->addAction(pauseAction);  
-  bar->addAction(stopAction);  
-
-  seekSlider = new Phonon::SeekSlider(this);
-  seekSlider->setMediaObject(mediaObject);
-  
-  volumeSlider = new Phonon::VolumeSlider(this);
-  volumeSlider->setAudioOutput(audioOutput);
-  volumeSlider->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-
-	QHBoxLayout *infoLayout = new QHBoxLayout;
-	infoLayout->addWidget(songTitle);
-	infoLayout->addStretch();
-	infoLayout->addWidget(timeLabel);
-
-  QHBoxLayout *seekerLayout = new QHBoxLayout;
-  seekerLayout->addWidget(seekSlider);
-  
-  QHBoxLayout *playBackLayout = new QHBoxLayout;
-  playBackLayout->addWidget(bar);
-  playBackLayout->addStretch();
-  playBackLayout->addWidget(volumeSlider);
+  playbackWidget = new PlaybackWidget(musicLibrary, this);
 
   musicLibrary = new MusicLibrary(serverConnection, this);
   libraryModel = new LibraryModel(this, musicLibrary);
@@ -214,13 +104,15 @@ void MetaWindow::setupUi(){
 //  tabWidget->addTab(partiersView, tr("Partiers"));
   tabWidget->addTab(settingsWidget, tr("Settings"));
   
-
+  activityList = new ActivityList(musicLibrary);
+ 
+  QHBoxLayout *contentLayout = new QHBoxLayout;
+  contentLayout->addWidget(activityList);
+  contentLayout->addWidget(tabWidget,6);
   
   QVBoxLayout *mainLayout = new QVBoxLayout;
-	mainLayout->addLayout(infoLayout);
-  mainLayout->addLayout(seekerLayout);
-  mainLayout->addLayout(playBackLayout);
-  mainLayout->addWidget(tabWidget);
+  mainLayout->addLayout(contentLayout,6);
+  mainLayout->addWidget(playbackWidget);
 
   QWidget* widget = new QWidget;
   widget->setLayout(mainLayout);
@@ -244,6 +136,16 @@ void MetaWindow::setupUi(){
     this,
     SLOT(playlistClicked(const QModelIndex&)));
 
+  resize(800,600);
+}
+
+void MetaWindow::createActions(){
+  quitAction = new QAction(tr("&Quit"), this);
+  quitAction->setShortcuts(QKeySequence::Quit);
+  setMusicDirAction = new QAction(tr("S&et Music Directory"), this);
+  setMusicDirAction->setShortcut(tr("Ctrl+E"));
+  connect(setMusicDirAction, SIGNAL(triggered()), this, SLOT(setMusicDir()));
+  connect(quitAction, SIGNAL(triggered()), this, SLOT(close()));
 }
 
 void MetaWindow::setupMenus(){

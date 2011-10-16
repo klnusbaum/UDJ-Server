@@ -40,8 +40,7 @@ PlaylistView::PlaylistView(MusicLibrary* musicLibrary, LibraryModel *libraryMode
 }
   
 QString PlaylistView::getFilePath(const QModelIndex& songIndex) const{
-  QModelIndex filePathIndex = songIndex.sibling(songIndex.row(), 5);
-  return playlistModel->data(filePathIndex).toString();
+  return playlistModel->getFilePath(songIndex);
 }
 
 void PlaylistView::addSongToPlaylist(const QModelIndex& libraryIndex){
@@ -58,12 +57,8 @@ void PlaylistView::removeSong(const QModelIndex& index){
 	}
 }
 
-Phonon::MediaSource PlaylistView::getAndRemoveNextSong(){
-  const QModelIndex root = model()->index(0,0);
-  Phonon::MediaSource toReturn = 
-    model()->data(root.sibling(root.row(), 5)).toString();
-  removeSong(root);
-  return toReturn;
+bool PlaylistView::isVotesColumn(int columnIndex){
+  return columnIndex == 3; 
 }
 
 
