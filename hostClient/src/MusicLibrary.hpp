@@ -98,7 +98,7 @@ public:
    * @param libraryId Id of the song to add to the playlist.
    * @return True if the addition of the song was sucessful, false otherwise.
    */
-	bool addSongToPlaylist(playlist_song_id_t libraryId);
+	bool addSongToActivePlaylist(playlist_song_id_t libraryId);
 
   /**
    * \brief Removes the specified song from the playlist.
@@ -106,7 +106,7 @@ public:
    * @param libraryId Id of the song to remove the playlist.
    * @return True if the removal of the song was sucessful, false otherwise.
    */
-	bool removeSongFromPlaylist(playlist_song_id_t plId);
+	bool removeSongFromActivePlaylist(playlist_song_id_t plId);
 
   void clearMyLibrary();
 

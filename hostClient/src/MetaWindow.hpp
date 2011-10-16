@@ -78,13 +78,6 @@ private slots:
    * \brief Set's the users music library to a user selected directory.
    */
   void setMusicDir();
-  
-  /**
-   * \brief Called whenever the playlist is clicked.
-   *
-   * @param index The index of the item in the playlist that was clicked.
-   */
-  void playlistClicked(const QModelIndex& index);
 
   void displayLibrary();
 
@@ -103,11 +96,6 @@ private:
   QTabWidget *tabs;
   /** \brief Used to display the contents of the users media library */
   LibraryView* libraryView;
-  /** \brief Used to display the current song playlist. */
-  PlaylistView* mainPlaylist;
-  /** \brief Used to display the list of partiers currently logged into 
-  the party.*/
-  PartiersView* partiersView;
   /** \brief The users media library */
   MusicLibrary* musicLibrary;
   /** \brief A widget used for displaying and modifying settings */

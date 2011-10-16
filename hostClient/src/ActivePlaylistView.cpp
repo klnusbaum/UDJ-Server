@@ -16,34 +16,34 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "PlaylistView.hpp"
+#include "ActivePlaylistView.hpp"
 #include "MusicLibrary.hpp"
 #include <QHeaderView>
 #include <QSqlRecord>
 #include <QSqlField>
-#include "PlaylistDelegate.hpp"
-#include "PlaylistModel.hpp"
+#include "ActivePlaylistDelegate.hpp"
+#include "ActivePlaylistModel.hpp"
 #include "LibraryModel.hpp"
 
 namespace UDJ{
 
-PlaylistView::PlaylistView(MusicLibrary* musicLibrary, LibraryModel *libraryModel, QWidget* parent):
+ActivePlaylistView::ActivePlaylistView(MusicLibrary* musicLibrary, LibraryModel *libraryModel, QWidget* parent):
   QTableView(parent),
   musicLibrary(musicLibrary),
   libraryModel(libraryModel)
 {
-  playlistModel = new PlaylistModel(musicLibrary, this);
+  playlistModel = new ActivePlaylistModel(musicLibrary, this);
   horizontalHeader()->setStretchLastSection(true);
-  setItemDelegateForColumn(6, new PlaylistDelegate(this));
+  setItemDelegateForColumn(6, new ActivePlaylistDelegate(this));
   setModel(playlistModel);
   setSelectionBehavior(QAbstractItemView::SelectRows);
 }
   
-QString PlaylistView::getFilePath(const QModelIndex& songIndex) const{
+QString ActivePlaylistView::getFilePath(const QModelIndex& songIndex) const{
   return playlistModel->getFilePath(songIndex);
 }
 
-void PlaylistView::addSongToPlaylist(const QModelIndex& libraryIndex){
+void ActivePlaylistView::addSongToPlaylist(const QModelIndex& libraryIndex){
   library_song_id_t libraryId = libraryModel->data(
     libraryIndex.sibling(libraryIndex.row(),0)).value<library_song_id_t>();
 	if(! playlistModel->addSongToPlaylist(libraryId)){
@@ -51,13 +51,13 @@ void PlaylistView::addSongToPlaylist(const QModelIndex& libraryIndex){
 	}
 }
 
-void PlaylistView::removeSong(const QModelIndex& index){
+void ActivePlaylistView::removeSong(const QModelIndex& index){
 	if(! playlistModel->removeSongFromPlaylist(index)){
 		//TODO display error message
 	}
 }
 
-bool PlaylistView::isVotesColumn(int columnIndex){
+bool ActivePlaylistView::isVotesColumn(int columnIndex){
   return columnIndex == 3; 
 }
 

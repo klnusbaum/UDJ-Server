@@ -22,10 +22,10 @@ SET(UDJ_SRCS
   MusicFinder.cpp 
   SettingsWidget.cpp 
   MusicLibrary.cpp
-  PlaylistView.cpp
+  ActivePlaylistView.cpp
   LibraryView.cpp
-  PlaylistDelegate.cpp
-	PlaylistModel.cpp
+  ActivePlaylistDelegate.cpp
+	ActivePlaylistModel.cpp
 	UDJServerConnection.cpp
 	PartiersView.cpp
   JSONHelper.cpp
@@ -47,10 +47,10 @@ SET(UDJ_MOC_HDRS
   MetaWindow.hpp 
   SettingsWidget.hpp
   MusicLibrary.hpp
-  PlaylistView.hpp
+  ActivePlaylistView.hpp
   LibraryView.hpp
-  PlaylistDelegate.hpp
-	PlaylistModel.hpp
+  ActivePlaylistDelegate.hpp
+	ActivePlaylistModel.hpp
 	DifferenceSpinner.hpp
 	UDJServerConnection.hpp
 	PartiersView.hpp

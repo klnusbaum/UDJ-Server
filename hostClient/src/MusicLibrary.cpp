@@ -206,7 +206,7 @@ bool MusicLibrary::alterVoteCount(playlist_song_id_t plId, int difference){
 	return true;
 }
 
-bool MusicLibrary::addSongToPlaylist(library_song_id_t libraryId){
+bool MusicLibrary::addSongToActivePlaylist(library_song_id_t libraryId){
 	QSqlQuery insertQuery("INSERT INTO " + getPlaylistTableName() +" "
 		"("+getPlaylistLibIdColName()+") VALUES ( ? );", database);
 	insertQuery.addBindValue(QVariant::fromValue(libraryId));
@@ -221,7 +221,7 @@ bool MusicLibrary::addSongToPlaylist(library_song_id_t libraryId){
 	return true;
 }
 
-bool MusicLibrary::removeSongFromPlaylist(playlist_song_id_t plId){
+bool MusicLibrary::removeSongFromActivePlaylist(playlist_song_id_t plId){
 	QSqlQuery removeQuery("DELETE FROM " + getPlaylistTableName() + " "
 		"WHERE " + getPlaylistIdColName() +" = ? ;", database);
 	removeQuery.addBindValue(QVariant::fromValue(plId));

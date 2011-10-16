@@ -79,6 +79,11 @@ private:
    */
   QList<QAction*> getContextMenuActions();
 
+  static const QString& getAddToPlaylistText(){
+    static const QString addToPlaylistText(tr("Add to playlist"));
+    return addToPlaylistText;
+  }
+
   //@}
 };
 

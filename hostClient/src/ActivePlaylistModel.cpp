@@ -16,11 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "PlaylistModel.hpp"
+#include "ActivePlaylistModel.hpp"
 
 namespace UDJ{
 
-PlaylistModel::PlaylistModel(
+ActivePlaylistModel::ActivePlaylistModel(
 	MusicLibrary* library,
 	QObject* parent):
 	QSqlRelationalTableModel(parent, library->getDatabaseConnection()),
@@ -31,7 +31,7 @@ PlaylistModel::PlaylistModel(
   setEditStrategy(QSqlTableModel::OnFieldChange);
 }
 
-Qt::ItemFlags PlaylistModel::flags(const QModelIndex& index) const{
+Qt::ItemFlags ActivePlaylistModel::flags(const QModelIndex& index) const{
 	Qt::ItemFlags fromParent = QSqlRelationalTableModel::flags(index);	
 	if(index.column() != 6){
 		int mask = ~Qt::ItemIsEditable;
@@ -40,7 +40,7 @@ Qt::ItemFlags PlaylistModel::flags(const QModelIndex& index) const{
 	return fromParent;
 }
 
-bool PlaylistModel::updateVoteCount(const QModelIndex& index, int difference){
+bool ActivePlaylistModel::updateVoteCount(const QModelIndex& index, int difference){
 	if(index.column() != 6 || !index.isValid()){
 		return false;
 	}
@@ -54,23 +54,23 @@ bool PlaylistModel::updateVoteCount(const QModelIndex& index, int difference){
 	}
 }
 
-bool PlaylistModel::addSongToPlaylist(library_song_id_t libraryId){
-	bool success = musicLibrary->addSongToPlaylist(libraryId);
+bool ActivePlaylistModel::addSongToPlaylist(library_song_id_t libraryId){
+	bool success = musicLibrary->addSongToActivePlaylist(libraryId);
 	if(success){
 		select();
 	}
 	return success;
 }
 
-bool PlaylistModel::removeSongFromPlaylist(const QModelIndex& index){
+bool ActivePlaylistModel::removeSongFromPlaylist(const QModelIndex& index){
 	playlist_song_id_t plId = data(index.sibling(index.row(), 0)).value<playlist_song_id_t>();
-	bool toReturn = musicLibrary->removeSongFromPlaylist(plId);
+	bool toReturn = musicLibrary->removeSongFromActivePlaylist(plId);
 	if(toReturn){
 		select();
 	}
 }
 
-QString PlaylistModel::getFilePath(const QModelIndex& songIndex) const{
+QString ActivePlaylistModel::getFilePath(const QModelIndex& songIndex) const{
   QModelIndex filePathIndex = 
     songIndex.sibling(songIndex.row(), getFilePathColIndex());
   return data(filePathIndex).toString();

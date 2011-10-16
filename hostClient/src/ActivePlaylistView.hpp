@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef PLAYLIST_VIEW_HPP
-#define PLAYLIST_VIEW_HPP
+#ifndef ACTIVE_PLAYLIST_VIEW_HPP
+#define ACTIVE_PLAYLIST_VIEW_HPP
 #include <QTableView>
 #include <QSqlDatabase>
 #include <phonon/mediasource.h>
@@ -26,13 +26,13 @@
 namespace UDJ{
 
 class MusicLibrary;
-class PlaylistModel;
+class ActivePlaylistModel;
 class LibraryModel;
 
 /**
  * \brief Used to view the items in a PlaylistModel
  */
-class PlaylistView : public QTableView{
+class ActivePlaylistView : public QTableView{
 Q_OBJECT
 public:
 
@@ -40,13 +40,13 @@ public:
   //@{
 
   /**
-   * \brief Constructs a PlaylistView
+   * \brief Constructs a ActivePlaylistView
    *
    * @param musicLibrary The music library containing music that might be
    * added to the playlist.
    * @param parent The parent widget.
    */
-  PlaylistView(MusicLibrary* musicLibrary, LibraryModel *libraryModel, QWidget* parent=0);
+  ActivePlaylistView(MusicLibrary* musicLibrary, LibraryModel *libraryModel, QWidget* parent=0);
 
   //@}
 
@@ -92,7 +92,7 @@ private:
   LibraryModel* libraryModel;
 
   /** \brief The model containing the playlist data */
-  PlaylistModel* playlistModel;
+  ActivePlaylistModel* playlistModel;
 
 
   //@}

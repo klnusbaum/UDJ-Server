@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef PLAYLIST_MODEL_HPP
-#define PLAYLIST_MODEL_HPP
+#ifndef ACTIVE_PLAYLIST_MODEL_HPP
+#define ACTIVE_PLAYLIST_MODEL_HPP
 
 #include <QSqlRelationalTableModel>
 #include "MusicLibrary.hpp"
@@ -27,19 +27,19 @@ namespace UDJ{
 /** 
  * \brief A model representing the data in the Playlist.
  */
-class PlaylistModel : public QSqlRelationalTableModel{
+class ActivePlaylistModel : public QSqlRelationalTableModel{
 Q_OBJECT
 public:
   /** @name Constructor(s) */
   //@{
 
   /**
-   * \brief Constructs a playlist model.
+   * \brief Constructs an Active playlist model.
    *
    * @param serverConnection The connection the the UDJ server.
    * @param parent The parent QObject.
    */
-	PlaylistModel(MusicLibrary *library, QObject* parent=0);
+	ActivePlaylistModel(MusicLibrary *library, QObject* parent=0);
 
   //@}
 

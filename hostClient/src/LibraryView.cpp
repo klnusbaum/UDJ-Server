@@ -43,7 +43,7 @@ void LibraryView::contextMenuEvent(QContextMenuEvent* e){
 
   QAction* selected = 
     QMenu::exec(getContextMenuActions(), e->globalPos());
-  if(selected->text() == "Add to playlist"){
+  if(selected->text() == getAddToPlaylistText()){
     QModelIndex indexToAdd = indexAt(e->pos());
     emit songAddRequest(indexToAdd);
   }
@@ -52,7 +52,7 @@ void LibraryView::contextMenuEvent(QContextMenuEvent* e){
 
 QList<QAction*> LibraryView::getContextMenuActions(){
   QList<QAction*> contextActions;
-  contextActions.append(new QAction("Add to playlist", this));
+  contextActions.append(new QAction(getAddToPlaylistText(), this));
   return contextActions;
 }
 

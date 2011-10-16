@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef PLAYLIST_DELEGATE_HPP
-#define PLAYLIST_DELEGATE_HPP
+#ifndef ACTIVE_PLAYLIST_DELEGATE_HPP
+#define ACTIVE_PLAYLIST_DELEGATE_HPP
 
 #include <QSqlRelationalDelegate>
 #include "ConfigDefs.hpp"
@@ -25,21 +25,21 @@
 namespace UDJ{
 
 /**
- * \brief A delegate used by the the PLaylistView to display items from a
- * PlaylistModel.
+ * \brief A delegate used by the the ActivePLaylistView to display items from a
+ * ActivePlaylistModel.
  */
-class PlaylistDelegate : public QSqlRelationalDelegate{
+class ActivePlaylistDelegate : public QSqlRelationalDelegate{
 Q_OBJECT
 public:
   /** @name Constructor(s) */
   //@{
 
   /**
-   * \brief Constructs a PlaylistDelegate.
+   * \brief Constructs a ActivePlaylistDelegate.
    * 
    * @param parent The parent object.
    */
-  PlaylistDelegate(QObject* parent=0);
+  ActivePlaylistDelegate(QObject* parent=0);
 
   //@}
 
@@ -68,4 +68,4 @@ public:
 
 
 } //end namespace
-#endif //PLAYLIST_DELEGATE_HPP
+#endif //ACTIVE_PLAYLIST_DELEGATE_HPP

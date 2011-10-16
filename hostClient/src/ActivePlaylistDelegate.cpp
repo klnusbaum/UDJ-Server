@@ -16,19 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "PlaylistDelegate.hpp"
+#include "ActivePlaylistDelegate.hpp"
 #include "DifferenceSpinner.hpp"
-#include "PlaylistModel.hpp"
+#include "ActivePlaylistModel.hpp"
 
 
 namespace UDJ{
 
 
-PlaylistDelegate::PlaylistDelegate(QObject* parent):
+ActivePlaylistDelegate::ActivePlaylistDelegate(QObject* parent):
   QSqlRelationalDelegate(parent)
 {}
 
-QWidget* PlaylistDelegate::createEditor(
+QWidget* ActivePlaylistDelegate::createEditor(
   QWidget* parent, 
   const QStyleOptionViewItem& /*option*/, 
   const QModelIndex& index) const
@@ -40,7 +40,7 @@ QWidget* PlaylistDelegate::createEditor(
   return editor; 
 }
 
-void PlaylistDelegate::setEditorData(
+void ActivePlaylistDelegate::setEditorData(
   QWidget* editor,
   const QModelIndex& index) const
 {
@@ -55,7 +55,7 @@ void setModelData(
   const QModelIndex& index)
 {
   int diff = ((DifferenceSpinner*)editor)->getCurrentValueSavedValueDiff();
-  ((PlaylistModel*)model)->updateVoteCount(index, diff);
+  ((ActivePlaylistModel*)model)->updateVoteCount(index, diff);
 }
 
 

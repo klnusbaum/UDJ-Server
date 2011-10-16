@@ -17,6 +17,13 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "MetaWindow.hpp"
+#include "SettingsWidget.hpp"
+#include "MusicFinder.hpp"
+#include "MusicLibrary.hpp"
+#include "LibraryModel.hpp"
+#include "LibraryView.hpp"
+#include "ActivityList.hpp"
+#include "PartyWidget.hpp"
 #include <QSqlQuery>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -27,19 +34,7 @@
 #include <QProgressDialog>
 #include <QMenuBar>
 #include <QLabel>
-#include <QInputDialog>
-#include <QSplitter>
-#include <QGridLayout>
 #include <QStackedWidget>
-#include "SettingsWidget.hpp"
-#include "MusicFinder.hpp"
-#include "MusicLibrary.hpp"
-#include "PlaylistView.hpp"
-#include "LibraryView.hpp"
-#include "PartiersView.hpp"
-#include "LibraryModel.hpp"
-#include "ActivityList.hpp"
-#include "PartyWidget.hpp"
 
 
 namespace UDJ{
@@ -76,14 +71,6 @@ void MetaWindow::setMusicDir(){
   progress.setWindowModality(Qt::WindowModal);
   musicLibrary->setMusicLibrary(newMusic, progress);
   progress.setValue(numNewFiles);
-}
-
-void MetaWindow::playlistClicked(const QModelIndex& index){
-  if(PlaylistView::isVotesColumn(index.column())){
-    return;
-  }
-  playbackWidget->changeSong(mainPlaylist->getFilePath(index));
-	mainPlaylist->removeSong(index);
 }
 
 void MetaWindow::setupUi(){
