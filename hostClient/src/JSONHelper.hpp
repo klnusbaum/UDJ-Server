@@ -33,18 +33,18 @@ public:
 	  const QString& songName,
 	  const QString& artistName,
 	  const QString& albumName,
-	  const libraryid_t& hostId,
+	  const library_song_id_t& hostId,
     const bool isDeleted=false);
 
   static const QByteArray getLibraryEntryJSON(
 	  const QString& songName,
 	  const QString& artistName,
 	  const QString& albumName,
-	  const libraryid_t& hostId,
+	  const library_song_id_t& hostId,
     const bool isDeleted,
     bool &success);
 
-  static const std::map<libraryid_t, libraryid_t>
+  static const std::map<library_song_id_t, library_song_id_t>
     getHostToServerLibIdMap(QNetworkReply *reply);
 
 };

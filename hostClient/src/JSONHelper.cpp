@@ -27,7 +27,7 @@ const QByteArray JSONHelper::getLibraryEntryJSON(
   const QString& songName,
   const QString& artistName,
   const QString& albumName,
-  const libraryid_t& hostId,
+  const library_song_id_t& hostId,
   const bool isDeleted)
 {
   bool success=true;
@@ -44,7 +44,7 @@ const QByteArray JSONHelper::getLibraryEntryJSON(
   const QString& songName,
   const QString& artistName,
   const QString& albumName,
-  const libraryid_t& hostId,
+  const library_song_id_t& hostId,
   bool isDeleted,
   bool &success)
 {
@@ -52,9 +52,9 @@ const QByteArray JSONHelper::getLibraryEntryJSON(
   songData["song"] = songName;
   songData["artist"] = artistName;
   songData["album"] = albumName;
-  songData["host_lib_id"] = QVariant::fromValue<libraryid_t>(hostId);
-  songData["server_lib_id"] = 
-    QVariant::fromValue<libraryid_t>(MusicLibrary::getInvalidServerId());
+  songData["host_lib_song_id"] = QVariant::fromValue<library_song_id_t>(hostId);
+  songData["server_lib_song__id"] = 
+    QVariant::fromValue<library_song_id_t>(MusicLibrary::getInvalidServerId());
   songData["is_deleted"] = isDeleted ? "true" : "false";
   
   QVariantList toAddData;
@@ -65,18 +65,18 @@ const QByteArray JSONHelper::getLibraryEntryJSON(
 }
 
 
-const std::map<libraryid_t, libraryid_t>
+const std::map<library_song_id_t, library_song_id_t>
   JSONHelper::getHostToServerLibIdMap(QNetworkReply *reply)
 {
-  std::map<libraryid_t, libraryid_t> toReturn;
+  std::map<library_song_id_t, library_song_id_t> toReturn;
   QByteArray responseData = reply->readAll(); 
   //std::cout << "Response Data " << QString(responseData).toStdString() <<std::endl;
   QVariantList songsAdded = QtJson::Json::parse(responseData).toList();
   QVariantMap currentSong;
   for(int i=0;i<songsAdded.size(); ++i){
     currentSong = songsAdded.at(i).toMap();
-    toReturn[currentSong["host_lib_id"].value<libraryid_t>()] = 
-      currentSong["server_lib_id"].value<libraryid_t>();
+    toReturn[currentSong["host_lib_song_id"].value<library_song_id_t>()] = 
+      currentSong["server_lib_song_id"].value<library_song_id_t>();
   }
   return toReturn;
 }

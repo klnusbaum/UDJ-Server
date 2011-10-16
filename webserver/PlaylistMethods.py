@@ -32,8 +32,8 @@ def addClientIds(parray, serverClientMap):
 def processNewlyAdded(added, db):
   serverClientMap = dict()
   for newSong in added:
-    newServerId = db.insert('mainplaylist', libraryId=newSong['server_lib_id'])
-    serverClientMap[newServerId] = newSong['client_playlist_id']
+    newServerId = db.insert('mainplaylist', libraryId=newSong['server_lib_host_id'])
+    serverClientMap[newServerId] = newSong['client_playlist_song_id']
   return serverClientMap
   
 
@@ -84,16 +84,16 @@ class PlaylistEntry:
   IS_DELETED_DEFAULT=False
   INVALID_PRIORITY = -1
 
-  SERVER_ID_PARAM = 'server_playlist_id'
+  SERVER_ID_PARAM = 'server_playlist_song_id'
   PRIORITY_PARAM = 'priority'
-  LIBRARY_ID_PARAM = 'server_lib_id'
+  LIBRARY_ID_PARAM = 'server_lib_song_id'
   SONG_PARAM = 'song'
   ARTIST_PARAM = 'artist'
   ALBUM_PARAM = 'album'
   VOTES_PARAM = 'votes'
   TIME_ADDED_PARAM = 'time_added'
   IS_DELETED_PARAM = 'is_deleted'
-  CLIENT_ID_PARAM = 'client_playlist_id'
+  CLIENT_ID_PARAM = 'client_playlist_song_id'
 
   def __init__(
     self, 

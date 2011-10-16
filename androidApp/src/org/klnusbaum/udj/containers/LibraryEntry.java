@@ -38,7 +38,7 @@ public class LibraryEntry{
   private String album;
   private boolean isDeleted;
   public static final String IS_DELETED_FLAG = "is_deleted";
-  public static final String SERVER_LIB_ID_PARAM = "server_lib_id";
+  public static final String SERVER_LIB_ID_PARAM = "server_lib_song_id";
   public static final String SONG_PARAM = "song";
   public static final String ARTIST_PARAM = "artist";
   public static final String ALBUM_PARAM = "album";

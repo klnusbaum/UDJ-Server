@@ -23,8 +23,8 @@
 
 namespace UDJ{
 
-
-typedef long libraryid_t;
+typedef long playlist_song_id_t;
+typedef long library_song_id_t;
 typedef long playlistid_t;
 typedef long partyid_t;
 typedef long partierid_t;
@@ -51,7 +51,7 @@ typedef long partierid_t;
 		std::cerr << std::endl; \
   } \
   else{ \
-    RESULT_VAR = QSQLOBJECT.lastInsertId().value<libraryid_t>(); \
+    RESULT_VAR = QSQLOBJECT.lastInsertId().value<library_song_id_t>(); \
   }
 
 #else
@@ -61,7 +61,7 @@ typedef long partierid_t;
 
 #define EXEC_INSERT( MESSAGE, QSQLOBJECT, RESULT_VAR) \
   QSQLOBJECT.exec(); \
-  RESULT_VAR = QSQLOBJECT.lastInsertId().value<libraryid_t>();
+  RESULT_VAR = QSQLOBJECT.lastInsertId().value<library_song_id_t>();
 
 #endif
 

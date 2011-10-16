@@ -90,7 +90,7 @@ public:
    * @param difference The amount by which the vote count should be altered.
    * @return True if the altering was sucessful, false otherwise.
    */
-	bool alterVoteCount(playlistid_t plId, int difference);
+	bool alterVoteCount(playlist_song_id_t plId, int difference);
 
   /**
    * \brief Adds the specified song to the playlist.
@@ -98,7 +98,7 @@ public:
    * @param libraryId Id of the song to add to the playlist.
    * @return True if the addition of the song was sucessful, false otherwise.
    */
-	bool addSongToPlaylist(playlistid_t libraryId);
+	bool addSongToPlaylist(playlist_song_id_t libraryId);
 
   /**
    * \brief Removes the specified song from the playlist.
@@ -106,7 +106,7 @@ public:
    * @param libraryId Id of the song to remove the playlist.
    * @return True if the removal of the song was sucessful, false otherwise.
    */
-	bool removeSongFromPlaylist(playlistid_t plId);
+	bool removeSongFromPlaylist(playlist_song_id_t plId);
 
   void clearMyLibrary();
 
@@ -119,13 +119,13 @@ public:
   /** @name Public Constants */
   //@{
 
-  static const libraryid_t& getInvalidHostId(){
-    static const libraryid_t invalidHostId = -1; 
+  static const library_song_id_t& getInvalidHostId(){
+    static const library_song_id_t invalidHostId = -1; 
     return invalidHostId;
   }
 
-  static const libraryid_t& getInvalidServerId(){
-    static const libraryid_t invalidServerId = -1; 
+  static const library_song_id_t& getInvalidServerId(){
+    static const library_song_id_t invalidServerId = -1; 
     return invalidServerId;
   }
 
@@ -414,7 +414,7 @@ private:
 /** @name Private Slots */
 //@{
 private slots:
-  void updateServerIds(const std::map<libraryid_t, libraryid_t> 
+  void updateServerIds(const std::map<library_song_id_t, library_song_id_t> 
     hostToServerIdMap);
 //@}
 };

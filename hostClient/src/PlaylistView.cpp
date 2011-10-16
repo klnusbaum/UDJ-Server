@@ -44,8 +44,8 @@ QString PlaylistView::getFilePath(const QModelIndex& songIndex) const{
 }
 
 void PlaylistView::addSongToPlaylist(const QModelIndex& libraryIndex){
-  libraryid_t libraryId = libraryModel->data(
-    libraryIndex.sibling(libraryIndex.row(),0)).value<libraryid_t>();
+  library_song_id_t libraryId = libraryModel->data(
+    libraryIndex.sibling(libraryIndex.row(),0)).value<library_song_id_t>();
 	if(! playlistModel->addSongToPlaylist(libraryId)){
 		//TODO display error message
 	}

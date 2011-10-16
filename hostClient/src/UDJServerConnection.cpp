@@ -48,7 +48,7 @@ void UDJServerConnection::addLibSongOnServer(
 	const QString& songName,
 	const QString& artistName,
 	const QString& albumName,
-	const libraryid_t hostId)
+	const library_song_id_t hostId)
 {
   if(!isLoggedIn){
     return;
@@ -112,7 +112,7 @@ bool UDJServerConnection::haveValidLoginCookie(){
 }
 
 void UDJServerConnection::handleAddSongReply(QNetworkReply *reply){
-  std::map<libraryid_t, libraryid_t> hostToServerIdMap =
+  std::map<library_song_id_t, library_song_id_t> hostToServerIdMap =
     JSONHelper::getHostToServerLibIdMap(reply);
   emit serverIdsUpdate(hostToServerIdMap); 
 }

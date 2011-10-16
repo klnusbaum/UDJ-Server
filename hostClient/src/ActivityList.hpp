@@ -19,6 +19,7 @@
 #ifndef ACTIVITY_LIST_HPP
 #define ACTIVITY_LIST_HPP
 #include <QTreeView>
+#include "ConfigDefs.hpp"
 
 namespace UDJ{
 
@@ -30,9 +31,15 @@ Q_OBJECT
 public:
   ActivityList(MusicLibrary *library, QWidget *parent=0);
 
+signals:
+  void libraryClicked();
+  void partyClicked();
+  void playlistClicked(playlistid_t playlistId);
+
 private:
   MusicLibrary *library;
   void setupUi();
+
 };
 
 

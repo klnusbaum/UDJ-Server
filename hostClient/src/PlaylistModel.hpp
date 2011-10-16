@@ -75,7 +75,7 @@ public:
    * @return True if the song was sucessfully added to the playlist,
    * false otherwise.
    */
-	bool addSongToPlaylist(libraryid_t libraryId);
+	bool addSongToPlaylist(library_song_id_t libraryId);
   
   /**
    * \brief Removes a song from the playlist.

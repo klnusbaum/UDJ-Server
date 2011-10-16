@@ -33,9 +33,9 @@ MusicLibrary::MusicLibrary(UDJServerConnection *serverConnection, QObject *paren
   setupDB();
   connect(
     serverConnection,
-    SIGNAL(serverIdsUpdate(const std::map<libraryid_t, libraryid_t>)),
+    SIGNAL(serverIdsUpdate(const std::map<library_song_id_t, library_song_id_t>)),
     this,
-    SLOT(updateServerIds(const std::map<libraryid_t, libraryid_t>)));
+    SLOT(updateServerIds(const std::map<library_song_id_t, library_song_id_t>)));
 }
 
 void MusicLibrary::setupDB(){
@@ -108,7 +108,7 @@ void MusicLibrary::addSong(Phonon::MediaSource song){
   QString albumName = getAlbumName(song);
   QString fileName = song.fileName();
 
-  libraryid_t hostId = MusicLibrary::getInvalidHostId();
+  library_song_id_t hostId = MusicLibrary::getInvalidHostId();
   QSqlQuery addQuery("INSERT INTO "+getLibraryTableName()+ 
     "("+
     getLibSongColName() + ","+
@@ -160,7 +160,7 @@ QString MusicLibrary::getAlbumName(Phonon::MediaSource song) const{
 }
 
 void MusicLibrary::updateServerIds(
-  const std::map<libraryid_t, libraryid_t> hostToServerIdMap)
+  const std::map<library_song_id_t, library_song_id_t> hostToServerIdMap)
 {
   QSqlQuery updateQuery(database);
 	updateQuery.prepare(
@@ -169,7 +169,7 @@ void MusicLibrary::updateServerIds(
 		"WHERE " +getLibIdColName() + " = ? ;"
 		);
   for(
-    std::map<libraryid_t, libraryid_t>::const_iterator it = 
+    std::map<library_song_id_t, library_song_id_t>::const_iterator it = 
       hostToServerIdMap.begin();
     it != hostToServerIdMap.end();
     ++it
@@ -177,8 +177,8 @@ void MusicLibrary::updateServerIds(
   { 
     //std::cout << "about to update with " << it->second << " and " << it->first
       //<< std::endl;
-	  updateQuery.bindValue(0, QVariant::fromValue<libraryid_t>(it->second));
-	  updateQuery.bindValue(1, QVariant::fromValue<libraryid_t>(it->first));
+	  updateQuery.bindValue(0, QVariant::fromValue<library_song_id_t>(it->second));
+	  updateQuery.bindValue(1, QVariant::fromValue<library_song_id_t>(it->first));
     //std::cout << "0: " << updateQuery.boundValue(0).toString().toStdString() <<
       //" 1: " << updateQuery.boundValue(1).toString().toStdString() << std::endl;
 	  EXEC_SQL(
@@ -189,7 +189,7 @@ void MusicLibrary::updateServerIds(
   }
 }
 
-bool MusicLibrary::alterVoteCount(playlistid_t plId, int difference){
+bool MusicLibrary::alterVoteCount(playlist_song_id_t plId, int difference){
 	QSqlQuery updateQuery(
 		"UPDATE main_playlist_view "
 		"SET voteCount = (voteCount + ?) "
@@ -206,7 +206,7 @@ bool MusicLibrary::alterVoteCount(playlistid_t plId, int difference){
 	return true;
 }
 
-bool MusicLibrary::addSongToPlaylist(libraryid_t libraryId){
+bool MusicLibrary::addSongToPlaylist(library_song_id_t libraryId){
 	QSqlQuery insertQuery("INSERT INTO " + getPlaylistTableName() +" "
 		"("+getPlaylistLibIdColName()+") VALUES ( ? );", database);
 	insertQuery.addBindValue(QVariant::fromValue(libraryId));
@@ -221,7 +221,7 @@ bool MusicLibrary::addSongToPlaylist(libraryid_t libraryId){
 	return true;
 }
 
-bool MusicLibrary::removeSongFromPlaylist(playlistid_t plId){
+bool MusicLibrary::removeSongFromPlaylist(playlist_song_id_t plId){
 	QSqlQuery removeQuery("DELETE FROM " + getPlaylistTableName() + " "
 		"WHERE " + getPlaylistIdColName() +" = ? ;", database);
 	removeQuery.addBindValue(QVariant::fromValue(plId));
@@ -261,7 +261,7 @@ Phonon::MediaSource MusicLibrary::takeNextSongToPlay(){
     nextSongQuery)
   nextSongQuery.first();
   QString filePath = nextSongQuery.value(0).toString();
-  playlistid_t  toDeleteId  = nextSongQuery.value(1).value<playlistid_t>();
+  playlist_song_id_t  toDeleteId  = nextSongQuery.value(1).value<playlist_song_id_t>();
   
   QSqlQuery deleteNextSongQuery(
     "DELETE FROM " + getPlaylistViewName() + " WHERE " + 

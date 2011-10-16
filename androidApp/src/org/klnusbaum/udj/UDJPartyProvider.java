@@ -73,13 +73,13 @@ public class UDJPartyProvider extends ContentProvider{
   public static final String VOTES_COLUMN = "votes";
   public static final String PRIORITY_COLUMN = "priority";
   public static final String SYNC_STATE_COLUMN = "sync_state";
-  public static final String SERVER_PLAYLIST_ID_COLUMN ="server_playlist_id";
+  public static final String SERVER_PLAYLIST_ID_COLUMN ="server_playlist_song_id";
   public static final String TIME_ADDED_COLUMN ="time_added";
   public static final String VOTE_STATUS_COLUMN ="vote_status";
   public static final String SONG_COLUMN = "song";
   public static final String ARTIST_COLUMN = "artist";
   public static final String ALBUM_COLUMN = "album";
-  public static final String SERVER_LIBRARY_ID_COLUMN = "server_lib_id";
+  public static final String SERVER_LIBRARY_ID_COLUMN = "server_lib_song_id";
 
   /** Constants used for representing invalid ids */
   public static final String INVALID_SERVER_PLAYLIST_ID = "-1";

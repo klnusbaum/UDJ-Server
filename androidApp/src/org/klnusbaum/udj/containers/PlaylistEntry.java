@@ -31,7 +31,7 @@ import org.klnusbaum.udj.UDJPartyProvider;
 
 public class PlaylistEntry{
 
-  public static final String PLAYLIST_CLIENT_ID_PARAM = "client_playlist_id";
+  public static final String PLAYLIST_CLIENT_ID_PARAM = "client_playlist_song_id";
   private long serverId;
   private long hostId;
   private long libId;

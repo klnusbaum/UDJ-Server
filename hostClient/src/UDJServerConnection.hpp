@@ -89,7 +89,7 @@ public:
 		const QString& songName,
 		const QString& artistName,
 		const QString& ablumName,
-    const libraryid_t hostid);
+    const library_song_id_t hostid);
 
 
   //@}
@@ -118,7 +118,7 @@ signals:
    *
    * @param libraryId Library id of the song added to the playlist.
    */
-	void songAddedToMainPlaylist(libraryid_t libraryId);
+	void songAddedToMainPlaylist(library_song_id_t libraryId);
   
   /**
    * \brief Emitted when the vote count for song in the playlist is changed.
@@ -126,13 +126,13 @@ signals:
    * @param  playlistId Id of the song in the playlist whose vote count was
    * changed.
    */
-	void voteCountChanged(playlistid_t playlistId);
+	void voteCountChanged(playlist_song_id_t playlistId);
 
   void connectionEstablished();
   
   void unableToConnect(const QString& errMessage);
 
-  void serverIdsUpdate(const std::map<libraryid_t, libraryid_t> 
+  void serverIdsUpdate(const std::map<library_song_id_t, library_song_id_t> 
     hostToServerIdMap);
 
   //@}

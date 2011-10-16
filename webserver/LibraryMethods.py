@@ -42,7 +42,7 @@ def addSongToLibrary(to_add, db):
     song=to_add['song'],
     artist=to_add['artist'],
     album=to_add['album'],
-    hostId=to_add['host_lib_id'])
+    hostId=to_add['host_lib_song_id'])
   toReturn = db.select(
     'library', 
     where=web.db.sqlwhere({'id' : idreturn})
@@ -67,8 +67,8 @@ class LibraryEntry:
   DEFAULT_ALBUM_NAME= ''
   DEFAULT_DELETED_STATUS = False
 
-  SERVER_ID_PARAM = "server_lib_id"
-  HOST_ID_PARAM = "host_lib_id"
+  SERVER_ID_PARAM = "server_lib_song_id"
+  HOST_ID_PARAM = "host_lib_song_id"
   SONG_PARAM = "song"
   ARTIST_PARAM = "artist"
   ALBUM_PARAM = "album"

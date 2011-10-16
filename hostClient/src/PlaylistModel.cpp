@@ -45,7 +45,7 @@ bool PlaylistModel::updateVoteCount(const QModelIndex& index, int difference){
 		return false;
 	}
 	const QModelIndex plIdIndex = index.sibling(index.row(), 0);
-	playlistid_t plId = data(plIdIndex).value<playlistid_t>();
+	playlist_song_id_t plId = data(plIdIndex).value<playlist_song_id_t>();
 	if(musicLibrary->alterVoteCount(plId, difference)){
 		select();
 	}
@@ -54,7 +54,7 @@ bool PlaylistModel::updateVoteCount(const QModelIndex& index, int difference){
 	}
 }
 
-bool PlaylistModel::addSongToPlaylist(libraryid_t libraryId){
+bool PlaylistModel::addSongToPlaylist(library_song_id_t libraryId){
 	bool success = musicLibrary->addSongToPlaylist(libraryId);
 	if(success){
 		select();
@@ -63,7 +63,7 @@ bool PlaylistModel::addSongToPlaylist(libraryid_t libraryId){
 }
 
 bool PlaylistModel::removeSongFromPlaylist(const QModelIndex& index){
-	playlistid_t plId = data(index.sibling(index.row(), 0)).value<playlistid_t>();
+	playlist_song_id_t plId = data(index.sibling(index.row(), 0)).value<playlist_song_id_t>();
 	bool toReturn = musicLibrary->removeSongFromPlaylist(plId);
 	if(toReturn){
 		select();
