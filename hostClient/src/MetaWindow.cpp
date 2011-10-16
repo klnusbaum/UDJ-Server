@@ -30,6 +30,7 @@
 #include <QInputDialog>
 #include <QSplitter>
 #include <QGridLayout>
+#include <QStackedWidget>
 #include "SettingsWidget.hpp"
 #include "MusicFinder.hpp"
 #include "MusicLibrary.hpp"
@@ -96,10 +97,15 @@ void MetaWindow::setupUi(){
   partyWidget = new PartyWidget(musicLibrary, this);
  
   activityList = new ActivityList(musicLibrary);
+
+  contentStack = new QStackedWidget(this);
+  contentStack->addWidget(libraryView);
+  contentStack->addWidget(partyWidget);
+  contentStack->setCurrentWidget(libraryView);
  
-  contentLayout = new QHBoxLayout;
+  QHBoxLayout *contentLayout = new QHBoxLayout;
   contentLayout->addWidget(activityList);
-  contentLayout->addWidget(libraryView,getMainContentStretch());
+  contentLayout->addWidget(contentStack,6);
   
   QVBoxLayout *mainLayout = new QVBoxLayout;
   mainLayout->addLayout(contentLayout,6);
@@ -150,22 +156,17 @@ void MetaWindow::setupMenus(){
 
 
 void MetaWindow::displayLibrary(){
-  switchOutMainContent(libraryView);
+  contentStack->setCurrentWidget(libraryView);
 }
 
 void MetaWindow::displayPartyWidget(){
-  switchOutMainContent(partyWidget);
+  contentStack->setCurrentWidget(partyWidget);
 }
 
 void MetaWindow::displayPlaylist(playlistid_t playlist){
 
 }
 
-void MetaWindow::switchOutMainContent(QWidget *newMainContent){
-  contentLayout->removeWidget(contentLayout->itemAt(1)->widget());
-  contentLayout->addWidget(newMainContent, getMainContentStretch());
-  contentLayout->invalidate();
-}
 
 
 } //end namespace

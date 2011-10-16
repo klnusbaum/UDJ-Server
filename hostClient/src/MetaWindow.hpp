@@ -32,8 +32,8 @@ class QTabWidget;
 class QPushButton;
 class QAction;
 class QLabel;
-class QHBoxLayout;
 class QSplitter;
+class QStackedWidget;
 
 namespace UDJ{
 
@@ -132,8 +132,8 @@ private:
   PlaybackWidget *playbackWidget;
 
   PartyWidget *partyWidget;
+  QStackedWidget *contentStack;
 
-  QHBoxLayout *contentLayout;
 
 
   //@}
@@ -147,13 +147,6 @@ private:
   void setupMenus();
 
   void createActions();
-
-  void switchOutMainContent(QWidget *newMainContent);
-
-  static const int& getMainContentStretch(){
-    static const int mainContentStretch = 6;
-    return mainContentStretch;
-  }
   
   //@}
 
