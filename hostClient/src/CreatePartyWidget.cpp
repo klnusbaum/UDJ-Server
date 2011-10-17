@@ -22,6 +22,8 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QProgressDialog>
+#include <QMessageBox>
 
 
 namespace UDJ{
@@ -34,6 +36,21 @@ CreatePartyWidget::CreatePartyWidget(
   musicLibrary(musicLibrary)
 {
   setupUi();
+  connect(
+    createPartyButton,
+    SIGNAL(clicked(bool)),
+    this,
+    SLOT(doLogin()));
+  connect(
+    musicLibrary,
+    SIGNAL(partyCreated()),
+    this,
+    SLOT(partyCreateSuccess()));
+  connect(
+    musicLibrary,
+    SIGNAL(partyCreationFailed()),
+    this,
+    SLOT(partyCreateFail()));
 }
 
 
@@ -53,7 +70,32 @@ void CreatePartyWidget::setupUi(){
   mainLayout->addWidget(createPartyButton);
 
   setLayout(mainLayout);
+}
 
+void CreatePartyWidget::doLogin(){
+  musicLibrary->createNewParty(
+    nameEdit->text(),
+    passwordEdit->text(),
+    locationEdit->text());
+  createProgress = new QProgressDialog(
+    tr("Creating party..."),
+    tr("Cancel"),
+    0,
+    1,
+    this);
+}
+
+void CreatePartyWidget::partyCreateSuccess(){
+  createProgress->setValue(1);
+  emit partyCreated();
+}
+
+void CreatePartyWidget::partyCreateFail(){
+  createProgress->setValue(1);
+  QMessageBox::critical(
+    this,
+    tr("Party Creation Failed"),
+    tr("Failed to create party"));
 }
 
 

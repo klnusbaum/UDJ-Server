@@ -117,5 +117,13 @@ void UDJServerConnection::handleAddSongReply(QNetworkReply *reply){
   emit serverIdsUpdate(hostToServerIdMap); 
 }
 
+void UDJServerConnection::createNewParty(
+  const QString& name,
+  const QString& password,
+  const QString& location)
+{
+  emit partyCreated();
+}
+
 
 }//end namespace

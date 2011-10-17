@@ -33,9 +33,23 @@ MusicLibrary::MusicLibrary(UDJServerConnection *serverConnection, QObject *paren
   setupDB();
   connect(
     serverConnection,
-    SIGNAL(serverIdsUpdate(const std::map<library_song_id_t, library_song_id_t>)),
+    SIGNAL(
+      serverIdsUpdate(const std::map<library_song_id_t, library_song_id_t>)),
     this,
-    SLOT(updateServerIds(const std::map<library_song_id_t, library_song_id_t>)));
+    SLOT(
+      updateServerIds(const std::map<library_song_id_t, library_song_id_t>)));
+
+  connect(
+    serverConnection,
+    SIGNAL(partyCreated()),
+    this,
+    SIGNAL(partyCreated()));
+
+  connect(
+    serverConnection,
+    SIGNAL(partyCreationFailed()),
+    this,
+    SIGNAL(partyCreationFailed()));
 }
 
 void MusicLibrary::setupDB(){
@@ -257,5 +271,14 @@ Phonon::MediaSource MusicLibrary::takeNextSongToPlay(){
     deleteNextSongQuery)
   return Phonon::MediaSource(filePath);
 }
+
+void MusicLibrary::createNewParty(
+  const QString& name, 
+  const QString& password, 
+  const QString& location)
+{
+  serverConnection->createNewParty(name, password, location);
+}
+
 
 } //end namespace

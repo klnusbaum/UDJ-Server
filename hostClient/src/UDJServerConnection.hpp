@@ -91,6 +91,11 @@ public:
 		const QString& ablumName,
     const library_song_id_t hostid);
 
+  void createNewParty(
+    const QString& name,
+    const QString& password,
+    const QString& location);
+
 
   //@}
 
@@ -135,6 +140,7 @@ signals:
   void serverIdsUpdate(const std::map<library_song_id_t, library_song_id_t> 
     hostToServerIdMap);
 
+  void partyCreated();
   //@}
 
 

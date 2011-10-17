@@ -110,6 +110,11 @@ public:
 
   void clearMyLibrary();
 
+  void createNewParty(
+    const QString& name, 
+    const QString& password, 
+    const QString& location);
+
   Phonon::MediaSource getNextSongToPlay();
   
   Phonon::MediaSource takeNextSongToPlay();
@@ -235,6 +240,10 @@ public:
 //@{
 signals:
   void songsAdded();
+
+  void partyCreated();
+
+  void partyCreationFailed();
 //@}
 
 private:
@@ -419,7 +428,9 @@ private:
 private slots:
   void updateServerIds(const std::map<library_song_id_t, library_song_id_t> 
     hostToServerIdMap);
+
 //@}
+
 };
 
 
