@@ -62,6 +62,7 @@ void LoginWidget::setupUi(){
   setLayout(layout);
 
   connect(loginButton, SIGNAL(clicked(bool)), this, SLOT(doLogin()));
+  connect(loginButton, SIGNAL(clicked(bool)), this, SLOT(doLogin()));
 }
 
 bool LoginWidget::hasValidCredsFormat() const{
@@ -74,13 +75,13 @@ bool LoginWidget::hasValidCredsFormat() const{
 
 void LoginWidget::doLogin(){
   if(hasValidCredsFormat()){
-    serverConnection->startConnection(usernameBox->text(), passwordBox->text());
     loginProgress = new QProgressDialog(
       tr("Logging in..."), 
       tr("Cancel"),
       0,
       1,
       this);
+    serverConnection->startConnection(usernameBox->text(), passwordBox->text());
   }
   else{
     displayBadCredFormatMessage();

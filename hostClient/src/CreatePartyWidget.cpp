@@ -73,16 +73,16 @@ void CreatePartyWidget::setupUi(){
 }
 
 void CreatePartyWidget::doLogin(){
-  musicLibrary->createNewParty(
-    nameEdit->text(),
-    passwordEdit->text(),
-    locationEdit->text());
   createProgress = new QProgressDialog(
     tr("Creating party..."),
     tr("Cancel"),
     0,
     1,
     this);
+  musicLibrary->createNewParty(
+    nameEdit->text(),
+    passwordEdit->text(),
+    locationEdit->text());
 }
 
 void CreatePartyWidget::partyCreateSuccess(){

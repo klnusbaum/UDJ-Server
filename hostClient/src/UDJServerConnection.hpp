@@ -141,6 +141,8 @@ signals:
     hostToServerIdMap);
 
   void partyCreated();
+
+  void partyCreationFailed();
   //@}
 
 
