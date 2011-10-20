@@ -8,8 +8,9 @@ playing, fade into new song, then gradual return beat of new song to normal.
 -Import iTunes library capability
 
 ANDROID APP
--IMPORTANT: SWITCH TO HttpURLConnection. This will give us automatic caching
-compression
+-IMPORTANT: SWITCH TO HttpsURLConnection. This will give us automatic caching
+compression. Also security. Also, this is what the android team is throwing
+themselves behind so it will be getting the most attention.
 -Users should be able to remove songs they added form the playlist
 (You know, say they accidentally double added a song)
 -Indicator on playlist of songs you've added
