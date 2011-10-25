@@ -156,11 +156,15 @@ private:
   bool isLoggedIn;
 
   /** \brief Id of the party associated with this conneciton */
-	partyid_t partyId;
+  partyid_t partyId;
 
   QNetworkAccessManager *netAccessManager;
 
-  QNetworkCookieJar *cookieJar;
+  QString ticket_id;
+
+  QDateTime timeTicketIssued;
+
+  void setLoggedIn(QString ticket);
 
 
   //@}
@@ -213,12 +217,25 @@ private:
     return LIB_ADD_URL;
   }
 
+  static const QString& getAPIVersionHeaderName(){
+    static const QString API_VERSION_HEAER_NAME = "udj_api_version";
+    return API_VERSION_HEAER_NAME;
+  }
+
+  static const QString& getAPIVersion(){
+    static const QString API_VERSION = "0.2";
+    return API_VERSION;
+  }
+
+  static const QString& getTicketHeaderName(){
+    static const QString ticketHeaderName = "udj_ticket_id";
+    return ticketHeaderName;
+  }
+
 
   void authenticate(const QString& username, const QString& password);
 
   void handleAuthReply(QNetworkReply* reply);
- 
-  bool haveValidLoginCookie();
 
   void handleAddSongReply(QNetworkReply *reply);
 

@@ -30,7 +30,6 @@ UDJServerConnection::UDJServerConnection(QObject *parent):QObject(parent),
   isLoggedIn(false)
 {
   netAccessManager = new QNetworkAccessManager(this);
-  cookieJar = netAccessManager->cookieJar();
   connect(netAccessManager, SIGNAL(finished(QNetworkReply*)),
     this, SLOT(recievedReply(QNetworkReply*)));
 }
@@ -72,6 +71,7 @@ void UDJServerConnection::authenticate(
   const QString& password)
 {
   QNetworkRequest authRequest(getAuthUrl());
+  authRequest.setRawHeader(getAPIVersionHeaderName(), getAPIVersion());
   QString data("username="+username+"&password="+password);
   QBuffer *dataBuffer = new QBuffer();
   dataBuffer->setData(data.toUtf8());
@@ -90,25 +90,18 @@ void UDJServerConnection::recievedReply(QNetworkReply *reply){
 }
 
 void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
-  QString stringreply(reply->readAll());
-  //std::cout << stringreply.toStdString() << std::endl;
-  if(haveValidLoginCookie()){
-    isLoggedIn = true;
-    emit connectionEstablished();
+  if(reply->hasRawHeader(ticketHeaderName)){
+    setLoggedIn(reply->rawHeader(getTicketHeaderName()));
   }
   else{
     emit unableToConnect("Bad username and password");
   }
 }
 
-bool UDJServerConnection::haveValidLoginCookie(){
-  QList<QNetworkCookie> authCookies = cookieJar->cookiesForUrl(getAuthUrl());
-  for(int i =0; i<authCookies.size(); ++i){
-    if(authCookies.at(i).name() == getLoginCookieName()){
-      return true;
-    }
-  }
-  return false;
+void UDJServerConnection::setLoggedIn(QString ticket){
+  ticket_id = ticket;
+  timeTicketIssued = QDateTime::currentDateTime();
+  isLoggedIn = true;
 }
 
 void UDJServerConnection::handleAddSongReply(QNetworkReply *reply){
