@@ -16,47 +16,32 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef CREATE_PARTY_WIDGET_HPP
-#define CREATE_PARTY_WIDGET_HPP
-#include <QWidget>
-
-class QLineEdit;
-class QPushButton;
-class QLabel;
-class QProgressDialog;
+#include "PartyDashboard.hpp"
+#include "MusicLibrary.hpp"
+#include <QLabel>
+#include <QVBoxLayout>
 
 namespace UDJ{
 
 
-class MusicLibrary;
-
-class CreatePartyWidget : public QWidget{
-Q_OBJECT
-public:
-  CreatePartyWidget(MusicLibrary *musicLibrary, QWidget *parent=0);
-
-signals:
-  void partyCreated();
-
-private:
-  void setupUi();
-  QLineEdit *nameEdit;
-  QLineEdit *passwordEdit;
-  QLineEdit *locationEdit;
-  QLabel *createLabel;
-  QPushButton *createPartyButton;
-  QProgressDialog *createProgress;
-  MusicLibrary *musicLibrary;
-
-private slots:
-  void doLogin();
-  void partyCreateSuccess();
-  void partyCreateFail();
-
-};
+PartyDashboard::PartyDashboard(MusicLibrary *musicLibrary, QWidget *parent)
+  :QWidget(parent),
+  musicLibrary(musicLibrary)
+{
+  setupUi();
+}
 
 
-}//end namspace UDJ
+void PartyDashboard::setupUi(){
+  QVBoxLayout *layout = new QVBoxLayout;
+  QLabel *placeHolder = new QLabel(tr("Party Dashboard"));
+  layout->addWidget(placeHolder);
+  setLayout(layout);
+}
+
+void PartyDashboard::refreshDisplay(){
+
+}
 
 
-#endif //CREATE_PARTY_WIDGET_HPP
+} //end namespace UDJ

@@ -33,9 +33,23 @@ MusicLibrary::MusicLibrary(UDJServerConnection *serverConnection, QObject *paren
   setupDB();
   connect(
     serverConnection,
-    SIGNAL(serverIdsUpdate(const std::map<library_song_id_t, library_song_id_t>)),
+    SIGNAL(
+      serverIdsUpdate(const std::map<library_song_id_t, library_song_id_t>)),
     this,
-    SLOT(updateServerIds(const std::map<library_song_id_t, library_song_id_t>)));
+    SLOT(
+      updateServerIds(const std::map<library_song_id_t, library_song_id_t>)));
+
+  connect(
+    serverConnection,
+    SIGNAL(partyCreated()),
+    this,
+    SIGNAL(partyCreated()));
+
+  connect(
+    serverConnection,
+    SIGNAL(partyCreationFailed()),
+    this,
+    SIGNAL(partyCreationFailed()));
 }
 
 void MusicLibrary::setupDB(){
@@ -57,28 +71,28 @@ void MusicLibrary::setupDB(){
 		setupQuery)	
 
 	EXEC_SQL(
-		"Error creating playlist table.", 
-		setupQuery.exec(getCreatePlaylistQuery()),
+		"Error creating activePlaylist table.", 
+		setupQuery.exec(getCreateActivePlaylistQuery()),
 		setupQuery)	
 
 	EXEC_SQL(
-		"Error creating playlist view.",
-  	setupQuery.exec(getCreatePlaylistViewQuery()),
+		"Error creating activePlaylist view.",
+  	setupQuery.exec(getCreateActivePlaylistViewQuery()),
 		setupQuery)
 
 	EXEC_SQL(
-		"Error creating update trigger for playlist view.",
-  	setupQuery.exec(getPlaylistUpdateTriggerQuery()),
+		"Error creating update trigger for activePlaylist view.",
+  	setupQuery.exec(getActivePlaylistUpdateTriggerQuery()),
 		setupQuery)
 
 	EXEC_SQL(
-		"Error creating delete trigger for playlist view.",
-		setupQuery.exec(getPlaylistDeleteTriggerQuery()),
+		"Error creating delete trigger for activePlaylist view.",
+		setupQuery.exec(getActivePlaylistDeleteTriggerQuery()),
 		setupQuery)
 
 	EXEC_SQL(
-		"Error creating insert trigger for playlist view.",
-  	setupQuery.exec(getPlaylistInsertTriggerQuery()),
+		"Error creating insert trigger for activePlaylist view.",
+  	setupQuery.exec(getActivePlaylistInsertTriggerQuery()),
 		setupQuery)
 }
 
@@ -96,12 +110,12 @@ void MusicLibrary::setMusicLibrary(QList<Phonon::MediaSource> songs, QProgressDi
     if(progress.wasCanceled()){
       break;
     }
-    addSong(songs[i]);
+    addSongToLibrary(songs[i]);
   }
   emit songsAdded();
 }
 
-void MusicLibrary::addSong(Phonon::MediaSource song){
+void MusicLibrary::addSongToLibrary(Phonon::MediaSource song){
   metaDataGetter->setCurrentSource(song);
   QString songName =	getSongName(song);
   QString artistName = getArtistName(song);
@@ -175,40 +189,25 @@ void MusicLibrary::updateServerIds(
     ++it
   )
   { 
-    //std::cout << "about to update with " << it->second << " and " << it->first
-      //<< std::endl;
-	  updateQuery.bindValue(0, QVariant::fromValue<library_song_id_t>(it->second));
-	  updateQuery.bindValue(1, QVariant::fromValue<library_song_id_t>(it->first));
-    //std::cout << "0: " << updateQuery.boundValue(0).toString().toStdString() <<
-      //" 1: " << updateQuery.boundValue(1).toString().toStdString() << std::endl;
+	  updateQuery.bindValue(
+      0, QVariant::fromValue<library_song_id_t>(it->second));
+	  updateQuery.bindValue(
+      1, QVariant::fromValue<library_song_id_t>(it->first));
 	  EXEC_SQL(
 		  "Updating server id didn't work!", 
 		  updateQuery.exec(), 
 		  updateQuery);
-   
   }
 }
 
 bool MusicLibrary::alterVoteCount(playlist_song_id_t plId, int difference){
-	QSqlQuery updateQuery(
-		"UPDATE main_playlist_view "
-		"SET voteCount = (voteCount + ?) "
-		"WHERE plId = ? ", 
-		database);
-	updateQuery.addBindValue(difference);
-	updateQuery.addBindValue(QVariant::fromValue(plId));
-	EXEC_SQL(
-		"Updating vote count didn't work!", 
-		updateQuery.exec(), 
-		updateQuery);
-	//TODO return value should be based on success of above query.
-  //TODO inform the server of the altered vote count
+  //TODO actually implement
 	return true;
 }
 
 bool MusicLibrary::addSongToActivePlaylist(library_song_id_t libraryId){
-	QSqlQuery insertQuery("INSERT INTO " + getPlaylistTableName() +" "
-		"("+getPlaylistLibIdColName()+") VALUES ( ? );", database);
+	QSqlQuery insertQuery("INSERT INTO " + getActivePlaylistTableName() +" "
+		"("+getActivePlaylistLibIdColName()+") VALUES ( ? );", database);
 	insertQuery.addBindValue(QVariant::fromValue(libraryId));
 	
 	EXEC_SQL(
@@ -217,21 +216,21 @@ bool MusicLibrary::addSongToActivePlaylist(library_song_id_t libraryId){
 		insertQuery)
 	//TODO this value should instead be based on the result of the
 	//above sql query.
-  //TODO inform the server of the song being added from the playlist
+  //TODO inform the server of the song being added from the activePlaylist
 	return true;
 }
 
 bool MusicLibrary::removeSongFromActivePlaylist(playlist_song_id_t plId){
-	QSqlQuery removeQuery("DELETE FROM " + getPlaylistTableName() + " "
-		"WHERE " + getPlaylistIdColName() +" = ? ;", database);
+	QSqlQuery removeQuery("DELETE FROM " + getActivePlaylistTableName() + " "
+		"WHERE " + getActivePlaylistIdColName() +" = ? ;", database);
 	removeQuery.addBindValue(QVariant::fromValue(plId));
 	
 	EXEC_SQL(
-		"Remove from playlist failed", 
+		"Remove from activePlaylist failed", 
 		removeQuery.exec(),
 		removeQuery)
 	//TODO this value should be based on above result
-  //TODO inform the server of the song being removed from the playlist
+  //TODO inform the server of the song being removed from the activePlaylist
 	return true;
 }
 
@@ -241,7 +240,7 @@ QSqlDatabase MusicLibrary::getDatabaseConnection(){
 
 Phonon::MediaSource MusicLibrary::getNextSongToPlay(){
   QSqlQuery nextSongQuery("SELECT " + getLibFileColName() + " FROM " +
-    getPlaylistViewName() + " LIMIT 1;");
+    getActivePlaylistViewName() + " LIMIT 1;");
   EXEC_SQL(
     "Getting next song failed",
     nextSongQuery.exec(),
@@ -253,8 +252,8 @@ Phonon::MediaSource MusicLibrary::getNextSongToPlay(){
 
 Phonon::MediaSource MusicLibrary::takeNextSongToPlay(){
   QSqlQuery nextSongQuery(
-    "SELECT " + getLibFileColName() + ", " + getPlaylistIdColName() +" FROM " +
-    getPlaylistViewName() + " LIMIT 1;");
+    "SELECT " + getLibFileColName() + ", " + getActivePlaylistIdColName() +" FROM " +
+    getActivePlaylistViewName() + " LIMIT 1;");
   EXEC_SQL(
     "Getting next song in take failed",
     nextSongQuery.exec(),
@@ -264,13 +263,22 @@ Phonon::MediaSource MusicLibrary::takeNextSongToPlay(){
   playlist_song_id_t  toDeleteId  = nextSongQuery.value(1).value<playlist_song_id_t>();
   
   QSqlQuery deleteNextSongQuery(
-    "DELETE FROM " + getPlaylistViewName() + " WHERE " + 
-    getPlaylistIdColName() + "=" +QString::number(toDeleteId) + ";");
+    "DELETE FROM " + getActivePlaylistViewName() + " WHERE " + 
+    getActivePlaylistIdColName() + "=" +QString::number(toDeleteId) + ";");
   EXEC_SQL(
     "Error deleting song in takeNextSong",
     deleteNextSongQuery.exec(),
     deleteNextSongQuery)
   return Phonon::MediaSource(filePath);
 }
+
+void MusicLibrary::createNewParty(
+  const QString& name, 
+  const QString& password, 
+  const QString& location)
+{
+  serverConnection->createNewParty(name, password, location);
+}
+
 
 } //end namespace
