@@ -26,6 +26,7 @@ namespace UDJ{
 class MusicLibrary;
 
 class PartyDashboard : public QWidget{
+Q_OBJECT
 public:
   PartyDashboard(MusicLibrary *musicLibrary, QWidget *parent=0);
   void refreshDisplay();
