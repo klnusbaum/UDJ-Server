@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-class Party(models.Model):
+class Event(models.Model):
   id = models.AutoField(primary_key=True)
   name = models.CharField(max_length=200)
   host = models.ForeignKey(User)
@@ -42,17 +42,14 @@ class Ticket(models.Model):
 
 
   def __unicode__(self):
-    return "Ticket " + str(self.id) + " : User id " + str(self.user_id)
+    return "Ticket " + str(self.id) + " : User id " + str(self.user.id)
 
 
-class PartyingUser(models.Model):
+class EventGoer(models.Model):
   id = models.AutoField(primary_key=True)
   user = models.ForeignKey(User)
-  party = models.ForeignKey(Party)
+  event = models.ForeignKey(Event)
 
   def __unicode__(self):
-    return "User " + str(self.user_id) + " is in Party " + str(self.party_id)
+    return "User " + str(self.user.id) + " is in Party " + str(self.event.id)
 
-  
-
-# Create your models here.
