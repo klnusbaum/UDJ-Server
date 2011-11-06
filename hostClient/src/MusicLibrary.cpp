@@ -41,13 +41,13 @@ MusicLibrary::MusicLibrary(UDJServerConnection *serverConnection, QObject *paren
 
   connect(
     serverConnection,
-    SIGNAL(partyCreated()),
+    SIGNAL(eventCreated()),
     this,
     SIGNAL(eventCreated()));
 
   connect(
     serverConnection,
-    SIGNAL(partyCreationFailed()),
+    SIGNAL(eventCreationFailed()),
     this,
     SIGNAL(eventCreationFailed()));
 }
