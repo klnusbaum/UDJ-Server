@@ -63,7 +63,6 @@ void LoginWidget::setupUi(){
   setLayout(layout);
 
   connect(loginButton, SIGNAL(clicked(bool)), this, SLOT(doLogin()));
-  connect(loginButton, SIGNAL(clicked(bool)), this, SLOT(doLogin()));
 }
 
 bool LoginWidget::hasValidCredsFormat() const{
