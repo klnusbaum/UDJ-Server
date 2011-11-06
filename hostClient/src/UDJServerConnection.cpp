@@ -30,7 +30,6 @@ UDJServerConnection::UDJServerConnection(QObject *parent):QObject(parent),
   isLoggedIn(false)
 {
   netAccessManager = new QNetworkAccessManager(this);
-  cookieJar = netAccessManager->cookieJar();
   connect(netAccessManager, SIGNAL(finished(QNetworkReply*)),
     this, SLOT(recievedReply(QNetworkReply*)));
 }
@@ -72,6 +71,9 @@ void UDJServerConnection::authenticate(
   const QString& password)
 {
   QNetworkRequest authRequest(getAuthUrl());
+  authRequest.setRawHeader(
+    getAPIVersionHeaderName(),
+    getAPIVersion());
   QString data("username="+username+"&password="+password);
   QBuffer *dataBuffer = new QBuffer();
   dataBuffer->setData(data.toUtf8());
@@ -80,6 +82,7 @@ void UDJServerConnection::authenticate(
 }
  
 void UDJServerConnection::recievedReply(QNetworkReply *reply){
+  std::cout << QString(reply->readAll()).toStdString() << std::endl;
   if(reply->request().url().path() == getAuthUrl().path()){
     handleAuthReply(reply);
   }
@@ -90,25 +93,26 @@ void UDJServerConnection::recievedReply(QNetworkReply *reply){
 }
 
 void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
-  QString stringreply(reply->readAll());
-  //std::cout << stringreply.toStdString() << std::endl;
-  if(haveValidLoginCookie()){
-    isLoggedIn = true;
+  std::cout << "Handling auth\n";
+  QList<QByteArray> headers = reply->rawHeaderList();
+  for(int i=0; i< headers.size(); ++i){
+    std::cout << "Header: " << QString(headers.at(i)).toStdString() << "\n";
+  }
+  if(reply->hasRawHeader(getTicketHeaderName())){
+    std::cout << "Got good ticket\n";
+    setLoggedIn(reply->rawHeader(getTicketHeaderName()));
     emit connectionEstablished();
   }
   else{
+    std::cout << "Didn't find ticket header\n";
     emit unableToConnect("Bad username and password");
   }
 }
 
-bool UDJServerConnection::haveValidLoginCookie(){
-  QList<QNetworkCookie> authCookies = cookieJar->cookiesForUrl(getAuthUrl());
-  for(int i =0; i<authCookies.size(); ++i){
-    if(authCookies.at(i).name() == getLoginCookieName()){
-      return true;
-    }
-  }
-  return false;
+void UDJServerConnection::setLoggedIn(QString ticket){
+  ticket_id = ticket;
+  timeTicketIssued = QDateTime::currentDateTime();
+  isLoggedIn = true;
 }
 
 void UDJServerConnection::handleAddSongReply(QNetworkReply *reply){

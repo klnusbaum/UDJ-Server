@@ -21,6 +21,7 @@
 
 #include "ConfigDefs.hpp"
 #include <QSqlDatabase>
+#include <QDateTime>
 #include <QObject>
 #include <map>
 
@@ -156,11 +157,15 @@ private:
   bool isLoggedIn;
 
   /** \brief Id of the party associated with this conneciton */
-	partyid_t partyId;
+  partyid_t partyId;
 
   QNetworkAccessManager *netAccessManager;
 
-  QNetworkCookieJar *cookieJar;
+  QString ticket_id;
+
+  QDateTime timeTicketIssued;
+
+  void setLoggedIn(QString ticket);
 
 
   //@}
@@ -194,7 +199,7 @@ private:
   
   static const QString& getServerUrlPath(){
     static const QString SERVER_URL_PATH= 
-      "http://0.0.0.0:" + getServerPortNumber();
+      "http://klnusbaum.dyndns.org:" + getServerPortNumber() + "/udj/";
     return SERVER_URL_PATH;
   }
 
@@ -204,21 +209,34 @@ private:
   }
   
   static const QUrl& getAuthUrl(){
-    static const QUrl AUTH_URL(getServerUrlPath() + "/auth");
+    static const QUrl AUTH_URL(getServerUrlPath() + "auth/");
     return AUTH_URL;
   }
 
   static const QUrl& getLibAddSongUrl(){
-    static const QUrl LIB_ADD_URL(getServerUrlPath() + "/library");
+    static const QUrl LIB_ADD_URL(getServerUrlPath() + "library/");
     return LIB_ADD_URL;
+  }
+
+  static const QByteArray& getAPIVersionHeaderName(){
+    static const QByteArray API_VERSION_HEAER_NAME = "udj_api_version";
+    return API_VERSION_HEAER_NAME;
+  }
+
+  static const QByteArray& getAPIVersion(){
+    static const QByteArray API_VERSION = "0.2";
+    return API_VERSION;
+  }
+
+  static const QByteArray& getTicketHeaderName(){
+    static const QByteArray ticketHeaderName = "udj_ticket_hash";
+    return ticketHeaderName;
   }
 
 
   void authenticate(const QString& username, const QString& password);
 
   void handleAuthReply(QNetworkReply* reply);
- 
-  bool haveValidLoginCookie();
 
   void handleAddSongReply(QNetworkReply *reply);
 
