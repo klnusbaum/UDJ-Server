@@ -43,8 +43,8 @@ void ActivityList::itemClicked(const QModelIndex& index){
     if(title == getLibraryTitle()){
       emit libraryClicked();
     }
-    else if(title == getPartyTitle()){
-      emit partyClicked();
+    else if(title == getEventTitle()){
+      emit eventClicked();
     }
   }
 }
@@ -52,7 +52,7 @@ void ActivityList::itemClicked(const QModelIndex& index){
 void ActivityList::setupUi(){
   model = new QStandardItemModel(this);
   model->appendRow(new QStandardItem(getLibraryTitle()));
-  model->appendRow(new QStandardItem(getPartyTitle()));
+  model->appendRow(new QStandardItem(getEventTitle()));
   model->appendRow(new QStandardItem(getPlaylistTitle()));
   setModel(model);
   header()->hide();

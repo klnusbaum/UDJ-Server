@@ -35,7 +35,7 @@ public:
 
 signals:
   void libraryClicked();
-  void partyClicked();
+  void eventClicked();
   void playlistClicked(playlistid_t playlistId);
 
 private:
@@ -44,9 +44,9 @@ private:
     return libraryTitle;
   }
 
-  static const QString& getPartyTitle(){
-    static const QString partyTitle(tr("Party"));
-    return partyTitle;
+  static const QString& getEventTitle(){
+    static const QString eventTitle(tr("Party"));
+    return eventTitle;
   }
 
   static const QString& getPlaylistTitle(){
