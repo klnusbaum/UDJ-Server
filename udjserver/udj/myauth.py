@@ -1,4 +1,7 @@
 from django.contrib.auth.models import User
+from django.template import RequestContext
+from django.shortcuts import get_object_or_404
+from django.shortcuts import render_to_response
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
@@ -9,9 +12,6 @@ def validAuthRequest(request):
     return False
   elif not request.POST.__contains__("username") \
     or not request.POST.__contains__("password"):
-    return False
-  elif not \
-    User.objects.get(username__exact=request.POST.__getitem("username")):
     return False
   return True
   
@@ -40,8 +40,8 @@ def authenticate(request):
   if not validAuthRequest(request):
     return HttpResponseBadRequest()
 
-  userToAuth = \
-    User.objects.get(username__exact=request.POST.__getitem__("username"))
+  userToAuth = get_object_or_404( \
+    User, username__exact=request.POST.__getitem__("username"))
   if userToAuth.check_password(request.POST.__getitem__("password")):
     ticket = getTicketForUser(userToAuth)
     response = HttpResponse()
