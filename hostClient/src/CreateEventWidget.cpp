@@ -58,7 +58,7 @@ void CreateEventWidget::setupUi(){
   nameEdit = new QLineEdit(tr("Name of event"));
   passwordEdit = new QLineEdit(tr("Password (optional)"));
   locationEdit = new QLineEdit(tr("Location (optional)"));
-  createEventButton = new QPushButton(tr("Create Party"));
+  createEventButton = new QPushButton(tr("Create Event"));
   createEventButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
   createLabel = new QLabel(tr("Create a New Event"));
 
