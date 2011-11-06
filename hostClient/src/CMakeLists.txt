@@ -32,7 +32,7 @@ SET(UDJ_SRCS
   qt-json/json.cpp
   LoginWidget.cpp
   ActivityList.cpp
-  PartyWidget.cpp
+  EventWidget.cpp
   CreateEventWidget.cpp
   EventDashboard.cpp
 )
@@ -58,7 +58,7 @@ SET(UDJ_MOC_HDRS
   LoginWidget.hpp
   ActivityList.hpp
   PlaybackWidget.hpp
-  PartyWidget.hpp
+  EventWidget.hpp
   CreateEventWidget.hpp
   EventDashboard.hpp
 )

@@ -41,7 +41,7 @@ class SettingsWidget;
 class PlaylistView;
 class LibraryView;
 class ActivityList;
-class PartyWidget;
+class EventWidget;
 
 /**
  * \brief A class that is the main point of interaction with the user. 
@@ -80,7 +80,7 @@ private slots:
 
   void displayLibrary();
 
-  void displayPartyWidget();
+  void displayEventWidget();
 
   void displayPlaylist(playlistid_t playlist);
 
@@ -118,7 +118,7 @@ private:
 
   PlaybackWidget *playbackWidget;
 
-  PartyWidget *partyWidget;
+  EventWidget *partyWidget;
   QStackedWidget *contentStack;
 
 

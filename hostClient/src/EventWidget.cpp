@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "PartyWidget.hpp"
+#include "EventWidget.hpp"
 #include "MusicLibrary.hpp"
 #include "CreateEventWidget.hpp"
 #include "EventDashboard.hpp"
@@ -26,7 +26,7 @@
 
 namespace UDJ{
 
-PartyWidget::PartyWidget(MusicLibrary *musicLibrary, QWidget *parent)
+EventWidget::EventWidget(MusicLibrary *musicLibrary, QWidget *parent)
   :QWidget(parent), musicLibrary(musicLibrary)
 {
   setupUi();  
@@ -37,7 +37,7 @@ PartyWidget::PartyWidget(MusicLibrary *musicLibrary, QWidget *parent)
     SLOT(showEventDashboard()));
 }
 
-void PartyWidget::setupUi(){
+void EventWidget::setupUi(){
   creatorWidget = new CreateEventWidget(musicLibrary);
   creatorWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
   eventDashboard = new EventDashboard(musicLibrary, this);
@@ -49,7 +49,7 @@ void PartyWidget::setupUi(){
   setLayout(mainLayout);
 }
 
-void PartyWidget::showEventDashboard(){
+void EventWidget::showEventDashboard(){
   eventDashboard->refreshDisplay(); 
   mainContent->setCurrentWidget(eventDashboard);
 }

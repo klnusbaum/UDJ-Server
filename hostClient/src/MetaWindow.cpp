@@ -23,7 +23,7 @@
 #include "LibraryModel.hpp"
 #include "LibraryView.hpp"
 #include "ActivityList.hpp"
-#include "PartyWidget.hpp"
+#include "EventWidget.hpp"
 #include <QSqlQuery>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -81,7 +81,7 @@ void MetaWindow::setupUi(){
   libraryModel = new LibraryModel(this, musicLibrary);
   libraryView = new LibraryView(libraryModel, this);
 
-  partyWidget = new PartyWidget(musicLibrary, this);
+  partyWidget = new EventWidget(musicLibrary, this);
  
   activityList = new ActivityList(musicLibrary);
 
@@ -114,7 +114,7 @@ void MetaWindow::setupUi(){
     activityList,
     SIGNAL(partyClicked()),
     this,
-    SLOT(displayPartyWidget()));
+    SLOT(displayEventWidget()));
 
   connect(
     activityList,
@@ -146,7 +146,7 @@ void MetaWindow::displayLibrary(){
   contentStack->setCurrentWidget(libraryView);
 }
 
-void MetaWindow::displayPartyWidget(){
+void MetaWindow::displayEventWidget(){
   contentStack->setCurrentWidget(partyWidget);
 }
 

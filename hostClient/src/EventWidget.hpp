@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef PARTY_WIDGET_HPP
-#define PARTY_WIDGET_HPP
+#ifndef EVENT_WIDGET_HPP
+#define EVENT_WIDGET_HPP
 #include <QWidget>
 
 class QStackedWidget;
@@ -27,10 +27,10 @@ class MusicLibrary;
 class CreateEventWidget;
 class EventDashboard;
 
-class PartyWidget : public QWidget{
+class EventWidget : public QWidget{
 Q_OBJECT
 public:
-  PartyWidget(MusicLibrary *musicLibrary, QWidget *parent=0);
+  EventWidget(MusicLibrary *musicLibrary, QWidget *parent=0);
 private:
   MusicLibrary *musicLibrary;
   void setupUi();
@@ -44,4 +44,4 @@ private slots:
 
 }//end namespace UDJ
 
-#endif //PARTY_WIDGET_HPP
+#endif //EVENT_WIDGET_HPP
