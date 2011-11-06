@@ -118,9 +118,9 @@ void MetaWindow::setupUi(){
 
   connect(
     activityList,
-    SIGNAL(playlistClicked(playlistid_t)),
+    SIGNAL(playlistClicked(playlist_id_t)),
     this,
-    SLOT(displayPlaylist(playlistid_t)));
+    SLOT(displayPlaylist(playlist_id_t)));
 
   resize(800,600);
 }
@@ -150,7 +150,7 @@ void MetaWindow::displayEventWidget(){
   contentStack->setCurrentWidget(eventWidget);
 }
 
-void MetaWindow::displayPlaylist(playlistid_t playlist){
+void MetaWindow::displayPlaylist(playlist_id_t playlist){
 
 }
 

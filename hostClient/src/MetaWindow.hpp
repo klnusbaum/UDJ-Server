@@ -82,7 +82,7 @@ private slots:
 
   void displayEventWidget();
 
-  void displayPlaylist(playlistid_t playlist);
+  void displayPlaylist(playlist_id_t playlist);
 
   
   //@}
