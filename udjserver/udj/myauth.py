@@ -50,7 +50,7 @@ def authenticate(request):
   if userToAuth.check_password(request.POST.__getitem__("password")):
     ticket = getTicketForUser(userToAuth)
     response = HttpResponse()
-    response['udj_ticket_number'] = ticket.ticket_hash
+    response['udj_ticket_hash'] = ticket.ticket_hash
     return response
   else:
     print "bad username and password"
