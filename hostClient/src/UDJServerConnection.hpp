@@ -21,6 +21,7 @@
 
 #include "ConfigDefs.hpp"
 #include <QSqlDatabase>
+#include <QDateTime>
 #include <QObject>
 #include <map>
 
@@ -198,7 +199,7 @@ private:
   
   static const QString& getServerUrlPath(){
     static const QString SERVER_URL_PATH= 
-      "http://0.0.0.0:" + getServerPortNumber();
+      "http://klnusbaum.dyndns.org:" + getServerPortNumber();
     return SERVER_URL_PATH;
   }
 
@@ -217,18 +218,18 @@ private:
     return LIB_ADD_URL;
   }
 
-  static const QString& getAPIVersionHeaderName(){
-    static const QString API_VERSION_HEAER_NAME = "udj_api_version";
+  static const QByteArray& getAPIVersionHeaderName(){
+    static const QByteArray API_VERSION_HEAER_NAME = "udj_api_version";
     return API_VERSION_HEAER_NAME;
   }
 
-  static const QString& getAPIVersion(){
-    static const QString API_VERSION = "0.2";
+  static const QByteArray& getAPIVersion(){
+    static const QByteArray API_VERSION = "0.2";
     return API_VERSION;
   }
 
-  static const QString& getTicketHeaderName(){
-    static const QString ticketHeaderName = "udj_ticket_id";
+  static const QByteArray& getTicketHeaderName(){
+    static const QByteArray ticketHeaderName = "udj_ticket_id";
     return ticketHeaderName;
   }
 

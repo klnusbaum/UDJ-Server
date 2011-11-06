@@ -71,7 +71,9 @@ void UDJServerConnection::authenticate(
   const QString& password)
 {
   QNetworkRequest authRequest(getAuthUrl());
-  authRequest.setRawHeader(getAPIVersionHeaderName(), getAPIVersion());
+  authRequest.setRawHeader(
+    getAPIVersionHeaderName(),
+    getAPIVersion());
   QString data("username="+username+"&password="+password);
   QBuffer *dataBuffer = new QBuffer();
   dataBuffer->setData(data.toUtf8());
@@ -90,7 +92,7 @@ void UDJServerConnection::recievedReply(QNetworkReply *reply){
 }
 
 void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
-  if(reply->hasRawHeader(ticketHeaderName)){
+  if(reply->hasRawHeader(getTicketHeaderName())){
     setLoggedIn(reply->rawHeader(getTicketHeaderName()));
   }
   else{

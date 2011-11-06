@@ -5,7 +5,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    (r'^udj/auth/$', 'udj.auth.authenticate'),
+    (r'^udj/auth/$', 'udj.myauth.authenticate'),
     # Examples:
     # url(r'^$', 'udjserver.views.home', name='home'),
     # url(r'^udjserver/', include('udjserver.foo.urls')),
