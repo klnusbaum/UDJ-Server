@@ -81,13 +81,13 @@ void MetaWindow::setupUi(){
   libraryModel = new LibraryModel(this, musicLibrary);
   libraryView = new LibraryView(libraryModel, this);
 
-  partyWidget = new EventWidget(musicLibrary, this);
+  eventWidget = new EventWidget(musicLibrary, this);
  
   activityList = new ActivityList(musicLibrary);
 
   contentStack = new QStackedWidget(this);
   contentStack->addWidget(libraryView);
-  contentStack->addWidget(partyWidget);
+  contentStack->addWidget(eventWidget);
   contentStack->setCurrentWidget(libraryView);
  
   QHBoxLayout *contentLayout = new QHBoxLayout;
@@ -112,7 +112,7 @@ void MetaWindow::setupUi(){
 
   connect(
     activityList,
-    SIGNAL(partyClicked()),
+    SIGNAL(eventClicked()),
     this,
     SLOT(displayEventWidget()));
 
@@ -147,7 +147,7 @@ void MetaWindow::displayLibrary(){
 }
 
 void MetaWindow::displayEventWidget(){
-  contentStack->setCurrentWidget(partyWidget);
+  contentStack->setCurrentWidget(eventWidget);
 }
 
 void MetaWindow::displayPlaylist(playlistid_t playlist){

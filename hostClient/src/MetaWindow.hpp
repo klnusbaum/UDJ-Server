@@ -48,7 +48,7 @@ class EventWidget;
  * 
  * This is the main window with which the user will interact. It contains
  * all information about the current playlist, their music library, which
- * partiers are currently logged into their party, and any relevant 
+ * event goers are currently logged into their event, and any relevant 
  * settings.
  */
 class MetaWindow : public QMainWindow{
@@ -118,7 +118,7 @@ private:
 
   PlaybackWidget *playbackWidget;
 
-  EventWidget *partyWidget;
+  EventWidget *eventWidget;
   QStackedWidget *contentStack;
 
 
