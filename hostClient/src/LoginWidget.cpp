@@ -52,6 +52,7 @@ void LoginWidget::setupUi(){
 
   usernameBox = new QLineEdit(getUsernameHint(), this);
   passwordBox = new QLineEdit(getPasswordHint(), this);
+  passwordBox->setEchoMode(QLineEdit::Password);
   loginButton = new QPushButton(tr("Login"), this);
   QGridLayout *layout = new QGridLayout;
   layout->addWidget(logo,0,0,1,2, Qt::AlignCenter);
