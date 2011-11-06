@@ -19,7 +19,7 @@
 #include "PartyWidget.hpp"
 #include "MusicLibrary.hpp"
 #include "CreateEventWidget.hpp"
-#include "PartyDashboard.hpp"
+#include "EventDashboard.hpp"
 #include <QVBoxLayout>
 #include <QStackedWidget>
 
@@ -32,26 +32,26 @@ PartyWidget::PartyWidget(MusicLibrary *musicLibrary, QWidget *parent)
   setupUi();  
   connect(
     creatorWidget,
-    SIGNAL(partyCreated()),
+    SIGNAL(eventCreated()),
     this,
-    SLOT(showPartyDashboard()));
+    SLOT(showEventDashboard()));
 }
 
 void PartyWidget::setupUi(){
   creatorWidget = new CreateEventWidget(musicLibrary);
   creatorWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-  partyDashboard = new PartyDashboard(musicLibrary, this);
+  eventDashboard = new EventDashboard(musicLibrary, this);
   mainContent = new QStackedWidget(this);
   mainContent->addWidget(creatorWidget);
-  mainContent->addWidget(partyDashboard);
+  mainContent->addWidget(eventDashboard);
   QVBoxLayout *mainLayout = new QVBoxLayout;
   mainLayout->addWidget(mainContent);
   setLayout(mainLayout);
 }
 
-void PartyWidget::showPartyDashboard(){
-  partyDashboard->refreshDisplay(); 
-  mainContent->setCurrentWidget(partyDashboard);
+void PartyWidget::showEventDashboard(){
+  eventDashboard->refreshDisplay(); 
+  mainContent->setCurrentWidget(eventDashboard);
 }
 
 

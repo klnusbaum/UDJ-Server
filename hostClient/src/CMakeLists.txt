@@ -34,7 +34,7 @@ SET(UDJ_SRCS
   ActivityList.cpp
   PartyWidget.cpp
   CreateEventWidget.cpp
-  PartyDashboard.cpp
+  EventDashboard.cpp
 )
 
 SET(UDJ_HDRS 
@@ -60,7 +60,7 @@ SET(UDJ_MOC_HDRS
   PlaybackWidget.hpp
   PartyWidget.hpp
   CreateEventWidget.hpp
-  PartyDashboard.hpp
+  EventDashboard.hpp
 )
 
 

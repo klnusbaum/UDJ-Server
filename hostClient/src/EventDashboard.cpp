@@ -16,26 +16,32 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef PARTY_DASHBOARD_HPP
-#define PARTY_DASHBOARD_HPP
-#include <QWidget>
-
+#include "EventDashboard.hpp"
+#include "MusicLibrary.hpp"
+#include <QLabel>
+#include <QVBoxLayout>
 
 namespace UDJ{
 
-class MusicLibrary;
 
-class PartyDashboard : public QWidget{
-Q_OBJECT
-public:
-  PartyDashboard(MusicLibrary *musicLibrary, QWidget *parent=0);
-  void refreshDisplay();
-private:
-  void setupUi();
-  MusicLibrary *musicLibrary;
-};
+EventDashboard::EventDashboard(MusicLibrary *musicLibrary, QWidget *parent)
+  :QWidget(parent),
+  musicLibrary(musicLibrary)
+{
+  setupUi();
+}
 
 
-}//end namespace UDJ
+void EventDashboard::setupUi(){
+  QVBoxLayout *layout = new QVBoxLayout;
+  QLabel *placeHolder = new QLabel(tr("Event Dashboard"));
+  layout->addWidget(placeHolder);
+  setLayout(layout);
+}
 
-#endif //PARTY_DASHBOARD_HPP
+void EventDashboard::refreshDisplay(){
+
+}
+
+
+} //end namespace UDJ
