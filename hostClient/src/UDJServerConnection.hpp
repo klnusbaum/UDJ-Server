@@ -199,7 +199,7 @@ private:
   
   static const QString& getServerUrlPath(){
     static const QString SERVER_URL_PATH= 
-      "http://klnusbaum.dyndns.org:" + getServerPortNumber() + "/udj";
+      "http://klnusbaum.dyndns.org:" + getServerPortNumber() + "/udj/";
     return SERVER_URL_PATH;
   }
 
@@ -209,12 +209,12 @@ private:
   }
   
   static const QUrl& getAuthUrl(){
-    static const QUrl AUTH_URL(getServerUrlPath() + "/auth");
+    static const QUrl AUTH_URL(getServerUrlPath() + "auth/");
     return AUTH_URL;
   }
 
   static const QUrl& getLibAddSongUrl(){
-    static const QUrl LIB_ADD_URL(getServerUrlPath() + "/library");
+    static const QUrl LIB_ADD_URL(getServerUrlPath() + "library/");
     return LIB_ADD_URL;
   }
 
