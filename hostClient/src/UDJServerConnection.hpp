@@ -69,7 +69,7 @@ public:
    *
    * @return The id of the event this connection is associated with.
    */
-	inline partyid_t  getEventId(){
+	inline event_id_t  getEventId(){
 		return eventId;
 	}
 
@@ -110,14 +110,14 @@ signals:
    *
    * @param eventGoerId Id of the event goer who left.
    */
-	void eventGoerLeft(partierid_t eventGoerId);
+	void eventGoerLeft(event_goer_id_t eventGoerId);
 
   /**
    * \brief Emitted when an event goers joins the event.
    *
    * @param eventGoerId Id of the event goer who joined.
    */
-	void eventGoerJoined(partierid_t eventGoerId);
+	void eventGoerJoined(event_goer_id_t eventGoerId);
 
   /**
    * \brief Emitted when a song is added to the main playlist.
@@ -157,7 +157,7 @@ private:
   bool isLoggedIn;
 
   /** \brief Id of the event associated with this conneciton */
-  partyid_t eventId;
+  event_id_t eventId;
 
   QNetworkAccessManager *netAccessManager;
 
