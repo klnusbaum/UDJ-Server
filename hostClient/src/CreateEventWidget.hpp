@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef CREATE_PARTY_WIDGET_HPP
-#define CREATE_PARTY_WIDGET_HPP
+#ifndef CREATE_EVENT_WIDGET_HPP
+#define CREATE_EVENT_WIDGET_HPP
 #include <QWidget>
 
 class QLineEdit;
@@ -30,13 +30,13 @@ namespace UDJ{
 
 class MusicLibrary;
 
-class CreatePartyWidget : public QWidget{
+class CreateEventWidget : public QWidget{
 Q_OBJECT
 public:
-  CreatePartyWidget(MusicLibrary *musicLibrary, QWidget *parent=0);
+  CreateEventWidget(MusicLibrary *musicLibrary, QWidget *parent=0);
 
 signals:
-  void partyCreated();
+  void eventCreated();
 
 private:
   void setupUi();
@@ -44,14 +44,14 @@ private:
   QLineEdit *passwordEdit;
   QLineEdit *locationEdit;
   QLabel *createLabel;
-  QPushButton *createPartyButton;
+  QPushButton *createEventButton;
   QProgressDialog *createProgress;
   MusicLibrary *musicLibrary;
 
 private slots:
   void doLogin();
-  void partyCreateSuccess();
-  void partyCreateFail();
+  void eventCreateSuccess();
+  void eventCreateFail();
 
 };
 
@@ -59,4 +59,4 @@ private slots:
 }//end namspace UDJ
 
 
-#endif //CREATE_PARTY_WIDGET_HPP
+#endif //CREATE_EVENT_WIDGET_HPP

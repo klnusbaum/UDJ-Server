@@ -18,7 +18,7 @@
  */
 #include "PartyWidget.hpp"
 #include "MusicLibrary.hpp"
-#include "CreatePartyWidget.hpp"
+#include "CreateEventWidget.hpp"
 #include "PartyDashboard.hpp"
 #include <QVBoxLayout>
 #include <QStackedWidget>
@@ -38,7 +38,7 @@ PartyWidget::PartyWidget(MusicLibrary *musicLibrary, QWidget *parent)
 }
 
 void PartyWidget::setupUi(){
-  creatorWidget = new CreatePartyWidget(musicLibrary);
+  creatorWidget = new CreateEventWidget(musicLibrary);
   creatorWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
   partyDashboard = new PartyDashboard(musicLibrary, this);
   mainContent = new QStackedWidget(this);

@@ -24,7 +24,7 @@ class QStackedWidget;
 namespace UDJ{
 
 class MusicLibrary;
-class CreatePartyWidget;
+class CreateEventWidget;
 class PartyDashboard;
 
 class PartyWidget : public QWidget{
@@ -35,7 +35,7 @@ private:
   MusicLibrary *musicLibrary;
   void setupUi();
   QStackedWidget *mainContent;
-  CreatePartyWidget *creatorWidget;
+  CreateEventWidget *creatorWidget;
   PartyDashboard *partyDashboard;
 private slots:
   void showPartyDashboard();

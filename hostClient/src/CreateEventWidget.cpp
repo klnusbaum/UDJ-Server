@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "CreatePartyWidget.hpp"
+#include "CreateEventWidget.hpp"
 #include "MusicLibrary.hpp"
 #include <QLineEdit>
 #include <QPushButton>
@@ -29,7 +29,7 @@
 namespace UDJ{
 
 
-CreatePartyWidget::CreatePartyWidget(
+CreateEventWidget::CreateEventWidget(
   MusicLibrary *musicLibrary, 
   QWidget *parent):
   QWidget(parent),
@@ -37,44 +37,44 @@ CreatePartyWidget::CreatePartyWidget(
 {
   setupUi();
   connect(
-    createPartyButton,
+    createEventButton,
     SIGNAL(clicked(bool)),
     this,
     SLOT(doLogin()));
   connect(
     musicLibrary,
-    SIGNAL(partyCreated()),
+    SIGNAL(eventCreated()),
     this,
-    SLOT(partyCreateSuccess()));
+    SLOT(eventCreateSuccess()));
   connect(
     musicLibrary,
-    SIGNAL(partyCreationFailed()),
+    SIGNAL(eventCreationFailed()),
     this,
-    SLOT(partyCreateFail()));
+    SLOT(eventCreateFail()));
 }
 
 
-void CreatePartyWidget::setupUi(){
-  nameEdit = new QLineEdit(tr("Name of party"));
+void CreateEventWidget::setupUi(){
+  nameEdit = new QLineEdit(tr("Name of event"));
   passwordEdit = new QLineEdit(tr("Password (optional)"));
   locationEdit = new QLineEdit(tr("Location (optional)"));
-  createPartyButton = new QPushButton(tr("Create Party"));
-  createPartyButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-  createLabel = new QLabel(tr("Create a New Party"));
+  createEventButton = new QPushButton(tr("Create Party"));
+  createEventButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+  createLabel = new QLabel(tr("Create a New Event"));
 
   QVBoxLayout *mainLayout = new QVBoxLayout;
   mainLayout->addWidget(createLabel, Qt::AlignCenter);
   mainLayout->addWidget(nameEdit);
   mainLayout->addWidget(passwordEdit);
   mainLayout->addWidget(locationEdit);
-  mainLayout->addWidget(createPartyButton);
+  mainLayout->addWidget(createEventButton);
 
   setLayout(mainLayout);
 }
 
-void CreatePartyWidget::doLogin(){
+void CreateEventWidget::doLogin(){
   createProgress = new QProgressDialog(
-    tr("Creating party..."),
+    tr("Creating event..."),
     tr("Cancel"),
     0,
     1,
@@ -85,17 +85,17 @@ void CreatePartyWidget::doLogin(){
     locationEdit->text());
 }
 
-void CreatePartyWidget::partyCreateSuccess(){
+void CreateEventWidget::eventCreateSuccess(){
   createProgress->setValue(1);
-  emit partyCreated();
+  emit eventCreated();
 }
 
-void CreatePartyWidget::partyCreateFail(){
+void CreateEventWidget::eventCreateFail(){
   createProgress->setValue(1);
   QMessageBox::critical(
     this,
-    tr("Party Creation Failed"),
-    tr("Failed to create party"));
+    tr("Event Creation Failed"),
+    tr("Failed to create event"));
 }
 
 

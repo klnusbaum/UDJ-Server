@@ -40,7 +40,6 @@ namespace UDJ{
 class SettingsWidget;
 class PlaylistView;
 class LibraryView;
-class PartiersView;
 class ActivityList;
 class PartyWidget;
 

@@ -27,14 +27,13 @@ SET(UDJ_SRCS
   ActivePlaylistDelegate.cpp
 	ActivePlaylistModel.cpp
 	UDJServerConnection.cpp
-	PartiersView.cpp
   JSONHelper.cpp
   LibraryModel.cpp
   qt-json/json.cpp
   LoginWidget.cpp
   ActivityList.cpp
   PartyWidget.cpp
-  CreatePartyWidget.cpp
+  CreateEventWidget.cpp
   PartyDashboard.cpp
 )
 
@@ -55,13 +54,12 @@ SET(UDJ_MOC_HDRS
 	ActivePlaylistModel.hpp
 	DifferenceSpinner.hpp
 	UDJServerConnection.hpp
-	PartiersView.hpp
   LibraryModel.hpp
   LoginWidget.hpp
   ActivityList.hpp
   PlaybackWidget.hpp
   PartyWidget.hpp
-  CreatePartyWidget.hpp
+  CreateEventWidget.hpp
   PartyDashboard.hpp
 )
 
