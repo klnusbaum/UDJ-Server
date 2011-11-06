@@ -229,7 +229,7 @@ private:
   }
 
   static const QByteArray& getTicketHeaderName(){
-    static const QByteArray ticketHeaderName = "udj_ticket_id";
+    static const QByteArray ticketHeaderName = "udj_ticket_hash";
     return ticketHeaderName;
   }
 
