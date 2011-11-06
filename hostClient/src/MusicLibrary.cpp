@@ -43,13 +43,13 @@ MusicLibrary::MusicLibrary(UDJServerConnection *serverConnection, QObject *paren
     serverConnection,
     SIGNAL(partyCreated()),
     this,
-    SIGNAL(partyCreated()));
+    SIGNAL(eventCreated()));
 
   connect(
     serverConnection,
     SIGNAL(partyCreationFailed()),
     this,
-    SIGNAL(partyCreationFailed()));
+    SIGNAL(eventCreationFailed()));
 }
 
 void MusicLibrary::setupDB(){
@@ -272,7 +272,7 @@ Phonon::MediaSource MusicLibrary::takeNextSongToPlay(){
   return Phonon::MediaSource(filePath);
 }
 
-void MusicLibrary::createNewParty(
+void MusicLibrary::createNewEvent(
   const QString& name, 
   const QString& password, 
   const QString& location)

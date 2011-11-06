@@ -79,7 +79,7 @@ void CreateEventWidget::doLogin(){
     0,
     1,
     this);
-  musicLibrary->createNewParty(
+  musicLibrary->createNewEvent(
     nameEdit->text(),
     passwordEdit->text(),
     locationEdit->text());

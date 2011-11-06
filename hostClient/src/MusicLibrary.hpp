@@ -110,7 +110,7 @@ public:
 
   void clearMyLibrary();
 
-  void createNewParty(
+  void createNewEvent(
     const QString& name, 
     const QString& password, 
     const QString& location);
@@ -148,14 +148,14 @@ public:
 
   /**
    * \brief Gets the name of the table in the musicdb that contains information
-   * about the partiers associated with the server conneciton.
+   * about the event goers associated with the server conneciton.
    *
    * @return The name of the table in the musicdb that contains information
-   * about the partiers associated with the server connection.
+   * about the event goesrs associated with the server connection.
    */
-	static const QString& getPartiersTableName(){
-		static const QString partiersTableName = "my_partiers";
-    return partiersTableName;
+	static const QString& getEventGoersTableName(){
+		static const QString eventGoersTableName = "my_event_goers";
+    return eventGoersTableName;
 	}
   
   static const QString& getActivePlaylistTableName(){
@@ -241,9 +241,9 @@ public:
 signals:
   void songsAdded();
 
-  void partyCreated();
+  void eventCreated();
 
-  void partyCreationFailed();
+  void eventCreationFailed();
 //@}
 
 private:
