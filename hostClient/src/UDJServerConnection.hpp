@@ -64,13 +64,13 @@ public:
   //@{
 
   /**
-   * \brief Retrieves the id of the party associated with this server 
+   * \brief Retrieves the id of the event associated with this server 
    * connection.
    *
-   * @return The id of the party this connection is associated with.
+   * @return The id of the event this connection is associated with.
    */
-	inline partyid_t  getPartyId(){
-		return partyId;
+	inline partyid_t  getEventId(){
+		return eventId;
 	}
 
   //@}
@@ -92,7 +92,7 @@ public:
 		const QString& ablumName,
     const library_song_id_t hostid);
 
-  void createNewParty(
+  void createNewEvent(
     const QString& name,
     const QString& password,
     const QString& location);
@@ -106,18 +106,18 @@ signals:
   //@{
 
   /**
-   * \brief Emitted when a partier leaves.
+   * \brief Emitted when an event goer leaves.
    *
-   * @param partierId Id of the partier who left.
+   * @param eventGoerId Id of the event goer who left.
    */
-	void partierLeft(partierid_t partierId);
+	void eventGoerLeft(partierid_t eventGoerId);
 
   /**
-   * \brief Emitted when a partier joins the party.
+   * \brief Emitted when an event goers joins the event.
    *
-   * @param partierId Id of the partier who joined.
+   * @param eventGoerId Id of the event goer who joined.
    */
-	void partierJoined(partierid_t partierId);
+	void eventGoerJoined(partierid_t eventGoerId);
 
   /**
    * \brief Emitted when a song is added to the main playlist.
@@ -141,9 +141,9 @@ signals:
   void serverIdsUpdate(const std::map<library_song_id_t, library_song_id_t> 
     hostToServerIdMap);
 
-  void partyCreated();
+  void eventCreated();
 
-  void partyCreationFailed();
+  void eventCreationFailed();
   //@}
 
 
@@ -156,8 +156,8 @@ private:
 
   bool isLoggedIn;
 
-  /** \brief Id of the party associated with this conneciton */
-  partyid_t partyId;
+  /** \brief Id of the event associated with this conneciton */
+  partyid_t eventId;
 
   QNetworkAccessManager *netAccessManager;
 

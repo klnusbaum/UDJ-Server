@@ -121,12 +121,12 @@ void UDJServerConnection::handleAddSongReply(QNetworkReply *reply){
   emit serverIdsUpdate(hostToServerIdMap); 
 }
 
-void UDJServerConnection::createNewParty(
+void UDJServerConnection::createNewEvent(
   const QString& name,
   const QString& password,
   const QString& location)
 {
-  emit partyCreated();
+  emit eventCreated();
 }
 
 

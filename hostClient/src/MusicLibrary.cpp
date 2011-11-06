@@ -277,7 +277,7 @@ void MusicLibrary::createNewEvent(
   const QString& password, 
   const QString& location)
 {
-  serverConnection->createNewParty(name, password, location);
+  serverConnection->createNewEvent(name, password, location);
 }
 
 
