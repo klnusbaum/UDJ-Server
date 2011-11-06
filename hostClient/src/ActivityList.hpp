@@ -45,7 +45,7 @@ private:
   }
 
   static const QString& getEventTitle(){
-    static const QString eventTitle(tr("Party"));
+    static const QString eventTitle(tr("Event"));
     return eventTitle;
   }
 
