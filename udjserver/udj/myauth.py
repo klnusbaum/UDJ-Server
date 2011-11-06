@@ -7,11 +7,11 @@ from django.http import HttpResponseForbidden
 def validAuthRequest(request):
   if not request.method == "POST":
     return False
-  else if not request.POST.__contains__("username") \
+  elif not request.POST.__contains__("username") \
     or not request.POST.__contains__("password"):
     return False
-  else if not \
-    User.objects.get(username__exact=request.POST.__getitem("username"))
+  elif not \
+    User.objects.get(username__exact=request.POST.__getitem("username")):
     return False
   return True
   
