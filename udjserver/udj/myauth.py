@@ -6,6 +6,9 @@ from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
+from django.views.decorators.csrf import csrf_exempt
+import random
+from models import Ticket
 
 def validAuthRequest(request):
   if not request.method == "POST":
@@ -23,19 +26,21 @@ def generateRandomHash():
 
 def getUniqueRandHash():
   rand_hash = generateRandomHash()
-  while Tickets.objects.filter(ticket_hash==rand_hash):
+  while Ticket.objects.filter(ticket_hash=rand_hash):
     rand_hash = generateRandomHash()
   return rand_hash
 
 
 def getTicketForUser(userRequestingTicket):
-  currentTickets = Ticket.objects.filter(userRequestingTicket=user)
-  for ticket in currentTickets:
-    ticket.delete()
+  currentTickets = Ticket.objects.filter(user=userRequestingTicket)
+  if currentTickets:
+    for ticket in currentTickets:
+      ticket.delete()
   toReturn = Ticket(user=userRequestingTicket, ticket_hash=getUniqueRandHash())
   toReturn.save()
   return toReturn 
 
+@csrf_exempt
 def authenticate(request):
   if not validAuthRequest(request):
     return HttpResponseBadRequest()
@@ -48,4 +53,4 @@ def authenticate(request):
     response['udj_ticket_number' : ticket.ticket_hash]
     return response
   else:
-    return HttpResponseForbidden
+    return HttpResponseForbidden()
