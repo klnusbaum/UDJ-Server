@@ -82,6 +82,7 @@ void UDJServerConnection::authenticate(
 }
  
 void UDJServerConnection::recievedReply(QNetworkReply *reply){
+  std::cout << QString(reply->readAll()).toStdString() << std::endl;
   if(reply->request().url().path() == getAuthUrl().path()){
     handleAuthReply(reply);
   }
