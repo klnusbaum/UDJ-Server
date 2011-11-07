@@ -93,18 +93,12 @@ void UDJServerConnection::recievedReply(QNetworkReply *reply){
 }
 
 void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
-  std::cout << "Handling auth\n";
   QList<QByteArray> headers = reply->rawHeaderList();
-  for(int i=0; i< headers.size(); ++i){
-    std::cout << "Header: " << QString(headers.at(i)).toStdString() << "\n";
-  }
   if(reply->hasRawHeader(getTicketHeaderName())){
-    std::cout << "Got good ticket\n";
     setLoggedIn(reply->rawHeader(getTicketHeaderName()));
     emit connectionEstablished();
   }
   else{
-    std::cout << "Didn't find ticket header\n";
     emit unableToConnect("Bad username and password");
   }
 }
