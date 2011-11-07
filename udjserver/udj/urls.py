@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import patterns, include, url
 
 urlpatterns = patterns('',
-    (r'^auth/$', 'udj.myauth.authenticate'),
+    (r'^auth$', 'udj.myauth.authenticate'),
 )
 
 urlpatterns += patterns('udj.views',

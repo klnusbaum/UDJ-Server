@@ -18,6 +18,7 @@ class LibraryEntry(models.Model):
   song = models.CharField(max_length=200)
   artist = models.CharField(max_length=200)
   album = models.CharField(max_length=200)
+  owning_user = models.ForeignKey(User)
 
   def __unicode__(self):
     return "Library Entry " + str(self.server_lib_song_id) + ": " + self.song
@@ -30,6 +31,7 @@ class ActivePlaylistEntry(models.Model):
   server_lib_song = models.ForeignKey(LibraryEntry)
   time_added = models.DateTimeField(auto_now_add=True)
   adder = models.ForeignKey(User)
+  event = models.ForeignKey(Event)
 
   def __unicode__(self):
     return "Active Playlist Entry " + str(server_playlist_song_id)
