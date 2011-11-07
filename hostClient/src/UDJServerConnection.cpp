@@ -83,7 +83,11 @@ void UDJServerConnection::authenticate(
  
 void UDJServerConnection::recievedReply(QNetworkReply *reply){
   std::cout << QString(reply->readAll()).toStdString() << std::endl;
-  if(reply->request().url().path() == getAuthUrl().path()){
+  if(reply->hasRawHeader("error")){
+    std::cout << "Error: " << 
+      QString(reply->rawHeader("error")).toStdString() << std::endl;
+  }
+  else if(reply->request().url().path() == getAuthUrl().path()){
     handleAuthReply(reply);
   }
   else if(reply->request().url().path() == getLibAddSongUrl().path()){

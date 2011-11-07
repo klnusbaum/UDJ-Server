@@ -8,9 +8,16 @@ from django.core import serializers
 from django.contrib.auth.models import User
 
 def addSongs(request, user_id):
-  if not hasValidTicket(request) or \
-  not ticketMatchesUser(request.META["udj_ticket_hash"], user_id):
-    return HttpResponseForbidden()
+  if not hasValidTicket(request):
+    toReturn = HttpResponseForbidden()
+    toReturn['error'] = "invalid ticket" + ticket_validity
+    return toReturn
+
+  if not ticketMatchesUser(request.META["HTTP_UDJ_TICKET_HASH"], user_id):
+    toReturn = HttpResponseForbidden()
+    toReturn['error'] = "ticket didn't match user"
+    return toReturn
+   
   payload = request.readlines()
   for song in serializers.deserialize("json", payload):
     del song['server_lib_song_id']
