@@ -38,7 +38,7 @@ class ActivePlaylistEntry(models.Model):
 class Ticket(models.Model):
   user = models.ForeignKey(User, primary_key=True)
   ticket_hash = models.CharField(max_length=32, unique=True)
-  time_logged_in = models.DateTimeField(auto_now_add=True)
+  time_issued = models.DateTimeField(auto_now_add=True)
 
 
   def __unicode__(self):

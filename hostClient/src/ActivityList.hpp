@@ -36,7 +36,7 @@ public:
 signals:
   void libraryClicked();
   void eventClicked();
-  void playlistClicked(playlistid_t playlistId);
+  void playlistClicked(playlist_id_t playlistId);
 
 private:
   static const QString& getLibraryTitle(){

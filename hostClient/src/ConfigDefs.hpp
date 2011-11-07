@@ -25,7 +25,7 @@ namespace UDJ{
 
 typedef long playlist_song_id_t;
 typedef long library_song_id_t;
-typedef long playlistid_t;
+typedef long playlist_id_t;
 typedef long event_id_t;
 typedef long event_goer_id_t;
 
