@@ -73,6 +73,7 @@ def authenticate(request):
     ticket = getTicketForUser(userToAuth)
     response = HttpResponse()
     response['udj_ticket_hash'] = ticket.ticket_hash
+    response['user_id'] = userToAuth.id
     return response
   else:
     print "bad username and password"

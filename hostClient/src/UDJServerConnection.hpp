@@ -110,14 +110,14 @@ signals:
    *
    * @param eventGoerId Id of the event goer who left.
    */
-	void eventGoerLeft(event_goer_id_t eventGoerId);
+	void eventGoerLeft(user_id_t eventGoerId);
 
   /**
    * \brief Emitted when an event goers joins the event.
    *
    * @param eventGoerId Id of the event goer who joined.
    */
-	void eventGoerJoined(event_goer_id_t eventGoerId);
+	void eventGoerJoined(user_id_t eventGoerId);
 
   /**
    * \brief Emitted when a song is added to the main playlist.
@@ -162,10 +162,11 @@ private:
   QNetworkAccessManager *netAccessManager;
 
   QByteArray ticket_hash;
+  user_id_t  user_id;
 
   QDateTime timeTicketIssued;
 
-  void setLoggedIn(QByteArray ticket);
+  void setLoggedIn(QByteArray ticket, QByteArray userId);
 
 
   //@}
@@ -173,10 +174,7 @@ private:
   /** @name Private Function */
   //@{
 
-  static const QString& getLoginCookieName(){
-    static const QString loginCookieName("loggedIn");
-    return loginCookieName;
-  }
+  QUrl getLibAddSongUrl() const;
 
   static const QString & getServerPortNumber(){
     /** 
@@ -209,13 +207,8 @@ private:
   }
   
   static const QUrl& getAuthUrl(){
-    static const QUrl AUTH_URL(getServerUrlPath() + "auth/");
+    static const QUrl AUTH_URL(getServerUrlPath() + "auth");
     return AUTH_URL;
-  }
-
-  static const QUrl& getLibAddSongUrl(){
-    static const QUrl LIB_ADD_URL(getServerUrlPath() + "library/");
-    return LIB_ADD_URL;
   }
 
   static const QByteArray& getAPIVersionHeaderName(){
@@ -232,6 +225,12 @@ private:
     static const QByteArray ticketHeaderName = "udj_ticket_hash";
     return ticketHeaderName;
   }
+
+  static const QByteArray& getUserIdHeaderName(){
+    static const QByteArray userIdHeaderName = "user_id";
+    return userIdHeaderName;
+  }
+
 
 
   void authenticate(const QString& username, const QString& password);

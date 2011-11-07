@@ -93,9 +93,14 @@ void UDJServerConnection::recievedReply(QNetworkReply *reply){
 }
 
 void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
-  QList<QByteArray> headers = reply->rawHeaderList();
-  if(reply->hasRawHeader(getTicketHeaderName())){
-    setLoggedIn(reply->rawHeader(getTicketHeaderName()));
+  if(
+    reply->hasRawHeader(getTicketHeaderName()) &&
+    reply->hasRawHeader(getUserIdHeaderName())
+  ){
+    setLoggedIn(
+      reply->rawHeader(getTicketHeaderName()),
+      reply->rawHeader(getUserIdHeaderName())
+    );
     emit connectionEstablished();
   }
   else{
@@ -103,8 +108,9 @@ void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
   }
 }
 
-void UDJServerConnection::setLoggedIn(QByteArray ticket){
+void UDJServerConnection::setLoggedIn(QByteArray ticket, QByteArray userId){
   ticket_hash = ticket;
+  user_id = QString(userId).toLong();
   timeTicketIssued = QDateTime::currentDateTime();
   isLoggedIn = true;
 }
@@ -121,6 +127,11 @@ void UDJServerConnection::createNewEvent(
   const QString& location)
 {
   emit eventCreated();
+}
+
+QUrl UDJServerConnection::getLibAddSongUrl() const{
+  return QUrl(getServerUrlPath() + "users/ " + QString::number(user_id) +
+    "/library/songs");
 }
 
 
