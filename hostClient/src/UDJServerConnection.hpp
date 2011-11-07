@@ -161,11 +161,11 @@ private:
 
   QNetworkAccessManager *netAccessManager;
 
-  QString ticket_id;
+  QByteArray ticket_hash;
 
   QDateTime timeTicketIssued;
 
-  void setLoggedIn(QString ticket);
+  void setLoggedIn(QByteArray ticket);
 
 
   //@}

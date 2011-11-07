@@ -61,9 +61,9 @@ void UDJServerConnection::addLibSongOnServer(
     hostId,
     false, 
     success);
-  const QByteArray finalData = "to_add="+songJSON;
   QNetworkRequest addSongRequest(getLibAddSongUrl());
-  netAccessManager->post(addSongRequest, finalData);
+  addSongRequest.setRawHeader(getTicketHeaderName(), ticket_hash);
+  netAccessManager->put(addSongRequest, songJSON);
 }
 
 void UDJServerConnection::authenticate(
@@ -109,8 +109,8 @@ void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
   }
 }
 
-void UDJServerConnection::setLoggedIn(QString ticket){
-  ticket_id = ticket;
+void UDJServerConnection::setLoggedIn(QByteArray ticket){
+  ticket_hash = ticket;
   timeTicketIssued = QDateTime::currentDateTime();
   isLoggedIn = true;
 }
