@@ -22,6 +22,7 @@
 #include <QDir>
 #include <QSqlQuery>
 #include <QVariant>
+#include <QSqlRecord>
 
 namespace UDJ{
 
@@ -50,6 +51,8 @@ MusicLibrary::MusicLibrary(UDJServerConnection *serverConnection, QObject *paren
     SIGNAL(eventCreationFailed()),
     this,
     SIGNAL(eventCreationFailed()));
+
+  syncLibrary();
 }
 
 void MusicLibrary::setupDB(){
@@ -252,19 +255,23 @@ Phonon::MediaSource MusicLibrary::getNextSongToPlay(){
 
 Phonon::MediaSource MusicLibrary::takeNextSongToPlay(){
   QSqlQuery nextSongQuery(
-    "SELECT " + getLibFileColName() + ", " + getActivePlaylistIdColName() +" FROM " +
-    getActivePlaylistViewName() + " LIMIT 1;");
+    "SELECT " + getLibFileColName() + ", " + 
+    getActivePlaylistIdColName() +" FROM " +
+    getActivePlaylistViewName() + " LIMIT 1;", 
+    database);
   EXEC_SQL(
     "Getting next song in take failed",
     nextSongQuery.exec(),
     nextSongQuery)
   nextSongQuery.first();
   QString filePath = nextSongQuery.value(0).toString();
-  playlist_song_id_t  toDeleteId  = nextSongQuery.value(1).value<playlist_song_id_t>();
+  playlist_song_id_t  toDeleteId  = 
+    nextSongQuery.value(1).value<playlist_song_id_t>();
   
   QSqlQuery deleteNextSongQuery(
     "DELETE FROM " + getActivePlaylistViewName() + " WHERE " + 
-    getActivePlaylistIdColName() + "=" +QString::number(toDeleteId) + ";");
+    getActivePlaylistIdColName() + "=" +QString::number(toDeleteId) + ";", 
+    database);
   EXEC_SQL(
     "Error deleting song in takeNextSong",
     deleteNextSongQuery.exec(),
@@ -280,5 +287,24 @@ void MusicLibrary::createNewEvent(
   serverConnection->createNewEvent(name, password, location);
 }
 
+void MusicLibrary::syncLibrary(){
+  QSqlQuery getUnsyncedSongs(
+    "SELECT FROM " + getLibraryTableName() + " WHERE " + 
+    getServerLibIdColName() + "=" + getInvalidServerId() + ";", 
+    database);
+  EXEC_SQL(
+    "Error querying for unsynced songs",
+    getUnsyncedSongs.exec(),
+    getUnsyncedSongs)
+
+  while(getUnsyncedSongs.next()){  
+    QSqlRecord currentRecord = getUnsyncedSongs.record();
+	  serverConnection->addLibSongOnServer(
+      currentRecord.value(getLibSongColName()).toString(),
+      currentRecord.value(getLibArtistColName()).toString(),
+      currentRecord.value(getLibAlbumColName()).toString(),
+      currentRecord.value(getLibIdColName()).value<library_song_id_t>());
+  }
+}
 
 } //end namespace

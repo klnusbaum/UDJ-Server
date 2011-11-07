@@ -297,7 +297,15 @@ private:
    */
   QString getAlbumName(Phonon::MediaSource song) const;
 
+  /** \brief Does initiail database setup */
   void setupDB();
+
+  /** 
+   * \brief Adds any songs to the server for which the
+   * host client doesn't have valid server_lib_song_id.
+   */
+  void syncLibrary();
+
 
   //@}
 
