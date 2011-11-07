@@ -130,7 +130,7 @@ void UDJServerConnection::createNewEvent(
 }
 
 QUrl UDJServerConnection::getLibAddSongUrl() const{
-  return QUrl(getServerUrlPath() + "users/ " + QString::number(user_id) +
+  return QUrl(getServerUrlPath() + "users/" + QString::number(user_id) +
     "/library/songs");
 }
 

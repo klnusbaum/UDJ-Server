@@ -44,7 +44,7 @@ class Ticket(models.Model):
 
 
   def __unicode__(self):
-    return "Ticket " + str(self.id) + " : User id " + str(self.user.id)
+    return "Ticket " + self.ticket_hash +  " : User id " + str(self.user.id)
 
 
 class EventGoer(models.Model):

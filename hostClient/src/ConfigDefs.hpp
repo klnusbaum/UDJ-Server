@@ -37,17 +37,24 @@ typedef long user_id_t;
 
 #define EXEC_SQL( MESSAGE , STMT, QSQLOBJECT ) \
 	if(!( STMT )){ \
-		std::cerr << MESSAGE << " IN FILE " << __FILE__ << " AT LINE " << __LINE__ <<  std::endl; \
-		std::cerr << "SQL ERROR MESSAGE: '" << QSQLOBJECT.lastError().text().toStdString() << "'" << std::endl; \
+		std::cerr << MESSAGE << " IN FILE " << __FILE__ << " AT LINE " \
+      << __LINE__ <<  std::endl; \
+		std::cerr << "SQL ERROR MESSAGE: '" << \
+      QSQLOBJECT.lastError().text().toStdString() << "'" << std::endl; \
+    std::cerr << "QUERY WAS: '" << QSQLOBJECT.lastQuery().toStdString() \
+      << "'" <<std::endl; \
 		std::cerr << std::endl; \
 	} \
 
 #define EXEC_INSERT( MESSAGE, QSQLOBJECT, RESULT_VAR) \
   QSQLOBJECT.exec(); \
   if( QSQLOBJECT.lastError().type() != QSqlError::NoError ){ \
-		std::cerr << MESSAGE << " IN FILE " << __FILE__ << " AT LINE " << __LINE__ <<  std::endl; \
+		std::cerr << MESSAGE << " IN FILE " << __FILE__ << " AT LINE " \
+      << __LINE__ <<  std::endl; \
 		std::cerr << "SQL ERROR MESSAGE: '" << \
     QSQLOBJECT.lastError().text().toStdString() << "'" << std::endl; \
+    std::cerr << "QUERY WAS: '" << QSQLOBJECT.lastQuery().toStdString() \
+      << "'" <<std::endl; \
 		std::cerr << std::endl; \
   } \
   else{ \

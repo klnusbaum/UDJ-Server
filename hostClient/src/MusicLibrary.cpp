@@ -288,15 +288,16 @@ void MusicLibrary::createNewEvent(
 }
 
 void MusicLibrary::syncLibrary(){
-  QSqlQuery getUnsyncedSongs(
-    "SELECT FROM " + getLibraryTableName() + " WHERE " + 
-    getServerLibIdColName() + "=" + getInvalidServerId() + ";", 
-    database);
+  QSqlQuery getUnsyncedSongs(database);
   EXEC_SQL(
     "Error querying for unsynced songs",
-    getUnsyncedSongs.exec(),
+    getUnsyncedSongs.exec(
+      "SELECT * FROM " + getLibraryTableName() + " WHERE " + 
+      getServerLibIdColName() + "=" + 
+      QString::number(getInvalidServerId()) + ";"),
     getUnsyncedSongs)
 
+  std::cout << "Number of rows returned: " << getUnsyncedSongs.size() << "\n";
   while(getUnsyncedSongs.next()){  
     QSqlRecord currentRecord = getUnsyncedSongs.record();
 	  serverConnection->addLibSongOnServer(
