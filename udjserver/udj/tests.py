@@ -17,13 +17,14 @@ class AuthTestCase(TestCase):
   def testAuth(self):
     client = Client()
     response = client.post('/udj/auth/', {'username': 'test', 'password' : 'onetest'})
-#    response = client.post('/udj/auth/')
     self.assertEqual(response.status_code, 200)
+    self.assertTrue(response.has_header('udj_ticket_hash'))
+    self.assertTrue(response.has_header('user_id'))
     
-class SanityTestCase(TestCase):
+class LibAddTest(TestCase):
   fixtrues = ['test_fixture.json']
 
-  def testSanity(self):
+  def testAdd(self):
     client = Client()
     response = client.get('/udj/')
     self.assertEqual(response.status_code, 200)
