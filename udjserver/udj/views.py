@@ -19,7 +19,11 @@ def addSongs(request, user_id):
     return toReturn
    
   payload = request.readlines()
+  #print "Payload \n %s" % payload
   for song in serializers.deserialize("json", payload):
     del song['server_lib_song_id']
     song['owning_user'] = User.objects.filter(id=user_id)[0]
     song.save()
+
+def default(request):
+  return HttpResponse("You should chekcout www.zombo.com")
