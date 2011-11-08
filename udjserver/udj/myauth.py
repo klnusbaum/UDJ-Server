@@ -68,8 +68,8 @@ def authenticate(request):
     return HttpResponseBadRequest()
 
   userToAuth = get_object_or_404( \
-    User, username__exact=request.POST["username"])
-  if userToAuth.check_password(request.POST["password"]):
+    User, username__exact=request.POST['username'])
+  if userToAuth.check_password(request.POST['password']):
     ticket = getTicketForUser(userToAuth)
     response = HttpResponse()
     response['udj_ticket_hash'] = ticket.ticket_hash

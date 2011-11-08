@@ -11,17 +11,19 @@ from django.test.client import Client
 
 
 class AuthTestCase(TestCase):
-  fixtrues = ['test_fixture.json']
+  fixtures = ['test_fixture.json']
+
 
   def testAuth(self):
     client = Client()
-    response = client.post('/udj/auth', {'username': 'test', 'password' : 'onetest'})
+    response = client.post('/udj/auth/', {'username': 'test', 'password' : 'onetest'})
+#    response = client.post('/udj/auth/')
     self.assertEqual(response.status_code, 200)
     
 class SanityTestCase(TestCase):
   fixtrues = ['test_fixture.json']
 
-  def sanityTest(self):
+  def testSanity(self):
     client = Client()
     response = client.get('/udj/')
     self.assertEqual(response.status_code, 200)
