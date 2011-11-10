@@ -26,3 +26,15 @@ class AuthTestCase(TestCase):
     self.assertEqual(int(response.__getitem__('user_id')), testUser[0].id)
     ticket = Ticket.objects.filter(user=testUser)
     self.assertEqual(response.__getitem__('udj_ticket_hash'), ticket[0].ticket_hash)
+
+
+class LibAddTestCase(TestCase):
+  fixtures = ['test_fixture.json']
+
+
+  def testLibAdd(self):
+    client = Client()
+    response = client.post('/udj/auth/', {'username': 'test', 'password' : 'onetest'})
+    ticket_hash = response.__getitem__('udj_ticket_hash')
+    user_id = response.__getitem__('user_id')
+    client.put('/udj/' + user_id + '/library/song
