@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 def addSongs(request, user_id):
   if not hasValidTicket(request):
     toReturn = HttpResponseForbidden()
-    toReturn['error'] = "invalid ticket" + ticket_validity
+    toReturn['error'] = "invalid ticket"
     return toReturn
 
   if not ticketMatchesUser(request.META["HTTP_UDJ_TICKET_HASH"], user_id):
@@ -19,13 +19,7 @@ def addSongs(request, user_id):
     return toReturn
    
   payload = request.readlines()
-  #print "Payload \n %s" % payload
-"""
-  for song in serializers.deserialize("json", payload):
-    del song['server_lib_song_id']
-    song['owning_user'] = User.objects.filter(id=user_id)[0]
-    song.save()
-"""
-
-def default(request):
-  return HttpResponse("You should chekcout www.zombo.com")
+  for toInsert in serializers.deserialize("json", payload):
+    del toInsert['server_lib_song_id']
+    toInsert['owning_user'] = User.objects.filter(id=user_id)[0]
+    toInsert.save()
