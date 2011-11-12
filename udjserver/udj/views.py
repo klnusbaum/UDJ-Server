@@ -12,6 +12,15 @@ from django.core import serializers
 from django.contrib.auth.models import User
 from udj.models import LibraryEntry
 
+def addSong(songJson, user_id):
+  toInsert = LibraryEntry( \
+    host_lib_song_id = int(songJson['host_lib_song_id']), \
+    song = songJson['song'], \
+    artist  = songJson['artist'], \
+    album = songJson['album'], \
+    owning_user = User.objects.filter(id=user_id)[0])
+  toInsert.save()
+
 
 def addSongs(request, user_id):
   if request.method != 'PUT':
@@ -32,12 +41,10 @@ def addSongs(request, user_id):
    
   convertedPayload = json.loads(payload)
 
-  for libEntry in convertedPayload:
-    toInsert = LibraryEntry( \
-      host_lib_song_id = int(libEntry['host_lib_song_id']), \
-      song = libEntry['song'], \
-      artist  = libEntry['artist'], \
-      album = libEntry['album'], \
-      owning_user = User.objects.filter(id=user_id)[0])
-    toInsert.save()
+  if request.path.endswith('song'):
+    addSong(convertedPayload, user_id)
+  else:
+    for libEntry in convertedPayload:
+      addSong(libEntry, user_id)
+
   return HttpResponse('ok', status=200)
