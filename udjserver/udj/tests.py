@@ -34,24 +34,31 @@ class LibAddTestCase(TestCase):
 
 
   def testLibAdd(self):
-    lib_id = 1
-    song = 'Roulet Dares'
-    artist = 'The Mars Volta'
-    album = 'Deloused in the Comatorium'
     client = Client()
     response = client.post('/udj/auth/', {'username': 'test', 'password' : 'onetest'})
     ticket_hash = response.__getitem__('udj_ticket_hash')
     user_id = response.__getitem__('user_id')
-    payload = '{server_lib_song_id : -1, host_lib_song_id : ' + str(lib_id) + \
-      ', song : "' + song + '", artist : "' + artist + '" , album : "' + \
-     album +'"}'
-    client.put('/udj/users/' + user_id + '/library/song', data=payload, \
-      content_type='text/json')
+
+
+    lib_id = 1
+    song = 'Roulet Dares'
+    artist = 'The Mars Volta'
+    album = 'Deloused in the Comatorium'
+    payload = '{"server_lib_song_id" : -1, "host_lib_song_id" : ' +\
+      str(lib_id) + \
+      ', "song" : "' + song + '", "artist" : "' + artist + '" , "album" : "' + \
+      album +'"}'
+    response = client.put('/udj/users/' + user_id + '/library/song', \
+      data=payload, content_type='text/json', \
+      **{'udj_ticket_hash' : ticket_hash})
+
+
+    self.assertEqual(response.status_code, 200)
     matchedEntries = LibraryEntry.objects.filter(host_lib_song_id=lib_id, \
       owning_user=user_id)
     self.assertEqual(len(matchedEntries), 1, msg="Couldn't find inserted song.")
     insertedLibEntry = matchedEntries[0]
     self.assertEqual(insertedLibEntry.song, song)
     self.assertEqual(insertedLibEntry.artist, artist)
-    self.assertEqual(insertedLibEntry.ablum, album)
+    self.assertEqual(insertedLibEntry.album, album)
     
