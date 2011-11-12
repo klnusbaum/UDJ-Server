@@ -14,7 +14,8 @@ def TicketUserMatch(function):
       toReturn = HttpResponseForbidden()
       toReturn['error'] = "ticket didn't match user"
       return toReturn
-    return function(*args, **kwargs)
+    else:
+      return function(*args, **kwargs)
   return wrapper
 
 def AcceptsMethods(acceptedMethods):
@@ -28,3 +29,14 @@ def AcceptsMethods(acceptedMethods):
     return wrapper
   return decorator
       
+def NeedsJSON(function):
+  def wrapper(*args, **kwargs):
+    request = args[0]
+    if request.META['CONTENT_TYPE'] != 'text/json' \
+      or request.raw_post_data == '':
+      return HttpResponseBadRequest()
+    else:
+      return function(*args, **kwargs)
+  return wrapper
+    
+    

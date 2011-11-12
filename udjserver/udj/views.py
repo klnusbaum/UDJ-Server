@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from udj.models import LibraryEntry
 from udj.decorators import TicketUserMatch
 from udj.decorators import AcceptsMethods
+from udj.decorators import NeedsJSON
 
 def addSong(songJson, user_id):
   toInsert = LibraryEntry( \
@@ -21,13 +22,16 @@ def addSong(songJson, user_id):
 
 
 @AcceptsMethods({'PUT'})
+@NeedsJSON
 @TicketUserMatch
 def addSongs(request, user_id):
 
   payload = request.raw_post_data
   
+  """
   if payload == "":
     return HttpResponseBadRequest()
+  """
    
   #TODO catch any exception in the json parsing and return a bad request
   convertedPayload = json.loads(payload)
@@ -36,4 +40,6 @@ def addSongs(request, user_id):
   for libEntry in convertedPayload:
     addedSongs.append(addSong(libEntry, user_id))
 
-  return HttpResponse()
+  data = serializers.serialize("json", addedSongs)
+
+  return HttpResponse(data)

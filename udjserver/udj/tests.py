@@ -61,4 +61,6 @@ class LibAddTestCase(TestCase):
     self.assertEqual(insertedLibEntry.song, song)
     self.assertEqual(insertedLibEntry.artist, artist)
     self.assertEqual(insertedLibEntry.album, album)
+
+    print 
     
