@@ -2,6 +2,7 @@
 import json
 from django.http import HttpRequest
 from django.http import HttpResponse
+from django.http import HttpResponseBadRequest
 from django.core import serializers
 from django.contrib.auth.models import User
 from udj.models import LibraryEntry
@@ -28,12 +29,11 @@ def addSongs(request, user_id):
   if payload == "":
     return HttpResponseBadRequest()
    
+  #TODO catch any exception in the json parsing and return a bad request
   convertedPayload = json.loads(payload)
 
-  if request.path.endswith('song'):
-    addSong(convertedPayload, user_id)
-  else:
-    for libEntry in convertedPayload:
-      addSong(libEntry, user_id)
+  addedSongs = []
+  for libEntry in convertedPayload:
+    addedSongs.append(addSong(libEntry, user_id))
 
-  return HttpResponse('ok', status=200)
+  return HttpResponse()

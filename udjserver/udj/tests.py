@@ -44,11 +44,11 @@ class LibAddTestCase(TestCase):
     song = 'Roulet Dares'
     artist = 'The Mars Volta'
     album = 'Deloused in the Comatorium'
-    payload = '{"server_lib_song_id" : -1, "host_lib_song_id" : ' +\
+    payload = '[{"server_lib_song_id" : -1, "host_lib_song_id" : ' +\
       str(lib_id) + \
       ', "song" : "' + song + '", "artist" : "' + artist + '" , "album" : "' + \
-      album +'"}'
-    response = client.put('/udj/users/' + user_id + '/library/song', \
+      album +'"}]'
+    response = client.put('/udj/users/' + user_id + '/library/songs', \
       data=payload, content_type='text/json', \
       **{'udj_ticket_hash' : ticket_hash})
 
