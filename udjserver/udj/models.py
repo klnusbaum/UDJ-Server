@@ -58,9 +58,16 @@ class Playlist(models.Model):
   host_playlist_id = models.IntegerField()
   name = models.CharField(max_length=200)
   date_created = models.DateTimeField()
+  owning_user = models.ForeignKey(User)
+
+  def __unicode__(self):
+    return "Playlist " + str(self.server_playlist_id) 
 
 class PlaylistEntry(models.Model):
   server_playlist_entry_id = models.AutoField(primary_key=True)
   host_playlist_entry_id = models.IntegerField()
   playlist = models.ForeignKey(Playlist)
   song = models.ForeignKey(LibraryEntry) 
+
+  def __unicode__(self):
+    return "Playlist Entry " + str(self.server_playlist_entry_id) 

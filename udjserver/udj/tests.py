@@ -13,7 +13,7 @@ from udj.models import LibraryEntry
 import json
 
 def authTestUser(testObject):
-    response = testObject.client.post('/udj/auth/', {'username': 'test', 'password' : 'onetest'})
+    response = testObject.client.post('/udj/auth/', {'username': 'test1', 'password' : 'onetest'})
     testObject.ticket_hash = response.__getitem__('udj_ticket_hash')
     testObject.user_id = response.__getitem__('user_id')
 
@@ -26,11 +26,11 @@ class AuthTestCase(TestCase):
 
   def testAuth(self):
     client = Client()
-    response = client.post('/udj/auth/', {'username': 'test', 'password' : 'onetest'})
+    response = client.post('/udj/auth/', {'username': 'test1', 'password' : 'onetest'})
     self.assertEqual(response.status_code, 200)
     self.assertTrue(response.has_header('udj_ticket_hash'))
     self.assertTrue(response.has_header('user_id'))
-    testUser = User.objects.filter(username='test')
+    testUser = User.objects.filter(username='test1')
     self.assertEqual(int(response.__getitem__('user_id')), testUser[0].id)
     ticket = Ticket.objects.filter(user=testUser)
     self.assertEqual(response.__getitem__('udj_ticket_hash'), ticket[0].ticket_hash)
