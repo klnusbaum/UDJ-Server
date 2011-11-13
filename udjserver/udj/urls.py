@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import patterns, include, url
 
-urlpatterns = patterns('udj.myauth',
+urlpatterns = patterns('udj.auth',
     (r'^auth/?$', 'authenticate'),
 )
 

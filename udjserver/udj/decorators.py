@@ -1,5 +1,5 @@
-from myauth import hasValidTicket
-from myauth import ticketMatchesUser
+from udj.auth import hasValidTicket
+from udj.auth import ticketMatchesUser
 from django.http import HttpResponseNotAllowed
 from django.http import HttpResponseBadRequest
 
