@@ -33,13 +33,14 @@ def NeedsJSON(function):
   def wrapper(*args, **kwargs):
     request = args[0]
     try:
-      if request.META['CONTENT_TYPE'] != 'text/json' \
-        or request.raw_post_data == '':
-        return HttpResponseBadRequest()
+      if request.META['CONTENT_TYPE'] != 'text/json':
+        return HttpResponseBadRequest("must send json")
+      elif request.raw_post_data == '':
+        return HttpResponseBadRequest("didn't send anything. empty payload")
       else:
         return function(*args, **kwargs)
     except KeyError:
-      return HttpResponseBadRequest("Must speicfy a conent type of test/json")
+      return HttpResponseBadRequest("Must speicfy a conent type of text/json")
   return wrapper
     
     
