@@ -15,7 +15,6 @@ def addSongToLibrary(songJson, user_id):
   toInsert.save()
   return toInsert
 
-
 @AcceptsMethods('PUT')
 @NeedsJSON
 @TicketUserMatch
@@ -35,8 +34,16 @@ def addSongsToLibrary(request, user_id):
 @AcceptsMethods('DELETE')
 @TicketUserMatch
 def deleteSongFromLibrary(request, user_id, lib_id):
-  matchedEntries = LibraryEntry.objects.filter(server_lib_song_id=lib_id)
+  matchedEntries = LibraryEntry.objects.filter(
+    server_lib_song_id=lib_id, owning_user=user_id
+  )
   if len(matchedEntries) != 1:
     return HttpResponseNotFound()
   matchedEntries[0].delete()
-  return HttpResponse() 
+  return HttpResponse("Deleted item: " + lib_id)
+
+@AcceptsMethods('DELETE')
+@TicketUserMatch
+def deleteEntireLibrary(request, user_id):
+  LibraryEntry.objects.filter(user_id=user_id).delete()
+  return HttpResponse("Deleted all items from the library")
