@@ -51,18 +51,17 @@ class NeedsAuthTestCase(TestCase):
   def doDelete(self, url):
     return self.client.delete(url, **{'udj_ticket_hash' : self.ticket_hash})
    
-
-class LibAddTestCase(NeedsAuthTestCase):
+class LibSingleAddTestCase(NeedsAuthTestCase):
   def testLibAdd(self):
 
     lib_id = 1
     song = 'Roulette Dares'
     artist = 'The Mars Volta'
     album = 'Deloused in the Comatorium'
-    payload = '[{"server_lib_song_id" : -1, "host_lib_song_id" : ' +\
-      str(lib_id) + \
+    payload = '{ "to_add" : [{"host_lib_song_id" : ' + str(lib_id) + \
       ', "song" : "' + song + '", "artist" : "' + artist + '" , "album" : "' + \
-      album +'"}]'
+      album +'"}], "id_maps" : [ {"server_id" : -1, "client_id" : 1}]}'
+
     response = self.doJSONPut('/udj/users/' + self.user_id + '/library/songs', payload)
 
     self.assertEqual(response.status_code, 201)
@@ -76,12 +75,41 @@ class LibAddTestCase(NeedsAuthTestCase):
 
     responseObject = json.loads(response.content)[0]
     self.assertEqual(
-      responseObject['server_lib_song_id'], insertedLibEntry.server_lib_song_id)
-    self.assertEqual(responseObject['host_lib_song_id'], 1)
-    self.assertEqual(responseObject['song'], song)
-    self.assertEqual(responseObject['artist'], artist)
-    self.assertEqual(responseObject['album'], album)
+      responseObject['server_id'], insertedLibEntry.server_lib_song_id)
+    self.assertEqual(
+      responseObject['client_id'], lib_id)
+"""
 
+class LibMultiAddTestCase(NeedsAuthTestCase):
+  def testLibAdd(self):
+
+    lib_id1 = 1
+    lib_id2 = 2
+    song = 'Roulette Dares'
+    artist = 'The Mars Volta'
+    album = 'Deloused in the Comatorium'
+    payload = '{ "to_add" : [{"host_lib_song_id" : ' + str(lib_id) + \
+      ', "song" : "' + song + '", "artist" : "' + artist + '" , "album" : "' + \
+      album +'"}], "id_maps" : [ {"server_id" : -1, "client_id" : 1}]}'
+
+    response = self.doJSONPut('/udj/users/' + self.user_id + '/library/songs', payload)
+
+    self.assertEqual(response.status_code, 201)
+    matchedEntries = LibraryEntry.objects.filter(host_lib_song_id=lib_id, \
+      owning_user=self.user_id)
+    self.assertEqual(len(matchedEntries), 1, msg="Couldn't find inserted song.")
+    insertedLibEntry = matchedEntries[0]
+    self.assertEqual(insertedLibEntry.song, song)
+    self.assertEqual(insertedLibEntry.artist, artist)
+    self.assertEqual(insertedLibEntry.album, album)
+
+    responseObject = json.loads(response.content)[0]
+    self.assertEqual(
+      responseObject['server_id'], insertedLibEntry.server_lib_song_id)
+    self.assertEqual(
+      responseObject['client_id'], lib_id)
+
+"""
 
 class LibRemoveTestCase(NeedsAuthTestCase):
   def testLibSongDelete(self):

@@ -22,14 +22,18 @@ def addSongsToLibrary(request, user_id):
 
   payload = request.raw_post_data
   #TODO catch any exception in the json parsing and return a bad request
-  convertedPayload = json.loads(payload)
+  jsonPayload = json.loads(payload)
+  songsToAdd = jsonPayload["to_add"]
+  idMaps = jsonPayload["id_maps"]
 
-  addedSongs = []
-  for libEntry in convertedPayload:
-    addedSongs.append(addSongToLibrary(libEntry, user_id))
-  data = json.dumps(addedSongs, cls=LibraryEntryEncoder)
+  counter = 0
+  for libEntry in songsToAdd:
+    addedSong = addSongToLibrary(libEntry, user_id)
+    idMaps[counter]["server_id"] = addedSong.server_lib_song_id
+    counter = counter +1
+  toReturn = json.dumps(idMaps)
 
-  return HttpResponse(data, status=201)
+  return HttpResponse(toReturn, status=201)
 
 @AcceptsMethods('DELETE')
 @TicketUserMatch
