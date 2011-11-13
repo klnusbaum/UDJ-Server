@@ -5,6 +5,6 @@ urlpatterns = patterns('udj.myauth',
 )
 
 urlpatterns += patterns('udj.views',
-  (r'^users/(?P<user_id>\d+)/library/songs$', 'addSongs'),
+  (r'^users/(?P<user_id>\d+)/library/songs$', 'addSongsToLibrary'),
 ) 
 

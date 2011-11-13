@@ -10,6 +10,7 @@ from django.test.client import Client
 from django.contrib.auth.models import User
 from udj.models import Ticket
 from udj.models import LibraryEntry
+import json
 
 
 
@@ -41,7 +42,7 @@ class LibAddTestCase(TestCase):
 
 
     lib_id = 1
-    song = 'Roulet Dares'
+    song = 'Roulette Dares'
     artist = 'The Mars Volta'
     album = 'Deloused in the Comatorium'
     payload = '[{"server_lib_song_id" : -1, "host_lib_song_id" : ' +\
@@ -62,5 +63,12 @@ class LibAddTestCase(TestCase):
     self.assertEqual(insertedLibEntry.artist, artist)
     self.assertEqual(insertedLibEntry.album, album)
 
-    print 
+    responseObject = json.loads(response.content)[0]
+    self.assertEqual(
+      responseObject['server_lib_song_id'], insertedLibEntry.server_lib_song_id)
+    self.assertEqual(responseObject['host_lib_song_id'], 1)
+    self.assertEqual(responseObject['song'], song)
+    self.assertEqual(responseObject['artist'], artist)
+    self.assertEqual(responseObject['album'], album)
+    
     
