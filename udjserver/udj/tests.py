@@ -92,4 +92,12 @@ class LibRemoveTestCase(NeedsAuthTestCase):
       0
     )
 
-    
+
+class LibFullDeleteTest(NeedsAuthTestCase):
+  def testFullDelete(self):
+    response = self.doDelete('/udj/users/'+self.user_id+'/library')
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(
+      len(LibraryEntry.objects.filter(owning_user__id=2)),
+      0
+    )

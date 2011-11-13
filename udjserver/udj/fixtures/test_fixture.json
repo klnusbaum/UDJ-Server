@@ -13,11 +13,14 @@
  {"pk": 3, "model": "contenttypes.contenttype", "fields": {"model": "user", "name": "user", "app_label": "auth"}},
  {"pk": "abfea84ddec30b37de94373e97b6aa5d", "model": "sessions.session", "fields": {"expire_date": "2011-11-26 18:32:37", "session_data": "ZjRlZTZhNjNlZjAwMTgwMTcwNWJhNjEyMTljZDc1YTk1YzkxNGQ1MjqAAn1xAShVEl9hdXRoX3Vz\nZXJfYmFja2VuZHECVSlkamFuZ28uY29udHJpYi5hdXRoLmJhY2tlbmRzLk1vZGVsQmFja2VuZHED\nVQ1fYXV0aF91c2VyX2lkcQRLAXUu\n"}},
  {"pk": 1, "model": "sites.site", "fields": {"domain": "example.com", "name": "example.com"}},
+ {"pk": 5, "model": "admin.logentry", "fields": {"action_flag": 1, "action_time": "2011-11-12 23:04:37", "object_repr": "Library Entry 3: People of the Sun", "object_id": "3", "change_message": "", "user": 1, "content_type": 10}},
+ {"pk": 4, "model": "admin.logentry", "fields": {"action_flag": 1, "action_time": "2011-11-12 20:01:46", "object_repr": "testuser2", "object_id": "3", "change_message": "", "user": 1, "content_type": 3}},
  {"pk": 3, "model": "admin.logentry", "fields": {"action_flag": 1, "action_time": "2011-11-12 18:47:47", "object_repr": "Library Entry 2: Guerilla Radio", "object_id": "2", "change_message": "", "user": 1, "content_type": 10}},
  {"pk": 2, "model": "admin.logentry", "fields": {"action_flag": 1, "action_time": "2011-11-12 18:34:49", "object_repr": "Library Entry 1: Wake Up", "object_id": "1", "change_message": "", "user": 1, "content_type": 10}},
  {"pk": 1, "model": "admin.logentry", "fields": {"action_flag": 1, "action_time": "2011-11-12 18:34:10", "object_repr": "test", "object_id": "2", "change_message": "", "user": 1, "content_type": 3}},
  {"pk": 1, "model": "udj.libraryentry", "fields": {"album": "Rage Against The Machine", "artist": "Rage Against The Machine", "owning_user": 2, "host_lib_song_id": 2, "song": "Wake Up"}},
  {"pk": 2, "model": "udj.libraryentry", "fields": {"album": "The Battle of Los Angeles", "artist": "Rage Against The Machine", "owning_user": 2, "host_lib_song_id": 3, "song": "Guerilla Radio"}},
+ {"pk": 3, "model": "udj.libraryentry", "fields": {"album": "Evil Empire", "artist": "Rage Against The Machine", "owning_user": 3, "host_lib_song_id": 2, "song": "People of the Sun"}},
  {"pk": 22, "model": "auth.permission", "fields": {"codename": "add_logentry", "name": "Can add log entry", "content_type": 8}},
  {"pk": 23, "model": "auth.permission", "fields": {"codename": "change_logentry", "name": "Can change log entry", "content_type": 8}},
  {"pk": 24, "model": "auth.permission", "fields": {"codename": "delete_logentry", "name": "Can delete log entry", "content_type": 8}},
@@ -57,4 +60,5 @@
  {"pk": 34, "model": "auth.permission", "fields": {"codename": "add_ticket", "name": "Can add ticket", "content_type": 12}},
  {"pk": 35, "model": "auth.permission", "fields": {"codename": "change_ticket", "name": "Can change ticket", "content_type": 12}},
  {"pk": 36, "model": "auth.permission", "fields": {"codename": "delete_ticket", "name": "Can delete ticket", "content_type": 12}},
- {"pk": 2, "model": "auth.user", "fields": {"username": "test", "first_name": "", "last_name": "", "is_active": true, "is_superuser": false, "is_staff": false, "last_login": "2011-11-12 18:34:10", "groups": [], "user_permissions": [], "password": "sha1$66dcb$6c1b76fb018b2f91ab79791099690bfd04971aa1", "email": "", "date_joined": "2011-11-12 18:34:10"}}]
+ {"pk": 2, "model": "auth.user", "fields": {"username": "test", "first_name": "", "last_name": "", "is_active": true, "is_superuser": false, "is_staff": false, "last_login": "2011-11-12 18:34:10", "groups": [], "user_permissions": [], "password": "sha1$66dcb$6c1b76fb018b2f91ab79791099690bfd04971aa1", "email": "", "date_joined": "2011-11-12 18:34:10"}},
+ {"pk": 3, "model": "auth.user", "fields": {"username": "testuser2", "first_name": "", "last_name": "", "is_active": true, "is_superuser": false, "is_staff": false, "last_login": "2011-11-12 20:01:46", "groups": [], "user_permissions": [], "password": "sha1$3797f$7ec0fcdc0ac90c7af27fc47127fd691577f50aac", "email": "", "date_joined": "2011-11-12 20:01:46"}}]

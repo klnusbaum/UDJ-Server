@@ -45,5 +45,5 @@ def deleteSongFromLibrary(request, user_id, lib_id):
 @AcceptsMethods('DELETE')
 @TicketUserMatch
 def deleteEntireLibrary(request, user_id):
-  LibraryEntry.objects.filter(user_id=user_id).delete()
+  LibraryEntry.objects.filter(owning_user__id=user_id).delete()
   return HttpResponse("Deleted all items from the library")
