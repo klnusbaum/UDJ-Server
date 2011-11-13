@@ -20,11 +20,10 @@ def addSongToLibrary(songJson, user_id, host_lib_id):
 @TicketUserMatch
 def addSongsToLibrary(request, user_id):
 
-  payload = request.raw_post_data
+  payload = json.loads(request.raw_post_data)
   #TODO catch any exception in the json parsing and return a bad request
-  jsonPayload = json.loads(payload)
-  songsToAdd = jsonPayload["to_add"]
-  idMaps = jsonPayload["id_maps"]
+  songsToAdd = payload["to_add"]
+  idMaps = payload["id_maps"]
 
   counter = 0
   for libEntry in songsToAdd:

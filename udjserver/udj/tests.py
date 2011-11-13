@@ -10,6 +10,7 @@ from django.test.client import Client
 from django.contrib.auth.models import User
 from udj.models import Ticket
 from udj.models import LibraryEntry
+from udj.models import Playlist
 import json
 
 class AuthTestCase(TestCase):
@@ -108,9 +109,10 @@ class LibMultiAddTestCase(DoesServerOpsTestCase):
       '/udj/users/' + self.user_id + '/library/songs', payload)
 
     self.assertEqual(response.status_code, 201, msg=response.content)
-    idMap = json.loads(response.content)[0]
+    response_payload = json.loads(response.content)
+    idMap = response_payload[0]
     verifySongAdded(self, lib_id1, idMap, song1, artist1, album1)
-    idMap = json.loads(response.content)[1]
+    idMap = response_payload[1]
     verifySongAdded(self, lib_id2, idMap, song2, artist2, album2)
 
 class LibRemoveTestCase(DoesServerOpsTestCase):
@@ -131,3 +133,33 @@ class LibFullDeleteTest(DoesServerOpsTestCase):
       len(LibraryEntry.objects.filter(owning_user__id=2)),
       0
     )
+
+def verifyPlaylistAdded(testObject, host_id, idMap, name, date_created):
+  matchedEntries = Playlist.objects.filter(host_playlist_id=lib_id, 
+    owning_user=testObject.user_id)
+  testObject.assertEqual(len(matchedEntries), 1, 
+    msg="Couldn't find inserted playlist.")
+  insertedPlaylist = matchedEntries[0]
+  testObject.assertEqual(insertedPlaylist.name, name)
+  testObject.assertEqual(insertedPlaylist.date_created, date_created)
+
+  testObject.assertEqual( 
+    idMap['server_id'], insertedPlaylist.server_lib_song_id)
+  testObject.assertEqual(idMap['client_id'], host_id)
+
+
+class PlaylistSingleAddTest(DoesServerOpsTestCase):
+  def testAddPlaylist(self):
+    host_id = 1
+    name = "Daft Punk"
+    date_created = 1321019418
+    payload = '{"to_add" : [{"name" : "' + name + '", "date_created" : ' + \
+      str(date_created ) + '}], "id_maps" : [{"server_id" : -1 , ' + \
+      '"client_id" : ' + str(host_id) + '}]}'
+
+    response = self.doJSONPut(
+      '/udj/users/' + self.user_id + '/playlists', payload)
+
+    self.assertEqual(response.status_code, 201, msg=response.content)
+    response_payload = json.loads(response.content)
+    idMap = response_payload[0]

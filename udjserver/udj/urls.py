@@ -13,3 +13,7 @@ urlpatterns += patterns('udj.views.library',
   (r'^users/(?P<user_id>\d+)/library$', 'deleteEntireLibrary'),
 ) 
 
+urlpatterns += patterns('udj.views.playlist',
+  (r'^users/(?P<user_id>\d+)/playlists$', 'addPlaylists'),
+) 
+
