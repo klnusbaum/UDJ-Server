@@ -12,11 +12,6 @@ from models import Ticket
 from datetime import datetime
 from datetime import timedelta
 
-def getInvalidTicketResponse(request):
-    toReturn = HttpResponseForbidden()
-    toReturn['error'] = request.META["udj_ticket_hash"] + " is invalid ticket"
-    return toReturn
-
 def ticketMatchesUser(provided_hash, provided_user_id):
   matchingTickets =  \
     Ticket.objects.filter(ticket_hash=provided_hash, user__id=provided_user_id)

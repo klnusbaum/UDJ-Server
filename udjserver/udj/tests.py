@@ -12,17 +12,8 @@ from udj.models import Ticket
 from udj.models import LibraryEntry
 import json
 
-def authTestUser(testObject):
-    response = testObject.client.post('/udj/auth/', {'username': 'test1', 'password' : 'onetest'})
-    testObject.ticket_hash = response.__getitem__('udj_ticket_hash')
-    testObject.user_id = response.__getitem__('user_id')
-
-
-
-
 class AuthTestCase(TestCase):
   fixtures = ['test_fixture.json']
-
 
   def testAuth(self):
     client = Client()
@@ -40,7 +31,10 @@ class NeedsAuthTestCase(TestCase):
   fixtures = ['test_fixture.json']
   client = Client()
   def setUp(self):
-    authTestUser(self)
+    response = self.client.post(
+      '/udj/auth/', {'username': 'test1', 'password' : 'onetest'})
+    self.ticket_hash = response.__getitem__('udj_ticket_hash')
+    self.user_id = response.__getitem__('user_id')
 
 class DoesServerOpsTestCase(NeedsAuthTestCase):
 
@@ -53,6 +47,21 @@ class DoesServerOpsTestCase(NeedsAuthTestCase):
   def doDelete(self, url):
     return self.client.delete(url, **{'udj_ticket_hash' : self.ticket_hash})
    
+def verifySongAdded(testObject, lib_id, idMap, song, artist, album):
+  matchedEntries = LibraryEntry.objects.filter(host_lib_song_id=lib_id, 
+    owning_user=testObject.user_id)
+  testObject.assertEqual(len(matchedEntries), 1, 
+    msg="Couldn't find inserted song.")
+  insertedLibEntry = matchedEntries[0]
+  testObject.assertEqual(insertedLibEntry.song, song)
+  testObject.assertEqual(insertedLibEntry.artist, artist)
+  testObject.assertEqual(insertedLibEntry.album, album)
+
+  testObject.assertEqual( 
+    idMap['server_id'], insertedLibEntry.server_lib_song_id)
+  testObject.assertEqual(idMap['client_id'], lib_id)
+
+
 class LibSingleAddTestCase(DoesServerOpsTestCase):
   def testLibAdd(self):
 
@@ -65,33 +74,23 @@ class LibSingleAddTestCase(DoesServerOpsTestCase):
       album +'"}], "id_maps" : [ {"server_id" : -1, "client_id" : ' + \
      str(lib_id) +  '}]}'
 
-    response = self.doJSONPut('/udj/users/' + self.user_id + '/library/songs', payload)
+    response = self.doJSONPut(
+      '/udj/users/' + self.user_id + '/library/songs', payload)
     self.assertEqual(response.status_code, 201)
+    idMap = json.loads(response.content)[0]
+    verifySongAdded(self, lib_id, idMap, song, artist, album)
 
-
-    matchedEntries = LibraryEntry.objects.filter(host_lib_song_id=lib_id, 
-      owning_user=self.user_id)
-    self.assertEqual(len(matchedEntries), 1, msg="Couldn't find inserted song.")
-    insertedLibEntry = matchedEntries[0]
-    self.assertEqual(insertedLibEntry.song, song)
-    self.assertEqual(insertedLibEntry.artist, artist)
-    self.assertEqual(insertedLibEntry.album, album)
-
-    responseObject = json.loads(response.content)[0]
-    self.assertEqual( \
-      responseObject['server_id'], insertedLibEntry.server_lib_song_id)
-    self.assertEqual(responseObject['client_id'], lib_id)
 
 
 class LibMultiAddTestCase(DoesServerOpsTestCase):
   def testLibAdd(self):
 
-    lib_id1 = '1'
+    lib_id1 = 1
     song1 = 'Roulette Dares'
     artist1 = 'The Mars Volta'
     album1 = 'Deloused in the Comatorium'
 
-    lib_id2 = '2'
+    lib_id2 = 2
     song2 = 'Ilyena'
     artist2 = 'The Mars Volta'
     album2 = 'The Bedlam in Goliath'
@@ -101,27 +100,18 @@ class LibMultiAddTestCase(DoesServerOpsTestCase):
       '" , "album" : "' + album1 +'"}, ' + \
       '{"song" : "' + song2 + '", "artist" : "' + artist2 + \
       '" , "album" : "' + album2 +'"}],' + \
-      '"id_maps" : [ {"server_id" : -1, "client_id" : 1}, ' + \
-      '{"server_id" : -1, "client_id" : 2}]}'
+      '"id_maps" : [ {"server_id" : -1, "client_id" : ' + \
+       str(lib_id1) +'}, ' +  \
+      '{"server_id" : -1, "client_id" : ' + str(lib_id2) + '}]}'
 
     response = self.doJSONPut(
       '/udj/users/' + self.user_id + '/library/songs', payload)
 
     self.assertEqual(response.status_code, 201, msg=response.content)
-    matchedEntries1 = LibraryEntry.objects.filter(host_lib_song_id=lib_id, \
-      owning_user=self.user_id)
-    self.assertEqual(len(matchedEntries1), 1, msg="Couldn't find inserted song.")
-    insertedLibEntry1 = matchedEntries1[0]
-    self.assertEqual(insertedLibEntry1.song, song)
-    self.assertEqual(insertedLibEntry1.artist, artist)
-    self.assertEqual(insertedLibEntry1.album, album)
-
-    added1 = json.loads(response.content)[0]
-    self.assertEqual(
-      responseObject['server_id'], insertedLibEntry1.server_lib_song_id)
-    self.assertEqual1(
-      responseObject['client_id'], lib_id1)
-
+    idMap = json.loads(response.content)[0]
+    verifySongAdded(self, lib_id1, idMap, song1, artist1, album1)
+    idMap = json.loads(response.content)[1]
+    verifySongAdded(self, lib_id2, idMap, song2, artist2, album2)
 
 class LibRemoveTestCase(DoesServerOpsTestCase):
   def testLibSongDelete(self):

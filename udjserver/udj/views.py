@@ -10,8 +10,8 @@ from udj.JSONCodecs import LibraryEntryEncoder
 from udj.JSONCodecs import getLibraryEntryFromJSON
 from udj.models import LibraryEntry
 
-def addSongToLibrary(songJson, user_id):
-  toInsert = getLibraryEntryFromJSON(songJson, user_id)
+def addSongToLibrary(songJson, user_id, host_lib_id):
+  toInsert = getLibraryEntryFromJSON(songJson, user_id, host_lib_id)
   toInsert.save()
   return toInsert
 
@@ -28,7 +28,8 @@ def addSongsToLibrary(request, user_id):
 
   counter = 0
   for libEntry in songsToAdd:
-    addedSong = addSongToLibrary(libEntry, user_id)
+    addedSong = \
+      addSongToLibrary(libEntry, user_id, idMaps[counter]["client_id"])
     idMaps[counter]["server_id"] = addedSong.server_lib_song_id
     counter = counter +1
   toReturn = json.dumps(idMaps)

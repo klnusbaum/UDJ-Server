@@ -15,9 +15,9 @@ class LibraryEntryEncoder(json.JSONEncoder):
     else:
       return json.JSONEncoder.default(self, obj)
 
-def getLibraryEntryFromJSON(songJson, user_id):
+def getLibraryEntryFromJSON(songJson, user_id, host_lib_id):
   return LibraryEntry( 
-    host_lib_song_id = int(songJson['host_lib_song_id']), 
+    host_lib_song_id = host_lib_id, 
     song = songJson['song'], 
     artist  = songJson['artist'], 
     album = songJson['album'], 
