@@ -2,11 +2,13 @@
 import json
 from django.http import HttpRequest
 from django.http import HttpResponse
+from django.http import HttpResponseNotFound
 from udj.decorators import TicketUserMatch
 from udj.decorators import AcceptsMethods
 from udj.decorators import NeedsJSON
 from udj.JSONCodecs import LibraryEntryEncoder
 from udj.JSONCodecs import getLibraryEntryFromJSON
+from udj.models import LibraryEntry
 
 def addSongToLibrary(songJson, user_id):
   toInsert = getLibraryEntryFromJSON(songJson, user_id)
@@ -28,4 +30,13 @@ def addSongsToLibrary(request, user_id):
     addedSongs.append(addSongToLibrary(libEntry, user_id))
   data = json.dumps(addedSongs, cls=LibraryEntryEncoder)
 
-  return HttpResponse(data)
+  return HttpResponse(data, status=201)
+
+@AcceptsMethods('DELETE')
+@TicketUserMatch
+def deleteSongFromLibrary(request, user_id, lib_id):
+  matchedEntries = LibraryEntry.objects.filter(server_lib_song_id=lib_id)
+  if len(matchedEntries) != 1:
+    return HttpResponseNotFound()
+  matchedEntries[0].delete()
+  return HttpResponse() 

@@ -12,6 +12,12 @@ from udj.models import Ticket
 from udj.models import LibraryEntry
 import json
 
+def authTestUser(testObject):
+    response = testObject.client.post('/udj/auth/', {'username': 'test', 'password' : 'onetest'})
+    testObject.ticket_hash = response.__getitem__('udj_ticket_hash')
+    testObject.user_id = response.__getitem__('user_id')
+
+
 
 
 class AuthTestCase(TestCase):
@@ -30,16 +36,24 @@ class AuthTestCase(TestCase):
     self.assertEqual(response.__getitem__('udj_ticket_hash'), ticket[0].ticket_hash)
 
 
-class LibAddTestCase(TestCase):
+class NeedsAuthTestCase(TestCase):
   fixtures = ['test_fixture.json']
+  client = Client()
+  def setUp(self):
+    authTestUser(self)
 
+  def doJSONPut(self, url, payload):
+    return self.client.put(
+      url,
+      data=payload, content_type='text/json', 
+      **{'udj_ticket_hash' : self.ticket_hash})
+   
+  def doDelete(self, url):
+    return self.client.delete(url, **{'udj_ticket_hash' : self.ticket_hash})
+   
 
+class LibAddTestCase(NeedsAuthTestCase):
   def testLibAdd(self):
-    client = Client()
-    response = client.post('/udj/auth/', {'username': 'test', 'password' : 'onetest'})
-    ticket_hash = response.__getitem__('udj_ticket_hash')
-    user_id = response.__getitem__('user_id')
-
 
     lib_id = 1
     song = 'Roulette Dares'
@@ -49,14 +63,11 @@ class LibAddTestCase(TestCase):
       str(lib_id) + \
       ', "song" : "' + song + '", "artist" : "' + artist + '" , "album" : "' + \
       album +'"}]'
-    response = client.put('/udj/users/' + user_id + '/library/songs', \
-      data=payload, content_type='text/json', \
-      **{'udj_ticket_hash' : ticket_hash})
+    response = self.doJSONPut('/udj/users/' + self.user_id + '/library/songs', payload)
 
-
-    self.assertEqual(response.status_code, 200)
+    self.assertEqual(response.status_code, 201)
     matchedEntries = LibraryEntry.objects.filter(host_lib_song_id=lib_id, \
-      owning_user=user_id)
+      owning_user=self.user_id)
     self.assertEqual(len(matchedEntries), 1, msg="Couldn't find inserted song.")
     insertedLibEntry = matchedEntries[0]
     self.assertEqual(insertedLibEntry.song, song)
@@ -70,5 +81,15 @@ class LibAddTestCase(TestCase):
     self.assertEqual(responseObject['song'], song)
     self.assertEqual(responseObject['artist'], artist)
     self.assertEqual(responseObject['album'], album)
-    
+
+
+class LibRemoveTestCase(NeedsAuthTestCase):
+  def testLibSongDelete(self):
+    response = self.doDelete('/udj/users/' + self.user_id + '/library/2')
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(
+      len(LibraryEntry.objects.filter(server_lib_song_id=2)),
+      0
+    )
+
     

@@ -2,6 +2,7 @@ from myauth import hasValidTicket
 from myauth import ticketMatchesUser
 from myauth import getInvalidTicketResponse
 from django.http import HttpResponseNotAllowed
+from django.http import HttpResponseBadRequest
 
 def TicketUserMatch(function):
   def wrapper(*args, **kwargs):
@@ -11,8 +12,7 @@ def TicketUserMatch(function):
     if not hasValidTicket(request):
       return getInvalidTicketResponse(request)
     if not ticketMatchesUser(request.META["udj_ticket_hash"], user_id):
-      toReturn = HttpResponseForbidden()
-      toReturn['error'] = "ticket didn't match user"
+      toReturn = HttpResponseForbidden("ticket didn't match user")
       return toReturn
     else:
       return function(*args, **kwargs)
@@ -32,11 +32,14 @@ def AcceptsMethods(acceptedMethods):
 def NeedsJSON(function):
   def wrapper(*args, **kwargs):
     request = args[0]
-    if request.META['CONTENT_TYPE'] != 'text/json' \
-      or request.raw_post_data == '':
-      return HttpResponseBadRequest()
-    else:
-      return function(*args, **kwargs)
+    try:
+      if request.META['CONTENT_TYPE'] != 'text/json' \
+        or request.raw_post_data == '':
+        return HttpResponseBadRequest()
+      else:
+        return function(*args, **kwargs)
+    except KeyError:
+      return HttpResponseBadRequest("Must speicfy a conent type of test/json")
   return wrapper
     
     
