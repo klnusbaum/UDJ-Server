@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Event(models.Model):
-  id = models.AutoField(primary_key=True)
   name = models.CharField(max_length=200)
   host = models.ForeignKey(User)
   latitude = models.DecimalField(max_digits=7, decimal_places=5)
@@ -10,7 +9,6 @@ class Event(models.Model):
 
   def __unicode__(self):
     return "Party " + str(self.id) + ": " + self.name
-
 
 class LibraryEntry(models.Model):
   server_lib_song_id = models.AutoField(primary_key=True)
@@ -26,6 +24,7 @@ class LibraryEntry(models.Model):
 
 class ActivePlaylistEntry(models.Model):
   server_playlist_song_id = models.AutoField(primary_key=True)
+  #Id of playlist entry on client who added the song
   client_playlist_song_id = models.IntegerField()
   priority = models.IntegerField()
   server_lib_song = models.ForeignKey(LibraryEntry)
@@ -48,10 +47,20 @@ class Ticket(models.Model):
 
 
 class EventGoer(models.Model):
-  id = models.AutoField(primary_key=True)
   user = models.ForeignKey(User)
   event = models.ForeignKey(Event)
 
   def __unicode__(self):
     return "User " + str(self.user.id) + " is in Party " + str(self.event.id)
 
+class Playlist(models.Model):
+  server_playlist_id = models.AutoField(primary_key=True)
+  host_playlist_id = models.IntegerField()
+  name = models.CharField(max_length=200)
+  date_created = models.DateTimeField()
+
+class PlaylistEntry(models.Model):
+  server_playlist_entry_id = models.AutoField(primary_key=True)
+  host_playlist_entry_id = models.IntegerField()
+  playlist = models.ForeignKey(Playlist)
+  song = models.ForeignKey(LibraryEntry) 
