@@ -31,3 +31,16 @@ def addPlaylists(request, user_id):
   toReturn = json.dumps(idMaps)
 
   return HttpResponse(toReturn, status=201)
+
+@AcceptsMethods('DELETE')
+@TicketUserMatch
+def deletePlaylist(request, user_id, playlist_id):
+  matchedEntries = Playlist.objects.filter(
+    server_playlist_id=playlist_id,
+    owning_user=user_id)
+  if len(matchedEntries) != 1:
+    return HttpResponseNotFound()
+  matchedEntries[0].delete()
+  return HttpResponse("Deleted playlist: " + lib_id)
+
+
