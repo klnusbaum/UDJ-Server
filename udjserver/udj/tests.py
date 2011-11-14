@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from udj.models import Ticket
 from udj.models import LibraryEntry
 from udj.models import Playlist
+from udj.models import PlaylistEntry
 import json
 from datetime import datetime
 
@@ -199,6 +200,23 @@ class PlaylistRemoveTestCase(DoesServerOpsTestCase):
     self.assertEqual(
       len(LibraryEntry.objects.filter(server_lib_song_id=10)),0)
 
+def verifyPlaylistEntryAdded(
+  testObject, host_id, idMap, lib_song_id, playlist_id):
+
+  matchedEntries = PlaylistEntry.objects.filter(host_playlist_entry_id=host_id, 
+    playlist__server_playlist_id=playlist_id)
+  testObject.assertEqual(len(matchedEntries), 1, 
+    msg="Couldn't find inserted playlist.")
+  insertedPlaylistEntry = matchedEntries[0]
+  testObject.assertEqual(
+    insertedPlaylistEntry.song.server_lib_song_id, lib_song_id)
+
+  testObject.assertEqual( 
+    idMap['server_id'], insertedPlaylistEntry.server_playlist_entry_id)
+  testObject.assertEqual(idMap['client_id'], host_id)
+
+  
+
 class PlaylistEntrySingleAddTest(DoesServerOpsTestCase):
   def testAddPlaylistEntry(self):
     host_id = 1
@@ -211,5 +229,9 @@ class PlaylistEntrySingleAddTest(DoesServerOpsTestCase):
     response = self.doJSONPut(
       '/udj/users/' + self.user_id + '/playlists/'+str(playlist_id)+'/songs',
       payload)
+    self.assertEqual(response.status_code, 201, msg=response.content)
+    response_payload = json.loads(response.content)
+    idMap = response_payload[0]
+    verifyPlaylistEntryAdded(self, host_id, idMap, lib_song_id, playlist_id)
 
 
