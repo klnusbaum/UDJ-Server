@@ -166,7 +166,7 @@ class PlaylistSingleAddTest(DoesServerOpsTestCase):
 
 class PlaylistRemoveTestCase(DoesServerOpsTestCase):
   def testPlaylistDelete(self):
-    response = self.doDelete('/udj/users/' + self.user_id + '/playlists/10')
+    response = self.doDelete('/udj/users/' + self.user_id + '/playlists/1')
     self.assertEqual(response.status_code, 200)
     self.assertEqual(
       len(LibraryEntry.objects.filter(server_lib_song_id=10)),0)

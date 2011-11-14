@@ -41,6 +41,6 @@ def deletePlaylist(request, user_id, playlist_id):
   if len(matchedEntries) != 1:
     return HttpResponseNotFound()
   matchedEntries[0].delete()
-  return HttpResponse("Deleted playlist: " + lib_id)
+  return HttpResponse("Deleted playlist: " + playlist_id)
 
 
