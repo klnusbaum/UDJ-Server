@@ -199,3 +199,17 @@ class PlaylistRemoveTestCase(DoesServerOpsTestCase):
     self.assertEqual(
       len(LibraryEntry.objects.filter(server_lib_song_id=10)),0)
 
+class PlaylistEntrySingleAddTest(DoesServerOpsTestCase):
+  def testAddPlaylistEntry(self):
+    host_id = 1
+    lib_song_id = 6
+    playlist_id = 1
+    payload = '{"to_add" : ['+ str(lib_song_id) + '],' +\
+      '"id_maps" : [{"server_id" : -1 , ' + \
+      '"client_id" : ' + str(host_id) + '}]}'
+
+    response = self.doJSONPut(
+      '/udj/users/' + self.user_id + '/playlists/'+str(playlist_id)+'/songs',
+      payload)
+
+

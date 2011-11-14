@@ -30,6 +30,7 @@
  {"pk": 1, "model": "admin.logentry", "fields": {"action_flag": 1, "action_time": "2011-11-13 13:59:50", "object_repr": "test1", "object_id": "2", "change_message": "", "user": 1, "content_type": 3}},
  {"pk": 1, "model": "udj.libraryentry", "fields": {"album": "Blue", "artist": "Third Eye Blind", "owning_user": 2, "host_lib_song_id": 10, "song": "10 Days Late"}},
  {"pk": 2, "model": "udj.libraryentry", "fields": {"album": "Blue", "artist": "Third Eye Blind", "owning_user": 2, "host_lib_song_id": 11, "song": "Never Let You Go"}},
+ {"pk": 6, "model": "udj.libraryentry", "fields": {"album": "Blue", "artist": "Third Eye Blind", "owning_user": 2, "host_lib_song_id": 12, "song": "Deep Inside of You"}},
  {"pk": 3, "model": "udj.libraryentry", "fields": {"album": "Adore", "artist": "The Smashing Pumpkins", "owning_user": 3, "host_lib_song_id": 1, "song": "Pug"}},
  {"pk": 4, "model": "udj.libraryentry", "fields": {"album": "Mellon Collie And The Infinite Sadness", "artist": "The Smashing Pumpkins", "owning_user": 3, "host_lib_song_id": 2, "song": "Zero"}},
  {"pk": 5, "model": "udj.libraryentry", "fields": {"album": "Mellon Collie And The Infinite Sadness", "artist": "The Smashing Pumpkins", "owning_user": 3, "host_lib_song_id": 3, "song": "1979"}},

@@ -6,6 +6,7 @@ from udj.decorators import TicketUserMatch
 from udj.decorators import AcceptsMethods
 from udj.decorators import NeedsJSON
 from udj.JSONCodecs import getPlaylistFromJSON
+from udj.JSONCodecs import getPlaylistEntryFromJSON
 from udj.models import Playlist
 from udj.models import PlaylistEntry
 
@@ -24,8 +25,7 @@ def addPlaylists(request, user_id):
 
   counter = 0
   for playlist in playlistsToAdd:
-    addedPlaylist = \
-      addPlaylist(playlist, user_id, idMaps[counter]["client_id"])
+    addedPlaylist = addPlaylist(playlist, user_id, idMaps[counter]["client_id"])
     idMaps[counter]["server_id"] = addedPlaylist.server_playlist_id
     counter = counter +1
   toReturn = json.dumps(idMaps)
@@ -43,4 +43,26 @@ def deletePlaylist(request, user_id, playlist_id):
   matchedEntries[0].delete()
   return HttpResponse("Deleted playlist: " + playlist_id)
 
+def addSongToPlaylist(song_id, playlist_id, user_id, host_id):
+  toInsert = getPlaylistEntryFromJSON(song_id, playlist_id, user_id, host_id)
+  toInsert.save()
+  return toInsert
 
+@AcceptsMethods('PUT')
+@NeedsJSON
+@TicketUserMatch
+def addPlaylistEntries(request, user_id, playlist_id):
+  payload = json.loads(request.raw_post_data)
+  songsToAdd = payload["to_add"]
+  idMaps = payload["id_maps"]
+
+  counter = 0
+  for song_id in songsToAdd:
+    addedSong = addSongToPlaylist(
+      song_id, playlist_id, user_id, idMaps[counter]["client_id"])
+    idMaps[counter]["server_id"] = addedSong.server_playlist_entry_id
+    counter = counter +1
+  toReturn = json.dumps(idMaps)
+
+  return HttpResponse(toReturn, status=201)
+  

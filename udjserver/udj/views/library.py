@@ -6,7 +6,6 @@ from django.http import HttpResponseNotFound
 from udj.decorators import TicketUserMatch
 from udj.decorators import AcceptsMethods
 from udj.decorators import NeedsJSON
-from udj.JSONCodecs import LibraryEntryEncoder
 from udj.JSONCodecs import getLibraryEntryFromJSON
 from udj.models import LibraryEntry
 
