@@ -198,7 +198,7 @@ class PlaylistRemoveTestCase(DoesServerOpsTestCase):
     response = self.doDelete('/udj/users/' + self.user_id + '/playlists/1')
     self.assertEqual(response.status_code, 200)
     self.assertEqual(
-      len(LibraryEntry.objects.filter(server_lib_song_id=10)),0)
+      len(Playlist.objects.filter(server_playlist_id=1)),0)
 
 def verifyPlaylistEntryAdded(
   testObject, host_id, idMap, lib_song_id, playlist_id):
@@ -260,4 +260,10 @@ class PlaylistEntryMultiAddTest(DoesServerOpsTestCase):
     idMap = response_payload[1]
     verifyPlaylistEntryAdded(self, host_id2, idMap, lib_song_id2, playlist_id)
 
+class PlaylistEntryRemoveTestCase(DoesServerOpsTestCase):
+  def testPlaylistDelete(self):
+    response = self.doDelete('/udj/users/' + self.user_id + '/playlists/1/songs/1')
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(
+      len(PlaylistEntry.objects.filter(server_playlist_entry_id=1)),0)
 

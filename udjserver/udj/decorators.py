@@ -23,7 +23,7 @@ def AcceptsMethods(acceptedMethods):
       if request.method in acceptedMethods:
         return target(*args, **kwargs)
       else:
-        return HttpResponseNotAllowed()
+        return HttpResponseNotAllowed(acceptedMethods)
     return wrapper
   return decorator
       

@@ -65,4 +65,15 @@ def addPlaylistEntries(request, user_id, playlist_id):
   toReturn = json.dumps(idMaps)
 
   return HttpResponse(toReturn, status=201)
-  
+
+@AcceptsMethods('DELETE')
+@TicketUserMatch
+def deleteSongFromPlaylist(request, user_id, playlist_id, playlist_entry_id):
+  matchedEntries = PlaylistEntry.objects.filter(
+    playlist__server_playlist_id=playlist_id,
+    playlist__owning_user__id=user_id,
+    server_playlist_entry_id=playlist_entry_id)
+  if len(matchedEntries) != 1:
+    return HttpResponseNotFound()
+  matchedEntries[0].delete()
+  return HttpResponse("Deleted playlist entry: " + playlist_entry_id)
