@@ -234,4 +234,30 @@ class PlaylistEntrySingleAddTest(DoesServerOpsTestCase):
     idMap = response_payload[0]
     verifyPlaylistEntryAdded(self, host_id, idMap, lib_song_id, playlist_id)
 
+class PlaylistEntryMultiAddTest(DoesServerOpsTestCase):
+  def testAddPlaylistEntries(self):
+    playlist_id = 1
+
+    host_id1 = 1
+    lib_song_id1 = 6
+    host_id2 = 2
+    lib_song_id2 = 7
+
+    payload = '{"to_add" : ['+ str(lib_song_id1) + \
+      ','+ str(lib_song_id2) +'],' +\
+      '"id_maps" : [{"server_id" : -1 , ' + \
+      '"client_id" : ' + str(host_id1) + '},' + \
+      '{"server_id" : -1 , ' + \
+      '"client_id" : ' + str(host_id2) + '}]}'
+  
+    response = self.doJSONPut(
+      '/udj/users/' + self.user_id + '/playlists/'+str(playlist_id)+'/songs',
+      payload)
+    self.assertEqual(response.status_code, 201, msg=response.content)
+    response_payload = json.loads(response.content)
+    idMap = response_payload[0]
+    verifyPlaylistEntryAdded(self, host_id1, idMap, lib_song_id1, playlist_id)
+    idMap = response_payload[1]
+    verifyPlaylistEntryAdded(self, host_id2, idMap, lib_song_id2, playlist_id)
+
 
