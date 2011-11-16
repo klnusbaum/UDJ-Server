@@ -10,8 +10,10 @@ from django.test.client import Client
 from django.contrib.auth.models import User
 from udj.models import Ticket
 from udj.models import LibraryEntry
+"""
 from udj.models import Playlist
 from udj.models import PlaylistEntry
+"""
 import json
 from datetime import datetime
 
@@ -148,6 +150,8 @@ class LibFullDeleteTest(DoesServerOpsTestCase):
       0
     )
 
+
+"""
 def verifyPlaylistAdded(testObject, host_id, idMap, name, date_created):
   matchedEntries = Playlist.objects.filter(host_playlist_id=host_id, 
     owning_user=testObject.user_id)
@@ -278,4 +282,4 @@ class PlaylistEntryRemoveTestCase(DoesServerOpsTestCase):
     self.assertEqual(response.status_code, 200)
     self.assertEqual(
       len(PlaylistEntry.objects.filter(server_playlist_entry_id=1)),0)
-
+"""

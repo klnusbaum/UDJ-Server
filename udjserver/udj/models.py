@@ -53,6 +53,7 @@ class EventGoer(models.Model):
   def __unicode__(self):
     return "User " + str(self.user.id) + " is in Party " + str(self.event.id)
 
+"""
 class Playlist(models.Model):
   server_playlist_id = models.AutoField(primary_key=True)
   host_playlist_id = models.IntegerField()
@@ -71,3 +72,4 @@ class PlaylistEntry(models.Model):
 
   def __unicode__(self):
     return "Playlist Entry " + str(self.server_playlist_entry_id) 
+"""
