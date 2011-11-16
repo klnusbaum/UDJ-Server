@@ -24,6 +24,7 @@
 #include <QDateTime>
 #include <QObject>
 #include <map>
+#include <QNetworkRequest>
 
 class QNetworkAccessManager;
 class QNetworkReply;
@@ -167,6 +168,8 @@ private:
   QDateTime timeTicketIssued;
 
   void setLoggedIn(QByteArray ticket, QByteArray userId);
+
+  void prepareJSONRequest(QNetworkRequest &request);
 
 
   //@}

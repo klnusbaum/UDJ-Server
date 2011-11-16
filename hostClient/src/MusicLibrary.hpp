@@ -335,7 +335,7 @@ private:
       "(" + getLibIdColName() + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 
       getServerLibIdColName() + " INTEGER DEFAULT " + 
-        getInvalidServerId() + ", " +
+        QString::number(getInvalidServerId()) + ", " +
 
    	  getLibSongColName() + " TEXT NOT NULL, " +
       getLibArtistColName() + " TEXT, "+

@@ -8,6 +8,8 @@ Replace this with more appropriate tests for your application.
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
+from udj.headers import getTicketHeader
+from udj.headers import getUserIdHeader
 from udj.models import Ticket
 from udj.models import LibraryEntry
 """
@@ -24,18 +26,13 @@ class AuthTestCase(TestCase):
     client = Client()
     response = client.post('/udj/auth/', {'username': 'test1', 'password' : 'onetest'})
     self.assertEqual(response.status_code, 200)
-    # Need to use HTTP_UDJ_TICKET_HASH instead of udj_ticket_hash in order
-    # to simpluate what actually happens in production. This is stupid and 
-    # makes me angry.
-    self.assertTrue(response.has_header('HTTP_UDJ_TICKET_HASH'))
-    self.assertTrue(response.has_header('user_id'))
+    self.assertTrue(response.has_header(getTicketHeader()))
+    self.assertTrue(response.has_header(getUserIdHeader()))
     testUser = User.objects.filter(username='test1')
-    self.assertEqual(int(response.__getitem__('user_id')), testUser[0].id)
+    self.assertEqual(
+      int(response.__getitem__(getUserIdHeader())), testUser[0].id)
     ticket = Ticket.objects.filter(user=testUser)
-    # Need to use HTTP_UDJ_TICKET_HASH instead of udj_ticket_hash in order
-    # to simpluate what actually happens in production. This is stupid and 
-    # makes me angry.
-    self.assertEqual(response.__getitem__('HTTP_UDJ_TICKET_HASH'), ticket[0].ticket_hash)
+    self.assertEqual(response.__getitem__(getTicketHeader()), ticket[0].ticket_hash)
 
 
 class NeedsAuthTestCase(TestCase):
@@ -44,25 +41,25 @@ class NeedsAuthTestCase(TestCase):
   def setUp(self):
     response = self.client.post(
       '/udj/auth/', {'username': 'test1', 'password' : 'onetest'})
-    # Need to use HTTP_UDJ_TICKET_HASH instead of udj_ticket_hash in order
-    # to simpluate what actually happens in production. This is stupid and 
-    # makes me angry.
-    self.ticket_hash = response.__getitem__('HTTP_UDJ_TICKET_HASH')
-    self.user_id = response.__getitem__('user_id')
+    self.ticket_hash = response.__getitem__(getTicketHeader())
+    self.user_id = response.__getitem__(getUserIdHeader())
 
 class DoesServerOpsTestCase(NeedsAuthTestCase):
 
   def doJSONPut(self, url, payload):
-    # Need to use HTTP_UDJ_TICKET_HASH instead of udj_ticket_hash in order
-    # to simpluate what actually happens in production. This is stupid and 
-    # makes me angry.
+    #This has to be HTTP_UDJ_TICKET_HASH and not just udj_ticket_has for 
+    #some weird reason. I think it's becase I'm dealing with the raw headers.
+    #Either way, it makes me angry
     return self.client.put(
       url,
       data=payload, content_type='text/json', 
-      **{'HTTP_UDJ_TICKET_HASH' : self.ticket_hash})
+      **{getTicketHeader() : self.ticket_hash})
    
   def doDelete(self, url):
-    return self.client.delete(url, **{'HTTP_UDJ_TICKET_HASH' : self.ticket_hash})
+    #This has to be HTTP_UDJ_TICKET_HASH and not just udj_ticket_has for 
+    #some weird reason. I think it's becase I'm dealing with the raw headers.
+    #Either way, it makes me angry
+    return self.client.delete(url, **{getTicketHeader() : self.ticket_hash})
    
 def verifySongAdded(testObject, lib_id, idMap, song, artist, album):
   matchedEntries = LibraryEntry.objects.filter(host_lib_song_id=lib_id, 
@@ -86,8 +83,8 @@ class LibSingleAddTestCase(DoesServerOpsTestCase):
     song = 'Roulette Dares'
     artist = 'The Mars Volta'
     album = 'Deloused in the Comatorium'
-    payload = '{ "to_add" : [{"host_lib_song_id" : ' + str(lib_id) + \
-      ', "song" : "' + song + '", "artist" : "' + artist + '" , "album" : "' + \
+    payload = '{ "to_add" : [{'\
+      ' "song" : "' + song + '", "artist" : "' + artist + '" , "album" : "' + \
       album +'"}], "id_maps" : [ {"server_id" : -1, "client_id" : ' + \
      str(lib_id) +  '}]}'
 
@@ -130,6 +127,23 @@ class LibMultiAddTestCase(DoesServerOpsTestCase):
     verifySongAdded(self, lib_id1, idMap, song1, artist1, album1)
     idMap = response_payload[1]
     verifySongAdded(self, lib_id2, idMap, song2, artist2, album2)
+
+class LibTestDuplicateAdd(DoesServerOpsTestCase):
+  def testDupAdd(self):
+
+    payload = '{ "to_add" : ' + \
+      ' [{"song" : "10 Days Late", "artist" : "Third Eye Blind", ' +\
+      '"album" : "Blue"}],' + \
+      '"id_maps" : [{"server_id" : -1, "client_id" : 10}]}'
+
+    response = self.doJSONPut(
+      '/udj/users/' + self.user_id + '/library/songs', payload)
+
+    self.assertEqual(response.status_code, 201, msg=response.content)
+    response_payload = json.loads(response.content)
+    idMap = response_payload[0]
+    self.assertEqual(idMap['server_id'], 1)
+    
 
 class LibRemoveTestCase(DoesServerOpsTestCase):
   def testLibSongDelete(self):
