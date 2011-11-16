@@ -14,7 +14,7 @@ from datetime import timedelta
 
 def ticketMatchesUser(request, provided_user_id):
   matchingTickets =  \
-    Ticket.objects.filter(ticket_hash=request.META["udj_ticket_hash"], user__id=provided_user_id)
+    Ticket.objects.filter(ticket_hash=request.META["HTTP_UDJ_TICKET_HASH"], user__id=provided_user_id)
   return len(matchingTickets) > 0
   
 
@@ -27,10 +27,10 @@ def isValidTicket(provided_hash):
     return False
 
 def hasValidTicket(request):
-  if "udj_ticket_hash" not in request.META:
+  if "HTTP_UDJ_TICKET_HASH" not in request.META:
     return False
   else:
-    return isValidTicket(request.META["udj_ticket_hash"])
+    return isValidTicket(request.META["HTTP_UDJ_TICKET_HASH"])
 
 def validAuthRequest(request):
   if not request.method == "POST":

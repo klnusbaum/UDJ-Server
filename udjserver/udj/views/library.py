@@ -3,6 +3,7 @@ import json
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseNotFound
+from django.http import HttpResponseBadRequest
 from udj.decorators import TicketUserMatch
 from udj.decorators import AcceptsMethods
 from udj.decorators import NeedsJSON
@@ -23,6 +24,11 @@ def addSongsToLibrary(request, user_id):
   #TODO catch any exception in the json parsing and return a bad request
   songsToAdd = payload["to_add"]
   idMaps = payload["id_maps"]
+
+  print payload
+
+  if len(songsToAdd) != len(idMaps):
+    return HttpResponseBadRequest("to_add and id_maps arrays must be the same length")
 
   counter = 0
   for libEntry in songsToAdd:

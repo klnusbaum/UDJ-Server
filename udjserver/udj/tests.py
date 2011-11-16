@@ -22,12 +22,18 @@ class AuthTestCase(TestCase):
     client = Client()
     response = client.post('/udj/auth/', {'username': 'test1', 'password' : 'onetest'})
     self.assertEqual(response.status_code, 200)
-    self.assertTrue(response.has_header('udj_ticket_hash'))
+    # Need to use HTTP_UDJ_TICKET_HASH instead of udj_ticket_hash in order
+    # to simpluate what actually happens in production. This is stupid and 
+    # makes me angry.
+    self.assertTrue(response.has_header('HTTP_UDJ_TICKET_HASH'))
     self.assertTrue(response.has_header('user_id'))
     testUser = User.objects.filter(username='test1')
     self.assertEqual(int(response.__getitem__('user_id')), testUser[0].id)
     ticket = Ticket.objects.filter(user=testUser)
-    self.assertEqual(response.__getitem__('udj_ticket_hash'), ticket[0].ticket_hash)
+    # Need to use HTTP_UDJ_TICKET_HASH instead of udj_ticket_hash in order
+    # to simpluate what actually happens in production. This is stupid and 
+    # makes me angry.
+    self.assertEqual(response.__getitem__('HTTP_UDJ_TICKET_HASH'), ticket[0].ticket_hash)
 
 
 class NeedsAuthTestCase(TestCase):
@@ -36,19 +42,25 @@ class NeedsAuthTestCase(TestCase):
   def setUp(self):
     response = self.client.post(
       '/udj/auth/', {'username': 'test1', 'password' : 'onetest'})
-    self.ticket_hash = response.__getitem__('udj_ticket_hash')
+    # Need to use HTTP_UDJ_TICKET_HASH instead of udj_ticket_hash in order
+    # to simpluate what actually happens in production. This is stupid and 
+    # makes me angry.
+    self.ticket_hash = response.__getitem__('HTTP_UDJ_TICKET_HASH')
     self.user_id = response.__getitem__('user_id')
 
 class DoesServerOpsTestCase(NeedsAuthTestCase):
 
   def doJSONPut(self, url, payload):
+    # Need to use HTTP_UDJ_TICKET_HASH instead of udj_ticket_hash in order
+    # to simpluate what actually happens in production. This is stupid and 
+    # makes me angry.
     return self.client.put(
       url,
       data=payload, content_type='text/json', 
-      **{'udj_ticket_hash' : self.ticket_hash})
+      **{'HTTP_UDJ_TICKET_HASH' : self.ticket_hash})
    
   def doDelete(self, url):
-    return self.client.delete(url, **{'udj_ticket_hash' : self.ticket_hash})
+    return self.client.delete(url, **{'HTTP_UDJ_TICKET_HASH' : self.ticket_hash})
    
 def verifySongAdded(testObject, lib_id, idMap, song, artist, album):
   matchedEntries = LibraryEntry.objects.filter(host_lib_song_id=lib_id, 
