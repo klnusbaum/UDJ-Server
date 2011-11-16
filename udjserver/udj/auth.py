@@ -12,9 +12,9 @@ from models import Ticket
 from datetime import datetime
 from datetime import timedelta
 
-def ticketMatchesUser(provided_hash, provided_user_id):
+def ticketMatchesUser(request, provided_user_id):
   matchingTickets =  \
-    Ticket.objects.filter(ticket_hash=provided_hash, user__id=provided_user_id)
+    Ticket.objects.filter(ticket_hash=request.META["udj_ticket_hash"], user__id=provided_user_id)
   return len(matchingTickets) > 0
   
 

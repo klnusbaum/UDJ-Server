@@ -2,6 +2,7 @@ from udj.auth import hasValidTicket
 from udj.auth import ticketMatchesUser
 from django.http import HttpResponseNotAllowed
 from django.http import HttpResponseBadRequest
+from django.http import HttpResponseForbidden
 
 def TicketUserMatch(function):
   def wrapper(*args, **kwargs):
@@ -9,8 +10,10 @@ def TicketUserMatch(function):
     user_id = kwargs['user_id']
     
     if not hasValidTicket(request):
+      for key in request.META:
+        print key
       return HttpResponseForbidden()
-    if not ticketMatchesUser(request.META["udj_ticket_hash"], user_id):
+    if not ticketMatchesUser(request, user_id):
       return HttpResponseForbidden()
     else:
       return function(*args, **kwargs)
