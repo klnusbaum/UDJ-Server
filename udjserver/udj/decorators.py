@@ -10,8 +10,6 @@ def TicketUserMatch(function):
     user_id = kwargs['user_id']
     
     if not hasValidTicket(request):
-      for key in request.META:
-        print key
       return HttpResponseForbidden()
     if not ticketMatchesUser(request, user_id):
       return HttpResponseForbidden()

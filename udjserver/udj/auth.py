@@ -11,10 +11,14 @@ import random
 from models import Ticket
 from datetime import datetime
 from datetime import timedelta
+from headers import getTicketHeader
+from headers import getUserIdHeader
+
 
 def ticketMatchesUser(request, provided_user_id):
-  matchingTickets =  \
-    Ticket.objects.filter(ticket_hash=request.META["HTTP_UDJ_TICKET_HASH"], user__id=provided_user_id)
+  matchingTickets = Ticket.objects.filter(
+    ticket_hash=request.META[getTicketHeader()], 
+    user__id=provided_user_id)
   return len(matchingTickets) > 0
   
 
@@ -27,10 +31,10 @@ def isValidTicket(provided_hash):
     return False
 
 def hasValidTicket(request):
-  if "HTTP_UDJ_TICKET_HASH" not in request.META:
+  if getTicketHeader() not in request.META:
     return False
   else:
-    return isValidTicket(request.META["HTTP_UDJ_TICKET_HASH"])
+    return isValidTicket(request.META[getTicketHeader()])
 
 def validAuthRequest(request):
   if not request.method == "POST":
@@ -72,8 +76,8 @@ def authenticate(request):
   if userToAuth.check_password(request.POST['password']):
     ticket = getTicketForUser(userToAuth)
     response = HttpResponse()
-    response['udj_ticket_hash'] = ticket.ticket_hash
-    response['user_id'] = userToAuth.id
+    response[getTicketHeader()] = ticket.ticket_hash
+    response[getUserIdHeader()] = userToAuth.id
     return response
   else:
     print "bad username and password"

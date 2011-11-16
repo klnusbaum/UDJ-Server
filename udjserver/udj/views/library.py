@@ -11,21 +11,24 @@ from udj.JSONCodecs import getLibraryEntryFromJSON
 from udj.models import LibraryEntry
 
 def addSongToLibrary(songJson, user_id, host_lib_id):
-  toInsert = getLibraryEntryFromJSON(songJson, user_id, host_lib_id)
-  toInsert.save()
-  return toInsert
+  preivouslyAdded = LibraryEntry.objects.filter(host_lib_song_id=host_lib_id, 
+    owning_user__id=user_id)
+  if len(preivouslyAdded) ==1:
+    return preivouslyAdded[0]
+  else:
+    toInsert = getLibraryEntryFromJSON(songJson, user_id, host_lib_id)
+    toInsert.save()
+    return toInsert
 
 @AcceptsMethods('PUT')
 @NeedsJSON
 @TicketUserMatch
 def addSongsToLibrary(request, user_id):
 
-  payload = json.loads(request.raw_post_data)
   #TODO catch any exception in the json parsing and return a bad request
+  payload = json.loads(request.raw_post_data)
   songsToAdd = payload["to_add"]
   idMaps = payload["id_maps"]
-
-  print payload
 
   if len(songsToAdd) != len(idMaps):
     return HttpResponseBadRequest("to_add and id_maps arrays must be the same length")
