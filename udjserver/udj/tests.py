@@ -22,11 +22,17 @@ class AuthTestCase(TestCase):
     client = Client()
     response = client.post('/udj/auth/', {'username': 'test1', 'password' : 'onetest'})
     self.assertEqual(response.status_code, 200)
+    # Need to use HTTP_UDJ_TICKET_HASH instead of udj_ticket_hash in order
+    # to simpluate what actually happens in production. This is stupid and 
+    # makes me angry.
     self.assertTrue(response.has_header('HTTP_UDJ_TICKET_HASH'))
     self.assertTrue(response.has_header('user_id'))
     testUser = User.objects.filter(username='test1')
     self.assertEqual(int(response.__getitem__('user_id')), testUser[0].id)
     ticket = Ticket.objects.filter(user=testUser)
+    # Need to use HTTP_UDJ_TICKET_HASH instead of udj_ticket_hash in order
+    # to simpluate what actually happens in production. This is stupid and 
+    # makes me angry.
     self.assertEqual(response.__getitem__('HTTP_UDJ_TICKET_HASH'), ticket[0].ticket_hash)
 
 
@@ -36,12 +42,18 @@ class NeedsAuthTestCase(TestCase):
   def setUp(self):
     response = self.client.post(
       '/udj/auth/', {'username': 'test1', 'password' : 'onetest'})
+    # Need to use HTTP_UDJ_TICKET_HASH instead of udj_ticket_hash in order
+    # to simpluate what actually happens in production. This is stupid and 
+    # makes me angry.
     self.ticket_hash = response.__getitem__('HTTP_UDJ_TICKET_HASH')
     self.user_id = response.__getitem__('user_id')
 
 class DoesServerOpsTestCase(NeedsAuthTestCase):
 
   def doJSONPut(self, url, payload):
+    # Need to use HTTP_UDJ_TICKET_HASH instead of udj_ticket_hash in order
+    # to simpluate what actually happens in production. This is stupid and 
+    # makes me angry.
     return self.client.put(
       url,
       data=payload, content_type='text/json', 
