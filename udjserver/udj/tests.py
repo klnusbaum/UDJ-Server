@@ -126,6 +126,23 @@ class LibMultiAddTestCase(DoesServerOpsTestCase):
     idMap = response_payload[1]
     verifySongAdded(self, lib_id2, idMap, song2, artist2, album2)
 
+class LibTestDuplicateAdd(DoesServerOpsTestCase):
+  def testDupAdd(self):
+
+    payload = '{ "to_add" : ' + \
+      ' [{"song" : "10 Days Late", "artist" : "Third Eye Blind", ' +\
+      '"album" : "Blue"}],' + \
+      '"id_maps" : [{"server_id" : -1, "client_id" : 10}]}'
+
+    response = self.doJSONPut(
+      '/udj/users/' + self.user_id + '/library/songs', payload)
+
+    self.assertEqual(response.status_code, 201, msg=response.content)
+    response_payload = json.loads(response.content)
+    idMap = response_payload[0]
+    self.assertEqual(idMap['server_id'], 1)
+    
+
 class LibRemoveTestCase(DoesServerOpsTestCase):
   def testLibSongDelete(self):
     response = self.doDelete('/udj/users/' + self.user_id + '/library/2')
