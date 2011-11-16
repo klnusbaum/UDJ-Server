@@ -18,12 +18,10 @@
  */
 #include <QNetworkAccessManager>
 #include <QNetworkCookieJar>
-#include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QBuffer>
 #include "UDJServerConnection.hpp"
 #include "JSONHelper.hpp"
-#include <QList>
 
 namespace UDJ{
 
@@ -43,6 +41,10 @@ void UDJServerConnection::startConnection(
   authenticate(username, password);
 }
 
+void UDJServerConnection::prepareJSONRequest(QNetworkRequest &request){
+  request.setHeader(QNetworkRequest::ContentTypeHeader, "text/json");
+  request.setRawHeader(getTicketHeaderName(), ticket_hash);
+}
 
 void UDJServerConnection::addLibSongOnServer(
 	const QString& songName,
@@ -62,7 +64,8 @@ void UDJServerConnection::addLibSongOnServer(
     hostId,
     success);
   QNetworkRequest addSongRequest(getLibAddSongUrl());
-  addSongRequest.setRawHeader(getTicketHeaderName(), ticket_hash);
+  prepareJSONRequest(addSongRequest);
+  std::cout << "payload: " << QString(songJSON).toStdString() << std::endl;
   netAccessManager->put(addSongRequest, songJSON);
 }
 

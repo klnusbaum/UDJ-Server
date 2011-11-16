@@ -70,6 +70,7 @@ const QByteArray JSONHelper::getJSONForLibAdd(
     QVariantMap idMap;
     idMap["server_id"] = QVariant::fromValue(MusicLibrary::getInvalidServerId());
     idMap["client_id"] = QVariant::fromValue(*it);
+    idMaps.append(idMap);
   }
 
   QVariantMap addObject;

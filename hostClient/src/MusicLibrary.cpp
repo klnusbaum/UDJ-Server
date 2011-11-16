@@ -126,17 +126,19 @@ void MusicLibrary::addSongToLibrary(Phonon::MediaSource song){
   QString fileName = song.fileName();
 
   library_song_id_t hostId;
-  QSqlQuery addQuery("INSERT INTO "+getLibraryTableName()+ 
+  QSqlQuery addQuery(
+    "INSERT INTO "+getLibraryTableName()+ 
     "("+
     getLibSongColName() + ","+
     getLibArtistColName() + ","+
     getLibAlbumColName() + ","+
-    getLibFileColName() + ") VALUES ( ?, ?, ?, ?)", database);
+    getLibFileColName() + ") VALUES ( :song , :artist , :album , :file );", 
+    database);
   
-  addQuery.addBindValue(songName);
-  addQuery.addBindValue(artistName);
-  addQuery.addBindValue(albumName);
-  addQuery.addBindValue(fileName);
+  addQuery.bindValue(":song", songName);
+  addQuery.bindValue(":artist", artistName);
+  addQuery.bindValue(":album", albumName);
+  addQuery.bindValue(":file", fileName);
 	EXEC_INSERT(
 		"Failed to add song " << songName.toStdString(), 
 		addQuery,

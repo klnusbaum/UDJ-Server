@@ -72,8 +72,8 @@ class LibSingleAddTestCase(DoesServerOpsTestCase):
     song = 'Roulette Dares'
     artist = 'The Mars Volta'
     album = 'Deloused in the Comatorium'
-    payload = '{ "to_add" : [{"host_lib_song_id" : ' + str(lib_id) + \
-      ', "song" : "' + song + '", "artist" : "' + artist + '" , "album" : "' + \
+    payload = '{ "to_add" : [{'\
+      ' "song" : "' + song + '", "artist" : "' + artist + '" , "album" : "' + \
       album +'"}], "id_maps" : [ {"server_id" : -1, "client_id" : ' + \
      str(lib_id) +  '}]}'
 
