@@ -23,6 +23,7 @@
 #include <QBuffer>
 #include "UDJServerConnection.hpp"
 #include "JSONHelper.hpp"
+#include <QList>
 
 namespace UDJ{
 
@@ -54,12 +55,11 @@ void UDJServerConnection::addLibSongOnServer(
   }
   bool success = true;
 
-  const QByteArray songJSON = JSONHelper::getLibraryEntryJSON(
-    songName, 
-    artistName,
-    albumName,
+  lib_song_t songToAdd = {songName, artistName, albumName};
+
+  const QByteArray songJSON = JSONHelper::getJSONForLibAdd(
+    songToAdd,
     hostId,
-    false, 
     success);
   QNetworkRequest addSongRequest(getLibAddSongUrl());
   addSongRequest.setRawHeader(getTicketHeaderName(), ticket_hash);

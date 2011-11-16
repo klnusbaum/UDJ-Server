@@ -124,11 +124,6 @@ public:
   /** @name Public Constants */
   //@{
 
-  static const library_song_id_t& getInvalidHostId(){
-    static const library_song_id_t invalidHostId = -1; 
-    return invalidHostId;
-  }
-
   static const library_song_id_t& getInvalidServerId(){
     static const library_song_id_t invalidServerId = -1; 
     return invalidServerId;

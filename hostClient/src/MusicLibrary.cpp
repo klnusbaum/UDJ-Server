@@ -125,7 +125,7 @@ void MusicLibrary::addSongToLibrary(Phonon::MediaSource song){
   QString albumName = getAlbumName(song);
   QString fileName = song.fileName();
 
-  library_song_id_t hostId = MusicLibrary::getInvalidHostId();
+  library_song_id_t hostId;
   QSqlQuery addQuery("INSERT INTO "+getLibraryTableName()+ 
     "("+
     getLibSongColName() + ","+

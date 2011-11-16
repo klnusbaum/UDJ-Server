@@ -20,28 +20,39 @@
 #define JSON_HELPER_HPP
 #include "ConfigDefs.hpp"
 #include <map>
+#include <vector>
 
 class QNetworkReply;
 
 namespace UDJ{
 
+typedef struct {
+  QString songName;
+  QString artistName;
+  QString albumName;
+} lib_song_t;
+
 
 class JSONHelper{
 
 public:
-  static const QByteArray getLibraryEntryJSON(
-	  const QString& songName,
-	  const QString& artistName,
-	  const QString& albumName,
-	  const library_song_id_t& hostId,
-    const bool isDeleted=false);
 
-  static const QByteArray getLibraryEntryJSON(
-	  const QString& songName,
-	  const QString& artistName,
-	  const QString& albumName,
-	  const library_song_id_t& hostId,
-    const bool isDeleted,
+  static const QByteArray getJSONForLibAdd(
+    const lib_song_t &song,
+    const library_song_id_t &id);
+
+  static const QByteArray getJSONForLibAdd(
+    const lib_song_t &song,
+    const library_song_id_t &id,
+    bool &success);
+
+  static const QByteArray getJSONForLibAdd(
+    const std::vector<lib_song_t> &songs,
+    const std::vector<library_song_id_t> &ids);
+
+  static const QByteArray getJSONForLibAdd(
+    const std::vector<lib_song_t>& songs,
+    const std::vector<library_song_id_t>& ids,
     bool &success);
 
   static const std::map<library_song_id_t, library_song_id_t>

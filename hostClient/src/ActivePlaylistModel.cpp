@@ -49,9 +49,8 @@ bool ActivePlaylistModel::updateVoteCount(const QModelIndex& index, int differen
 	if(musicLibrary->alterVoteCount(plId, difference)){
 		select();
 	}
-	else{
-		//TODO should show error
-	}
+  //TODO should show error
+  return false;
 }
 
 bool ActivePlaylistModel::addSongToPlaylist(library_song_id_t libraryId){
@@ -68,6 +67,8 @@ bool ActivePlaylistModel::removeSongFromPlaylist(const QModelIndex& index){
 	if(toReturn){
 		select();
 	}
+  //TODO Should raise error or something
+  return false;
 }
 
 QString ActivePlaylistModel::getFilePath(const QModelIndex& songIndex) const{
