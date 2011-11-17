@@ -13,6 +13,12 @@ urlpatterns += patterns('udj.views.library',
   (r'^users/(?P<user_id>\d+)/library$', 'deleteEntireLibrary'),
 ) 
 
+urlpatterns += patterns('udj.views.event',
+  (r'^event/(?P<latitude>-?\d+\.\d+)/(?P<longitude>-?\d+\.\d+)', 'getNearbyEvents'),
+)
+
+"""
+
 urlpatterns += patterns('udj.views.playlist',
   (r'^users/(?P<user_id>\d+)/playlists$', 'addPlaylists'),
   (
@@ -29,4 +35,4 @@ urlpatterns += patterns('udj.views.playlist',
     'deleteSongFromPlaylist'
   ),
 ) 
-
+"""

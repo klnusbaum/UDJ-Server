@@ -1,9 +1,6 @@
 import json
 from udj.models import LibraryEntry
-"""
-from udj.models import Playlist
-from udj.models import PlaylistEntry
-"""
+from udj.models import Event
 from django.contrib.auth.models import User
 from datetime import datetime
 
@@ -16,7 +13,26 @@ def getLibraryEntryFromJSON(songJson, user_id, host_lib_id):
     owning_user = User.objects.filter(id=user_id)[0]
   )
 
+def getJSONForEvents(events):
+  toReturn = []
+  for event in events:
+    toAdd = {
+      'id' : event.id,
+      'name' : event.name, 
+      'host_id' : event.host.id,
+      'latitude' : event.latitude,
+      'longitude' : event.longitude
+    }
+    toReturn.append(toAdd)
+  return json.dumps(toReturn)
+
+
+
+
+
 """
+from udj.models import Playlist
+from udj.models import PlaylistEntry
 def getPlaylistFromJSON(playlistJson, user_id, host_id):
   return Playlist( 
     host_playlist_id = host_id, 

@@ -47,18 +47,15 @@ class NeedsAuthTestCase(TestCase):
 class DoesServerOpsTestCase(NeedsAuthTestCase):
 
   def doJSONPut(self, url, payload):
-    #This has to be HTTP_UDJ_TICKET_HASH and not just udj_ticket_has for 
-    #some weird reason. I think it's becase I'm dealing with the raw headers.
-    #Either way, it makes me angry
-    return self.client.put(
+   return self.client.put(
       url,
       data=payload, content_type='text/json', 
       **{getTicketHeader() : self.ticket_hash})
+
+  def doGet(self, url):
+    return self.client.get(url, **{getTicketHeader() : self.ticket_hash})
    
   def doDelete(self, url):
-    #This has to be HTTP_UDJ_TICKET_HASH and not just udj_ticket_has for 
-    #some weird reason. I think it's becase I'm dealing with the raw headers.
-    #Either way, it makes me angry
     return self.client.delete(url, **{getTicketHeader() : self.ticket_hash})
    
 def verifySongAdded(testObject, lib_id, idMap, song, artist, album):
@@ -163,6 +160,13 @@ class LibFullDeleteTest(DoesServerOpsTestCase):
       len(LibraryEntry.objects.filter(owning_user__id=2)),
       0
     )
+
+class GetEventsTest(DoesServerOpsTestCase):
+  def testGetEvents(self):
+    response = self.doGet('/udj/events/48.2222/-88.44454')
+    self.assertEqual(response.status_code, 200)
+    response_payload = json.loads(response.content)
+    self.assertEqual(response_payload[0].id, 1) 
 
 
 """
