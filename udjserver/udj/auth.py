@@ -80,5 +80,4 @@ def authenticate(request):
     response[getUserIdHeader()] = userToAuth.id
     return response
   else:
-    print "bad username and password"
     return HttpResponseForbidden()

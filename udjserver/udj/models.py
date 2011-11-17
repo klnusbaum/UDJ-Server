@@ -5,7 +5,7 @@ class Event(models.Model):
   name = models.CharField(max_length=200)
   host = models.ForeignKey(User)
   latitude = models.DecimalField(max_digits=10, decimal_places=7)
-  logitude = models.DecimalField(max_digits=10, decimal_places=7)
+  longitude = models.DecimalField(max_digits=10, decimal_places=7)
 
   def __unicode__(self):
     return "Party " + str(self.id) + ": " + self.name

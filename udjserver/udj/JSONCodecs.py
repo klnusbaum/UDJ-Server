@@ -20,15 +20,11 @@ def getJSONForEvents(events):
       'id' : event.id,
       'name' : event.name, 
       'host_id' : event.host.id,
-      'latitude' : event.latitude,
-      'longitude' : event.longitude
+      'latitude' : float(event.latitude),
+      'longitude' : float(event.longitude)
     }
     toReturn.append(toAdd)
   return json.dumps(toReturn)
-
-
-
-
 
 """
 from udj.models import Playlist

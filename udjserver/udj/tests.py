@@ -166,7 +166,7 @@ class GetEventsTest(DoesServerOpsTestCase):
     response = self.doGet('/udj/events/48.2222/-88.44454')
     self.assertEqual(response.status_code, 200)
     response_payload = json.loads(response.content)
-    self.assertEqual(response_payload[0].id, 1) 
+    self.assertEqual(response_payload[0]['id'], 1) 
 
 
 """

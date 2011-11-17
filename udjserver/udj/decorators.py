@@ -4,6 +4,16 @@ from django.http import HttpResponseNotAllowed
 from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
 
+def NeedsAuth(function):
+  def wrapper(*args, **kwargs):
+    request = args[0]
+    if not hasValidTicket(request):
+      return HttpResponseForbidden()
+    else:
+      return function(*args, **kwargs)
+  return wrapper
+      
+
 def TicketUserMatch(function):
   def wrapper(*args, **kwargs):
     request = args[0]
