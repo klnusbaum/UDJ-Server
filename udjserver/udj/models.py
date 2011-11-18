@@ -11,7 +11,6 @@ class Event(models.Model):
     return "Party " + str(self.id) + ": " + self.name
 
 class LibraryEntry(models.Model):
-  server_lib_song_id = models.AutoField(primary_key=True)
   host_lib_song_id = models.IntegerField()
   song = models.CharField(max_length=200)
   artist = models.CharField(max_length=200)
@@ -19,13 +18,11 @@ class LibraryEntry(models.Model):
   owning_user = models.ForeignKey(User)
 
   def __unicode__(self):
-    return "Library Entry " + str(self.server_lib_song_id) + ": " + self.song
+    return "Library Entry " + str(self.id) + ": " + self.song
 
 
 class ActivePlaylistEntry(models.Model):
-  server_playlist_song_id = models.AutoField(primary_key=True)
   #Id of playlist entry on client who added the song
-  client_playlist_song_id = models.IntegerField()
   priority = models.IntegerField()
   server_lib_song = models.ForeignKey(LibraryEntry)
   time_added = models.DateTimeField(auto_now_add=True)

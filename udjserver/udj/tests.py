@@ -12,10 +12,6 @@ from udj.headers import getTicketHeader
 from udj.headers import getUserIdHeader
 from udj.models import Ticket
 from udj.models import LibraryEntry
-"""
-from udj.models import Playlist
-from udj.models import PlaylistEntry
-"""
 import json
 from datetime import datetime
 
@@ -58,7 +54,7 @@ class DoesServerOpsTestCase(NeedsAuthTestCase):
   def doDelete(self, url):
     return self.client.delete(url, **{getTicketHeader() : self.ticket_hash})
    
-def verifySongAdded(testObject, lib_id, idMap, song, artist, album):
+def verifySongAdded(testObject, lib_id, ids, song, artist, album):
   matchedEntries = LibraryEntry.objects.filter(host_lib_song_id=lib_id, 
     owning_user=testObject.user_id)
   testObject.assertEqual(len(matchedEntries), 1, 
@@ -68,9 +64,7 @@ def verifySongAdded(testObject, lib_id, idMap, song, artist, album):
   testObject.assertEqual(insertedLibEntry.artist, artist)
   testObject.assertEqual(insertedLibEntry.album, album)
 
-  testObject.assertEqual( 
-    idMap['server_id'], insertedLibEntry.server_lib_song_id)
-  testObject.assertEqual(idMap['client_id'], lib_id)
+  testObject.assertTrue(lib_id in ids)
 
 
 class LibSingleAddTestCase(DoesServerOpsTestCase):
@@ -80,17 +74,18 @@ class LibSingleAddTestCase(DoesServerOpsTestCase):
     song = 'Roulette Dares'
     artist = 'The Mars Volta'
     album = 'Deloused in the Comatorium'
-    payload = '{ "to_add" : [{'\
-      ' "song" : "' + song + '", "artist" : "' + artist + '" , "album" : "' + \
-      album +'"}], "id_maps" : [ {"server_id" : -1, "client_id" : ' + \
-     str(lib_id) +  '}]}'
+    payload = '[{' + \
+     '"id" : ' + str(lib_id) + ',' +\
+     '"song" : "' + song + '",'+\
+     '"artist" : "' + artist +'",'+\
+     '"album" : "' + album + '"}]'
+
 
     response = self.doJSONPut(
       '/udj/users/' + self.user_id + '/library/songs', payload)
     self.assertEqual(response.status_code, 201)
-    idMap = json.loads(response.content)[0]
-    verifySongAdded(self, lib_id, idMap, song, artist, album)
-
+    ids = json.loads(response.content)
+    verifySongAdded(self, lib_id, ids, song, artist, album)
 
 
 class LibMultiAddTestCase(DoesServerOpsTestCase):
@@ -106,48 +101,45 @@ class LibMultiAddTestCase(DoesServerOpsTestCase):
     artist2 = 'The Mars Volta'
     album2 = 'The Bedlam in Goliath'
 
-    payload = '{ "to_add" : ' + \
-      ' [{"song" : "' + song1 + '", "artist" : "' + artist1 + \
-      '" , "album" : "' + album1 +'"}, ' + \
-      '{"song" : "' + song2 + '", "artist" : "' + artist2 + \
-      '" , "album" : "' + album2 +'"}],' + \
-      '"id_maps" : [ {"server_id" : -1, "client_id" : ' + \
-       str(lib_id1) +'}, ' +  \
-      '{"server_id" : -1, "client_id" : ' + str(lib_id2) + '}]}'
+    payload = '[{' + \
+      '"id" : ' + str(lib_id1) + ',' + \
+      '"song" : "' + song1 + '",' + \
+      '"artist" : "' + artist1 + '",' + \
+      '"album" : "' + album1 + '"},{' + \
+      '"id" : ' + str(lib_id2) + ',' + \
+      '"song" : "' + song2 + '",' + \
+      '"artist" : "' + artist2 + '",' + \
+      '"album" : "' + album2 + '"}]'
+
 
     response = self.doJSONPut(
       '/udj/users/' + self.user_id + '/library/songs', payload)
 
     self.assertEqual(response.status_code, 201, msg=response.content)
-    response_payload = json.loads(response.content)
-    idMap = response_payload[0]
-    verifySongAdded(self, lib_id1, idMap, song1, artist1, album1)
-    idMap = response_payload[1]
-    verifySongAdded(self, lib_id2, idMap, song2, artist2, album2)
+    ids = json.loads(response.content)
+    verifySongAdded(self, lib_id1, ids, song1, artist1, album1)
+    verifySongAdded(self, lib_id2, ids, song2, artist2, album2)
 
 class LibTestDuplicateAdd(DoesServerOpsTestCase):
   def testDupAdd(self):
 
-    payload = '{ "to_add" : ' + \
-      ' [{"song" : "10 Days Late", "artist" : "Third Eye Blind", ' +\
-      '"album" : "Blue"}],' + \
-      '"id_maps" : [{"server_id" : -1, "client_id" : 10}]}'
-
+    payload = []
+    payload.append({"song" : "Deep Inside Of You", "artist" : "Third Eye Blind",
+      "albumt" : "Blue", "id" : 10})
     response = self.doJSONPut(
-      '/udj/users/' + self.user_id + '/library/songs', payload)
+      '/udj/users/' + self.user_id + '/library/songs', json.dumps(payload))
 
     self.assertEqual(response.status_code, 201, msg=response.content)
-    response_payload = json.loads(response.content)
-    idMap = response_payload[0]
-    self.assertEqual(idMap['server_id'], 1)
+    ids = json.loads(response.content)
+    self.assertEqual(ids[0], 10)
+    self.assertEqual(len(LibraryEntry.objects.filter(owning_user__id=2, host_lib_song_id=10)), 1)
     
-
 class LibRemoveTestCase(DoesServerOpsTestCase):
   def testLibSongDelete(self):
-    response = self.doDelete('/udj/users/' + self.user_id + '/library/2')
+    response = self.doDelete('/udj/users/' + self.user_id + '/library/10')
     self.assertEqual(response.status_code, 200)
     self.assertEqual(
-      len(LibraryEntry.objects.filter(server_lib_song_id=2)),
+      len(LibraryEntry.objects.filter(host_lib_song_id=2,owning_user__id=2)),
       0
     )
 
@@ -168,136 +160,3 @@ class GetEventsTest(DoesServerOpsTestCase):
     response_payload = json.loads(response.content)
     self.assertEqual(response_payload[0]['id'], 1) 
 
-
-"""
-def verifyPlaylistAdded(testObject, host_id, idMap, name, date_created):
-  matchedEntries = Playlist.objects.filter(host_playlist_id=host_id, 
-    owning_user=testObject.user_id)
-  testObject.assertEqual(len(matchedEntries), 1, 
-    msg="Couldn't find inserted playlist.")
-  insertedPlaylist = matchedEntries[0]
-  testObject.assertEqual(insertedPlaylist.name, name)
-  testObject.assertEqual(
-    insertedPlaylist.date_created, 
-    datetime.fromtimestamp(date_created))
-
-  testObject.assertEqual( 
-    idMap['server_id'], insertedPlaylist.server_playlist_id)
-  testObject.assertEqual(idMap['client_id'], host_id)
-
-
-class PlaylistSingleAddTest(DoesServerOpsTestCase):
-  def testAddPlaylist(self):
-    host_id = 1
-    name = "Daft Punk"
-    date_created = 1321019418
-    payload = '{"to_add" : [{"name" : "' + name + '", "date_created" : ' + \
-      str(date_created ) + '}], "id_maps" : [{"server_id" : -1 , ' + \
-      '"client_id" : ' + str(host_id) + '}]}'
-
-    response = self.doJSONPut(
-      '/udj/users/' + self.user_id + '/playlists', payload)
-
-    self.assertEqual(response.status_code, 201, msg=response.content)
-    response_payload = json.loads(response.content)
-    idMap = response_payload[0]
-    verifyPlaylistAdded(self, host_id, idMap, name, date_created)
-
-class PlaylistMutliAddTest(DoesServerOpsTestCase):
-  def testAddPlaylists(self):
-    host_id1 = 1
-    name1 = "Daft Punk Hits"
-    date_created1 = 1321019418
-    host_id2 = 2
-    name2 = "Milkman Hits"
-    date_created2 = 1321020000
-    payload = '{"to_add" : [{"name" : "' + name1 + '", "date_created" : ' + \
-      str(date_created1) + '}, {"name" : "' + name2 + '", "date_created" : ' + \
-      str(date_created2) + '} ], "id_maps" : [{"server_id" : -1 , ' + \
-      '"client_id" : ' + str(host_id1) + '}, {"server_id" : -1 , ' + \
-      '"client_id" : ' + str(host_id2) + '}]}'
-
-    response = self.doJSONPut(
-      '/udj/users/' + self.user_id + '/playlists', payload)
-
-    self.assertEqual(response.status_code, 201, msg=response.content)
-    response_payload = json.loads(response.content)
-    idMap = response_payload[0]
-    verifyPlaylistAdded(self, host_id1, idMap, name1, date_created1)
-    idMap = response_payload[1]
-    verifyPlaylistAdded(self, host_id2, idMap, name2, date_created2)
-
-class PlaylistRemoveTestCase(DoesServerOpsTestCase):
-  def testPlaylistDelete(self):
-    response = self.doDelete('/udj/users/' + self.user_id + '/playlists/1')
-    self.assertEqual(response.status_code, 200)
-    self.assertEqual(
-      len(Playlist.objects.filter(server_playlist_id=1)),0)
-
-def verifyPlaylistEntryAdded(
-  testObject, host_id, idMap, lib_song_id, playlist_id):
-
-  matchedEntries = PlaylistEntry.objects.filter(host_playlist_entry_id=host_id, 
-    playlist__server_playlist_id=playlist_id)
-  testObject.assertEqual(len(matchedEntries), 1, 
-    msg="Couldn't find inserted playlist.")
-  insertedPlaylistEntry = matchedEntries[0]
-  testObject.assertEqual(
-    insertedPlaylistEntry.song.server_lib_song_id, lib_song_id)
-
-  testObject.assertEqual( 
-    idMap['server_id'], insertedPlaylistEntry.server_playlist_entry_id)
-  testObject.assertEqual(idMap['client_id'], host_id)
-
-  
-
-class PlaylistEntrySingleAddTest(DoesServerOpsTestCase):
-  def testAddPlaylistEntry(self):
-    host_id = 1
-    lib_song_id = 6
-    playlist_id = 1
-    payload = '{"to_add" : ['+ str(lib_song_id) + '],' +\
-      '"id_maps" : [{"server_id" : -1 , ' + \
-      '"client_id" : ' + str(host_id) + '}]}'
-
-    response = self.doJSONPut(
-      '/udj/users/' + self.user_id + '/playlists/'+str(playlist_id)+'/songs',
-      payload)
-    self.assertEqual(response.status_code, 201, msg=response.content)
-    response_payload = json.loads(response.content)
-    idMap = response_payload[0]
-    verifyPlaylistEntryAdded(self, host_id, idMap, lib_song_id, playlist_id)
-
-class PlaylistEntryMultiAddTest(DoesServerOpsTestCase):
-  def testAddPlaylistEntries(self):
-    playlist_id = 1
-
-    host_id1 = 1
-    lib_song_id1 = 6
-    host_id2 = 2
-    lib_song_id2 = 7
-
-    payload = '{"to_add" : ['+ str(lib_song_id1) + \
-      ','+ str(lib_song_id2) +'],' +\
-      '"id_maps" : [{"server_id" : -1 , ' + \
-      '"client_id" : ' + str(host_id1) + '},' + \
-      '{"server_id" : -1 , ' + \
-      '"client_id" : ' + str(host_id2) + '}]}'
-  
-    response = self.doJSONPut(
-      '/udj/users/' + self.user_id + '/playlists/'+str(playlist_id)+'/songs',
-      payload)
-    self.assertEqual(response.status_code, 201, msg=response.content)
-    response_payload = json.loads(response.content)
-    idMap = response_payload[0]
-    verifyPlaylistEntryAdded(self, host_id1, idMap, lib_song_id1, playlist_id)
-    idMap = response_payload[1]
-    verifyPlaylistEntryAdded(self, host_id2, idMap, lib_song_id2, playlist_id)
-
-class PlaylistEntryRemoveTestCase(DoesServerOpsTestCase):
-  def testPlaylistDelete(self):
-    response = self.doDelete('/udj/users/' + self.user_id + '/playlists/1/songs/1')
-    self.assertEqual(response.status_code, 200)
-    self.assertEqual(
-      len(PlaylistEntry.objects.filter(server_playlist_entry_id=1)),0)
-"""

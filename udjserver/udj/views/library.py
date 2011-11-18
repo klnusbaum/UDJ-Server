@@ -10,13 +10,14 @@ from udj.decorators import NeedsJSON
 from udj.JSONCodecs import getLibraryEntryFromJSON
 from udj.models import LibraryEntry
 
-def addSongToLibrary(songJson, user_id, host_lib_id):
-  preivouslyAdded = LibraryEntry.objects.filter(host_lib_song_id=host_lib_id, 
+def addSongToLibrary(songJson, user_id):
+  preivouslyAdded = LibraryEntry.objects.filter(
+    host_lib_song_id=songJson['id'], 
     owning_user__id=user_id)
   if len(preivouslyAdded) ==1:
     return preivouslyAdded[0]
   else:
-    toInsert = getLibraryEntryFromJSON(songJson, user_id, host_lib_id)
+    toInsert = getLibraryEntryFromJSON(songJson, user_id)
     toInsert.save()
     return toInsert
 
@@ -26,28 +27,20 @@ def addSongToLibrary(songJson, user_id, host_lib_id):
 def addSongsToLibrary(request, user_id):
 
   #TODO catch any exception in the json parsing and return a bad request
-  payload = json.loads(request.raw_post_data)
-  songsToAdd = payload["to_add"]
-  idMaps = payload["id_maps"]
+  songsToAdd = json.loads(request.raw_post_data)
 
-  if len(songsToAdd) != len(idMaps):
-    return HttpResponseBadRequest("to_add and id_maps arrays must be the same length")
-
-  counter = 0
+  toReturn = []
   for libEntry in songsToAdd:
-    addedSong = \
-      addSongToLibrary(libEntry, user_id, idMaps[counter]["client_id"])
-    idMaps[counter]["server_id"] = addedSong.server_lib_song_id
-    counter = counter +1
-  toReturn = json.dumps(idMaps)
+    addedSong = addSongToLibrary(libEntry, user_id)
+    toReturn.append(addedSong.host_lib_song_id)
 
-  return HttpResponse(toReturn, status=201)
+  return HttpResponse(json.dumps(toReturn), status=201)
 
 @AcceptsMethods('DELETE')
 @TicketUserMatch
 def deleteSongFromLibrary(request, user_id, lib_id):
   matchedEntries = LibraryEntry.objects.filter(
-    server_lib_song_id=lib_id, owning_user=user_id
+    host_lib_song_id=lib_id, owning_user=user_id
   )
   if len(matchedEntries) != 1:
     return HttpResponseNotFound()
