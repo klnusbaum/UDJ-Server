@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 class Event(models.Model):
   name = models.CharField(max_length=200)
   host = models.ForeignKey(User)
-  latitude = models.DecimalField(max_digits=10, decimal_places=7)
-  longitude = models.DecimalField(max_digits=10, decimal_places=7)
+  latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
+  longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
   password_hash = models.CharField(max_length=32, blank=True)
 
   def __unicode__(self):

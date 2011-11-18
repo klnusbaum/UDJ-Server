@@ -12,6 +12,7 @@ from udj.headers import getTicketHeader
 from udj.headers import getUserIdHeader
 from udj.models import Ticket
 from udj.models import LibraryEntry
+from udj.models import Event
 import json
 from datetime import datetime
 
@@ -40,8 +41,6 @@ class NeedsAuthTestCase(TestCase):
     self.ticket_hash = response.__getitem__(getTicketHeader())
     self.user_id = response.__getitem__(getUserIdHeader())
 
-class DoesServerOpsTestCase(NeedsAuthTestCase):
-
   def doJSONPut(self, url, payload):
    return self.client.put(
       url,
@@ -67,7 +66,7 @@ def verifySongAdded(testObject, lib_id, ids, song, artist, album):
   testObject.assertTrue(lib_id in ids)
 
 
-class LibSingleAddTestCase(DoesServerOpsTestCase):
+class LibSingleAddTestCase(NeedsAuthTestCase):
   def testLibAdd(self):
 
     lib_id = 1
@@ -88,7 +87,7 @@ class LibSingleAddTestCase(DoesServerOpsTestCase):
     verifySongAdded(self, lib_id, ids, song, artist, album)
 
 
-class LibMultiAddTestCase(DoesServerOpsTestCase):
+class LibMultiAddTestCase(NeedsAuthTestCase):
   def testLibAdds(self):
 
     lib_id1 = 1
@@ -120,7 +119,7 @@ class LibMultiAddTestCase(DoesServerOpsTestCase):
     verifySongAdded(self, lib_id1, ids, song1, artist1, album1)
     verifySongAdded(self, lib_id2, ids, song2, artist2, album2)
 
-class LibTestDuplicateAdd(DoesServerOpsTestCase):
+class LibTestDuplicateAdd(NeedsAuthTestCase):
   def testDupAdd(self):
 
     payload = []
@@ -134,7 +133,7 @@ class LibTestDuplicateAdd(DoesServerOpsTestCase):
     self.assertEqual(ids[0], 10)
     self.assertEqual(len(LibraryEntry.objects.filter(owning_user__id=2, host_lib_song_id=10)), 1)
     
-class LibRemoveTestCase(DoesServerOpsTestCase):
+class LibRemoveTestCase(NeedsAuthTestCase):
   def testLibSongDelete(self):
     response = self.doDelete('/udj/users/' + self.user_id + '/library/10')
     self.assertEqual(response.status_code, 200)
@@ -144,7 +143,7 @@ class LibRemoveTestCase(DoesServerOpsTestCase):
     )
 
 
-class LibFullDeleteTest(DoesServerOpsTestCase):
+class LibFullDeleteTest(NeedsAuthTestCase):
   def testFullDelete(self):
     response = self.doDelete('/udj/users/'+self.user_id+'/library')
     self.assertEqual(response.status_code, 200)
@@ -153,7 +152,7 @@ class LibFullDeleteTest(DoesServerOpsTestCase):
       0
     )
 
-class GetEventsTest(DoesServerOpsTestCase):
+class GetEventsTest(NeedsAuthTestCase):
   def testGetEvents(self):
     response = self.doGet('/udj/events/48.2222/-88.44454')
     self.assertEqual(response.status_code, 200)
@@ -165,3 +164,12 @@ class GetEventsTest(DoesServerOpsTestCase):
     self.assertTrue("password" not in events[0])
     self.assertTrue("password_hash" not in events[0])
 
+class CreateEventTest(NeedsAuthTestCase):
+  def testCreateEvent(self):
+    partyName = "A Bitchn' Party"
+    event = {'name' : partyName } 
+    response = self.doJSONPut('/udj/events/2/event', json.dumps(event))
+    self.assertEqual(response.status_code, 201, "Error: " + response.content)
+    self.assertEqual(json.loads(response.content)['event_id'] ,2)
+    addedEvent = Event.objects.filter(id=2)
+    self.assertEqual(addedEvent[0].name, partyName)
