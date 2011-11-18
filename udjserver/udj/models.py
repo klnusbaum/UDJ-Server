@@ -6,6 +6,7 @@ class Event(models.Model):
   host = models.ForeignKey(User)
   latitude = models.DecimalField(max_digits=10, decimal_places=7)
   longitude = models.DecimalField(max_digits=10, decimal_places=7)
+  password_hash = models.CharField(max_length=32, blank=True)
 
   def __unicode__(self):
     return "Party " + str(self.id) + ": " + self.name
