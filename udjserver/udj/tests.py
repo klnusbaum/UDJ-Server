@@ -157,6 +157,9 @@ class GetEventsTest(DoesServerOpsTestCase):
   def testGetEvents(self):
     response = self.doGet('/udj/events/48.2222/-88.44454')
     self.assertEqual(response.status_code, 200)
-    response_payload = json.loads(response.content)
-    self.assertEqual(response_payload[0]['id'], 1) 
+    events = json.loads(response.content)
+    self.assertEqual(events[0]['id'], 1) 
+    self.assertEqual(events[0]['name'], 'First Party') 
+    self.assertEqual(events[0]['latitude'], 40.113523) 
+    self.assertEqual(events[0]['longitude'], -88.224006) 
 
