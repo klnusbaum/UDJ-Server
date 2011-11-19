@@ -212,3 +212,9 @@ class JoinEventTest(User3TestCase):
     event_goer_entries = EventGoer.objects.filter(event__id=1, user__id=3)
     self.assertEqual(len(event_goer_entries),1) 
     
+class LeaveEventTest(User2TestCase):
+  def testLeaveEvent(self):
+    reponse = self.doDelete('/udj/events/1/2')
+    self.assertEqual(response.status_code, 200)
+    event_goer_entries = EventGoer.objects.filter(event__id=1, user__id=2)
+    self.assertEqual(len(event_goer_entries), 0)

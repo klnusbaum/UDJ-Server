@@ -8,7 +8,13 @@ from udj.auth import getUserForTicket
 from django.shortcuts import get_object_or_404
 
 #TODO actually implement this fucntion. i.e. check for password compliance
-def CanLoginToParty(function):
+def IsUserOrHost(function):
+  def wrapper(*args, **kwargs):
+    return function(*args, **kwargs)
+  return wrapper
+
+#TODO actually implement this fucntion. i.e. check for password compliance
+def CanLoginToEvent(function):
   def wrapper(*args, **kwargs):
     return function(*args, **kwargs)
   return wrapper
