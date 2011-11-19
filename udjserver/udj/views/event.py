@@ -93,4 +93,6 @@ def joinEvent(request, event_id):
 @NeedsAuth
 @IsUserOrHost
 def leaveEvent(request, event_id, user_id):
-  return HttpRequest("left event")
+  event_goer = EventGoer.objects.filter(event__id=event_id, user__id=user_id)[0]
+  event_goer.delete()
+  return HttpResponse("left event")
