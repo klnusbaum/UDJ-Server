@@ -12,6 +12,7 @@ from udj.decorators import NeedsAuth
 from udj.decorators import IsEventHost
 from udj.decorators import CanLoginToParty
 from udj.models import Event
+from udj.models import EventGoer
 from udj.models import FinishedEvent
 from udj.JSONCodecs import getJSONForEvents
 from udj.auth import getUserForTicket
@@ -85,4 +86,4 @@ def loginToParty(request, event_id):
   event_to_join = Event.objects.filter(id=event_id)[0]
   event_goer = EventGoer(user=joining_user, event=event_to_join)
   event_goer.save()
-  return HttpResponse("joined event")
+  return HttpResponse("joined event", status=201)

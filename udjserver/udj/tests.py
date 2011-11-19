@@ -34,12 +34,13 @@ class AuthTestCase(TestCase):
     self.assertEqual(response.__getitem__(getTicketHeader()), ticket[0].ticket_hash)
 
 
-class NeedsAuthTestCase(TestCase):
+class DoesServerOpsTestCase(TestCase):
   fixtures = ['test_fixture.json']
   client = Client()
+  
   def setUp(self):
     response = self.client.post(
-      '/udj/auth/', {'username': 'test1', 'password' : 'onetest'})
+      '/udj/auth/', {'username': self.username, 'password' : self.userpass})
     self.ticket_hash = response.__getitem__(getTicketHeader())
     self.user_id = response.__getitem__(getUserIdHeader())
 
@@ -49,11 +50,26 @@ class NeedsAuthTestCase(TestCase):
       data=payload, content_type='text/json', 
       **{getTicketHeader() : self.ticket_hash})
 
+  def doPut(self, url):
+   return self.client.put(url, **{getTicketHeader() : self.ticket_hash})
+
   def doGet(self, url):
     return self.client.get(url, **{getTicketHeader() : self.ticket_hash})
    
   def doDelete(self, url):
     return self.client.delete(url, **{getTicketHeader() : self.ticket_hash})
+
+class User1TestCase(DoesServerOpsTestCase):
+  username = "test1"
+  userpass = "onetest"
+
+class User2TestCase(DoesServerOpsTestCase):
+  username = "test2"
+  userpass = "twotest"
+
+class User3TestCase(DoesServerOpsTestCase):
+  username = "test3"
+  userpass = "threetest"
    
 def verifySongAdded(testObject, lib_id, ids, song, artist, album):
   matchedEntries = LibraryEntry.objects.filter(host_lib_song_id=lib_id, 
@@ -68,7 +84,7 @@ def verifySongAdded(testObject, lib_id, ids, song, artist, album):
   testObject.assertTrue(lib_id in ids)
 
 
-class LibSingleAddTestCase(NeedsAuthTestCase):
+class LibSingleAddTestCase(User1TestCase):
   def testLibAdd(self):
 
     lib_id = 1
@@ -89,7 +105,7 @@ class LibSingleAddTestCase(NeedsAuthTestCase):
     verifySongAdded(self, lib_id, ids, song, artist, album)
 
 
-class LibMultiAddTestCase(NeedsAuthTestCase):
+class LibMultiAddTestCase(User1TestCase):
   def testLibAdds(self):
 
     lib_id1 = 1
@@ -121,7 +137,7 @@ class LibMultiAddTestCase(NeedsAuthTestCase):
     verifySongAdded(self, lib_id1, ids, song1, artist1, album1)
     verifySongAdded(self, lib_id2, ids, song2, artist2, album2)
 
-class LibTestDuplicateAdd(NeedsAuthTestCase):
+class LibTestDuplicateAdd(User1TestCase):
   def testDupAdd(self):
 
     payload = []
@@ -135,7 +151,7 @@ class LibTestDuplicateAdd(NeedsAuthTestCase):
     self.assertEqual(ids[0], 10)
     self.assertEqual(len(LibraryEntry.objects.filter(owning_user__id=2, host_lib_song_id=10)), 1)
     
-class LibRemoveTestCase(NeedsAuthTestCase):
+class LibRemoveTestCase(User1TestCase):
   def testLibSongDelete(self):
     response = self.doDelete('/udj/users/' + self.user_id + '/library/10')
     self.assertEqual(response.status_code, 200)
@@ -145,7 +161,7 @@ class LibRemoveTestCase(NeedsAuthTestCase):
     )
 
 
-class LibFullDeleteTest(NeedsAuthTestCase):
+class LibFullDeleteTest(User1TestCase):
   def testFullDelete(self):
     response = self.doDelete('/udj/users/'+self.user_id+'/library')
     self.assertEqual(response.status_code, 200)
@@ -154,7 +170,7 @@ class LibFullDeleteTest(NeedsAuthTestCase):
       0
     )
 
-class GetEventsTest(NeedsAuthTestCase):
+class GetEventsTest(User1TestCase):
   def testGetEvents(self):
     response = self.doGet('/udj/events/48.2222/-88.44454')
     self.assertEqual(response.status_code, 200)
@@ -166,7 +182,7 @@ class GetEventsTest(NeedsAuthTestCase):
     self.assertTrue("password" not in events[0])
     self.assertTrue("password_hash" not in events[0])
 
-class CreateEventTest(NeedsAuthTestCase):
+class CreateEventTest(User1TestCase):
   def testCreateEvent(self):
     partyName = "A Bitchn' Party"
     event = {'name' : partyName } 
@@ -176,7 +192,7 @@ class CreateEventTest(NeedsAuthTestCase):
     addedEvent = Event.objects.filter(id=2)
     self.assertEqual(addedEvent[0].name, partyName)
 
-class EndEventTest(NeedsAuthTestCase):
+class EndEventTest(User1TestCase):
   def testEndEvent(self):
     response = self.doDelete('/udj/events/1')
     self.assertEqual(len(Event.objects.filter(id=1)), 0)
@@ -187,3 +203,8 @@ class EndEventTest(NeedsAuthTestCase):
     self.assertEqual(finishedEvent.latitude, Decimal('40.113523'))
     self.assertEqual(finishedEvent.longitude, Decimal('-88.224006'))
     self.assertEqual(finishedEvent.host, User.objects.filter(id=2)[0])
+
+class JoinEventTest(User3TestCase):
+  def testJoinEvent(self):
+    response = self.doPut('/udj/events/1/user')
+    self.assertEqual(response.status_code, 201)
