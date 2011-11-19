@@ -135,10 +135,10 @@
     }
   },
   {
-    "pk": "90b1f7687136c61efbe6b1aabc63dc9e",
+    "pk": "00d7d3cbe46ee2d170d0de4120afa040",
     "model": "sessions.session",
     "fields": {
-      "expire_date": "2011-12-02 23:01:25",
+      "expire_date": "2011-12-03 11:28:00",
       "session_data": "ZTdiYTgzZjlkMTEzODJlODAxNGVmNTQyOTJjMzY4YTNlNGVhMWI5YzqAAn1xAS4=\n"
     }
   },
@@ -151,16 +151,29 @@
     }
   },
   {
+    "pk": 8,
+    "model": "admin.logentry",
+    "fields": {
+      "action_flag": 1,
+      "action_time": "2011-11-19 11:27:41",
+      "object_repr": "User 3 is in Party 1",
+      "object_id": "1",
+      "change_message": "",
+      "user": 1,
+      "content_type": 15
+    }
+  },
+  {
     "pk": 7,
     "model": "admin.logentry",
     "fields": {
       "action_flag": 1,
-      "action_time": "2011-11-18 23:01:09",
-      "object_repr": "Library Entry 3: 10 Days Late",
-      "object_id": "3",
+      "action_time": "2011-11-19 11:26:38",
+      "object_repr": "Event 1: First Party",
+      "object_id": "1",
       "change_message": "",
       "user": 1,
-      "content_type": 11
+      "content_type": 9
     }
   },
   {
@@ -168,9 +181,9 @@
     "model": "admin.logentry",
     "fields": {
       "action_flag": 1,
-      "action_time": "2011-11-18 23:00:34",
-      "object_repr": "Library Entry 2: Never Let You Go",
-      "object_id": "2",
+      "action_time": "2011-11-19 11:26:11",
+      "object_repr": "Library Entry 3: Deep Inside Of You",
+      "object_id": "3",
       "change_message": "",
       "user": 1,
       "content_type": 11
@@ -181,9 +194,9 @@
     "model": "admin.logentry",
     "fields": {
       "action_flag": 1,
-      "action_time": "2011-11-18 23:00:08",
-      "object_repr": "Library Entry 1: Deep Inside Of You",
-      "object_id": "1",
+      "action_time": "2011-11-19 11:25:44",
+      "object_repr": "Library Entry 2: Never Let You Go",
+      "object_id": "2",
       "change_message": "",
       "user": 1,
       "content_type": 11
@@ -194,12 +207,12 @@
     "model": "admin.logentry",
     "fields": {
       "action_flag": 1,
-      "action_time": "2011-11-18 22:59:43",
-      "object_repr": "Event 1: First Party",
+      "action_time": "2011-11-19 11:25:28",
+      "object_repr": "Library Entry 1: 10 Days Late",
       "object_id": "1",
       "change_message": "",
       "user": 1,
-      "content_type": 9
+      "content_type": 11
     }
   },
   {
@@ -207,9 +220,9 @@
     "model": "admin.logentry",
     "fields": {
       "action_flag": 1,
-      "action_time": "2011-11-18 22:59:11",
-      "object_repr": "test2",
-      "object_id": "3",
+      "action_time": "2011-11-19 11:24:58",
+      "object_repr": "test3",
+      "object_id": "4",
       "change_message": "",
       "user": 1,
       "content_type": 3
@@ -220,9 +233,9 @@
     "model": "admin.logentry",
     "fields": {
       "action_flag": 1,
-      "action_time": "2011-11-18 22:59:01",
-      "object_repr": "test1",
-      "object_id": "2",
+      "action_time": "2011-11-19 11:24:45",
+      "object_repr": "test2",
+      "object_id": "3",
       "change_message": "",
       "user": 1,
       "content_type": 3
@@ -232,11 +245,11 @@
     "pk": 1,
     "model": "admin.logentry",
     "fields": {
-      "action_flag": 2,
-      "action_time": "2011-11-18 22:58:47",
-      "object_repr": "admin",
-      "object_id": "1",
-      "change_message": "Changed username.",
+      "action_flag": 1,
+      "action_time": "2011-11-19 11:24:37",
+      "object_repr": "test1",
+      "object_id": "2",
+      "change_message": "",
       "user": 1,
       "content_type": 3
     }
@@ -245,11 +258,12 @@
     "pk": 1,
     "model": "udj.event",
     "fields": {
-      "latitude": "40.113523",
-      "host": 2,
-      "name": "First Party",
+      "time_started": "2011-11-19 11:26:38",
       "longitude": "-88.224006",
-      "password_hash": ""
+      "host": 2,
+      "latitude": "40.113523",
+      "password_hash": "",
+      "name": "First Party"
     }
   },
   {
@@ -260,7 +274,7 @@
       "artist": "Third Eye Blind",
       "owning_user": 2,
       "host_lib_song_id": 10,
-      "song": "Deep Inside Of You"
+      "song": "10 Days Late"
     }
   },
   {
@@ -282,7 +296,16 @@
       "artist": "Third Eye Blind",
       "owning_user": 2,
       "host_lib_song_id": 12,
-      "song": "10 Days Late"
+      "song": "Deep Inside Of You"
+    }
+  },
+  {
+    "pk": 1,
+    "model": "udj.eventgoer",
+    "fields": {
+      "user": 3,
+      "time_joined": "2011-11-19 11:27:41",
+      "event": 1
     }
   },
   {
@@ -691,24 +714,6 @@
     }
   },
   {
-    "pk": 1,
-    "model": "auth.user",
-    "fields": {
-      "username": "admin",
-      "first_name": "",
-      "last_name": "",
-      "is_active": true,
-      "is_superuser": true,
-      "is_staff": true,
-      "last_login": "2011-11-18 22:58:30",
-      "groups": [],
-      "user_permissions": [],
-      "password": "sha1$34d25$56c2d642fb814a9d1385c445928357e211df115b",
-      "email": "kljsd@ldkjfd.com",
-      "date_joined": "2011-11-18 22:58:09"
-    }
-  },
-  {
     "pk": 2,
     "model": "auth.user",
     "fields": {
@@ -718,12 +723,12 @@
       "is_active": true,
       "is_superuser": false,
       "is_staff": false,
-      "last_login": "2011-11-18 22:59:01",
+      "last_login": "2011-11-19 11:24:37",
       "groups": [],
       "user_permissions": [],
-      "password": "sha1$9a58b$f3db10b519a0efe97594dcf6588cb97fc39dc65b",
+      "password": "sha1$507a8$3ebd7b67c1f9ad5d8f9f663f5bc4b027175aa9e1",
       "email": "",
-      "date_joined": "2011-11-18 22:59:01"
+      "date_joined": "2011-11-19 11:24:37"
     }
   },
   {
@@ -736,12 +741,30 @@
       "is_active": true,
       "is_superuser": false,
       "is_staff": false,
-      "last_login": "2011-11-18 22:59:11",
+      "last_login": "2011-11-19 11:24:45",
       "groups": [],
       "user_permissions": [],
-      "password": "sha1$e4332$2ccbcb924d632fb66a762694de6ed16351449b08",
+      "password": "sha1$5a66c$2ee787dfa532ad84c2ee8bcdfef6f809111d8bf7",
       "email": "",
-      "date_joined": "2011-11-18 22:59:11"
+      "date_joined": "2011-11-19 11:24:45"
+    }
+  },
+  {
+    "pk": 4,
+    "model": "auth.user",
+    "fields": {
+      "username": "test3",
+      "first_name": "",
+      "last_name": "",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2011-11-19 11:24:58",
+      "groups": [],
+      "user_permissions": [],
+      "password": "sha1$345bc$84e71ad80e6e3f4795c92cb7cc36fbd762d70bcd",
+      "email": "",
+      "date_joined": "2011-11-19 11:24:58"
     }
   }
 ]

@@ -70,7 +70,8 @@ def endEvent(request, event_id):
     name=toDelete.name, 
     host=toDelete.host, 
     latitude = toDelete.latitude,
-    longitude = toDelete.longitude)
+    longitude = toDelete.longitude,
+     time_started = toDelete.time_started)
   toDelete.delete()
   finishedEvent.save() 
   return HttpResponse("Party ended")
@@ -79,6 +80,9 @@ def endEvent(request, event_id):
 @AcceptsMethods('PUT')
 @NeedsAuth
 @CanLoginToParty
-def loginToParty
-
-  return HttpResponse()
+def loginToParty(request, event_id):
+  joining_user = getUserForTicket(request)
+  event_to_join = Event.objects.filter(id=event_id)[0]
+  event_goer = EventGoer(user=joining_user, event=event_to_join)
+  event_goer.save()
+  return HttpResponse("joined event")

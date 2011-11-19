@@ -7,6 +7,7 @@ class Event(models.Model):
   latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
   longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
   password_hash = models.CharField(max_length=32, blank=True)
+  time_started = models.DateTimeField(auto_now_add=True)
 
   def __unicode__(self):
     return "Event " + str(self.id) + ": " + self.name
@@ -17,6 +18,8 @@ class FinishedEvent(models.Model):
   host = models.ForeignKey(User)
   latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
   longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
+  time_started = models.DateTimeField()
+  time_ended = models.DateTimeField(auto_now_add=True)
 
   def __unicode__(self):
     return "Event " + str(self.id) + ": " + self.name
@@ -69,6 +72,7 @@ class Ticket(models.Model):
 class EventGoer(models.Model):
   user = models.ForeignKey(User)
   event = models.ForeignKey(Event)
+  time_joined = models.DateTimeField(auto_now_add=True)
 
   def __unicode__(self):
     return "User " + str(self.user.id) + " is in Party " + str(self.event.id)
