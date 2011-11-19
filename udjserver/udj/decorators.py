@@ -3,6 +3,26 @@ from udj.auth import ticketMatchesUser
 from django.http import HttpResponseNotAllowed
 from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
+from udj.models import Event
+from udj.auth import getUserForTicket
+from django.shortcuts import get_object_or_404
+
+def EventExists(function):
+  def wrapper(*args, **kwargs):
+    event = get_object_or_404(Event, id__exact=kwargs['event_id'])
+    return function(*args, **kwargs)
+  return wrapper
+
+def IsEventHost(function):
+  def wrapper(*args, **kwargs):
+    request = args[0]
+    event = get_object_or_404(Event, id__exact=kwargs['event_id'])
+    user = getUserForTicket(request)
+    if event.host != user:
+      return HttpResponseForbidden()
+    else:
+      return function(*args, **kwargs)
+  return wrapper
 
 def NeedsAuth(function):
   def wrapper(*args, **kwargs):

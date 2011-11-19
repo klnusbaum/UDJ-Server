@@ -16,4 +16,5 @@ urlpatterns += patterns('udj.views.library',
 urlpatterns += patterns('udj.views.event',
   (r'^events/(?P<latitude>-?\d+\.\d+)/(?P<longitude>-?\d+\.\d+)$', 'getNearbyEvents'),
   (r'^events/event$', 'createEvent'),
+  (r'^events/(?P<event_id>\d+)', 'endEvent'),
 )

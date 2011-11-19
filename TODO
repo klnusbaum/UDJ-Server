@@ -36,18 +36,13 @@ SERVER
 the same song was added by two different users within 10 seconds of one another)
 just merge the song requests
 -If requests are made for a party that is over, notify client
--Once a party ends, a library can then be purged of all songs that have been deleted
--Transmitting the IS_DELETED_PARAM every time could be expensive.
-It probably won't be changing that often so perhaps we should only transmit this
-if there's been a deletion. Othewise don't transmit it.
--Make an admin URL so that I can do adminish stuff, like drop tables and what
-not.
--Fix the post for adding a library song to a PUT.
--If a song is requested to be added to the playlist and has the same host_client_id and adder_id it should be discarded as a duplicate
+-Test exception cases. 
+-Test for commands that are being issued to a party that is over.
 
 
 OVERALL
 -Rdio and Spotify integration!!!!!!
 -Client spec list (minimum fucntionality for each client, along with optional 
 functionality).
+
 

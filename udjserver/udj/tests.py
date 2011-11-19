@@ -5,6 +5,7 @@ when you run "manage.py test".
 Replace this with more appropriate tests for your application.
 """
 
+import json
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
@@ -13,8 +14,9 @@ from udj.headers import getUserIdHeader
 from udj.models import Ticket
 from udj.models import LibraryEntry
 from udj.models import Event
-import json
+from udj.models import FinishedEvent
 from datetime import datetime
+from decimal import Decimal
 
 class AuthTestCase(TestCase):
   fixtures = ['test_fixture.json']
@@ -173,3 +175,15 @@ class CreateEventTest(NeedsAuthTestCase):
     self.assertEqual(json.loads(response.content)['event_id'] ,2)
     addedEvent = Event.objects.filter(id=2)
     self.assertEqual(addedEvent[0].name, partyName)
+
+class EndEventTest(NeedsAuthTestCase):
+  def testEndEvent(self):
+    response = self.doDelete('/udj/events/1')
+    self.assertEqual(len(Event.objects.filter(id=1)), 0)
+    finishedEvent = FinishedEvent.objects.filter(party_id=1)
+    self.assertEqual(len(finishedEvent), 1)
+    finishedEvent = finishedEvent[0]
+    self.assertEqual(finishedEvent.name, 'First Party') 
+    self.assertEqual(finishedEvent.latitude, Decimal('40.113523'))
+    self.assertEqual(finishedEvent.longitude, Decimal('-88.224006'))
+    self.assertEqual(finishedEvent.host, User.objects.filter(id=2)[0])

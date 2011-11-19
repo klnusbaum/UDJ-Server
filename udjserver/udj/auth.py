@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404
-from django.shortcuts import render_to_response
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest

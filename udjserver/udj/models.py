@@ -9,7 +9,17 @@ class Event(models.Model):
   password_hash = models.CharField(max_length=32, blank=True)
 
   def __unicode__(self):
-    return "Party " + str(self.id) + ": " + self.name
+    return "Event " + str(self.id) + ": " + self.name
+
+class FinishedEvent(models.Model):
+  party_id = models.IntegerField(unique=True)
+  name = models.CharField(max_length=200)
+  host = models.ForeignKey(User)
+  latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
+  longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
+
+  def __unicode__(self):
+    return "Event " + str(self.id) + ": " + self.name
 
 class LibraryEntry(models.Model):
   host_lib_song_id = models.IntegerField()
@@ -25,7 +35,9 @@ class LibraryEntry(models.Model):
 class ActivePlaylistEntry(models.Model):
   #Id of playlist entry on client who added the song
   priority = models.IntegerField()
-  server_lib_song = models.ForeignKey(LibraryEntry)
+  song = models.ForeignKey(LibraryEntry)
+  upvotes = models.IntegerField()
+  downvotes = models.IntegerField()
   time_added = models.DateTimeField(auto_now_add=True)
   adder = models.ForeignKey(User)
   event = models.ForeignKey(Event)
@@ -50,24 +62,3 @@ class EventGoer(models.Model):
 
   def __unicode__(self):
     return "User " + str(self.user.id) + " is in Party " + str(self.event.id)
-
-"""
-class Playlist(models.Model):
-  server_playlist_id = models.AutoField(primary_key=True)
-  host_playlist_id = models.IntegerField()
-  name = models.CharField(max_length=200)
-  date_created = models.DateTimeField()
-  owning_user = models.ForeignKey(User)
-
-  def __unicode__(self):
-    return "Playlist " + str(self.server_playlist_id) 
-
-class PlaylistEntry(models.Model):
-  server_playlist_entry_id = models.AutoField(primary_key=True)
-  host_playlist_entry_id = models.IntegerField()
-  playlist = models.ForeignKey(Playlist)
-  song = models.ForeignKey(LibraryEntry) 
-
-  def __unicode__(self):
-    return "Playlist Entry " + str(self.server_playlist_entry_id) 
-"""
