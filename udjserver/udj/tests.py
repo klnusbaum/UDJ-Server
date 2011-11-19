@@ -168,7 +168,7 @@ class CreateEventTest(NeedsAuthTestCase):
   def testCreateEvent(self):
     partyName = "A Bitchn' Party"
     event = {'name' : partyName } 
-    response = self.doJSONPut('/udj/events/2/event', json.dumps(event))
+    response = self.doJSONPut('/udj/events/event', json.dumps(event))
     self.assertEqual(response.status_code, 201, "Error: " + response.content)
     self.assertEqual(json.loads(response.content)['event_id'] ,2)
     addedEvent = Event.objects.filter(id=2)

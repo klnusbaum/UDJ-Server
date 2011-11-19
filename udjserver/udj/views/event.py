@@ -11,6 +11,7 @@ from udj.decorators import NeedsJSON
 from udj.decorators import NeedsAuth
 from udj.models import Event
 from udj.JSONCodecs import getJSONForEvents
+from udj.auth import getUserForTicket
 
 
 @AcceptsMethods('GET')
@@ -22,13 +23,15 @@ def getNearbyEvents(request, latitude, longitude):
   return HttpResponse(events_json)  
 
 @AcceptsMethods('PUT')
-@TicketUserMatch
 @NeedsJSON
-def createEvent(request, user_id):
+@NeedsAuth
+def createEvent(request):
+  user = getUserForTicket(request)
   event = json.loads(request.raw_post_data)
+
   if 'name' not in event:
     return HttpResponseBadRequest("Must include a name attribute")
-  toInsert = Event(name=event['name'], host=User.objects.filter(id=user_id)[0])
+  toInsert = Event(name=event['name'], host=user)
 
   if 'coords' in event:
     if 'latitude' not in event['coords'] or 'longitude' not in event['coords']:

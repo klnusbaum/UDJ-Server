@@ -14,6 +14,10 @@ from datetime import timedelta
 from headers import getTicketHeader
 from headers import getUserIdHeader
 
+def getUserForTicket(request):
+  matchingTickets = Ticket.objects.filter(
+    ticket_hash=request.META[getTicketHeader()])
+  return matchingTickets[0].user
 
 def ticketMatchesUser(request, provided_user_id):
   matchingTickets = Ticket.objects.filter(
@@ -65,6 +69,7 @@ def getTicketForUser(userRequestingTicket):
   toReturn = Ticket(user=userRequestingTicket, ticket_hash=getUniqueRandHash())
   toReturn.save()
   return toReturn 
+
 
 @csrf_exempt
 def authenticate(request):
