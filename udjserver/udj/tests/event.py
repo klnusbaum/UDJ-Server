@@ -56,3 +56,10 @@ class LeaveEventTest(User2TestCase):
     event_goer_entries = EventGoer.objects.filter(event__id=1, user__id=3)
     self.assertEqual(len(event_goer_entries), 0)
 
+class KickUserTest(User1TestCase):
+  def testKickUser(self):
+    response = self.doDelete('/udj/events/1/3')
+    self.assertEqual(response.status_code, 200, response.content)
+    event_goer_entries = EventGoer.objects.filter(event__id=1, user__id=3)
+    self.assertEqual(len(event_goer_entries), 0)
+
