@@ -14,6 +14,7 @@ from udj.headers import getUserIdHeader
 from udj.models import Ticket
 from udj.models import LibraryEntry
 from udj.models import Event
+from udj.models import EventGoer
 from udj.models import FinishedEvent
 from datetime import datetime
 from decimal import Decimal
@@ -208,3 +209,6 @@ class JoinEventTest(User3TestCase):
   def testJoinEvent(self):
     response = self.doPut('/udj/events/1/user')
     self.assertEqual(response.status_code, 201)
+    event_goer_entries = EventGoer.objects.filter(event__id=1, user__id=3)
+    self.assertEqual(len(event_goer_entries),1) 
+    
