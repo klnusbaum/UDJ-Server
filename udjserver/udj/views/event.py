@@ -10,6 +10,7 @@ from udj.decorators import AcceptsMethods
 from udj.decorators import NeedsJSON
 from udj.decorators import NeedsAuth
 from udj.decorators import IsEventHost
+from udj.decorators import CanLoginToParty
 from udj.models import Event
 from udj.models import FinishedEvent
 from udj.JSONCodecs import getJSONForEvents
@@ -58,6 +59,7 @@ def createEvent(request):
 # Right now these are all done seperately. 
 #This is a potental future optimization
 @AcceptsMethods('DELETE')
+@NeedsAuth
 @IsEventHost
 def endEvent(request, event_id):
   #TODO We have a race condition here. Gonna need to wrap this in a transaction
@@ -73,3 +75,10 @@ def endEvent(request, event_id):
   finishedEvent.save() 
   return HttpResponse("Party ended")
 
+
+@AcceptsMethods('PUT')
+@NeedsAuth
+@CanLoginToParty
+def loginToParty
+
+  return HttpResponse()

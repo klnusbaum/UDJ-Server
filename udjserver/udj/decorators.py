@@ -7,6 +7,12 @@ from udj.models import Event
 from udj.auth import getUserForTicket
 from django.shortcuts import get_object_or_404
 
+def CanLoginToParty(function):
+  def wrapper(*args, **kwargs):
+    return function(*args, **kwargs)
+  return wrapper
+
+
 def EventExists(function):
   def wrapper(*args, **kwargs):
     event = get_object_or_404(Event, id__exact=kwargs['event_id'])

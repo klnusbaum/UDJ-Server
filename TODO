@@ -38,6 +38,7 @@ just merge the song requests
 -If requests are made for a party that is over, notify client
 -Test exception cases. 
 -Test for commands that are being issued to a party that is over.
+-Test events with passwords
 
 
 OVERALL
