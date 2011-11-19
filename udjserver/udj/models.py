@@ -45,6 +45,16 @@ class ActivePlaylistEntry(models.Model):
   def __unicode__(self):
     return "Active Playlist Entry " + str(server_playlist_song_id)
 
+class CurrentSong(models.Model):
+  event = models.ForeignKey(Event)
+  song = models.ForeignKey(LibraryEntry)
+  upvotes = models.IntegerField()
+  downvotes = models.IntegerField()
+  time_added = models.DateTimeField(auto_now_add=True)
+  adder = models.ForeignKey(User)
+  
+  
+
 
 class Ticket(models.Model):
   user = models.ForeignKey(User, primary_key=True)
