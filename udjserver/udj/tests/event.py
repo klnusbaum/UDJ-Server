@@ -4,6 +4,7 @@ from udj.tests.testcases import User1TestCase
 from udj.tests.testcases import User2TestCase
 from udj.tests.testcases import User3TestCase
 from udj.models import Event
+from udj.models import LibraryEntry
 from udj.models import EventGoer
 from udj.models import FinishedEvent
 from decimal import Decimal
@@ -63,3 +64,14 @@ class KickUserTest(User1TestCase):
     event_goer_entries = EventGoer.objects.filter(event__id=1, user__id=3)
     self.assertEqual(len(event_goer_entries), 0)
 
+#TODO still need to test the max_results parameter
+class TestAvailableMusic(User2TestCase):
+  def testGetAlbum(self): 
+   response = self.doGet('/udj/events/1/available_music?query=blue')
+   self.assertEqual(response.status_code, 200, response.content)
+   results = json.loads(response.content)
+   self.assertEqual(len(results), 3)
+   realSongs = LibraryEntry.objects.filter(album="Blue")
+   realIds = [song.host_lib_song_id for song in realSongs]
+   for song in results:
+     self.assertTrue(song['id'] in realIds)

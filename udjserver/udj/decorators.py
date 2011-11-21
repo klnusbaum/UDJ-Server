@@ -4,10 +4,24 @@ from django.http import HttpResponseNotAllowed
 from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
 from udj.models import Event
+from udj.models import EventGoer
 from udj.auth import getUserForTicket
 from django.shortcuts import get_object_or_404
 
-#TODO actually implement this fucntion. i.e. check for password compliance
+def InParty(function):
+  def wrapper(*args, **kwargs):
+    request = args[0]
+    user = getUserForTicket(request)
+    event = get_object_or_404(Event, id__exact=kwargs['event_id'])
+    event_goers = EventGoer.objects.filter(user=user, event=event)
+    if len(event_goers) != 1:
+      return HttpResponseForbidden()
+    else:
+      return function(*args, **kwargs)
+  return wrapper
+
+
+
 def IsUserOrHost(function):
   def wrapper(*args, **kwargs):
     request = args[0]

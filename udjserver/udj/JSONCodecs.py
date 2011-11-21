@@ -13,6 +13,15 @@ def getLibraryEntryFromJSON(songJson, user_id):
     owning_user = User.objects.filter(id=user_id)[0]
   )
 
+def getJsonForLibraryEntry(lib_entry):
+  return { 
+    "id" : lib_entry.host_lib_song_id, 
+    "song" : lib_entry.song, 
+    "artist" : lib_entry.artist, 
+    "album" : lib_entry.album,
+  }
+    
+
 def getJSONForEvents(events):
   toReturn = []
   for event in events:

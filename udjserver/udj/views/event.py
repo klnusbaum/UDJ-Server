@@ -1,6 +1,7 @@
 import json
 import hashlib
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseNotFound
@@ -12,11 +13,14 @@ from udj.decorators import NeedsAuth
 from udj.decorators import IsEventHost
 from udj.decorators import CanLoginToEvent
 from udj.decorators import IsUserOrHost
+from udj.decorators import InParty
 from udj.models import Event
+from udj.models import LibraryEntry
 from udj.models import EventGoer
 from udj.models import FinishedEvent
 from udj.JSONCodecs import getJSONForEvents
 from udj.auth import getUserForTicket
+from udj.JSONCodecs import getJsonForLibraryEntry
 
 
 @AcceptsMethods('GET')
@@ -96,3 +100,29 @@ def leaveEvent(request, event_id, user_id):
   event_goer = EventGoer.objects.filter(event__id=event_id, user__id=user_id)[0]
   event_goer.delete()
   return HttpResponse("left event")
+
+@AcceptsMethods('GET')
+@NeedsAuth
+@InParty
+def getAvailableMusic(request, event_id):
+  event = Event.objects.get(pk=event_id)
+  if(not request.GET.__contains__('query')):
+    return HttpResponseBadRequest('Must specify query')
+  query = request.GET.__getitem__('query')
+  #TODO Yes, I know this is dumb. There should be a more efficient way
+  # to do this in one query.
+  songs = LibraryEntry.objects.filter(
+    owning_user=event.host, 
+    song__icontains=query)
+  songs = songs | (LibraryEntry.objects.filter(
+    owning_user=event.host, 
+    artist__icontains=query))
+  songs= songs | ( LibraryEntry.objects.filter(
+    owning_user=event.host, 
+    album__icontains=query))
+  toReturn = []
+  for song in songs:
+    toReturn.append(getJsonForLibraryEntry(song))
+
+  return HttpResponse(json.dumps(toReturn))
+
