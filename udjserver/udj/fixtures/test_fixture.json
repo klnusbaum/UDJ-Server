@@ -9,6 +9,15 @@
     }
   },
   {
+    "pk": 16,
+    "model": "contenttypes.contenttype",
+    "fields": {
+      "model": "availablesong",
+      "name": "available song",
+      "app_label": "udj"
+    }
+  },
+  {
     "pk": 5,
     "model": "contenttypes.contenttype",
     "fields": {
@@ -135,10 +144,10 @@
     }
   },
   {
-    "pk": "00d7d3cbe46ee2d170d0de4120afa040",
+    "pk": "d34bfedf1ad9c0ad39b93df0a6d33c52",
     "model": "sessions.session",
     "fields": {
-      "expire_date": "2011-12-03 11:28:00",
+      "expire_date": "2011-12-05 00:09:57",
       "session_data": "ZTdiYTgzZjlkMTEzODJlODAxNGVmNTQyOTJjMzY4YTNlNGVhMWI5YzqAAn1xAS4=\n"
     }
   },
@@ -151,11 +160,50 @@
     }
   },
   {
-    "pk": 8,
+    "pk": 13,
     "model": "admin.logentry",
     "fields": {
       "action_flag": 1,
-      "action_time": "2011-11-19 11:27:41",
+      "action_time": "2011-11-21 00:09:45",
+      "object_repr": "Song Zero",
+      "object_id": "3",
+      "change_message": "",
+      "user": 1,
+      "content_type": 16
+    }
+  },
+  {
+    "pk": 12,
+    "model": "admin.logentry",
+    "fields": {
+      "action_flag": 1,
+      "action_time": "2011-11-21 00:09:37",
+      "object_repr": "Song Never Let You Go",
+      "object_id": "2",
+      "change_message": "",
+      "user": 1,
+      "content_type": 16
+    }
+  },
+  {
+    "pk": 11,
+    "model": "admin.logentry",
+    "fields": {
+      "action_flag": 1,
+      "action_time": "2011-11-21 00:09:28",
+      "object_repr": "Song Deep Inside Of You",
+      "object_id": "1",
+      "change_message": "",
+      "user": 1,
+      "content_type": 16
+    }
+  },
+  {
+    "pk": 10,
+    "model": "admin.logentry",
+    "fields": {
+      "action_flag": 1,
+      "action_time": "2011-11-21 00:07:24",
       "object_repr": "User 3 is in Party 1",
       "object_id": "1",
       "change_message": "",
@@ -164,11 +212,11 @@
     }
   },
   {
-    "pk": 7,
+    "pk": 9,
     "model": "admin.logentry",
     "fields": {
       "action_flag": 1,
-      "action_time": "2011-11-19 11:26:38",
+      "action_time": "2011-11-21 00:07:11",
       "object_repr": "Event 1: First Party",
       "object_id": "1",
       "change_message": "",
@@ -177,12 +225,38 @@
     }
   },
   {
+    "pk": 8,
+    "model": "admin.logentry",
+    "fields": {
+      "action_flag": 1,
+      "action_time": "2011-11-21 00:06:29",
+      "object_repr": "Library Entry 5: Zero",
+      "object_id": "5",
+      "change_message": "",
+      "user": 1,
+      "content_type": 11
+    }
+  },
+  {
+    "pk": 7,
+    "model": "admin.logentry",
+    "fields": {
+      "action_flag": 1,
+      "action_time": "2011-11-21 00:05:58",
+      "object_repr": "Library Entry 4: Sleep Now In The Fire",
+      "object_id": "4",
+      "change_message": "",
+      "user": 1,
+      "content_type": 11
+    }
+  },
+  {
     "pk": 6,
     "model": "admin.logentry",
     "fields": {
       "action_flag": 1,
-      "action_time": "2011-11-19 11:26:11",
-      "object_repr": "Library Entry 3: Deep Inside Of You",
+      "action_time": "2011-11-21 00:05:38",
+      "object_repr": "Library Entry 3: 10 Days Late",
       "object_id": "3",
       "change_message": "",
       "user": 1,
@@ -194,7 +268,7 @@
     "model": "admin.logentry",
     "fields": {
       "action_flag": 1,
-      "action_time": "2011-11-19 11:25:44",
+      "action_time": "2011-11-21 00:05:24",
       "object_repr": "Library Entry 2: Never Let You Go",
       "object_id": "2",
       "change_message": "",
@@ -207,8 +281,8 @@
     "model": "admin.logentry",
     "fields": {
       "action_flag": 1,
-      "action_time": "2011-11-19 11:25:28",
-      "object_repr": "Library Entry 1: 10 Days Late",
+      "action_time": "2011-11-21 00:05:10",
+      "object_repr": "Library Entry 1: Deep Inside Of You",
       "object_id": "1",
       "change_message": "",
       "user": 1,
@@ -220,7 +294,7 @@
     "model": "admin.logentry",
     "fields": {
       "action_flag": 1,
-      "action_time": "2011-11-19 11:24:58",
+      "action_time": "2011-11-21 00:04:46",
       "object_repr": "test3",
       "object_id": "4",
       "change_message": "",
@@ -233,7 +307,7 @@
     "model": "admin.logentry",
     "fields": {
       "action_flag": 1,
-      "action_time": "2011-11-19 11:24:45",
+      "action_time": "2011-11-21 00:04:35",
       "object_repr": "test2",
       "object_id": "3",
       "change_message": "",
@@ -246,7 +320,7 @@
     "model": "admin.logentry",
     "fields": {
       "action_flag": 1,
-      "action_time": "2011-11-19 11:24:37",
+      "action_time": "2011-11-21 00:04:21",
       "object_repr": "test1",
       "object_id": "2",
       "change_message": "",
@@ -258,7 +332,7 @@
     "pk": 1,
     "model": "udj.event",
     "fields": {
-      "time_started": "2011-11-19 11:26:38",
+      "time_started": "2011-11-21 00:07:11",
       "longitude": "-88.224006",
       "host": 2,
       "latitude": "40.113523",
@@ -274,7 +348,7 @@
       "artist": "Third Eye Blind",
       "owning_user": 2,
       "host_lib_song_id": 10,
-      "song": "10 Days Late"
+      "song": "Deep Inside Of You"
     }
   },
   {
@@ -296,7 +370,29 @@
       "artist": "Third Eye Blind",
       "owning_user": 2,
       "host_lib_song_id": 12,
-      "song": "Deep Inside Of You"
+      "song": "10 Days Late"
+    }
+  },
+  {
+    "pk": 4,
+    "model": "udj.libraryentry",
+    "fields": {
+      "album": "The Battle of Los Angeles",
+      "artist": "Rage Against The Machine",
+      "owning_user": 2,
+      "host_lib_song_id": 13,
+      "song": "Sleep Now In The Fire"
+    }
+  },
+  {
+    "pk": 5,
+    "model": "udj.libraryentry",
+    "fields": {
+      "album": "Mellon Collie And The Infinite Sadness",
+      "artist": "The Smashing Pumpkins",
+      "owning_user": 2,
+      "host_lib_song_id": 14,
+      "song": "Zero"
     }
   },
   {
@@ -304,8 +400,29 @@
     "model": "udj.eventgoer",
     "fields": {
       "user": 3,
-      "time_joined": "2011-11-19 11:27:41",
+      "time_joined": "2011-11-21 00:07:24",
       "event": 1
+    }
+  },
+  {
+    "pk": 1,
+    "model": "udj.availablesong",
+    "fields": {
+      "library_entry": 1
+    }
+  },
+  {
+    "pk": 2,
+    "model": "udj.availablesong",
+    "fields": {
+      "library_entry": 2
+    }
+  },
+  {
+    "pk": 3,
+    "model": "udj.availablesong",
+    "fields": {
+      "library_entry": 5
     }
   },
   {
@@ -552,6 +669,33 @@
     }
   },
   {
+    "pk": 46,
+    "model": "auth.permission",
+    "fields": {
+      "codename": "add_availablesong",
+      "name": "Can add available song",
+      "content_type": 16
+    }
+  },
+  {
+    "pk": 47,
+    "model": "auth.permission",
+    "fields": {
+      "codename": "change_availablesong",
+      "name": "Can change available song",
+      "content_type": 16
+    }
+  },
+  {
+    "pk": 48,
+    "model": "auth.permission",
+    "fields": {
+      "codename": "delete_availablesong",
+      "name": "Can delete available song",
+      "content_type": 16
+    }
+  },
+  {
     "pk": 37,
     "model": "auth.permission",
     "fields": {
@@ -714,6 +858,24 @@
     }
   },
   {
+    "pk": 1,
+    "model": "auth.user",
+    "fields": {
+      "username": "admin",
+      "first_name": "",
+      "last_name": "",
+      "is_active": true,
+      "is_superuser": true,
+      "is_staff": true,
+      "last_login": "2011-11-21 00:04:10",
+      "groups": [],
+      "user_permissions": [],
+      "password": "sha1$79d95$95bb254b5daccf168ea7a3f723d6f1bb96df5265",
+      "email": "udj@udj.com",
+      "date_joined": "2011-11-21 00:03:52"
+    }
+  },
+  {
     "pk": 2,
     "model": "auth.user",
     "fields": {
@@ -723,12 +885,12 @@
       "is_active": true,
       "is_superuser": false,
       "is_staff": false,
-      "last_login": "2011-11-19 11:24:37",
+      "last_login": "2011-11-21 00:04:21",
       "groups": [],
       "user_permissions": [],
-      "password": "sha1$507a8$3ebd7b67c1f9ad5d8f9f663f5bc4b027175aa9e1",
+      "password": "sha1$25614$3a0c1cb3df807816c273000157fd53252e66a464",
       "email": "",
-      "date_joined": "2011-11-19 11:24:37"
+      "date_joined": "2011-11-21 00:04:21"
     }
   },
   {
@@ -741,12 +903,12 @@
       "is_active": true,
       "is_superuser": false,
       "is_staff": false,
-      "last_login": "2011-11-19 11:24:45",
+      "last_login": "2011-11-21 00:04:35",
       "groups": [],
       "user_permissions": [],
-      "password": "sha1$5a66c$2ee787dfa532ad84c2ee8bcdfef6f809111d8bf7",
+      "password": "sha1$ab44d$9cc6d1f2a2987d086856ae2d51c8a2b8eb6c4d4c",
       "email": "",
-      "date_joined": "2011-11-19 11:24:45"
+      "date_joined": "2011-11-21 00:04:35"
     }
   },
   {
@@ -759,12 +921,12 @@
       "is_active": true,
       "is_superuser": false,
       "is_staff": false,
-      "last_login": "2011-11-19 11:24:58",
+      "last_login": "2011-11-21 00:04:46",
       "groups": [],
       "user_permissions": [],
-      "password": "sha1$345bc$84e71ad80e6e3f4795c92cb7cc36fbd762d70bcd",
+      "password": "sha1$88305$9401009b8dbcf94d44e0683456003ee2813aa8b6",
       "email": "",
-      "date_joined": "2011-11-19 11:24:58"
+      "date_joined": "2011-11-21 00:04:46"
     }
   }
 ]

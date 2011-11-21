@@ -3,6 +3,7 @@ from udj.models import Event
 from udj.models import LibraryEntry
 from udj.models import ActivePlaylistEntry
 from udj.models import EventGoer
+from udj.models import AvailableSong
 """
 from udj.models import Playlist
 from udj.models import PlaylistEntry
@@ -14,7 +15,4 @@ admin.site.register(Event)
 admin.site.register(LibraryEntry)
 admin.site.register(ActivePlaylistEntry)
 admin.site.register(EventGoer)
-"""
-admin.site.register(Playlist)
-admin.site.register(PlaylistEntry)
-"""
+admin.site.register(AvailableSong)

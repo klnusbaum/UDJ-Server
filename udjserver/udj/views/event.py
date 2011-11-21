@@ -15,7 +15,7 @@ from udj.decorators import CanLoginToEvent
 from udj.decorators import IsUserOrHost
 from udj.decorators import InParty
 from udj.models import Event
-from udj.models import LibraryEntry
+from udj.models import AvailableSong
 from udj.models import EventGoer
 from udj.models import FinishedEvent
 from udj.JSONCodecs import getJSONForEvents
@@ -111,18 +111,18 @@ def getAvailableMusic(request, event_id):
   query = request.GET.__getitem__('query')
   #TODO Yes, I know this is dumb. There should be a more efficient way
   # to do this in one query.
-  songs = LibraryEntry.objects.filter(
-    owning_user=event.host, 
-    song__icontains=query)
-  songs = songs | (LibraryEntry.objects.filter(
-    owning_user=event.host, 
-    artist__icontains=query))
-  songs= songs | ( LibraryEntry.objects.filter(
-    owning_user=event.host, 
-    album__icontains=query))
+  available_songs= AvailableSong.objects.filter(
+    library_entry__owning_user=event.host, 
+    library_entry__song__icontains=query)
+  available_songs = available_songs | (AvailableSong.objects.filter(
+    library_entry__owning_user=event.host, 
+    library_entry__artist__icontains=query))
+  available_songs= available_songs | (AvailableSong.objects.filter(
+    library_entry__owning_user=event.host, 
+    library_entry__album__icontains=query))
   toReturn = []
-  for song in songs:
-    toReturn.append(getJsonForLibraryEntry(song))
+  for available_song in available_songs:
+    toReturn.append(getJsonForLibraryEntry(available_song.library_entry))
 
   return HttpResponse(json.dumps(toReturn))
 

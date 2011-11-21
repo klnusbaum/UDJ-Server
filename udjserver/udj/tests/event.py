@@ -70,7 +70,7 @@ class TestAvailableMusic(User2TestCase):
    response = self.doGet('/udj/events/1/available_music?query=blue')
    self.assertEqual(response.status_code, 200, response.content)
    results = json.loads(response.content)
-   self.assertEqual(len(results), 3)
+   self.assertEqual(len(results), 2)
    realSongs = LibraryEntry.objects.filter(album="Blue")
    realIds = [song.host_lib_song_id for song in realSongs]
    for song in results:

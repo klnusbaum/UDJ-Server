@@ -56,9 +56,6 @@ class CurrentSong(models.Model):
   time_added = models.DateTimeField(auto_now_add=True)
   adder = models.ForeignKey(User)
   
-  
-
-
 class Ticket(models.Model):
   user = models.ForeignKey(User, primary_key=True)
   ticket_hash = models.CharField(max_length=32, unique=True)
@@ -68,7 +65,6 @@ class Ticket(models.Model):
   def __unicode__(self):
     return "Ticket " + self.ticket_hash +  " : User id " + str(self.user.id)
 
-
 class EventGoer(models.Model):
   user = models.ForeignKey(User)
   event = models.ForeignKey(Event)
@@ -76,3 +72,9 @@ class EventGoer(models.Model):
 
   def __unicode__(self):
     return "User " + str(self.user.id) + " is in Party " + str(self.event.id)
+
+class AvailableSong(models.Model):
+  library_entry = models.ForeignKey(LibraryEntry)
+
+  def __unicode__(self):
+    return "Song " + str(self.library_entry.song)
