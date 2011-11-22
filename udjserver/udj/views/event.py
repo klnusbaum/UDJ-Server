@@ -101,9 +101,14 @@ def leaveEvent(request, event_id, user_id):
   event_goer.delete()
   return HttpResponse("left event")
 
-@AcceptsMethods('GET')
 @NeedsAuth
 @InParty
+@AcceptsMethods(['GET', 'PUT', 'DELETE'])
+def availableMusic(request, event_id):
+  if request.method == 'GET':
+    return getAvailableMusic(request, event_id)
+
+
 def getAvailableMusic(request, event_id):
   event = Event.objects.get(pk=event_id)
   if(not request.GET.__contains__('query')):

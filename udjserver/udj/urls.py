@@ -19,5 +19,5 @@ urlpatterns += patterns('udj.views.event',
   (r'^events/(?P<event_id>\d+)$', 'endEvent'),
   (r'^events/(?P<event_id>\d+)/user$', 'joinEvent'),
   (r'^events/(?P<event_id>\d+)/(?P<user_id>\d+)$', 'leaveEvent'),
-  (r'^events/(?P<event_id>\d+)/available_music', 'getAvailableMusic'),
+  (r'^events/(?P<event_id>\d+)/available_music', 'availableMusic'),
 )
