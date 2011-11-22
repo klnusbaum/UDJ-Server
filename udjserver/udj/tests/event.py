@@ -75,3 +75,32 @@ class TestAvailableMusic(User2TestCase):
    realIds = [song.host_lib_song_id for song in realSongs]
    for song in results:
      self.assertTrue(song['id'] in realIds)
+
+  def testGetArtist(self): 
+   response = self.doGet(
+    '/udj/events/1/available_music?query=smashing+pumpkins')
+   self.assertEqual(response.status_code, 200, response.content)
+   results = json.loads(response.content)
+   self.assertEqual(len(results), 1)
+   realSongs = LibraryEntry.objects.filter(artist="The Smashing Pumpkins")
+   realIds = [song.host_lib_song_id for song in realSongs]
+   for song in results:
+     self.assertTrue(song['id'] in realIds)
+
+  def testGetSong(self):
+   response = self.doGet(
+    '/udj/events/1/available_music?query=Never+Let+You+Go')
+   self.assertEqual(response.status_code, 200, response.content)
+   results = json.loads(response.content)
+   self.assertEqual(len(results), 1)
+   realSongs = LibraryEntry.objects.filter(song="Never Let You Go")
+   realIds = [song.host_lib_song_id for song in realSongs]
+   for song in results:
+     self.assertTrue(song['id'] in realIds)
+
+  def testSongNotAvailable(self): 
+   response = self.doGet(
+    '/udj/events/1/available_music?query=rage+against+the+machine')
+   self.assertEqual(response.status_code, 200, response.content)
+   results = json.loads(response.content)
+   self.assertEqual(len(results), 0)
