@@ -105,16 +105,14 @@ def leaveEvent(request, event_id, user_id):
   return HttpResponse("left event")
 
 @NeedsAuth
-@InParty
-@AcceptsMethods(['GET', 'PUT', 'DELETE'])
+@AcceptsMethods(['GET', 'PUT'])
 def availableMusic(request, event_id):
   if request.method == 'GET':
     return getAvailableMusic(request, event_id=event_id)
-  elif request.method == 'PUT':
-    return addToAvailableMusic(request, event_id=event_id)
   else:
-    return removeFromAvailableMusic(request, event_id=event_id)
+    return addToAvailableMusic(request, event_id=event_id)
 
+@InParty
 def getAvailableMusic(request, event_id):
   event = Event.objects.get(pk=event_id)
   if(not request.GET.__contains__('query')):
@@ -149,16 +147,14 @@ def addToAvailableMusic(request, event_id):
 
   return HttpResponse(json.dumps(added), status=201)
 
+@NeedsAuth
+@AcceptsMethods(['DELETE'])
 @IsEventHost
-def removeFromAvailableMusic(request, event_id):
+def removeFromAvailableMusic(request, event_id, song_id):
   host = getUserForTicket(request)
-  toRemove = json.loads(request.raw_post_data)
-  removed = []
-  for song_id in toRemove:
-    AvailableSong.objects.filter(
-      library_entry__host_lib_song_id=song_id,
-      owning_user=host)[0].delete()
-    removed.append(song_id)
+  AvailableSong.objects.filter(
+    library_entry__host_lib_song_id=song_id,
+    library_entry__owning_user=host)[0].delete()
 
-  return HttpResponse(json.dumps(added))
+  return HttpResponse()
 

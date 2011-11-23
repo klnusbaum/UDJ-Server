@@ -108,15 +108,16 @@ class TestGetAvailableMusic(User2TestCase):
 
 class TestPutAvailableMusic(User1TestCase):
   def testPut(self): 
-   toAdd=[13]
-   response = self.doJSONPut('/udj/events/1/available_music', json.dumps(toAdd))
-   self.assertEqual(response.status_code, 201, response.content)
-   results = json.loads(response.content)
-   self.assertEqual(len(results), 1)
-   self.assertEqual(results[0], 13)
-   addedSong = AvailableSong.objects.filter(
-    library_entry__host_lib_song_id=13, library_entry__owning_user__id=2)
-   self.assertEqual(len(addedSong), 1)
+    toAdd=[13]
+    response = self.doJSONPut(
+      '/udj/events/1/available_music', json.dumps(toAdd))
+    self.assertEqual(response.status_code, 201, response.content)
+    results = json.loads(response.content)
+    self.assertEqual(len(results), 1)
+    self.assertEqual(results[0], 13)
+    addedSong = AvailableSong.objects.filter(
+      library_entry__host_lib_song_id=13, library_entry__owning_user__id=2)
+    self.assertEqual(len(addedSong), 1)
 
 class TestCantPutAvailableMusic(User2TestCase):
   def testPut(self): 
@@ -124,9 +125,12 @@ class TestCantPutAvailableMusic(User2TestCase):
    response = self.doJSONPut('/udj/events/1/available_music', json.dumps(toAdd))
    self.assertEqual(response.status_code, 403, response.content)
 
-"""
 class TestDeleteAvailableMusic(User1TestCase):
   def testRemove(self):
-    toRemove=[10];
-    re
-"""
+    response = self.doDelete('/udj/events/1/available_music/10')
+    self.assertEqual(response.status_code, 200, response.content)
+    foundSongs = AvailableSong.objects.filter(
+      library_entry__host_lib_song_id=10, library_entry__owning_user__id=2)
+    self.assertEqual(len(foundSongs), 0)
+   
+

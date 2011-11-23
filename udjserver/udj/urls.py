@@ -14,10 +14,13 @@ urlpatterns += patterns('udj.views.library',
 ) 
 
 urlpatterns += patterns('udj.views.event',
-  (r'^events/(?P<latitude>-?\d+\.\d+)/(?P<longitude>-?\d+\.\d+)$', 'getNearbyEvents'),
+  (r'^events/(?P<latitude>-?\d+\.\d+)/(?P<longitude>-?\d+\.\d+)$',
+    'getNearbyEvents'),
   (r'^events/event$', 'createEvent'),
   (r'^events/(?P<event_id>\d+)$', 'endEvent'),
   (r'^events/(?P<event_id>\d+)/user$', 'joinEvent'),
   (r'^events/(?P<event_id>\d+)/(?P<user_id>\d+)$', 'leaveEvent'),
-  (r'^events/(?P<event_id>\d+)/available_music', 'availableMusic'),
+  (r'^events/(?P<event_id>\d+)/available_music$', 'availableMusic'),
+  (r'^events/(?P<event_id>\d+)/available_music/(?P<song_id>\d+)$', 
+    'removeFromAvailableMusic'),
 )
