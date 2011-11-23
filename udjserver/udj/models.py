@@ -32,7 +32,7 @@ class LibraryEntry(models.Model):
   owning_user = models.ForeignKey(User)
 
   def __unicode__(self):
-    return "Library Entry " + str(self.id) + ": " + self.song
+    return "Library Entry " + str(self.host_lib_song_id) + ": " + self.song
 
 
 class ActivePlaylistEntry(models.Model):

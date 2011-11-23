@@ -93,7 +93,7 @@ class TestGetAvailableMusic(User2TestCase):
     '/udj/events/1/available_music?query=smashing+pumpkins')
    self.assertEqual(response.status_code, 200, response.content)
    results = json.loads(response.content)
-   self.assertEqual(len(results), 1)
+   self.assertEqual(len(results), 2)
    realSongs = LibraryEntry.objects.filter(artist="The Smashing Pumpkins")
    self.verifyExpectedResults(results, realSongs)
 

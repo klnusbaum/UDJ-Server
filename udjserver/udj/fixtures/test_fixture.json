@@ -1,940 +1,741 @@
 [
   {
-    "pk": 12,
-    "model": "contenttypes.contenttype",
+    "pk": 1, 
+    "model": "udj.event", 
     "fields": {
-      "model": "activeplaylistentry",
-      "name": "active playlist entry",
-      "app_label": "udj"
-    }
-  },
-  {
-    "pk": 16,
-    "model": "contenttypes.contenttype",
-    "fields": {
-      "model": "availablesong",
-      "name": "available song",
-      "app_label": "udj"
-    }
-  },
-  {
-    "pk": 5,
-    "model": "contenttypes.contenttype",
-    "fields": {
-      "model": "contenttype",
-      "name": "content type",
-      "app_label": "contenttypes"
-    }
-  },
-  {
-    "pk": 13,
-    "model": "contenttypes.contenttype",
-    "fields": {
-      "model": "currentsong",
-      "name": "current song",
-      "app_label": "udj"
-    }
-  },
-  {
-    "pk": 9,
-    "model": "contenttypes.contenttype",
-    "fields": {
-      "model": "event",
-      "name": "event",
-      "app_label": "udj"
-    }
-  },
-  {
-    "pk": 15,
-    "model": "contenttypes.contenttype",
-    "fields": {
-      "model": "eventgoer",
-      "name": "event goer",
-      "app_label": "udj"
-    }
-  },
-  {
-    "pk": 10,
-    "model": "contenttypes.contenttype",
-    "fields": {
-      "model": "finishedevent",
-      "name": "finished event",
-      "app_label": "udj"
-    }
-  },
-  {
-    "pk": 2,
-    "model": "contenttypes.contenttype",
-    "fields": {
-      "model": "group",
-      "name": "group",
-      "app_label": "auth"
-    }
-  },
-  {
-    "pk": 11,
-    "model": "contenttypes.contenttype",
-    "fields": {
-      "model": "libraryentry",
-      "name": "library entry",
-      "app_label": "udj"
-    }
-  },
-  {
-    "pk": 8,
-    "model": "contenttypes.contenttype",
-    "fields": {
-      "model": "logentry",
-      "name": "log entry",
-      "app_label": "admin"
-    }
-  },
-  {
-    "pk": 4,
-    "model": "contenttypes.contenttype",
-    "fields": {
-      "model": "message",
-      "name": "message",
-      "app_label": "auth"
-    }
-  },
-  {
-    "pk": 1,
-    "model": "contenttypes.contenttype",
-    "fields": {
-      "model": "permission",
-      "name": "permission",
-      "app_label": "auth"
-    }
-  },
-  {
-    "pk": 6,
-    "model": "contenttypes.contenttype",
-    "fields": {
-      "model": "session",
-      "name": "session",
-      "app_label": "sessions"
-    }
-  },
-  {
-    "pk": 7,
-    "model": "contenttypes.contenttype",
-    "fields": {
-      "model": "site",
-      "name": "site",
-      "app_label": "sites"
-    }
-  },
-  {
-    "pk": 14,
-    "model": "contenttypes.contenttype",
-    "fields": {
-      "model": "ticket",
-      "name": "ticket",
-      "app_label": "udj"
-    }
-  },
-  {
-    "pk": 3,
-    "model": "contenttypes.contenttype",
-    "fields": {
-      "model": "user",
-      "name": "user",
-      "app_label": "auth"
-    }
-  },
-  {
-    "pk": "d34bfedf1ad9c0ad39b93df0a6d33c52",
-    "model": "sessions.session",
-    "fields": {
-      "expire_date": "2011-12-05 00:09:57",
-      "session_data": "ZTdiYTgzZjlkMTEzODJlODAxNGVmNTQyOTJjMzY4YTNlNGVhMWI5YzqAAn1xAS4=\n"
-    }
-  },
-  {
-    "pk": 1,
-    "model": "sites.site",
-    "fields": {
-      "domain": "example.com",
-      "name": "example.com"
-    }
-  },
-  {
-    "pk": 13,
-    "model": "admin.logentry",
-    "fields": {
-      "action_flag": 1,
-      "action_time": "2011-11-21 00:09:45",
-      "object_repr": "Song Zero",
-      "object_id": "3",
-      "change_message": "",
-      "user": 1,
-      "content_type": 16
-    }
-  },
-  {
-    "pk": 12,
-    "model": "admin.logentry",
-    "fields": {
-      "action_flag": 1,
-      "action_time": "2011-11-21 00:09:37",
-      "object_repr": "Song Never Let You Go",
-      "object_id": "2",
-      "change_message": "",
-      "user": 1,
-      "content_type": 16
-    }
-  },
-  {
-    "pk": 11,
-    "model": "admin.logentry",
-    "fields": {
-      "action_flag": 1,
-      "action_time": "2011-11-21 00:09:28",
-      "object_repr": "Song Deep Inside Of You",
-      "object_id": "1",
-      "change_message": "",
-      "user": 1,
-      "content_type": 16
-    }
-  },
-  {
-    "pk": 10,
-    "model": "admin.logentry",
-    "fields": {
-      "action_flag": 1,
-      "action_time": "2011-11-21 00:07:24",
-      "object_repr": "User 3 is in Party 1",
-      "object_id": "1",
-      "change_message": "",
-      "user": 1,
-      "content_type": 15
-    }
-  },
-  {
-    "pk": 9,
-    "model": "admin.logentry",
-    "fields": {
-      "action_flag": 1,
-      "action_time": "2011-11-21 00:07:11",
-      "object_repr": "Event 1: First Party",
-      "object_id": "1",
-      "change_message": "",
-      "user": 1,
-      "content_type": 9
-    }
-  },
-  {
-    "pk": 8,
-    "model": "admin.logentry",
-    "fields": {
-      "action_flag": 1,
-      "action_time": "2011-11-21 00:06:29",
-      "object_repr": "Library Entry 5: Zero",
-      "object_id": "5",
-      "change_message": "",
-      "user": 1,
-      "content_type": 11
-    }
-  },
-  {
-    "pk": 7,
-    "model": "admin.logentry",
-    "fields": {
-      "action_flag": 1,
-      "action_time": "2011-11-21 00:05:58",
-      "object_repr": "Library Entry 4: Sleep Now In The Fire",
-      "object_id": "4",
-      "change_message": "",
-      "user": 1,
-      "content_type": 11
-    }
-  },
-  {
-    "pk": 6,
-    "model": "admin.logentry",
-    "fields": {
-      "action_flag": 1,
-      "action_time": "2011-11-21 00:05:38",
-      "object_repr": "Library Entry 3: 10 Days Late",
-      "object_id": "3",
-      "change_message": "",
-      "user": 1,
-      "content_type": 11
-    }
-  },
-  {
-    "pk": 5,
-    "model": "admin.logentry",
-    "fields": {
-      "action_flag": 1,
-      "action_time": "2011-11-21 00:05:24",
-      "object_repr": "Library Entry 2: Never Let You Go",
-      "object_id": "2",
-      "change_message": "",
-      "user": 1,
-      "content_type": 11
-    }
-  },
-  {
-    "pk": 4,
-    "model": "admin.logentry",
-    "fields": {
-      "action_flag": 1,
-      "action_time": "2011-11-21 00:05:10",
-      "object_repr": "Library Entry 1: Deep Inside Of You",
-      "object_id": "1",
-      "change_message": "",
-      "user": 1,
-      "content_type": 11
-    }
-  },
-  {
-    "pk": 3,
-    "model": "admin.logentry",
-    "fields": {
-      "action_flag": 1,
-      "action_time": "2011-11-21 00:04:46",
-      "object_repr": "test3",
-      "object_id": "4",
-      "change_message": "",
-      "user": 1,
-      "content_type": 3
-    }
-  },
-  {
-    "pk": 2,
-    "model": "admin.logentry",
-    "fields": {
-      "action_flag": 1,
-      "action_time": "2011-11-21 00:04:35",
-      "object_repr": "test2",
-      "object_id": "3",
-      "change_message": "",
-      "user": 1,
-      "content_type": 3
-    }
-  },
-  {
-    "pk": 1,
-    "model": "admin.logentry",
-    "fields": {
-      "action_flag": 1,
-      "action_time": "2011-11-21 00:04:21",
-      "object_repr": "test1",
-      "object_id": "2",
-      "change_message": "",
-      "user": 1,
-      "content_type": 3
-    }
-  },
-  {
-    "pk": 1,
-    "model": "udj.event",
-    "fields": {
-      "time_started": "2011-11-21 00:07:11",
-      "longitude": "-88.224006",
-      "host": 2,
-      "latitude": "40.113523",
-      "password_hash": "",
+      "time_started": "2011-11-21 00:07:11", 
+      "longitude": "-88.224006", 
+      "host": 2, 
+      "latitude": "40.113523", 
+      "password_hash": "", 
       "name": "First Party"
     }
-  },
+  }, 
   {
-    "pk": 1,
-    "model": "udj.libraryentry",
+    "pk": 1, 
+    "model": "udj.libraryentry", 
     "fields": {
-      "album": "Blue",
-      "artist": "Third Eye Blind",
-      "owning_user": 2,
-      "host_lib_song_id": 10,
+      "album": "Blue", 
+      "artist": "Third Eye Blind", 
+      "owning_user": 2, 
+      "host_lib_song_id": 10, 
       "song": "Deep Inside Of You"
     }
-  },
+  }, 
   {
-    "pk": 2,
-    "model": "udj.libraryentry",
+    "pk": 2, 
+    "model": "udj.libraryentry", 
     "fields": {
-      "album": "Blue",
-      "artist": "Third Eye Blind",
-      "owning_user": 2,
-      "host_lib_song_id": 11,
+      "album": "Blue", 
+      "artist": "Third Eye Blind", 
+      "owning_user": 2, 
+      "host_lib_song_id": 11, 
       "song": "Never Let You Go"
     }
-  },
+  }, 
   {
-    "pk": 3,
-    "model": "udj.libraryentry",
+    "pk": 3, 
+    "model": "udj.libraryentry", 
     "fields": {
-      "album": "Blue",
-      "artist": "Third Eye Blind",
-      "owning_user": 2,
-      "host_lib_song_id": 12,
+      "album": "Blue", 
+      "artist": "Third Eye Blind", 
+      "owning_user": 2, 
+      "host_lib_song_id": 12, 
       "song": "10 Days Late"
     }
-  },
+  }, 
   {
-    "pk": 4,
-    "model": "udj.libraryentry",
+    "pk": 4, 
+    "model": "udj.libraryentry", 
     "fields": {
-      "album": "The Battle of Los Angeles",
-      "artist": "Rage Against The Machine",
-      "owning_user": 2,
-      "host_lib_song_id": 13,
+      "album": "The Battle of Los Angeles", 
+      "artist": "Rage Against The Machine", 
+      "owning_user": 2, 
+      "host_lib_song_id": 13, 
       "song": "Sleep Now In The Fire"
     }
-  },
+  }, 
   {
-    "pk": 5,
-    "model": "udj.libraryentry",
+    "pk": 5, 
+    "model": "udj.libraryentry", 
     "fields": {
-      "album": "Mellon Collie And The Infinite Sadness",
-      "artist": "The Smashing Pumpkins",
-      "owning_user": 2,
-      "host_lib_song_id": 14,
+      "album": "Mellon Collie And The Infinite Sadness", 
+      "artist": "The Smashing Pumpkins", 
+      "owning_user": 2, 
+      "host_lib_song_id": 14, 
       "song": "Zero"
     }
-  },
+  }, 
   {
-    "pk": 2,
-    "model": "udj.eventgoer",
+    "pk": 6, 
+    "model": "udj.libraryentry", 
     "fields": {
-      "user": 2,
-      "time_joined": "2011-11-21 00:06:24",
+      "album": "Third Eye Blind", 
+      "artist": "Third Eye Blind", 
+      "owning_user": 2, 
+      "host_lib_song_id": 15, 
+      "song": "Losing A Whole Year"
+    }
+  }, 
+  {
+    "pk": 7, 
+    "model": "udj.libraryentry", 
+    "fields": {
+      "album": "Third Eye Blind", 
+      "artist": "Third Eye Blind", 
+      "owning_user": 2, 
+      "host_lib_song_id": 16, 
+      "song": "Narcolepsy"
+    }
+  }, 
+  {
+    "pk": 8, 
+    "model": "udj.libraryentry", 
+    "fields": {
+      "album": "Third Eye Blind", 
+      "artist": "Third Eye Blind", 
+      "owning_user": 2, 
+      "host_lib_song_id": 17, 
+      "song": "Semi-Charmed Life"
+    }
+  }, 
+  {
+    "pk": 9, 
+    "model": "udj.libraryentry", 
+    "fields": {
+      "album": "Third Eye Blind", 
+      "artist": "Third Eye Blind", 
+      "owning_user": 2, 
+      "host_lib_song_id": 18, 
+      "song": "Jumper"
+    }
+  }, 
+  {
+    "pk": 10, 
+    "model": "udj.libraryentry", 
+    "fields": {
+      "album": "Third Eye Blind", 
+      "artist": "Third Eye Blind", 
+      "owning_user": 2, 
+      "host_lib_song_id": 19, 
+      "song": "Graduate"
+    }
+  }, 
+  {
+    "pk": 11, 
+    "model": "udj.libraryentry", 
+    "fields": {
+      "album": "Siamese Dream", 
+      "artist": "The Smashing Pumpkins", 
+      "owning_user": 2, 
+      "host_lib_song_id": 20, 
+      "song": "Cherub Rock"
+    }
+  }, 
+  {
+    "pk": 12, 
+    "model": "udj.libraryentry", 
+    "fields": {
+      "album": "Scary Monsters and Nice Sprites", 
+      "artist": "Skrillex", 
+      "owning_user": 2, 
+      "host_lib_song_id": 21, 
+      "song": "Scary Monsters And Nice Sprites"
+    }
+  }, 
+  {
+    "pk": 13, 
+    "model": "udj.libraryentry", 
+    "fields": {
+      "album": "My Name Is Skrillex", 
+      "artist": "Skrillex", 
+      "owning_user": 2, 
+      "host_lib_song_id": 22, 
+      "song": "With You Friends"
+    }
+  }, 
+  {
+    "pk": 1, 
+    "model": "udj.eventgoer", 
+    "fields": {
+      "user": 3, 
+      "time_joined": "2011-11-21 00:07:24", 
       "event": 1
     }
-  },
+  }, 
   {
-    "pk": 1,
-    "model": "udj.eventgoer",
+    "pk": 2, 
+    "model": "udj.eventgoer", 
     "fields": {
-      "user": 3,
-      "time_joined": "2011-11-21 00:07:24",
+      "user": 2, 
+      "time_joined": "2011-11-21 00:06:24", 
       "event": 1
     }
-  },
+  }, 
   {
-    "pk": 1,
-    "model": "udj.availablesong",
+    "pk": 1, 
+    "model": "udj.availablesong", 
     "fields": {
       "library_entry": 1
     }
-  },
+  }, 
   {
-    "pk": 2,
-    "model": "udj.availablesong",
+    "pk": 2, 
+    "model": "udj.availablesong", 
     "fields": {
       "library_entry": 2
     }
-  },
+  }, 
   {
-    "pk": 3,
-    "model": "udj.availablesong",
+    "pk": 3, 
+    "model": "udj.availablesong", 
     "fields": {
       "library_entry": 5
     }
-  },
+  }, 
   {
-    "pk": 22,
-    "model": "auth.permission",
+    "pk": 4, 
+    "model": "udj.availablesong", 
     "fields": {
-      "codename": "add_logentry",
-      "name": "Can add log entry",
+      "library_entry": 8
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "udj.availablesong", 
+    "fields": {
+      "library_entry": 9
+    }
+  }, 
+  {
+    "pk": 6, 
+    "model": "udj.availablesong", 
+    "fields": {
+      "library_entry": 10
+    }
+  }, 
+  {
+    "pk": 7, 
+    "model": "udj.availablesong", 
+    "fields": {
+      "library_entry": 11
+    }
+  }, 
+  {
+    "pk": 8, 
+    "model": "udj.availablesong", 
+    "fields": {
+      "library_entry": 12
+    }
+  }, 
+  {
+    "pk": 9, 
+    "model": "udj.availablesong", 
+    "fields": {
+      "library_entry": 13
+    }
+  }, 
+  {
+    "pk": 22, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_logentry", 
+      "name": "Can add log entry", 
       "content_type": 8
     }
-  },
+  }, 
   {
-    "pk": 23,
-    "model": "auth.permission",
+    "pk": 23, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "change_logentry",
-      "name": "Can change log entry",
+      "codename": "change_logentry", 
+      "name": "Can change log entry", 
       "content_type": 8
     }
-  },
+  }, 
   {
-    "pk": 24,
-    "model": "auth.permission",
+    "pk": 24, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "delete_logentry",
-      "name": "Can delete log entry",
+      "codename": "delete_logentry", 
+      "name": "Can delete log entry", 
       "content_type": 8
     }
-  },
+  }, 
   {
-    "pk": 4,
-    "model": "auth.permission",
+    "pk": 4, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "add_group",
-      "name": "Can add group",
+      "codename": "add_group", 
+      "name": "Can add group", 
       "content_type": 2
     }
-  },
+  }, 
   {
-    "pk": 5,
-    "model": "auth.permission",
+    "pk": 5, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "change_group",
-      "name": "Can change group",
+      "codename": "change_group", 
+      "name": "Can change group", 
       "content_type": 2
     }
-  },
+  }, 
   {
-    "pk": 6,
-    "model": "auth.permission",
+    "pk": 6, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "delete_group",
-      "name": "Can delete group",
+      "codename": "delete_group", 
+      "name": "Can delete group", 
       "content_type": 2
     }
-  },
+  }, 
   {
-    "pk": 10,
-    "model": "auth.permission",
+    "pk": 10, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "add_message",
-      "name": "Can add message",
+      "codename": "add_message", 
+      "name": "Can add message", 
       "content_type": 4
     }
-  },
+  }, 
   {
-    "pk": 11,
-    "model": "auth.permission",
+    "pk": 11, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "change_message",
-      "name": "Can change message",
+      "codename": "change_message", 
+      "name": "Can change message", 
       "content_type": 4
     }
-  },
+  }, 
   {
-    "pk": 12,
-    "model": "auth.permission",
+    "pk": 12, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "delete_message",
-      "name": "Can delete message",
+      "codename": "delete_message", 
+      "name": "Can delete message", 
       "content_type": 4
     }
-  },
+  }, 
   {
-    "pk": 1,
-    "model": "auth.permission",
+    "pk": 1, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "add_permission",
-      "name": "Can add permission",
+      "codename": "add_permission", 
+      "name": "Can add permission", 
       "content_type": 1
     }
-  },
+  }, 
   {
-    "pk": 2,
-    "model": "auth.permission",
+    "pk": 2, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "change_permission",
-      "name": "Can change permission",
+      "codename": "change_permission", 
+      "name": "Can change permission", 
       "content_type": 1
     }
-  },
+  }, 
   {
-    "pk": 3,
-    "model": "auth.permission",
+    "pk": 3, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "delete_permission",
-      "name": "Can delete permission",
+      "codename": "delete_permission", 
+      "name": "Can delete permission", 
       "content_type": 1
     }
-  },
+  }, 
   {
-    "pk": 7,
-    "model": "auth.permission",
+    "pk": 7, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "add_user",
-      "name": "Can add user",
+      "codename": "add_user", 
+      "name": "Can add user", 
       "content_type": 3
     }
-  },
+  }, 
   {
-    "pk": 8,
-    "model": "auth.permission",
+    "pk": 8, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "change_user",
-      "name": "Can change user",
+      "codename": "change_user", 
+      "name": "Can change user", 
       "content_type": 3
     }
-  },
+  }, 
   {
-    "pk": 9,
-    "model": "auth.permission",
+    "pk": 9, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "delete_user",
-      "name": "Can delete user",
+      "codename": "delete_user", 
+      "name": "Can delete user", 
       "content_type": 3
     }
-  },
+  }, 
   {
-    "pk": 13,
-    "model": "auth.permission",
+    "pk": 13, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "add_contenttype",
-      "name": "Can add content type",
+      "codename": "add_contenttype", 
+      "name": "Can add content type", 
       "content_type": 5
     }
-  },
+  }, 
   {
-    "pk": 14,
-    "model": "auth.permission",
+    "pk": 14, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "change_contenttype",
-      "name": "Can change content type",
+      "codename": "change_contenttype", 
+      "name": "Can change content type", 
       "content_type": 5
     }
-  },
+  }, 
   {
-    "pk": 15,
-    "model": "auth.permission",
+    "pk": 15, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "delete_contenttype",
-      "name": "Can delete content type",
+      "codename": "delete_contenttype", 
+      "name": "Can delete content type", 
       "content_type": 5
     }
-  },
+  }, 
   {
-    "pk": 16,
-    "model": "auth.permission",
+    "pk": 16, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "add_session",
-      "name": "Can add session",
+      "codename": "add_session", 
+      "name": "Can add session", 
       "content_type": 6
     }
-  },
+  }, 
   {
-    "pk": 17,
-    "model": "auth.permission",
+    "pk": 17, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "change_session",
-      "name": "Can change session",
+      "codename": "change_session", 
+      "name": "Can change session", 
       "content_type": 6
     }
-  },
+  }, 
   {
-    "pk": 18,
-    "model": "auth.permission",
+    "pk": 18, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "delete_session",
-      "name": "Can delete session",
+      "codename": "delete_session", 
+      "name": "Can delete session", 
       "content_type": 6
     }
-  },
+  }, 
   {
-    "pk": 19,
-    "model": "auth.permission",
+    "pk": 19, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "add_site",
-      "name": "Can add site",
+      "codename": "add_site", 
+      "name": "Can add site", 
       "content_type": 7
     }
-  },
+  }, 
   {
-    "pk": 20,
-    "model": "auth.permission",
+    "pk": 20, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "change_site",
-      "name": "Can change site",
+      "codename": "change_site", 
+      "name": "Can change site", 
       "content_type": 7
     }
-  },
+  }, 
   {
-    "pk": 21,
-    "model": "auth.permission",
+    "pk": 21, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "delete_site",
-      "name": "Can delete site",
+      "codename": "delete_site", 
+      "name": "Can delete site", 
       "content_type": 7
     }
-  },
+  }, 
   {
-    "pk": 34,
-    "model": "auth.permission",
+    "pk": 34, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "add_activeplaylistentry",
-      "name": "Can add active playlist entry",
+      "codename": "add_activeplaylistentry", 
+      "name": "Can add active playlist entry", 
       "content_type": 12
     }
-  },
+  }, 
   {
-    "pk": 35,
-    "model": "auth.permission",
+    "pk": 35, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "change_activeplaylistentry",
-      "name": "Can change active playlist entry",
+      "codename": "change_activeplaylistentry", 
+      "name": "Can change active playlist entry", 
       "content_type": 12
     }
-  },
+  }, 
   {
-    "pk": 36,
-    "model": "auth.permission",
+    "pk": 36, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "delete_activeplaylistentry",
-      "name": "Can delete active playlist entry",
+      "codename": "delete_activeplaylistentry", 
+      "name": "Can delete active playlist entry", 
       "content_type": 12
     }
-  },
+  }, 
   {
-    "pk": 46,
-    "model": "auth.permission",
+    "pk": 46, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "add_availablesong",
-      "name": "Can add available song",
+      "codename": "add_availablesong", 
+      "name": "Can add available song", 
       "content_type": 16
     }
-  },
+  }, 
   {
-    "pk": 47,
-    "model": "auth.permission",
+    "pk": 47, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "change_availablesong",
-      "name": "Can change available song",
+      "codename": "change_availablesong", 
+      "name": "Can change available song", 
       "content_type": 16
     }
-  },
+  }, 
   {
-    "pk": 48,
-    "model": "auth.permission",
+    "pk": 48, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "delete_availablesong",
-      "name": "Can delete available song",
+      "codename": "delete_availablesong", 
+      "name": "Can delete available song", 
       "content_type": 16
     }
-  },
+  }, 
   {
-    "pk": 37,
-    "model": "auth.permission",
+    "pk": 37, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "add_currentsong",
-      "name": "Can add current song",
+      "codename": "add_currentsong", 
+      "name": "Can add current song", 
       "content_type": 13
     }
-  },
+  }, 
   {
-    "pk": 38,
-    "model": "auth.permission",
+    "pk": 38, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "change_currentsong",
-      "name": "Can change current song",
+      "codename": "change_currentsong", 
+      "name": "Can change current song", 
       "content_type": 13
     }
-  },
+  }, 
   {
-    "pk": 39,
-    "model": "auth.permission",
+    "pk": 39, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "delete_currentsong",
-      "name": "Can delete current song",
+      "codename": "delete_currentsong", 
+      "name": "Can delete current song", 
       "content_type": 13
     }
-  },
+  }, 
   {
-    "pk": 25,
-    "model": "auth.permission",
+    "pk": 25, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "add_event",
-      "name": "Can add event",
+      "codename": "add_event", 
+      "name": "Can add event", 
       "content_type": 9
     }
-  },
+  }, 
   {
-    "pk": 26,
-    "model": "auth.permission",
+    "pk": 26, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "change_event",
-      "name": "Can change event",
+      "codename": "change_event", 
+      "name": "Can change event", 
       "content_type": 9
     }
-  },
+  }, 
   {
-    "pk": 27,
-    "model": "auth.permission",
+    "pk": 27, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "delete_event",
-      "name": "Can delete event",
+      "codename": "delete_event", 
+      "name": "Can delete event", 
       "content_type": 9
     }
-  },
+  }, 
   {
-    "pk": 43,
-    "model": "auth.permission",
+    "pk": 43, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "add_eventgoer",
-      "name": "Can add event goer",
+      "codename": "add_eventgoer", 
+      "name": "Can add event goer", 
       "content_type": 15
     }
-  },
+  }, 
   {
-    "pk": 44,
-    "model": "auth.permission",
+    "pk": 44, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "change_eventgoer",
-      "name": "Can change event goer",
+      "codename": "change_eventgoer", 
+      "name": "Can change event goer", 
       "content_type": 15
     }
-  },
+  }, 
   {
-    "pk": 45,
-    "model": "auth.permission",
+    "pk": 45, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "delete_eventgoer",
-      "name": "Can delete event goer",
+      "codename": "delete_eventgoer", 
+      "name": "Can delete event goer", 
       "content_type": 15
     }
-  },
+  }, 
   {
-    "pk": 28,
-    "model": "auth.permission",
+    "pk": 28, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "add_finishedevent",
-      "name": "Can add finished event",
+      "codename": "add_finishedevent", 
+      "name": "Can add finished event", 
       "content_type": 10
     }
-  },
+  }, 
   {
-    "pk": 29,
-    "model": "auth.permission",
+    "pk": 29, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "change_finishedevent",
-      "name": "Can change finished event",
+      "codename": "change_finishedevent", 
+      "name": "Can change finished event", 
       "content_type": 10
     }
-  },
+  }, 
   {
-    "pk": 30,
-    "model": "auth.permission",
+    "pk": 30, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "delete_finishedevent",
-      "name": "Can delete finished event",
+      "codename": "delete_finishedevent", 
+      "name": "Can delete finished event", 
       "content_type": 10
     }
-  },
+  }, 
   {
-    "pk": 31,
-    "model": "auth.permission",
+    "pk": 31, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "add_libraryentry",
-      "name": "Can add library entry",
+      "codename": "add_libraryentry", 
+      "name": "Can add library entry", 
       "content_type": 11
     }
-  },
+  }, 
   {
-    "pk": 32,
-    "model": "auth.permission",
+    "pk": 32, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "change_libraryentry",
-      "name": "Can change library entry",
+      "codename": "change_libraryentry", 
+      "name": "Can change library entry", 
       "content_type": 11
     }
-  },
+  }, 
   {
-    "pk": 33,
-    "model": "auth.permission",
+    "pk": 33, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "delete_libraryentry",
-      "name": "Can delete library entry",
+      "codename": "delete_libraryentry", 
+      "name": "Can delete library entry", 
       "content_type": 11
     }
-  },
+  }, 
   {
-    "pk": 40,
-    "model": "auth.permission",
+    "pk": 40, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "add_ticket",
-      "name": "Can add ticket",
+      "codename": "add_ticket", 
+      "name": "Can add ticket", 
       "content_type": 14
     }
-  },
+  }, 
   {
-    "pk": 41,
-    "model": "auth.permission",
+    "pk": 41, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "change_ticket",
-      "name": "Can change ticket",
+      "codename": "change_ticket", 
+      "name": "Can change ticket", 
       "content_type": 14
     }
-  },
+  }, 
   {
-    "pk": 42,
-    "model": "auth.permission",
+    "pk": 42, 
+    "model": "auth.permission", 
     "fields": {
-      "codename": "delete_ticket",
-      "name": "Can delete ticket",
+      "codename": "delete_ticket", 
+      "name": "Can delete ticket", 
       "content_type": 14
     }
-  },
+  }, 
   {
-    "pk": 1,
-    "model": "auth.user",
+    "pk": 1, 
+    "model": "auth.user", 
     "fields": {
-      "username": "admin",
-      "first_name": "",
-      "last_name": "",
-      "is_active": true,
-      "is_superuser": true,
-      "is_staff": true,
-      "last_login": "2011-11-21 00:04:10",
-      "groups": [],
-      "user_permissions": [],
-      "password": "sha1$79d95$95bb254b5daccf168ea7a3f723d6f1bb96df5265",
-      "email": "udj@udj.com",
+      "username": "admin", 
+      "first_name": "", 
+      "last_name": "", 
+      "is_active": true, 
+      "is_superuser": true, 
+      "is_staff": true, 
+      "last_login": "2011-11-22 20:56:01", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$79d95$95bb254b5daccf168ea7a3f723d6f1bb96df5265", 
+      "email": "udj@udj.com", 
       "date_joined": "2011-11-21 00:03:52"
     }
-  },
+  }, 
   {
-    "pk": 2,
-    "model": "auth.user",
+    "pk": 2, 
+    "model": "auth.user", 
     "fields": {
-      "username": "test1",
-      "first_name": "",
-      "last_name": "",
-      "is_active": true,
-      "is_superuser": false,
-      "is_staff": false,
-      "last_login": "2011-11-21 00:04:21",
-      "groups": [],
-      "user_permissions": [],
-      "password": "sha1$25614$3a0c1cb3df807816c273000157fd53252e66a464",
-      "email": "",
+      "username": "test1", 
+      "first_name": "", 
+      "last_name": "", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "last_login": "2011-11-21 00:04:21", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$25614$3a0c1cb3df807816c273000157fd53252e66a464", 
+      "email": "", 
       "date_joined": "2011-11-21 00:04:21"
     }
-  },
+  }, 
   {
-    "pk": 3,
-    "model": "auth.user",
+    "pk": 3, 
+    "model": "auth.user", 
     "fields": {
-      "username": "test2",
-      "first_name": "",
-      "last_name": "",
-      "is_active": true,
-      "is_superuser": false,
-      "is_staff": false,
-      "last_login": "2011-11-21 00:04:35",
-      "groups": [],
-      "user_permissions": [],
-      "password": "sha1$ab44d$9cc6d1f2a2987d086856ae2d51c8a2b8eb6c4d4c",
-      "email": "",
+      "username": "test2", 
+      "first_name": "", 
+      "last_name": "", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "last_login": "2011-11-21 00:04:35", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$ab44d$9cc6d1f2a2987d086856ae2d51c8a2b8eb6c4d4c", 
+      "email": "", 
       "date_joined": "2011-11-21 00:04:35"
     }
-  },
+  }, 
   {
-    "pk": 4,
-    "model": "auth.user",
+    "pk": 4, 
+    "model": "auth.user", 
     "fields": {
-      "username": "test3",
-      "first_name": "",
-      "last_name": "",
-      "is_active": true,
-      "is_superuser": false,
-      "is_staff": false,
-      "last_login": "2011-11-21 00:04:46",
-      "groups": [],
-      "user_permissions": [],
-      "password": "sha1$88305$9401009b8dbcf94d44e0683456003ee2813aa8b6",
-      "email": "",
+      "username": "test3", 
+      "first_name": "", 
+      "last_name": "", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "last_login": "2011-11-21 00:04:46", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$88305$9401009b8dbcf94d44e0683456003ee2813aa8b6", 
+      "email": "", 
       "date_joined": "2011-11-21 00:04:46"
     }
   }
