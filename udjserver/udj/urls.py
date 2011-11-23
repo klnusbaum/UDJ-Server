@@ -24,5 +24,5 @@ urlpatterns += patterns('udj.views.event',
   (r'^events/(?P<event_id>\d+)/available_music/(?P<song_id>\d+)$', 
     'removeFromAvailableMusic'),
   (r'^events/(?P<event_id>\d+)/current_song$', 
-    'getCurrentSong'),
+    'currentSong'),
 )

@@ -188,9 +188,49 @@ def removeFromAvailableMusic(request, event_id, song_id):
   return HttpResponse()
 
 @NeedsAuth
+@AcceptsMethods(['GET', 'POST'])
+def currentSong(request, event_id):
+  if request.method == 'GET':
+    return getCurrentSong(request, event_id=event_id)
+  else: 
+    return setCurrentSong(request, event_id=event_id)
+
 @InParty
-@AcceptsMethods('GET')
 def getCurrentSong(request, event_id):
   currentSong = CurrentSong.objects.get(event__id=event_id)
   return HttpResponse(getJSONForCurrentSong(currentSong))
 
+def moveCurrentSong2PlayedSong(given_event):
+  currentSong = CurrentSong.objects.get(event=given_event)
+  PlayedPlaylistEntry(
+    song = currentSong.song,
+    upvotes = currentSong.upvotes,
+    downvotes = currentSong.downvotes,
+    time_added = currentSong.time_added,
+    time_played = currentSong.time_played,
+    adder = currentSong.adder,
+    event = given_event).save()
+  currentSong.delete()
+  
+def movePlaylistEntry2CurrentSong(given_event, playlist_entry_id):
+  playlistEntry = ActivePlaylistEntry.objects.get(pk=playlist_entry_id)
+  CurrentSong( 
+    song = playlistEntry.song,
+    upvotes = playlistEntry.upvotes,
+    downvotes = playlistEntry.downvotes,
+    time_added = playlistEntry.time_added,
+    adder = playlistEntry.adder,
+    event = given_event).save()
+  playlistEntry.delete()
+
+@IsEventHost
+def setCurrentSong(request, event_id):
+  if(not request.POST.__contains__('playlist_entry_id')):
+    return HttpResponseBadRequest(
+      'Please specifiy the playlist entry to set as the current song')
+  event = Event.objects.get(pk=event_id) 
+  moveCurrentSong2PlayedSong(event)
+  movePlaylistEntry2CurrentSong(
+    event, request.POST.__getitem__('playlist_entry_id'))
+  return HttpResponse("Song changed")
+  
