@@ -19,9 +19,11 @@ from udj.models import Event
 from udj.models import LibraryEntry
 from udj.models import AvailableSong
 from udj.models import EventGoer
+from udj.models import CurrentSong
 from udj.models import FinishedEvent
 from udj.JSONCodecs import getJSONForEvents
 from udj.JSONCodecs import getJSONForAvailableSongs
+from udj.JSONCodecs import getJSONForCurrentSong
 from udj.auth import getUserForTicket
 
 
@@ -133,6 +135,7 @@ def getAvailableMusic(request, event_id):
   return HttpResponse(getJSONForAvailableSongs(available_songs))
 
 @IsEventHost
+@NeedsJSON
 def addToAvailableMusic(request, event_id):
   host = getUserForTicket(request)
   toAdd = json.loads(request.raw_post_data)

@@ -8,7 +8,9 @@ from udj.models import LibraryEntry
 from udj.models import EventGoer
 from udj.models import FinishedEvent
 from udj.models import AvailableSong
+from udj.models import CurrentSong
 from decimal import Decimal
+from datetime import datetime
 
 class GetEventsTest(User1TestCase):
   def testGetEvents(self):
@@ -138,4 +140,20 @@ class TestDeleteAvailableMusic(User1TestCase):
       library_entry__host_lib_song_id=10, library_entry__owning_user__id=2)
     self.assertEqual(len(foundSongs), 0)
    
-
+class TestGetCurrentSong(User2TestCase):
+  def testGetCurrentSong(self):
+    response = self.doGet('/udj/events/1/current_song')
+    self.assertEqual(response.status_code, 200, response.content)
+    result = json.loads(response.content) 
+    actualCurrentSong = CurrentSong.objects.get(event__id=1)
+    self.assertEqual(
+      actualCurrentSong.song.host_lib_song_id, result['lib_song_id'])
+    self.assertEqual(actualCurrentSong.song.song, result['song'])
+    self.assertEqual(actualCurrentSong.song.artist, result['artist'])
+    self.assertEqual(actualCurrentSong.song.album, result['album'])
+    self.assertEqual(actualCurrentSong.upvotes, result['up_votes'])
+    self.assertEqual(actualCurrentSong.downvotes, result['down_votes'])
+    self.assertEqual(
+      actualCurrentSong.time_added, 
+      datetime.strptime(result['time_added'], "%Y-%m-%dT%H:%M:%S"))
+    self.assertEqual(actualCurrentSong.adder.id, result['adder_id'])

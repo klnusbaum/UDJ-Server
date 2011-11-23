@@ -47,7 +47,7 @@ def getJSONForCurrentSong(currentSong):
     'album' : currentSong.song.album,
     'up_votes' : currentSong.upvotes,
     'down_votes' : currentSong.downvotes,
-    'time_added' : currentSong.time_added,
+    'time_added' : currentSong.time_added.isoformat(),
     'adder_id' : currentSong.adder.id
   }
   return json.dumps(toReturn)
