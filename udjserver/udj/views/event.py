@@ -64,7 +64,7 @@ def createEvent(request):
   toInsert.save()
   return HttpResponse('{"event_id" : ' + str(toInsert.id) + '}', status=201)
        
-def movePlayedSongs(endingEvent, finishedEvent):
+def savePlayedSongs(endingEvent, finishedEvent):
   for playedSong in PlayedPlaylistEntry.objects.filter(event=endingEvent):
     FinishedPlaylistEntry(
       song = playedSong.song,
@@ -74,6 +74,17 @@ def movePlayedSongs(endingEvent, finishedEvent):
       time_played = playedSong.time_played,
       adder = playedSong.adder,
       event = finishedEvent).save()
+
+def saveCurrentSong(endEvent, finishedEvent):
+  currentSong = CurrentSong.objects.get(event=endEvent)
+  FinishedPlaylistEntry(
+    song = currentSong.song,
+    upvotes = currentSong.upvotes,
+    downvotes = currentSong.downvotes,
+    time_added = currentSong.time_added,
+    time_played = currentSong.time_played,
+    adder = currentSong.adder,
+    event = finishedEvent).save()
       
 
 #Should be able to make only one call to the events table to ensure it:
@@ -91,6 +102,7 @@ def endEvent(request, event_id):
   toDelete = Event.objects.get(id=event_id)
   host = toDelete.host
   finishedEvent = FinishedEvent(
+    event_id=toDelete.id,
     name=toDelete.name, 
     host=toDelete.host, 
     latitude = toDelete.latitude,
@@ -98,7 +110,8 @@ def endEvent(request, event_id):
     time_started = toDelete.time_started)
   finishedEvent.save() 
 
-  movePlayedSongs(toDelete, finishedEvent)
+  savePlayedSongs(toDelete, finishedEvent)
+  saveCurrentSong(toDelete, finishedEvent)
   toDelete.delete()
   AvailableSong.objects.filter(library_entry__owning_user=host).delete()
   

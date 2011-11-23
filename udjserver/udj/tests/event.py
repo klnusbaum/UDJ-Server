@@ -7,6 +7,7 @@ from udj.models import Event
 from udj.models import LibraryEntry
 from udj.models import EventGoer
 from udj.models import FinishedEvent
+from udj.models import FinishedPlaylistEntry
 from udj.models import AvailableSong
 from udj.models import CurrentSong
 from decimal import Decimal
@@ -38,12 +39,19 @@ class EndEventTest(User1TestCase):
   def testEndEvent(self):
     response = self.doDelete('/udj/events/1')
     self.assertEqual(len(Event.objects.filter(id=1)), 0)
+
     finishedEvent = FinishedEvent.objects.get(id=1)
     self.assertEqual(finishedEvent.name, 'First Party') 
     self.assertEqual(finishedEvent.latitude, Decimal('40.113523'))
     self.assertEqual(finishedEvent.longitude, Decimal('-88.224006'))
     self.assertEqual(finishedEvent.host, User.objects.filter(id=2)[0])
-    self.assertEqual(len(AvailableSong.objects.filter(library_entry__owning_user__id=2)),0)
+    self.assertEqual(
+      len(AvailableSong.objects.filter(library_entry__owning_user__id=2)),0)
+
+    finishedSongs = FinishedPlaylistEntry.objects.filter(event=finishedEvent)
+    self.assertEqual(len(finishedSongs),2)
+    self.assertTrue(FinishedPlaylistEntry.objects.filter(song__id=12).exists())
+    self.assertTrue(FinishedPlaylistEntry.objects.filter(song__id=10).exists())
 
 class JoinEventTest(User3TestCase):
   def testJoinEvent(self):
