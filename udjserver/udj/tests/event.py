@@ -65,16 +65,19 @@ class KickUserTest(User1TestCase):
     self.assertEqual(len(event_goer_entries), 0)
 
 #TODO still need to test the max_results parameter
-class TestAvailableMusic(User2TestCase):
+class TestGetAvailableMusic(User2TestCase):
+  def verifyExpectedResults(self, results, realSongs):
+   realIds = [song.host_lib_song_id for song in realSongs]
+   for song in results:
+     self.assertTrue(song['id'] in realIds)
+ 
   def testGetAlbum(self): 
    response = self.doGet('/udj/events/1/available_music?query=blue')
    self.assertEqual(response.status_code, 200, response.content)
    results = json.loads(response.content)
    self.assertEqual(len(results), 2)
    realSongs = LibraryEntry.objects.filter(album="Blue")
-   realIds = [song.host_lib_song_id for song in realSongs]
-   for song in results:
-     self.assertTrue(song['id'] in realIds)
+   self.verifyExpectedResults(results, realSongs)
 
   def testGetArtist(self): 
    response = self.doGet(
@@ -83,9 +86,7 @@ class TestAvailableMusic(User2TestCase):
    results = json.loads(response.content)
    self.assertEqual(len(results), 1)
    realSongs = LibraryEntry.objects.filter(artist="The Smashing Pumpkins")
-   realIds = [song.host_lib_song_id for song in realSongs]
-   for song in results:
-     self.assertTrue(song['id'] in realIds)
+   self.verifyExpectedResults(results, realSongs)
 
   def testGetSong(self):
    response = self.doGet(
@@ -94,9 +95,7 @@ class TestAvailableMusic(User2TestCase):
    results = json.loads(response.content)
    self.assertEqual(len(results), 1)
    realSongs = LibraryEntry.objects.filter(song="Never Let You Go")
-   realIds = [song.host_lib_song_id for song in realSongs]
-   for song in results:
-     self.assertTrue(song['id'] in realIds)
+   self.verifyExpectedResults(results, realSongs)
 
   def testSongNotAvailable(self): 
    response = self.doGet(
@@ -104,3 +103,10 @@ class TestAvailableMusic(User2TestCase):
    self.assertEqual(response.status_code, 200, response.content)
    results = json.loads(response.content)
    self.assertEqual(len(results), 0)
+
+"""
+class TestPutAvailableMusic(User2TestCase):
+  def testGetAlbum(self): 
+   response = self.doJSONPut('/udj/events/1/available_music')
+   self.assertEqual(response.status_code, 200, response.content)
+"""

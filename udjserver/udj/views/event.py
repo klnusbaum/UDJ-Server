@@ -107,7 +107,10 @@ def leaveEvent(request, event_id, user_id):
 def availableMusic(request, event_id):
   if request.method == 'GET':
     return getAvailableMusic(request, event_id)
-
+  elif request.method == 'PUT':
+    return addToAvailableMusic(request, event_id)
+  else:
+    return removeFromAvailableMusic(request, event_id)
 
 def getAvailableMusic(request, event_id):
   event = Event.objects.get(pk=event_id)
@@ -128,6 +131,18 @@ def getAvailableMusic(request, event_id):
   toReturn = []
   for available_song in available_songs:
     toReturn.append(getJsonForLibraryEntry(available_song.library_entry))
-
   return HttpResponse(json.dumps(toReturn))
+
+@IsEventHost
+def addToAvailableMusic(request, event_id):
+  host = getUserForTicket(request)
+  toAdd = json.loads(request.raw_post_data)
+  added = []
+  for song_id in toAdd:
+    addSong = AvailableSong(
+      Song.objects.filter(host_lib_song_id=song_id, user=host)[0])
+    addSong.save()
+    added.append(song_id)
+
+  return HttpResponse(json.dumps(added))
 

@@ -20,8 +20,6 @@ def InParty(function):
       return function(*args, **kwargs)
   return wrapper
 
-
-
 def IsUserOrHost(function):
   def wrapper(*args, **kwargs):
     request = args[0]
