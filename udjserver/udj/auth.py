@@ -14,9 +14,7 @@ from headers import getTicketHeader
 from headers import getUserIdHeader
 
 def getUserForTicket(request):
-  matchingTickets = Ticket.objects.filter(
-    ticket_hash=request.META[getTicketHeader()])
-  return matchingTickets[0].user
+  return Ticket.objects.get(ticket_hash=request.META[getTicketHeader()]).user
 
 def ticketMatchesUser(request, provided_user_id):
   matchingTickets = Ticket.objects.filter(
@@ -26,9 +24,11 @@ def ticketMatchesUser(request, provided_user_id):
   
 
 def isValidTicket(provided_hash):
-  matchingTickets = Ticket.objects.filter(ticket_hash=provided_hash)
-  if matchingTickets and \
-    (datetime.now() - matchingTickets[0].time_issued).days < 1:
+  try:
+    matchingTicket = Ticket.objects.get(ticket_hash=provided_hash)
+  except DoesNotExist:
+    return False
+  if(datetime.now() - matchingTicket.time_issued).days < 1:
     return True
   else:
     return False

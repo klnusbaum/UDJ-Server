@@ -14,7 +14,7 @@ def addSongToLibrary(songJson, user_id):
   preivouslyAdded = LibraryEntry.objects.filter(
     host_lib_song_id=songJson['id'], 
     owning_user__id=user_id)
-  if len(preivouslyAdded) ==1:
+  if preivouslyAdded.exists():
     return preivouslyAdded[0]
   else:
     toInsert = getLibraryEntryFromJSON(songJson, user_id)
@@ -39,12 +39,12 @@ def addSongsToLibrary(request, user_id):
 @AcceptsMethods('DELETE')
 @TicketUserMatch
 def deleteSongFromLibrary(request, user_id, lib_id):
-  matchedEntries = LibraryEntry.objects.filter(
-    host_lib_song_id=lib_id, owning_user=user_id
-  )
-  if len(matchedEntries) != 1:
+  try:
+    LibraryEntry.objects.get(
+      host_lib_song_id=lib_id, 
+      owning_user=user_id).delete()
+  except DoesNotExist:
     return HttpResponseNotFound()
-  matchedEntries[0].delete()
   return HttpResponse("Deleted item: " + lib_id)
 
 @AcceptsMethods('DELETE')

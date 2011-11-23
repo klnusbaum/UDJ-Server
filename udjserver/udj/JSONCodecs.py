@@ -10,7 +10,7 @@ def getLibraryEntryFromJSON(songJson, user_id):
     song = songJson['song'], 
     artist  = songJson['artist'], 
     album = songJson['album'], 
-    owning_user = User.objects.filter(id=user_id)[0]
+    owning_user = User.objects.get(id=user_id)
   )
 
 def getJSONForAvailableSongs(songs):

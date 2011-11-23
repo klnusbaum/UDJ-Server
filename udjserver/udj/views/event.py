@@ -71,7 +71,7 @@ def createEvent(request):
 def endEvent(request, event_id):
   #TODO We have a race condition here. Gonna need to wrap this in a transaction
   #in the future
-  toDelete = Event.objects.filter(id=event_id)[0]
+  toDelete = Event.objects.get(id=event_id)
   host = toDelete.host
   finishedEvent = FinishedEvent(
     party_id = toDelete.id, 
@@ -92,7 +92,7 @@ def endEvent(request, event_id):
 @CanLoginToEvent
 def joinEvent(request, event_id):
   joining_user = getUserForTicket(request)
-  event_to_join = Event.objects.filter(id=event_id)[0]
+  event_to_join = Event.objects.get(id=event_id)
   event_goer = EventGoer(user=joining_user, event=event_to_join)
   event_goer.save()
   return HttpResponse("joined event", status=201)
@@ -101,7 +101,7 @@ def joinEvent(request, event_id):
 @NeedsAuth
 @IsUserOrHost
 def leaveEvent(request, event_id, user_id):
-  event_goer = EventGoer.objects.filter(event__id=event_id, user__id=user_id)[0]
+  event_goer = EventGoer.objects.get(event__id=event_id, user__id=user_id)
   event_goer.delete()
   return HttpResponse("left event")
 
@@ -135,8 +135,8 @@ def addToAvailableMusic(request, event_id):
   toAdd = json.loads(request.raw_post_data)
   added = []
   for song_id in toAdd:
-    addSong = AvailableSong(library_entry=LibraryEntry.objects.filter(
-      host_lib_song_id=song_id, owning_user=host)[0])
+    addSong = AvailableSong(library_entry=LibraryEntry.objects.get(
+      host_lib_song_id=song_id, owning_user=host))
     addSong.save()
     added.append(song_id)
 
@@ -147,9 +147,9 @@ def addToAvailableMusic(request, event_id):
 @IsEventHost
 def removeFromAvailableMusic(request, event_id, song_id):
   host = getUserForTicket(request)
-  AvailableSong.objects.filter(
+  AvailableSong.objects.get(
     library_entry__host_lib_song_id=song_id,
-    library_entry__owning_user=host)[0].delete()
+    library_entry__owning_user=host).delete()
 
   return HttpResponse()
 
@@ -158,6 +158,6 @@ def removeFromAvailableMusic(request, event_id, song_id):
 @InParty
 @AcceptsMethods('GET')
 def getCurrentSong(request, event_id):
-  currentSong = CurrentSong.objects.filter(event__id=event_id)[0]  
+  currentSong = CurrentSong.objects.get(event__id=event_id)
   return HttpResponse(getJSONForCurrentSong(currentSong))
 
