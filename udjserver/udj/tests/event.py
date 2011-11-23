@@ -10,6 +10,7 @@ from udj.models import ActivePlaylistEntry
 from udj.models import FinishedEvent
 from udj.models import FinishedPlaylistEntry
 from udj.models import AvailableSong
+from udj.models import PlayedPlaylistEntry
 from udj.models import CurrentSong
 from decimal import Decimal
 from datetime import datetime
@@ -171,11 +172,12 @@ class TestSetCurentSong(User1TestCase):
   def testSetCurrentSong(self):
     response = self.doPost(
       '/udj/events/1/current_song', 
-      {'playilst_entry_id' : 1})
+      {'playlist_entry_id' : '1'})
+    self.assertEqual(response.status_code, 200, response.content)
     movedSong = ActivePlaylistEntry.objects.filter(id=1)
     self.assertFalse(movedSong.exists())
     playedSongs = PlayedPlaylistEntry.objects.filter(event__id=1)
     self.assertTrue(len(playedSongs), 2) 
     self.assertTrue(12 in [playedSong.song.id for playedSong in playedSongs])
     self.assertTrue(
-      CurrentSong.objects.filter(event__id=1, song__song__id=11).exists())
+      CurrentSong.objects.filter(event__id=1, song__id=11).exists())

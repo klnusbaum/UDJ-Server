@@ -23,6 +23,7 @@ from udj.models import CurrentSong
 from udj.models import FinishedEvent
 from udj.models import FinishedPlaylistEntry
 from udj.models import PlayedPlaylistEntry
+from udj.models import ActivePlaylistEntry
 from udj.JSONCodecs import getJSONForEvents
 from udj.JSONCodecs import getJSONForAvailableSongs
 from udj.JSONCodecs import getJSONForCurrentSong

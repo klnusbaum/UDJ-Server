@@ -55,7 +55,7 @@ class DoesServerOpsTestCase(TestCase):
     return self.client.delete(url, **{getTicketHeader() : self.ticket_hash})
 
   def doPost(self, url, args):
-    return self.client.post(url, args)
+    return self.client.post(url, args, **{getTicketHeader() : self.ticket_hash})
 
 class User1TestCase(DoesServerOpsTestCase):
   username = "test1"

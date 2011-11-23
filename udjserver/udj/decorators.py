@@ -50,7 +50,7 @@ def IsEventHost(function):
     event = get_object_or_404(Event, id__exact=kwargs['event_id'])
     user = getUserForTicket(request)
     if event.host != user:
-      return HttpResponseForbidden()
+      return HttpResponseForbidden("Only the host may do that")
     else:
       return function(*args, **kwargs)
   return wrapper
@@ -59,7 +59,7 @@ def NeedsAuth(function):
   def wrapper(*args, **kwargs):
     request = args[0]
     if not hasValidTicket(request):
-      return HttpResponseForbidden()
+      return HttpResponseForbidden("You're not authenticated")
     else:
       return function(*args, **kwargs)
   return wrapper
