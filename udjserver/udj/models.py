@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 class Event(models.Model):
   name = models.CharField(max_length=200)
-  host = models.ForeignKey(User)
+  host = models.ForeignKey(User, unique=True)
   latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
   longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
   password_hash = models.CharField(max_length=32, blank=True)
@@ -13,7 +13,6 @@ class Event(models.Model):
     return "Event " + str(self.id) + ": " + self.name
 
 class FinishedEvent(models.Model):
-  party_id = models.IntegerField(unique=True)
   name = models.CharField(max_length=200)
   host = models.ForeignKey(User)
   latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
@@ -22,7 +21,7 @@ class FinishedEvent(models.Model):
   time_ended = models.DateTimeField(auto_now_add=True)
 
   def __unicode__(self):
-    return "Event " + str(self.id) + ": " + self.name
+    return "Finished Event " + str(self.party_id) + ": " + self.name
 
 class LibraryEntry(models.Model):
   host_lib_song_id = models.IntegerField()
@@ -30,12 +29,18 @@ class LibraryEntry(models.Model):
   artist = models.CharField(max_length=200)
   album = models.CharField(max_length=200)
   owning_user = models.ForeignKey(User)
+  is_deleted = models.BooleanField(default=False)
+  
+  #class Meta:
+    #TODO Gotta fix this. This uniqueness clause only holds true when
+    # is_deleted = False
+    # unique_together = ("host_lib_song_id", "owning_user")
 
   def __unicode__(self):
     return "Library Entry " + str(self.host_lib_song_id) + ": " + self.song
 
 class AvailableSong(models.Model):
-  library_entry = models.ForeignKey(LibraryEntry)
+  library_entry = models.ForeignKey(LibraryEntry, unique=True)
 
   def __unicode__(self):
     return str(self.library_entry.song)
@@ -46,13 +51,13 @@ class ActivePlaylistEntry(models.Model):
   downvotes = models.IntegerField()
   time_added = models.DateTimeField(auto_now_add=True)
   adder = models.ForeignKey(User)
-  event = models.ForeignKey(Event)
+  event = models.ForeignKey(FinishedEvent)
 
   def __unicode__(self):
     return self.song.library_entry.song
 
 class PlayedPlaylistEntry(models.Model):
-  song = models.ForeignKey(AvailableSong)
+  song = models.ForeignKey(LibraryEntry)
   upvotes = models.IntegerField()
   downvotes = models.IntegerField()
   time_added = models.DateTimeField()
@@ -63,8 +68,18 @@ class PlayedPlaylistEntry(models.Model):
   def __unicode__(self):
     return self.song.library_entry.song
 
+class FinishedPlaylistEntry(models.Model):
+  song = models.ForeignKey(LibraryEntry)
+  upvotes = models.IntegerField()
+  downvotes = models.IntegerField()
+  time_added = models.DateTimeField()
+  time_played = models.DateTimeField(blank=True)
+  adder = models.ForeignKey(User)
+  event = models.ForeignKey(FinishedEvent)
+
+
 class CurrentSong(models.Model):
-  event = models.ForeignKey(Event)
+  event = models.ForeignKey(Event, unique=True)
   song = models.ForeignKey(LibraryEntry)
   upvotes = models.IntegerField()
   downvotes = models.IntegerField()

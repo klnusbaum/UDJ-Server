@@ -59,6 +59,8 @@ def createEvent(request):
       
   toInsert.save()
   return HttpResponse('{"event_id" : ' + str(toInsert.id) + '}', status=201)
+    
+
 
 #Should be able to make only one call to the events table to ensure it:
 # 1. Exsits
@@ -75,14 +77,14 @@ def endEvent(request, event_id):
   toDelete = Event.objects.get(id=event_id)
   host = toDelete.host
   finishedEvent = FinishedEvent(
-    party_id = toDelete.id, 
     name=toDelete.name, 
     host=toDelete.host, 
     latitude = toDelete.latitude,
     longitude = toDelete.longitude,
-     time_started = toDelete.time_started)
-  toDelete.delete()
+    time_started = toDelete.time_started)
   finishedEvent.save() 
+  #moveRemainingPlaylistSongs(toDelete, finishedEvent)
+  toDelete.delete()
   AvailableSong.objects.filter(library_entry__owning_user=host).delete()
   
   return HttpResponse("Party ended")

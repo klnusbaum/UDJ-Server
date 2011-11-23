@@ -22,7 +22,7 @@ class GetEventsTest(User1TestCase):
     self.assertTrue("password" not in events[0])
     self.assertTrue("password_hash" not in events[0])
 
-class CreateEventTest(User1TestCase):
+class CreateEventTest(User2TestCase):
   def testCreateEvent(self):
     partyName = "A Bitchn' Party"
     event = {'name' : partyName } 
@@ -36,9 +36,7 @@ class EndEventTest(User1TestCase):
   def testEndEvent(self):
     response = self.doDelete('/udj/events/1')
     self.assertEqual(len(Event.objects.filter(id=1)), 0)
-    finishedEvent = FinishedEvent.objects.filter(party_id=1)
-    self.assertEqual(len(finishedEvent), 1)
-    finishedEvent = finishedEvent[0]
+    finishedEvent = FinishedEvent.objects.get(id=1)
     self.assertEqual(finishedEvent.name, 'First Party') 
     self.assertEqual(finishedEvent.latitude, Decimal('40.113523'))
     self.assertEqual(finishedEvent.longitude, Decimal('-88.224006'))

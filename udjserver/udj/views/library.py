@@ -4,6 +4,7 @@ from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseNotFound
 from django.http import HttpResponseBadRequest
+from django.core.exceptions import ObjectDoesNotExist
 from udj.decorators import TicketUserMatch
 from udj.decorators import AcceptsMethods
 from udj.decorators import NeedsJSON
@@ -40,15 +41,17 @@ def addSongsToLibrary(request, user_id):
 @TicketUserMatch
 def deleteSongFromLibrary(request, user_id, lib_id):
   try:
-    LibraryEntry.objects.get(
+    toDelete = LibraryEntry.objects.get(
       host_lib_song_id=lib_id, 
-      owning_user=user_id).delete()
-  except DoesNotExist:
+      owning_user=user_id)
+    toDelete.is_deleted = True
+    toDelete.save()
+  except ObjectDoesNotExist:
     return HttpResponseNotFound()
   return HttpResponse("Deleted item: " + lib_id)
 
 @AcceptsMethods('DELETE')
 @TicketUserMatch
 def deleteEntireLibrary(request, user_id):
-  LibraryEntry.objects.filter(owning_user__id=user_id).delete()
+  LibraryEntry.objects.filter(owning_user__id=user_id).update(is_deleted=True)
   return HttpResponse("Deleted all items from the library")

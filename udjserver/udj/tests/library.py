@@ -88,18 +88,16 @@ class LibRemoveTestCase(User1TestCase):
   def testLibSongDelete(self):
     response = self.doDelete('/udj/users/' + self.user_id + '/library/10')
     self.assertEqual(response.status_code, 200)
-    self.assertEqual(
-      len(LibraryEntry.objects.filter(host_lib_song_id=2,owning_user__id=2)),
-      0
-    )
+    deletedEntries = LibraryEntry.objects.filter(
+      host_lib_song_id=10, owning_user__id=2, is_deleted=True)
+    self.assertEqual(len(deletedEntries), 1)
 
 
 class LibFullDeleteTest(User1TestCase):
   def testFullDelete(self):
     response = self.doDelete('/udj/users/'+self.user_id+'/library')
     self.assertEqual(response.status_code, 200)
-    self.assertEqual(
-      len(LibraryEntry.objects.filter(owning_user__id=2)),
-      0
-    )
+    deletedEntries = LibraryEntry.objects.filter(
+      owning_user__id=2, is_deleted=True)
+    self.assertEqual(len(deletedEntries), 13)
 
