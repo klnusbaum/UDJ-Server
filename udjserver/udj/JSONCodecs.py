@@ -39,3 +39,16 @@ def getJSONForEvents(events):
     toReturn.append(toAdd)
   return json.dumps(toReturn)
 
+def getJSONForCurrentSong(currentSong):
+  toReturn = {
+    'lib_song_id' : currentSong.song.host_lib_song_id,
+    'song' : currentSong.song.song,
+    'artist' : currentSong.song.artist,
+    'album' : currentSong.song.album,
+    'up_votes' : currentSong.upvotes,
+    'down_votes' : currentSong.downvotes,
+    'time_added' : currentSong.time_added,
+    'adder_id' : currentSong.adder.id
+  }
+  return json.dumps(toReturn)
+

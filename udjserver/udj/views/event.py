@@ -155,12 +155,10 @@ def removeFromAvailableMusic(request, event_id, song_id):
 
   return HttpResponse()
 
-"""
 @NeedsAuth
 @InParty
 @AcceptsMethods('GET')
 def getCurrentSong(request, event_id):
   currentSong = CurrentSong.objects.filter(event__id=event_id)[0]  
-  toReturn = getJsonForCurrentSong(currentSong)
-  return HttpResponse(json.dumps(toReturn))
-"""
+  return HttpResponse(getJSONForCurrentSong(currentSong))
+
