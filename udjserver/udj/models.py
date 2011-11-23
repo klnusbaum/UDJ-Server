@@ -31,10 +31,17 @@ class LibraryEntry(models.Model):
   owning_user = models.ForeignKey(User)
   is_deleted = models.BooleanField(default=False)
   
-  #class Meta:
-    #TODO Gotta fix this. This uniqueness clause only holds true when
-    # is_deleted = False
-    # unique_together = ("host_lib_song_id", "owning_user")
+
+  def validate_unique(self, exclude=None):
+    if not self.is_deleted and \
+      LibraryEntry.objects.exclude(pk=self.pk).filter(
+      host_lib_song_id=self.host_lib_song_id, 
+      owning_user=self.owning_user).exists()\
+    : 
+      raise ValidationError(
+        'Non-unique host_lib_song_id and owning_user combination')
+    super(LibraryEntry, self).validate_unique(exclude=exclude)
+
 
   def __unicode__(self):
     return "Library Entry " + str(self.host_lib_song_id) + ": " + self.song
