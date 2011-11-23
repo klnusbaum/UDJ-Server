@@ -43,6 +43,7 @@ class EndEventTest(User1TestCase):
     self.assertEqual(finishedEvent.latitude, Decimal('40.113523'))
     self.assertEqual(finishedEvent.longitude, Decimal('-88.224006'))
     self.assertEqual(finishedEvent.host, User.objects.filter(id=2)[0])
+    self.assertEqual(len(AvailableSong.objects.filter(library_entry__owning_user__id=2)),0)
 
 class JoinEventTest(User3TestCase):
   def testJoinEvent(self):
@@ -117,8 +118,15 @@ class TestPutAvailableMusic(User1TestCase):
     library_entry__host_lib_song_id=13, library_entry__owning_user__id=2)
    self.assertEqual(len(addedSong), 1)
 
-class TestCantPutMusic(User2TestCase):
+class TestCantPutAvailableMusic(User2TestCase):
   def testPut(self): 
    toAdd=[13]
    response = self.doJSONPut('/udj/events/1/available_music', json.dumps(toAdd))
    self.assertEqual(response.status_code, 403, response.content)
+
+"""
+class TestDeleteAvailableMusic(User1TestCase):
+  def testRemove(self):
+    toRemove=[10];
+    re
+"""

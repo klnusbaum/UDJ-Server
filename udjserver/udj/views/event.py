@@ -71,6 +71,7 @@ def endEvent(request, event_id):
   #TODO We have a race condition here. Gonna need to wrap this in a transaction
   #in the future
   toDelete = Event.objects.filter(id=event_id)[0]
+  host = toDelete.host
   finishedEvent = FinishedEvent(
     party_id = toDelete.id, 
     name=toDelete.name, 
@@ -80,6 +81,8 @@ def endEvent(request, event_id):
      time_started = toDelete.time_started)
   toDelete.delete()
   finishedEvent.save() 
+  AvailableSong.objects.filter(library_entry__owning_user=host).delete()
+  
   return HttpResponse("Party ended")
 
 
@@ -145,4 +148,17 @@ def addToAvailableMusic(request, event_id):
     added.append(song_id)
 
   return HttpResponse(json.dumps(added), status=201)
+
+@IsEventHost
+def removeFromAvailableMusic(request, event_id):
+  host = getUserForTicket(request)
+  toRemove = json.loads(request.raw_post_data)
+  removed = []
+  for song_id in toRemove:
+    AvailableSong.objects.filter(
+      library_entry__host_lib_song_id=song_id,
+      owning_user=host)[0].delete()
+    removed.append(song_id)
+
+  return HttpResponse(json.dumps(added))
 
