@@ -16,10 +16,11 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "Blue", 
-      "artist": "Third Eye Blind", 
-      "owning_user": 2, 
+      "is_deleted": false, 
       "host_lib_song_id": 10, 
-      "song": "Deep Inside Of You"
+      "artist": "Third Eye Blind", 
+      "song": "Deep Inside Of You", 
+      "owning_user": 2
     }
   }, 
   {
@@ -27,10 +28,11 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "Blue", 
-      "artist": "Third Eye Blind", 
-      "owning_user": 2, 
+      "is_deleted": false, 
       "host_lib_song_id": 11, 
-      "song": "Never Let You Go"
+      "artist": "Third Eye Blind", 
+      "song": "Never Let You Go", 
+      "owning_user": 2
     }
   }, 
   {
@@ -38,10 +40,11 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "Blue", 
-      "artist": "Third Eye Blind", 
-      "owning_user": 2, 
+      "is_deleted": false, 
       "host_lib_song_id": 12, 
-      "song": "10 Days Late"
+      "artist": "Third Eye Blind", 
+      "song": "10 Days Late", 
+      "owning_user": 2
     }
   }, 
   {
@@ -49,10 +52,11 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "The Battle of Los Angeles", 
-      "artist": "Rage Against The Machine", 
-      "owning_user": 2, 
+      "is_deleted": false, 
       "host_lib_song_id": 13, 
-      "song": "Sleep Now In The Fire"
+      "artist": "Rage Against The Machine", 
+      "song": "Sleep Now In The Fire", 
+      "owning_user": 2
     }
   }, 
   {
@@ -60,10 +64,11 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "Mellon Collie And The Infinite Sadness", 
-      "artist": "The Smashing Pumpkins", 
-      "owning_user": 2, 
+      "is_deleted": false, 
       "host_lib_song_id": 14, 
-      "song": "Zero"
+      "artist": "The Smashing Pumpkins", 
+      "song": "Zero", 
+      "owning_user": 2
     }
   }, 
   {
@@ -71,10 +76,11 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "Third Eye Blind", 
-      "artist": "Third Eye Blind", 
-      "owning_user": 2, 
+      "is_deleted": false, 
       "host_lib_song_id": 15, 
-      "song": "Losing A Whole Year"
+      "artist": "Third Eye Blind", 
+      "song": "Losing A Whole Year", 
+      "owning_user": 2
     }
   }, 
   {
@@ -82,10 +88,11 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "Third Eye Blind", 
-      "artist": "Third Eye Blind", 
-      "owning_user": 2, 
+      "is_deleted": false, 
       "host_lib_song_id": 16, 
-      "song": "Narcolepsy"
+      "artist": "Third Eye Blind", 
+      "song": "Narcolepsy", 
+      "owning_user": 2
     }
   }, 
   {
@@ -93,10 +100,11 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "Third Eye Blind", 
-      "artist": "Third Eye Blind", 
-      "owning_user": 2, 
+      "is_deleted": false, 
       "host_lib_song_id": 17, 
-      "song": "Semi-Charmed Life"
+      "artist": "Third Eye Blind", 
+      "song": "Semi-Charmed Life", 
+      "owning_user": 2
     }
   }, 
   {
@@ -104,10 +112,11 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "Third Eye Blind", 
-      "artist": "Third Eye Blind", 
-      "owning_user": 2, 
+      "is_deleted": false, 
       "host_lib_song_id": 18, 
-      "song": "Jumper"
+      "artist": "Third Eye Blind", 
+      "song": "Jumper", 
+      "owning_user": 2
     }
   }, 
   {
@@ -115,10 +124,11 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "Third Eye Blind", 
-      "artist": "Third Eye Blind", 
-      "owning_user": 2, 
+      "is_deleted": false, 
       "host_lib_song_id": 19, 
-      "song": "Graduate"
+      "artist": "Third Eye Blind", 
+      "song": "Graduate", 
+      "owning_user": 2
     }
   }, 
   {
@@ -126,10 +136,11 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "Siamese Dream", 
-      "artist": "The Smashing Pumpkins", 
-      "owning_user": 2, 
+      "is_deleted": false, 
       "host_lib_song_id": 20, 
-      "song": "Cherub Rock"
+      "artist": "The Smashing Pumpkins", 
+      "song": "Cherub Rock", 
+      "owning_user": 2
     }
   }, 
   {
@@ -137,10 +148,11 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "Scary Monsters and Nice Sprites", 
-      "artist": "Skrillex", 
-      "owning_user": 2, 
+      "is_deleted": false, 
       "host_lib_song_id": 21, 
-      "song": "Scary Monsters And Nice Sprites"
+      "artist": "Skrillex", 
+      "song": "Scary Monsters And Nice Sprites", 
+      "owning_user": 2
     }
   }, 
   {
@@ -148,10 +160,11 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "My Name Is Skrillex", 
-      "artist": "Skrillex", 
-      "owning_user": 2, 
+      "is_deleted": false, 
       "host_lib_song_id": 22, 
-      "song": "With You Friends"
+      "artist": "Skrillex", 
+      "song": "With You Friends", 
+      "owning_user": 2
     }
   }, 
   {
@@ -221,11 +234,11 @@
     "pk": 1, 
     "model": "udj.activeplaylistentry", 
     "fields": {
-      "song": 2, 
+      "song": 11, 
       "downvotes": 0, 
       "adder": 2, 
-      "upvotes": 1, 
-      "time_added": "2011-11-22 21:36:05", 
+      "upvotes": 2, 
+      "time_added": "2011-11-22 23:25:35", 
       "event": 1
     }
   }, 
@@ -233,11 +246,11 @@
     "pk": 2, 
     "model": "udj.activeplaylistentry", 
     "fields": {
-      "song": 7, 
+      "song": 8, 
       "downvotes": 0, 
-      "adder": 2, 
-      "upvotes": 2, 
-      "time_added": "2011-11-22 21:36:30", 
+      "adder": 3, 
+      "upvotes": 1, 
+      "time_added": "2011-11-22 23:26:00", 
       "event": 1
     }
   }, 
@@ -245,11 +258,11 @@
     "pk": 3, 
     "model": "udj.activeplaylistentry", 
     "fields": {
-      "song": 8, 
+      "song": 2, 
       "downvotes": 0, 
       "adder": 3, 
-      "upvotes": 2, 
-      "time_added": "2011-11-22 21:36:54", 
+      "upvotes": 3, 
+      "time_added": "2011-11-22 23:26:13", 
       "event": 1
     }
   }, 
@@ -257,11 +270,23 @@
     "pk": 4, 
     "model": "udj.activeplaylistentry", 
     "fields": {
-      "song": 3, 
+      "song": 12, 
       "downvotes": 0, 
-      "adder": 3, 
-      "upvotes": 1, 
-      "time_added": "2011-11-22 21:37:34", 
+      "adder": 2, 
+      "upvotes": 2, 
+      "time_added": "2011-11-22 23:26:24", 
+      "event": 1
+    }
+  }, 
+  {
+    "pk": 1, 
+    "model": "udj.currentsong", 
+    "fields": {
+      "song": 12, 
+      "downvotes": 1, 
+      "adder": 2, 
+      "upvotes": 4, 
+      "time_added": "2011-11-22 23:27:12", 
       "event": 1
     }
   }, 
@@ -293,7 +318,7 @@
       "is_active": true, 
       "is_superuser": true, 
       "is_staff": true, 
-      "last_login": "2011-11-22 21:31:19", 
+      "last_login": "2011-11-22 23:24:36", 
       "groups": [], 
       "user_permissions": [], 
       "password": "sha1$79d95$95bb254b5daccf168ea7a3f723d6f1bb96df5265", 

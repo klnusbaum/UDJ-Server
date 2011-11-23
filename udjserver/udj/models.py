@@ -43,18 +43,18 @@ class AvailableSong(models.Model):
   library_entry = models.ForeignKey(LibraryEntry, unique=True)
 
   def __unicode__(self):
-    return str(self.library_entry.song)
+    return str(self.library_entry.song) + " for " + Event.objects.get(host__id=self.library_entry.owning_user.id).name
 
 class ActivePlaylistEntry(models.Model):
-  song = models.ForeignKey(AvailableSong)
+  song = models.ForeignKey(LibraryEntry)
   upvotes = models.IntegerField()
   downvotes = models.IntegerField()
   time_added = models.DateTimeField(auto_now_add=True)
   adder = models.ForeignKey(User)
-  event = models.ForeignKey(FinishedEvent)
+  event = models.ForeignKey(Event)
 
   def __unicode__(self):
-    return self.song.library_entry.song
+    return self.song.song
 
 class PlayedPlaylistEntry(models.Model):
   song = models.ForeignKey(LibraryEntry)
@@ -66,7 +66,7 @@ class PlayedPlaylistEntry(models.Model):
   event = models.ForeignKey(Event)
 
   def __unicode__(self):
-    return self.song.library_entry.song
+    return self.song.song
 
 class FinishedPlaylistEntry(models.Model):
   song = models.ForeignKey(LibraryEntry)
@@ -77,6 +77,9 @@ class FinishedPlaylistEntry(models.Model):
   adder = models.ForeignKey(User)
   event = models.ForeignKey(FinishedEvent)
 
+  def __unicode__(self):
+    return self.song.song
+
 
 class CurrentSong(models.Model):
   event = models.ForeignKey(Event, unique=True)
@@ -85,6 +88,10 @@ class CurrentSong(models.Model):
   downvotes = models.IntegerField()
   time_added = models.DateTimeField(auto_now_add=True)
   adder = models.ForeignKey(User)
+
+  def __unicode__(self):
+    return self.song.song
+
   
 class Ticket(models.Model):
   user = models.ForeignKey(User, primary_key=True)
