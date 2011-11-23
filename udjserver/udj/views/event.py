@@ -1,6 +1,7 @@
 import json
 import hashlib
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseNotFound
@@ -118,17 +119,14 @@ def getAvailableMusic(request, event_id):
   if(not request.GET.__contains__('query')):
     return HttpResponseBadRequest('Must specify query')
   query = request.GET.__getitem__('query')
-  #TODO Yes, I know this is dumb. There should be a more efficient way
-  # to do this in one query.
-  available_songs= AvailableSong.objects.filter(
-    library_entry__owning_user=event.host, 
-    library_entry__song__icontains=query)
-  available_songs = available_songs | (AvailableSong.objects.filter(
-    library_entry__owning_user=event.host, 
-    library_entry__artist__icontains=query))
-  available_songs= available_songs | (AvailableSong.objects.filter(
-    library_entry__owning_user=event.host, 
-    library_entry__album__icontains=query))
+  available_songs = AvailableSong.objects.filter(
+    Q(library_entry__owning_user=event.host),
+    Q(library_entry__song__icontains=query) | 
+    Q(library_entry__artist__icontains=query) |
+    Q(library_entry__album__icontains=query))
+  if(request.GET.__contains__('max_results')):
+    available_songs = available_songs[:request.GET['max_results']]
+    
   return HttpResponse(getJSONForAvailableSongs(available_songs))
 
 @IsEventHost
@@ -154,6 +152,7 @@ def removeFromAvailableMusic(request, event_id, song_id):
     library_entry__owning_user=host)[0].delete()
 
   return HttpResponse()
+
 
 @NeedsAuth
 @InParty

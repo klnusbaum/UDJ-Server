@@ -81,6 +81,13 @@ class TestGetAvailableMusic(User2TestCase):
    realSongs = LibraryEntry.objects.filter(album="Blue")
    self.verifyExpectedResults(results, realSongs)
 
+  def testMaxResults(self): 
+   response = self.doGet(
+    '/udj/events/1/available_music?query=blue&max_results=1')
+   self.assertEqual(response.status_code, 200, response.content)
+   results = json.loads(response.content)
+   self.assertEqual(len(results), 1)
+
   def testGetArtist(self): 
    response = self.doGet(
     '/udj/events/1/available_music?query=smashing+pumpkins')
