@@ -19,8 +19,8 @@ from udj.models import AvailableSong
 from udj.models import EventGoer
 from udj.models import FinishedEvent
 from udj.JSONCodecs import getJSONForEvents
+from udj.JSONCodecs import getJSONForAvailableSongs
 from udj.auth import getUserForTicket
-from udj.JSONCodecs import getJsonForLibraryEntry
 
 
 @AcceptsMethods('GET')
@@ -129,10 +129,7 @@ def getAvailableMusic(request, event_id):
   available_songs= available_songs | (AvailableSong.objects.filter(
     library_entry__owning_user=event.host, 
     library_entry__album__icontains=query))
-  toReturn = []
-  for available_song in available_songs:
-    toReturn.append(getJsonForLibraryEntry(available_song.library_entry))
-  return HttpResponse(json.dumps(toReturn))
+  return HttpResponse(getJSONForAvailableSongs(available_songs))
 
 @IsEventHost
 def addToAvailableMusic(request, event_id):
@@ -158,3 +155,12 @@ def removeFromAvailableMusic(request, event_id, song_id):
 
   return HttpResponse()
 
+"""
+@NeedsAuth
+@InParty
+@AcceptsMethods('GET')
+def getCurrentSong(request, event_id):
+  currentSong = CurrentSong.objects.filter(event__id=event_id)[0]  
+  toReturn = getJsonForCurrentSong(currentSong)
+  return HttpResponse(json.dumps(toReturn))
+"""
