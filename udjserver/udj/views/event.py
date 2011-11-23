@@ -6,6 +6,7 @@ from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseNotFound
 from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest
 from udj.decorators import TicketUserMatch
 from udj.decorators import AcceptsMethods
 from udj.decorators import NeedsJSON
@@ -147,12 +148,13 @@ def addToAvailableMusic(request, event_id):
 @IsEventHost
 def removeFromAvailableMusic(request, event_id, song_id):
   host = getUserForTicket(request)
-  AvailableSong.objects.get(
-    library_entry__host_lib_song_id=song_id,
-    library_entry__owning_user=host).delete()
-
+  try:
+    AvailableSong.objects.get(
+      library_entry__host_lib_song_id=song_id,
+      library_entry__owning_user=host).delete()
+  except DoesNotExist:
+    return HttpResponseNotFound("id " + str(song_id) + " doesn't exist")
   return HttpResponse()
-
 
 @NeedsAuth
 @InParty
