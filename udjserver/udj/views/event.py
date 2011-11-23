@@ -1,7 +1,6 @@
 import json
 import hashlib
 from django.contrib.auth.models import User
-from django.db.models import Q
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseNotFound
@@ -15,6 +14,7 @@ from udj.decorators import CanLoginToEvent
 from udj.decorators import IsUserOrHost
 from udj.decorators import InParty
 from udj.models import Event
+from udj.models import LibraryEntry
 from udj.models import AvailableSong
 from udj.models import EventGoer
 from udj.models import FinishedEvent
@@ -106,11 +106,11 @@ def leaveEvent(request, event_id, user_id):
 @AcceptsMethods(['GET', 'PUT', 'DELETE'])
 def availableMusic(request, event_id):
   if request.method == 'GET':
-    return getAvailableMusic(request, event_id)
+    return getAvailableMusic(request, event_id=event_id)
   elif request.method == 'PUT':
-    return addToAvailableMusic(request, event_id)
+    return addToAvailableMusic(request, event_id=event_id)
   else:
-    return removeFromAvailableMusic(request, event_id)
+    return removeFromAvailableMusic(request, event_id=event_id)
 
 def getAvailableMusic(request, event_id):
   event = Event.objects.get(pk=event_id)
@@ -139,10 +139,10 @@ def addToAvailableMusic(request, event_id):
   toAdd = json.loads(request.raw_post_data)
   added = []
   for song_id in toAdd:
-    addSong = AvailableSong(
-      Song.objects.filter(host_lib_song_id=song_id, user=host)[0])
+    addSong = AvailableSong(library_entry=LibraryEntry.objects.filter(
+      host_lib_song_id=song_id, owning_user=host)[0])
     addSong.save()
     added.append(song_id)
 
-  return HttpResponse(json.dumps(added))
+  return HttpResponse(json.dumps(added), status=201)
 

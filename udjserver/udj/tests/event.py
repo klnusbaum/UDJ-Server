@@ -7,6 +7,7 @@ from udj.models import Event
 from udj.models import LibraryEntry
 from udj.models import EventGoer
 from udj.models import FinishedEvent
+from udj.models import AvailableSong
 from decimal import Decimal
 
 class GetEventsTest(User1TestCase):
@@ -104,9 +105,20 @@ class TestGetAvailableMusic(User2TestCase):
    results = json.loads(response.content)
    self.assertEqual(len(results), 0)
 
-"""
-class TestPutAvailableMusic(User2TestCase):
-  def testGetAlbum(self): 
-   response = self.doJSONPut('/udj/events/1/available_music')
-   self.assertEqual(response.status_code, 200, response.content)
-"""
+class TestPutAvailableMusic(User1TestCase):
+  def testPut(self): 
+   toAdd=[13]
+   response = self.doJSONPut('/udj/events/1/available_music', json.dumps(toAdd))
+   self.assertEqual(response.status_code, 201, response.content)
+   results = json.loads(response.content)
+   self.assertEqual(len(results), 1)
+   self.assertEqual(results[0], 13)
+   addedSong = AvailableSong.objects.filter(
+    library_entry__host_lib_song_id=13, library_entry__owning_user__id=2)
+   self.assertEqual(len(addedSong), 1)
+
+class TestCantPutMusic(User2TestCase):
+  def testPut(self): 
+   toAdd=[13]
+   response = self.doJSONPut('/udj/events/1/available_music', json.dumps(toAdd))
+   self.assertEqual(response.status_code, 403, response.content)
