@@ -34,11 +34,14 @@ class LibraryEntry(models.Model):
   def __unicode__(self):
     return "Library Entry " + str(self.host_lib_song_id) + ": " + self.song
 
+class AvailableSong(models.Model):
+  library_entry = models.ForeignKey(LibraryEntry)
+
+  def __unicode__(self):
+    return str(self.library_entry.song)
 
 class ActivePlaylistEntry(models.Model):
-  #Id of playlist entry on client who added the song
-  priority = models.IntegerField()
-  song = models.ForeignKey(LibraryEntry)
+  song = models.ForeignKey(AvailableSong)
   upvotes = models.IntegerField()
   downvotes = models.IntegerField()
   time_added = models.DateTimeField(auto_now_add=True)
@@ -46,7 +49,19 @@ class ActivePlaylistEntry(models.Model):
   event = models.ForeignKey(Event)
 
   def __unicode__(self):
-    return "Active Playlist Entry " + str(server_playlist_song_id)
+    return self.song.library_entry.song
+
+class PlayedPlaylistEntry(models.Model):
+  song = models.ForeignKey(AvailableSong)
+  upvotes = models.IntegerField()
+  downvotes = models.IntegerField()
+  time_added = models.DateTimeField()
+  time_played = models.DateTimeField(auto_now_add=True)
+  adder = models.ForeignKey(User)
+  event = models.ForeignKey(Event)
+
+  def __unicode__(self):
+    return self.song.library_entry.song
 
 class CurrentSong(models.Model):
   event = models.ForeignKey(Event)
@@ -73,8 +88,3 @@ class EventGoer(models.Model):
   def __unicode__(self):
     return "User " + str(self.user.id) + " is in Party " + str(self.event.id)
 
-class AvailableSong(models.Model):
-  library_entry = models.ForeignKey(LibraryEntry)
-
-  def __unicode__(self):
-    return "Song " + str(self.library_entry.song)
