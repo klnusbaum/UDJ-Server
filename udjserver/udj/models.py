@@ -13,6 +13,7 @@ class Event(models.Model):
     return "Event " + str(self.id) + ": " + self.name
 
 class FinishedEvent(models.Model):
+  event_id = models.IntegerField(unique=True)
   name = models.CharField(max_length=200)
   host = models.ForeignKey(User)
   latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
@@ -68,7 +69,7 @@ class PlayedPlaylistEntry(models.Model):
   upvotes = models.IntegerField()
   downvotes = models.IntegerField()
   time_added = models.DateTimeField()
-  time_played = models.DateTimeField(auto_now_add=True)
+  time_played = models.DateTimeField()
   adder = models.ForeignKey(User)
   event = models.ForeignKey(Event)
 
@@ -80,7 +81,7 @@ class FinishedPlaylistEntry(models.Model):
   upvotes = models.IntegerField()
   downvotes = models.IntegerField()
   time_added = models.DateTimeField()
-  time_played = models.DateTimeField(blank=True)
+  time_played = models.DateTimeField()
   adder = models.ForeignKey(User)
   event = models.ForeignKey(FinishedEvent)
 
@@ -93,7 +94,8 @@ class CurrentSong(models.Model):
   song = models.ForeignKey(LibraryEntry)
   upvotes = models.IntegerField()
   downvotes = models.IntegerField()
-  time_added = models.DateTimeField(auto_now_add=True)
+  time_added = models.DateTimeField()
+  time_played = models.DateTimeField(auto_now_add=True)
   adder = models.ForeignKey(User)
 
   def __unicode__(self):

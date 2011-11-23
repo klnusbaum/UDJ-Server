@@ -21,6 +21,8 @@ from udj.models import AvailableSong
 from udj.models import EventGoer
 from udj.models import CurrentSong
 from udj.models import FinishedEvent
+from udj.models import FinishedPlaylistEntry
+from udj.models import PlayedPlaylistEntry
 from udj.JSONCodecs import getJSONForEvents
 from udj.JSONCodecs import getJSONForAvailableSongs
 from udj.JSONCodecs import getJSONForCurrentSong
@@ -61,8 +63,18 @@ def createEvent(request):
       
   toInsert.save()
   return HttpResponse('{"event_id" : ' + str(toInsert.id) + '}', status=201)
-    
-
+       
+def movePlayedSongs(endingEvent, finishedEvent):
+  for playedSong in PlayedPlaylistEntry.objects.filter(event=endingEvent):
+    FinishedPlaylistEntry(
+      song = playedSong.song,
+      upvotes = playedSong.upvotes,
+      downvotes = playedSong.downvotes,
+      time_added = playedSong.time_added,
+      time_played = playedSong.time_played,
+      adder = playedSong.adder,
+      event = finishedEvent).save()
+      
 
 #Should be able to make only one call to the events table to ensure it:
 # 1. Exsits
@@ -85,7 +97,8 @@ def endEvent(request, event_id):
     longitude = toDelete.longitude,
     time_started = toDelete.time_started)
   finishedEvent.save() 
-  #moveRemainingPlaylistSongs(toDelete, finishedEvent)
+
+  movePlayedSongs(toDelete, finishedEvent)
   toDelete.delete()
   AvailableSong.objects.filter(library_entry__owning_user=host).delete()
   
