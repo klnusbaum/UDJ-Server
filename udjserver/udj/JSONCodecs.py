@@ -76,4 +76,3 @@ def getJSONForActivePlaylistEntries(entries):
 
 
   
-  return json.dumps(toReturn) 
