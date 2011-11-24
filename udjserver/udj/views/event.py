@@ -24,6 +24,8 @@ from udj.models import FinishedEvent
 from udj.models import FinishedPlaylistEntry
 from udj.models import PlayedPlaylistEntry
 from udj.models import ActivePlaylistEntry
+from udj.models import UpVote
+from udj.models import DownVote
 from udj.JSONCodecs import getJSONForEvents
 from udj.JSONCodecs import getJSONForAvailableSongs
 from udj.JSONCodecs import getJSONForCurrentSong
@@ -225,8 +227,8 @@ def movePlaylistEntry2CurrentSong(given_event, playlist_entry_id):
   playlistEntry = ActivePlaylistEntry.objects.get(pk=playlist_entry_id)
   CurrentSong( 
     song = playlistEntry.song,
-    upvotes = playlistEntry.upvotes,
-    downvotes = playlistEntry.downvotes,
+    upvotes = UpVote.objects.filter(playlist_entry=playlistEntry).count(),
+    downvotes = DownVote.objects.filter(playlist_entry=playlistEntry).count(),
     time_added = playlistEntry.time_added,
     adder = playlistEntry.adder,
     event = given_event,

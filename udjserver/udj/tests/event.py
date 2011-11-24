@@ -187,5 +187,7 @@ class TestSetCurentSong(User1TestCase):
     movedActivePlaylistEntry = ActivePlaylistEntry.objects.filter(pk=1)  
     self.assertFalse(movedActivePlaylistEntry.exists())
     newCurrent = CurrentSong.objects.get(client_request_id=3, adder=2, event=1)
+    self.assertEqual(newCurrent.upvotes, 2)
+    self.assertEqual(newCurrent.downvotes, 0)
     oldCurrent = PlayedPlaylistEntry.objects.get(
       client_request_id=1, adder=3, event=1)

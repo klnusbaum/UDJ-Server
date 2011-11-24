@@ -248,9 +248,7 @@
     "model": "udj.activeplaylistentry", 
     "fields": {
       "song": 11, 
-      "downvotes": 0, 
       "adder": 2, 
-      "upvotes": 2, 
       "time_added": "2011-11-22 23:25:35", 
       "event": 1,
       "client_request_id" : 3
@@ -261,9 +259,7 @@
     "model": "udj.activeplaylistentry", 
     "fields": {
       "song": 8, 
-      "downvotes": 0, 
       "adder": 3, 
-      "upvotes": 1, 
       "time_added": "2011-11-22 23:26:00", 
       "event": 1,
       "client_request_id" : 3
@@ -274,9 +270,7 @@
     "model": "udj.activeplaylistentry", 
     "fields": {
       "song": 2, 
-      "downvotes": 0, 
       "adder": 3, 
-      "upvotes": 3, 
       "time_added": "2011-11-22 23:26:13", 
       "event": 1,
       "client_request_id" : 2
@@ -287,9 +281,7 @@
     "model": "udj.activeplaylistentry", 
     "fields": {
       "song": 12, 
-      "downvotes": 0, 
       "adder": 2, 
-      "upvotes": 2, 
       "time_added": "2011-11-22 23:26:24", 
       "event": 1,
       "client_request_id" : 2
@@ -302,7 +294,7 @@
       "song": 12, 
       "downvotes": 1, 
       "adder": 3, 
-      "upvotes": 4, 
+      "upvotes": 2, 
       "time_added": "2011-11-22 23:25:12", 
       "time_played": "2011-11-23 00:06:11", 
       "event": 1,
@@ -338,6 +330,15 @@
     "fields": {
       "user": 2, 
       "time_joined": "2011-11-21 00:06:24", 
+      "event": 1
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "udj.eventgoer", 
+    "fields": {
+      "user": 4, 
+      "time_joined": "2011-11-21 00:08:24", 
       "event": 1
     }
   }, 
@@ -411,6 +412,78 @@
       "password": "sha1$88305$9401009b8dbcf94d44e0683456003ee2813aa8b6", 
       "email": "", 
       "date_joined": "2011-11-21 00:04:46"
+    }
+  },
+  {
+    "pk" : 1,
+    "model" : "udj.upvote",
+    "fields" : {
+      "playlist_entry" : 1,
+      "user" : 2
+    }
+  },
+  {
+    "pk" : 2,
+    "model" : "udj.upvote",
+    "fields" : {
+      "playlist_entry" : 1,
+      "user" : 3
+    }
+  },
+  {
+    "pk" : 3,
+    "model" : "udj.upvote",
+    "fields" : {
+      "playlist_entry" : 2,
+      "user" : 3
+    }
+  },
+  {
+    "pk" : 4,
+    "model" : "udj.upvote",
+    "fields" : {
+      "playlist_entry" : 3,
+      "user" : 3
+    }
+  },
+  {
+    "pk" : 5,
+    "model" : "udj.upvote",
+    "fields" : {
+      "playlist_entry" : 3,
+      "user" : 2
+    }
+  },
+  {
+    "pk" : 6,
+    "model" : "udj.upvote",
+    "fields" : {
+      "playlist_entry" : 3,
+      "user" : 4
+    }
+  },
+  {
+    "pk" : 7,
+    "model" : "udj.upvote",
+    "fields" : {
+      "playlist_entry" : 4,
+      "user" : 2
+    }
+  },
+  {
+    "pk" : 8,
+    "model" : "udj.upvote",
+    "fields" : {
+      "playlist_entry" : 4,
+      "user" : 4
+    }
+  },
+  {
+    "pk" : 1,
+    "model" : "udj.downvote",
+    "fields" : {
+      "playlist_entry" : 4,
+      "user" : 3
     }
   }
 ]

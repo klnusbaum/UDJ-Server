@@ -1,4 +1,4 @@
 from udj.models import ActivePlaylistEntry
 
-def getPriority(playlist_entry):
+def getPriorities(playlist_entry):
 
