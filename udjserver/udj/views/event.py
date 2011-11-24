@@ -161,6 +161,14 @@ def getAvailableMusic(request, event_id):
     
   return HttpResponse(getJSONForAvailableSongs(available_songs))
 
+@NeedsAuth
+@InParty
+@AcceptsMethods('GET')
+def getRandomMusic(request, event_id):
+  rand_limit = request.GET.get('max_randoms',20)
+  randomSongs = AvailableSong.objects.order_by('?')[:rand_limit]
+  return HttpResponse(getJSONForAvailableSongs(randomSongs))
+
 @IsEventHost
 @NeedsJSON
 def addToAvailableMusic(request, event_id):
@@ -176,7 +184,7 @@ def addToAvailableMusic(request, event_id):
   return HttpResponse(json.dumps(added), status=201)
 
 @NeedsAuth
-@AcceptsMethods(['DELETE'])
+@AcceptsMethods('DELETE')
 @IsEventHost
 def removeFromAvailableMusic(request, event_id, song_id):
   host = getUserForTicket(request)

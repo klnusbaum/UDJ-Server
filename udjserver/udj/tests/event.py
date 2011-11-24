@@ -123,6 +123,12 @@ class TestGetAvailableMusic(User2TestCase):
    results = json.loads(response.content)
    self.assertEqual(len(results), 0)
 
+  def testGetRandoms(self):
+   response = self.doGet(
+    '/udj/events/1/available_music/random_songs')
+   self.assertEqual(response.status_code, 200, response.content)
+   results = json.loads(response.content)
+
 class TestPutAvailableMusic(User1TestCase):
   def testPut(self): 
     toAdd=[13]
