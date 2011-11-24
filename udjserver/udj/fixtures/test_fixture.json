@@ -16,6 +16,7 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "Blue", 
+      "duration" : 250,
       "is_deleted": false, 
       "host_lib_song_id": 10, 
       "artist": "Third Eye Blind", 
@@ -28,6 +29,7 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "Blue", 
+      "duration" : 237,
       "is_deleted": false, 
       "host_lib_song_id": 11, 
       "artist": "Third Eye Blind", 
@@ -40,6 +42,7 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "Blue", 
+      "duration" : 185,
       "is_deleted": false, 
       "host_lib_song_id": 12, 
       "artist": "Third Eye Blind", 
@@ -52,6 +55,7 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "The Battle of Los Angeles", 
+      "duration" : 205,
       "is_deleted": false, 
       "host_lib_song_id": 13, 
       "artist": "Rage Against The Machine", 
@@ -64,6 +68,7 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "Mellon Collie And The Infinite Sadness", 
+      "duration" : 160,
       "is_deleted": false, 
       "host_lib_song_id": 14, 
       "artist": "The Smashing Pumpkins", 
@@ -76,6 +81,7 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "Third Eye Blind", 
+      "duration" : 200,
       "is_deleted": false, 
       "host_lib_song_id": 15, 
       "artist": "Third Eye Blind", 
@@ -88,6 +94,7 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "Third Eye Blind", 
+      "duration" : 228,
       "is_deleted": false, 
       "host_lib_song_id": 16, 
       "artist": "Third Eye Blind", 
@@ -100,6 +107,7 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "Third Eye Blind", 
+      "duration" : 268,
       "is_deleted": false, 
       "host_lib_song_id": 17, 
       "artist": "Third Eye Blind", 
@@ -112,6 +120,7 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "Third Eye Blind", 
+      "duration" : 273,
       "is_deleted": false, 
       "host_lib_song_id": 18, 
       "artist": "Third Eye Blind", 
@@ -124,6 +133,7 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "Third Eye Blind", 
+      "duration" : 189,
       "is_deleted": false, 
       "host_lib_song_id": 19, 
       "artist": "Third Eye Blind", 
@@ -136,6 +146,7 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "Siamese Dream", 
+      "duration" : 299,
       "is_deleted": false, 
       "host_lib_song_id": 20, 
       "artist": "The Smashing Pumpkins", 
@@ -148,6 +159,7 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "Scary Monsters and Nice Sprites", 
+      "duration" : 243,
       "is_deleted": false, 
       "host_lib_song_id": 21, 
       "artist": "Skrillex", 
@@ -160,6 +172,7 @@
     "model": "udj.libraryentry", 
     "fields": {
       "album": "My Name Is Skrillex", 
+      "duration" : 389,
       "is_deleted": false, 
       "host_lib_song_id": 22, 
       "artist": "Skrillex", 

@@ -172,6 +172,9 @@ class TestGetCurrentSong(User2TestCase):
     self.assertEqual(
       actualCurrentSong.time_added, 
       datetime.strptime(result['time_added'], "%Y-%m-%dT%H:%M:%S"))
+    self.assertEqual(
+      actualCurrentSong.time_played, 
+      datetime.strptime(result['time_played'], "%Y-%m-%dT%H:%M:%S"))
     self.assertEqual(actualCurrentSong.adder.id, result['adder_id'])
 
 class TestSetCurentSong(User1TestCase):

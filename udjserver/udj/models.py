@@ -29,6 +29,7 @@ class LibraryEntry(models.Model):
   song = models.CharField(max_length=200)
   artist = models.CharField(max_length=200)
   album = models.CharField(max_length=200)
+  duration = models.IntegerField()
   owning_user = models.ForeignKey(User)
   is_deleted = models.BooleanField(default=False)
   

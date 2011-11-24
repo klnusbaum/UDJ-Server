@@ -24,15 +24,19 @@ class LibSingleAddTestCase(User1TestCase):
     song = 'Roulette Dares'
     artist = 'The Mars Volta'
     album = 'Deloused in the Comatorium'
-    payload = '[{' + \
-     '"id" : ' + str(lib_id) + ',' +\
-     '"song" : "' + song + '",'+\
-     '"artist" : "' + artist +'",'+\
-     '"album" : "' + album + '"}]'
+    duration = 451
+
+    payload = [{
+      'id' : lib_id,
+      'song' : song,
+      'artist' : artist,
+      'album' : album,
+      'duration' : duration
+    }]
 
 
     response = self.doJSONPut(
-      '/udj/users/' + self.user_id + '/library/songs', payload)
+      '/udj/users/' + self.user_id + '/library/songs', json.dumps(payload))
     self.assertEqual(response.status_code, 201)
     ids = json.loads(response.content)
     verifySongAdded(self, lib_id, ids, song, artist, album)
@@ -45,25 +49,33 @@ class LibMultiAddTestCase(User1TestCase):
     song1 = 'Roulette Dares'
     artist1 = 'The Mars Volta'
     album1 = 'Deloused in the Comatorium'
+    duration1 = 451
 
     lib_id2 = 2
     song2 = 'Ilyena'
     artist2 = 'The Mars Volta'
     album2 = 'The Bedlam in Goliath'
+    duration2 = 335
 
-    payload = '[{' + \
-      '"id" : ' + str(lib_id1) + ',' + \
-      '"song" : "' + song1 + '",' + \
-      '"artist" : "' + artist1 + '",' + \
-      '"album" : "' + album1 + '"},{' + \
-      '"id" : ' + str(lib_id2) + ',' + \
-      '"song" : "' + song2 + '",' + \
-      '"artist" : "' + artist2 + '",' + \
-      '"album" : "' + album2 + '"}]'
-
+    payload = [
+      {
+        'id' : lib_id1,
+        'song' : song1,
+        'artist' : artist1,
+        'album' : album1,
+        'duration' : duration1
+      },
+      {
+        'id' : lib_id2,
+        'song' : song2,
+        'artist' : artist2,
+        'album' : album2,
+        'duration' : duration2
+      }
+    ]
 
     response = self.doJSONPut(
-      '/udj/users/' + self.user_id + '/library/songs', payload)
+      '/udj/users/' + self.user_id + '/library/songs', json.dumps(payload))
 
     self.assertEqual(response.status_code, 201, msg=response.content)
     ids = json.loads(response.content)
@@ -73,16 +85,21 @@ class LibMultiAddTestCase(User1TestCase):
 class LibTestDuplicateAdd(User1TestCase):
   def testDupAdd(self):
 
-    payload = []
-    payload.append({"song" : "Deep Inside Of You", "artist" : "Third Eye Blind",
-      "albumt" : "Blue", "id" : 10})
+    payload = [{
+      "song" : "Deep Inside Of You", 
+      "artist" : "Third Eye Blind",
+      "album" : "Blue", 
+      "id" : 10, 
+      "duration" : 250 
+    }]
     response = self.doJSONPut(
       '/udj/users/' + self.user_id + '/library/songs', json.dumps(payload))
 
     self.assertEqual(response.status_code, 201, msg=response.content)
     ids = json.loads(response.content)
     self.assertEqual(ids[0], 10)
-    self.assertEqual(len(LibraryEntry.objects.filter(owning_user__id=2, host_lib_song_id=10)), 1)
+    onlyOneSong = LibraryEntry.objects.get(
+      owning_user__id=2, host_lib_song_id=10)
     
 class LibRemoveTestCase(User1TestCase):
   def testLibSongDelete(self):
