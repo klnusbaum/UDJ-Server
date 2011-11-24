@@ -167,6 +167,7 @@ class TestGetCurrentSong(User2TestCase):
     self.assertEqual(actualCurrentSong.song.song, result['song'])
     self.assertEqual(actualCurrentSong.song.artist, result['artist'])
     self.assertEqual(actualCurrentSong.song.album, result['album'])
+    self.assertEqual(actualCurrentSong.song.duration, result['duration'])
     self.assertEqual(actualCurrentSong.upvotes, result['up_votes'])
     self.assertEqual(actualCurrentSong.downvotes, result['down_votes'])
     self.assertEqual(
