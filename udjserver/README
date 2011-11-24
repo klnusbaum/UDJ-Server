@@ -1,0 +1,8 @@
+To run this server for testing/debug purposes do the following.
+
+1. run the resetDebugDB script. If/when it asks you if you want to create a 
+super user, just say no. This creates the database that UDJ needs. You only
+need to do this once.
+
+2. To actually start the server up, run the debugRunServer script. The server
+will then be up and you can make http requests to it.
