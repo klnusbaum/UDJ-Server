@@ -28,3 +28,7 @@ urlpatterns += patterns('udj.views.event',
   (r'^events/(?P<event_id>\d+)/current_song$', 
     'currentSong'),
 )
+urlpatterns += patterns('udj.views.activeplaylist',
+  (r'^events/(?P<event_id>\d+)/active_playlist$', 
+    'getActivePlaylist'),
+)

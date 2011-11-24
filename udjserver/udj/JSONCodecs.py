@@ -58,13 +58,9 @@ def getJSONForCurrentSong(currentSong):
   return json.dumps(toReturn)
 
 def getJSONForActivePlaylistEntries(entries):
-  priorities = getPriorities(entries)
-
   toReturn = []
   for entry in entries:
     toReturn.append({
-      'id' : entry.id,
-      'priority' : priorities[entry.id],
       'lib_song_id' : entry.song.host_lib_song_id,
       'song' : entry.song.song,
       'artist' : entry.song.artist,
@@ -74,5 +70,10 @@ def getJSONForActivePlaylistEntries(entries):
       'down_votes' : entry.downvotes,
       'time_added' : entry.time_added.isoformat(),
       'adder_id' : entry.adder.id
-     })
+    })
+  return json.dumps(toReturn)
+  
+
+
+  
   return json.dumps(toReturn) 
