@@ -60,6 +60,10 @@ class ActivePlaylistEntry(models.Model):
   time_added = models.DateTimeField(auto_now_add=True)
   adder = models.ForeignKey(User)
   event = models.ForeignKey(Event)
+  client_request_id = models.IntegerField()
+
+  class Meta:
+    unique_together = ("adder", "client_request_id", "event")
 
   def __unicode__(self):
     return self.song.song
@@ -72,6 +76,10 @@ class PlayedPlaylistEntry(models.Model):
   time_played = models.DateTimeField()
   adder = models.ForeignKey(User)
   event = models.ForeignKey(Event)
+  client_request_id = models.IntegerField()
+
+  class Meta:
+    unique_together = ("adder", "client_request_id", "event")
 
   def __unicode__(self):
     return self.song.song
@@ -97,6 +105,7 @@ class CurrentSong(models.Model):
   time_added = models.DateTimeField()
   time_played = models.DateTimeField(auto_now_add=True)
   adder = models.ForeignKey(User)
+  client_request_id = models.IntegerField()
 
   def __unicode__(self):
     return self.song.song

@@ -239,7 +239,8 @@
       "adder": 2, 
       "upvotes": 2, 
       "time_added": "2011-11-22 23:25:35", 
-      "event": 1
+      "event": 1,
+      "client_request_id" : 3
     }
   }, 
   {
@@ -251,7 +252,8 @@
       "adder": 3, 
       "upvotes": 1, 
       "time_added": "2011-11-22 23:26:00", 
-      "event": 1
+      "event": 1,
+      "client_request_id" : 3
     }
   }, 
   {
@@ -263,7 +265,8 @@
       "adder": 3, 
       "upvotes": 3, 
       "time_added": "2011-11-22 23:26:13", 
-      "event": 1
+      "event": 1,
+      "client_request_id" : 2
     }
   }, 
   {
@@ -275,7 +278,8 @@
       "adder": 2, 
       "upvotes": 2, 
       "time_added": "2011-11-22 23:26:24", 
-      "event": 1
+      "event": 1,
+      "client_request_id" : 2
     }
   }, 
   {
@@ -284,11 +288,12 @@
     "fields": {
       "song": 12, 
       "downvotes": 1, 
-      "adder": 2, 
+      "adder": 3, 
       "upvotes": 4, 
       "time_added": "2011-11-22 23:25:12", 
       "time_played": "2011-11-23 00:06:11", 
-      "event": 1
+      "event": 1,
+      "client_request_id" : 1
     }
   }, 
   {
@@ -301,7 +306,8 @@
       "upvotes": 1, 
       "time_added": "2011-11-22 23:24:12", 
       "time_played": "2011-11-23 00:01:11", 
-      "event": 1
+      "event": 1,
+      "client_request_id" : 1
     }
   }, 
   {

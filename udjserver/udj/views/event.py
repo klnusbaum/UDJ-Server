@@ -210,7 +210,8 @@ def moveCurrentSong2PlayedSong(given_event):
     time_added = currentSong.time_added,
     time_played = currentSong.time_played,
     adder = currentSong.adder,
-    event = given_event).save()
+    event = given_event,
+    client_request_id = currentSong.client_request_id).save()
   currentSong.delete()
   
 def movePlaylistEntry2CurrentSong(given_event, playlist_entry_id):
@@ -221,7 +222,8 @@ def movePlaylistEntry2CurrentSong(given_event, playlist_entry_id):
     downvotes = playlistEntry.downvotes,
     time_added = playlistEntry.time_added,
     adder = playlistEntry.adder,
-    event = given_event).save()
+    event = given_event,
+    client_request_id = playlistEntry.client_request_id).save()
   playlistEntry.delete()
 
 @IsEventHost

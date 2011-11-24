@@ -174,10 +174,8 @@ class TestSetCurentSong(User1TestCase):
       '/udj/events/1/current_song', 
       {'playlist_entry_id' : '1'})
     self.assertEqual(response.status_code, 200, response.content)
-    movedSong = ActivePlaylistEntry.objects.filter(id=1)
-    self.assertFalse(movedSong.exists())
-    playedSongs = PlayedPlaylistEntry.objects.filter(event__id=1)
-    self.assertTrue(len(playedSongs), 2) 
-    self.assertTrue(12 in [playedSong.song.id for playedSong in playedSongs])
-    self.assertTrue(
-      CurrentSong.objects.filter(event__id=1, song__id=11).exists())
+    movedActivePlaylistEntry = ActivePlaylistEntry.objects.filter(pk=1)  
+    self.assertFalse(movedActivePlaylistEntry.exists())
+    newCurrent = CurrentSong.objects.get(client_request_id=3, adder=2, event=1)
+    oldCurrent = PlayedPlaylistEntry.objects.get(
+      client_request_id=1, adder=3, event=1)
