@@ -3,7 +3,6 @@ from udj.models import LibraryEntry
 from udj.models import Event
 from django.contrib.auth.models import User
 from datetime import datetime
-#from prioritycalc import getPriority
 
 def getLibraryEntryFromJSON(songJson, user_id):
   return LibraryEntry( 
@@ -57,22 +56,23 @@ def getJSONForCurrentSong(currentSong):
   }
   return json.dumps(toReturn)
 
-def getJSONForActivePlaylistEntries(entries):
-  toReturn = []
-  for entry in entries:
-    toReturn.append({
+def getActivePlaylistEntryDictionary(entry, upvotes, downvotes):
+   return { 
       'lib_song_id' : entry.song.host_lib_song_id,
       'song' : entry.song.song,
       'artist' : entry.song.artist,
       'album' : entry.song.album,
       'duration' : entry.song.duration,
-      'up_votes' : entry.upvotes,
-      'down_votes' : entry.downvotes,
+      'up_votes' : upvotes,
+      'down_votes' : downvotes,
       'time_added' : entry.time_added.isoformat(),
       'adder_id' : entry.adder.id
-    })
+    }
+
+def getJSONForActivePlaylistEntries(entries):
+  toReturn = []
+  for entry in entries:
+    toReturn.append(
+      getActivePlaylistEntryDictionary(entry, entry.upvotes, entry.downvotes))
   return json.dumps(toReturn)
-  
 
-
-  
