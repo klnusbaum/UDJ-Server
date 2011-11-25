@@ -7,8 +7,8 @@ class GetActivePlaylistTest(User2TestCase):
     self.assertEqual(response.status_code, 200)
     playlist = json.loads(response.content)
     self.assertEqual(len(playlist), 4)
-"""
-    self.assertEqual(playlist[0]['id'] = 
-    self.assertEqual(playlist[1]['id'] = 2
-"""
+    self.assertEqual(playlist[0]['id'], 5)
+    self.assertEqual(playlist[1]['id'], 3)
+    self.assertEqual(playlist[2]['id'], 4)
+    self.assertEqual(playlist[3]['id'], 6)
 
