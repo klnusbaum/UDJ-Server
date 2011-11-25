@@ -1,6 +1,7 @@
 import json
 import hashlib
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from django.http import HttpRequest
 from django.http import HttpResponse
@@ -224,7 +225,7 @@ def moveCurrentSong2PlayedSong(given_event):
   currentSong.delete()
   
 def movePlaylistEntry2CurrentSong(given_event, playlist_entry_id):
-  playlistEntry = ActivePlaylistEntry.objects.get(pk=playlist_entry_id)
+  playlistEntry = get_object_or_404(ActivePlaylistEntry, pk=playlist_entry_id)
   CurrentSong( 
     song = playlistEntry.song,
     upvotes = UpVote.objects.filter(playlist_entry=playlistEntry).count(),

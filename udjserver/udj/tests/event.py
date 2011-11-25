@@ -182,12 +182,12 @@ class TestSetCurentSong(User1TestCase):
   def testSetCurrentSong(self):
     response = self.doPost(
       '/udj/events/1/current_song', 
-      {'playlist_entry_id' : '1'})
+      {'playlist_entry_id' : '5'})
     self.assertEqual(response.status_code, 200, response.content)
-    movedActivePlaylistEntry = ActivePlaylistEntry.objects.filter(pk=1)  
+    movedActivePlaylistEntry = ActivePlaylistEntry.objects.filter(pk=5)  
     self.assertFalse(movedActivePlaylistEntry.exists())
-    newCurrent = CurrentSong.objects.get(client_request_id=3, adder=2, event=1)
-    self.assertEqual(newCurrent.upvotes, 2)
+    newCurrent = CurrentSong.objects.get(client_request_id=2, adder=3, event=1)
+    self.assertEqual(newCurrent.upvotes, 3)
     self.assertEqual(newCurrent.downvotes, 0)
     oldCurrent = PlayedPlaylistEntry.objects.get(
       client_request_id=1, adder=3, event=1)

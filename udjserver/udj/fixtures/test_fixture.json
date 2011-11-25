@@ -244,7 +244,7 @@
     }
   }, 
   {
-    "pk": 1, 
+    "pk": 3, 
     "model": "udj.activeplaylistentry", 
     "fields": {
       "song": 11, 
@@ -255,7 +255,7 @@
     }
   }, 
   {
-    "pk": 2, 
+    "pk": 4, 
     "model": "udj.activeplaylistentry", 
     "fields": {
       "song": 8, 
@@ -266,7 +266,7 @@
     }
   }, 
   {
-    "pk": 3, 
+    "pk": 5, 
     "model": "udj.activeplaylistentry", 
     "fields": {
       "song": 2, 
@@ -277,7 +277,7 @@
     }
   }, 
   {
-    "pk": 4, 
+    "pk": 6, 
     "model": "udj.activeplaylistentry", 
     "fields": {
       "song": 12, 
@@ -418,7 +418,7 @@
     "pk" : 1,
     "model" : "udj.upvote",
     "fields" : {
-      "playlist_entry" : 1,
+      "playlist_entry" : 3,
       "user" : 2
     }
   },
@@ -426,7 +426,7 @@
     "pk" : 2,
     "model" : "udj.upvote",
     "fields" : {
-      "playlist_entry" : 1,
+      "playlist_entry" : 3,
       "user" : 3
     }
   },
@@ -434,7 +434,7 @@
     "pk" : 3,
     "model" : "udj.upvote",
     "fields" : {
-      "playlist_entry" : 2,
+      "playlist_entry" : 4,
       "user" : 3
     }
   },
@@ -442,7 +442,7 @@
     "pk" : 4,
     "model" : "udj.upvote",
     "fields" : {
-      "playlist_entry" : 3,
+      "playlist_entry" : 5,
       "user" : 3
     }
   },
@@ -450,7 +450,7 @@
     "pk" : 5,
     "model" : "udj.upvote",
     "fields" : {
-      "playlist_entry" : 3,
+      "playlist_entry" : 5,
       "user" : 2
     }
   },
@@ -458,7 +458,7 @@
     "pk" : 6,
     "model" : "udj.upvote",
     "fields" : {
-      "playlist_entry" : 3,
+      "playlist_entry" : 5,
       "user" : 4
     }
   },
@@ -466,7 +466,7 @@
     "pk" : 7,
     "model" : "udj.upvote",
     "fields" : {
-      "playlist_entry" : 4,
+      "playlist_entry" : 6,
       "user" : 2
     }
   },
@@ -474,7 +474,7 @@
     "pk" : 8,
     "model" : "udj.upvote",
     "fields" : {
-      "playlist_entry" : 4,
+      "playlist_entry" : 6,
       "user" : 4
     }
   },
@@ -482,7 +482,7 @@
     "pk" : 1,
     "model" : "udj.downvote",
     "fields" : {
-      "playlist_entry" : 4,
+      "playlist_entry" : 6,
       "user" : 3
     }
   }
