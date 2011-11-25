@@ -7,8 +7,15 @@ from udj.decorators import NeedsJSON
 from udj.decorators import NeedsAuth
 from udj.decorators import InParty
 from udj.models import ActivePlaylistEntry
+from udj.models import LibraryEntry
+from udj.models import Event
+from udj.models import CurrentSong
+from udj.models import UpVote
+from udj.models import DownVote
+from udj.models import PlayedPlaylistEntry
 from udj.JSONCodecs import getJSONForActivePlaylistEntries
 from udj.JSONCodecs import getActivePlaylistEntryDictionary
+from udj.auth import getUserForTicket
 
 @NeedsAuth
 @InParty
@@ -59,6 +66,8 @@ def addSong2ActivePlaylist(song, event_id, adding_user):
   UpVote(playlist_entry=toReturn, user=adding_user).save()
   return toReturn
 
+#TODO Need to add a check to make sure that they aren't trying to add
+#a song  that's not in the available music.
 @NeedsAuth
 @InParty
 @AcceptsMethods('PUT')

@@ -1,5 +1,6 @@
 import json
 from udj.tests import User2TestCase
+from udj.tests import User1TestCase
 
 class GetActivePlaylistTest(User2TestCase):
   def testGetPlaylist(self):
@@ -12,3 +13,9 @@ class GetActivePlaylistTest(User2TestCase):
     self.assertEqual(playlist[2]['id'], 4)
     self.assertEqual(playlist[3]['id'], 6)
 
+class AddSongToPlaylistTests(User1TestCase):
+  def testSimpleAdd(self):
+    payload = [{ 'lib_id' : 10, 'client_request_id' : 4}]
+    response = \
+      self.doJSONPut('/udj/events/1/active_playlist/songs', json.dumps(payload))
+    self.assertEqual(response.status_code, 200)
