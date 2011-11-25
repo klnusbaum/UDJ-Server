@@ -50,8 +50,8 @@ def getJSONForCurrentSong(currentSong):
     'duration' : currentSong.song.duration,
     'up_votes' : currentSong.upvotes,
     'down_votes' : currentSong.downvotes,
-    'time_added' : currentSong.time_added.isoformat(),
-    'time_played' : currentSong.time_played.isoformat(),
+    'time_added' : currentSong.time_added.replace(microsecond=0).isoformat(),
+    'time_played' : currentSong.time_played.replace(microsecond=0).isoformat(),
     'adder_id' : currentSong.adder.id
   }
   return json.dumps(toReturn)
@@ -66,7 +66,7 @@ def getActivePlaylistEntryDictionary(entry, upvotes, downvotes):
       'duration' : entry.song.duration,
       'up_votes' : upvotes,
       'down_votes' : downvotes,
-      'time_added' : entry.time_added.isoformat(),
+      'time_added' : entry.time_added.replace(microsecond=0).isoformat(),
       'adder_id' : entry.adder.id
     }
 
