@@ -88,7 +88,7 @@ def addToPlaylist(request, event_id):
       upvotes = UpVote.objects.filter(playlist_entry=addedSong).count()
       downvotes = DownVote.objects.filter(playlist_entry=addedSong).count()
       toReturn['added_entries'].append(
-        getActivePlaylistEntryDictionary(inQueue, upvotes, downvotes))
+        getActivePlaylistEntryDictionary(addedSong, upvotes, downvotes))
       toReturn['request_ids'].append(song['client_request_id'])
 
     #If the song has already been played
@@ -102,4 +102,4 @@ def addToPlaylist(request, event_id):
         getActivePlaylistEntryDictionary(addedSong, 1, 0))
       toReturn['request_ids'].append(song['client_request_id'])
   
-  return HttpResponse(json.dumps(toReturn))
+  return HttpResponse(json.dumps(toReturn), status = 201)
