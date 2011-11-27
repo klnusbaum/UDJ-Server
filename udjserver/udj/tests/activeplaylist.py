@@ -121,9 +121,31 @@ class AddSongToPlaylistTests(User1TestCase):
       addedEntry.time_added.replace(microsecond=0))
     self.assertEqual(response_entry['adder_id'], addedEntry.adder.id) 
 
+  def testAlreadyPlayed1(self):
+    request_id = 1
+    payload = [{ 'lib_id' : 19, 'client_request_id' : request_id}]
+    response = \
+      self.doJSONPut('/udj/events/1/active_playlist/songs', json.dumps(payload))
+    self.assertEqual(response.status_code, 201)
+    json_content = json.loads(response.content)
+    added_entries = json_content['added_entries']    
+    request_ids = json_content['request_ids']    
+    already_played = json_content['already_played']
+    self.assertEqual(len(added_entries), 0)
+    self.assertEqual(len(request_ids), 0)
+    self.assertEqual(len(already_played), 1)
+    self.assertEqual(already_played[0], request_id)
+    
+    songThatShouldntBeThere = ActivePlaylistEntry.objects.filter(
+      adder__id=3,
+      event__id=1,
+      song__host_lib_song_id=19)
+    self.assertFalse(songThatShouldntBeThere.exists())
+  
+
 
 class AddSongToPlaylist2Tests(User2TestCase):
-  def testAlreadyPlayed1(self):
+  def testAlreadyPlayed2(self):
     request_id = 1
     payload = [{ 'lib_id' : 21, 'client_request_id' : request_id}]
     response = \
@@ -145,4 +167,3 @@ class AddSongToPlaylist2Tests(User2TestCase):
     self.assertFalse(songThatShouldntBeThere.exists())
 
 
-  #def testAlreadyPlayed2(self):
