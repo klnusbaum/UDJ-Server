@@ -1,7 +1,9 @@
 import json
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 from django.http import HttpRequest
 from django.http import HttpResponse
+from django.http import HttpResponseForbidden
 from udj.decorators import AcceptsMethods
 from udj.decorators import NeedsJSON
 from udj.decorators import NeedsAuth
@@ -103,3 +105,31 @@ def addToPlaylist(request, event_id):
       toReturn['request_ids'].append(song['client_request_id'])
   
   return HttpResponse(json.dumps(toReturn), status = 201)
+
+@NeedsAuth
+@InParty
+@AcceptsMethods('POST')
+def voteSongDown(request, event_id, playlist_id):
+  return voteSong(request, event_id, playlist_id, DownVote)
+
+@NeedsAuth
+@InParty
+@AcceptsMethods('POST')
+def voteSongUp(request, event_id, playlist_id):
+  return voteSong(request, event_id, playlist_id, UpVote)
+
+
+
+def hasAlreadyVoted(votingUser, entryToVote, VoteType):
+  return VoteType.objects.filter(
+    user=votingUser, playlist_entry=entryToVote).exists()
+
+def voteSong(request, event_id, playlist_id, VoteType):
+  votingUser = getUserForTicket(request)
+  entryToVote = get_object_or_404(ActivePlaylistEntry, pk=playlist_id)
+  if hasAlreadyVoted(votingUser, entryToVote, VoteType):
+    return HttpResponseForbidden()
+
+  VoteType(playlist_entry=entryToVote, user=votingUser).save()
+  return HttpResponse()
+

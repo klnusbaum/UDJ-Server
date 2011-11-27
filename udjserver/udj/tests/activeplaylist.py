@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 from udj.tests import User2TestCase
 from udj.tests import User1TestCase
+from udj.tests import User3TestCase
 from udj.models import UpVote
 from udj.models import DownVote
 from udj.models import ActivePlaylistEntry
@@ -165,5 +166,32 @@ class AddSongToPlaylist2Tests(User2TestCase):
       event__id=1,
       song__host_lib_song_id=21)
     self.assertFalse(songThatShouldntBeThere.exists())
+
+class TestVoting(User3TestCase):
+  def testUpVote(self):
+    playlist_id = 3
+    response = self.doPost('/udj/events/1/active_playlist/3/upvote', {})
+    self.assertEqual(response.status_code, 200)
+    upvote = UpVote.objects.get(playlist_entry__id=playlist_id, user__id=4)
+
+  def testDownVote(self):
+    playlist_id = 3
+    response = self.doPost('/udj/events/1/active_playlist/3/downvote', {})
+    self.assertEqual(response.status_code, 200)
+    downvote = DownVote.objects.get(playlist_entry__id=playlist_id, user__id=4)
+
+  def testDoubleUpVote(self):
+    playlist_id = 3
+    response = self.doPost('/udj/events/1/active_playlist/3/upvote', {})
+    self.assertEqual(response.status_code, 200)
+    response = self.doPost('/udj/events/1/active_playlist/3/upvote', {})
+    self.assertEqual(response.status_code, 403)
+
+  def testDoubleDownVote(self):
+    playlist_id = 3
+    response = self.doPost('/udj/events/1/active_playlist/3/downvote', {})
+    self.assertEqual(response.status_code, 200)
+    response = self.doPost('/udj/events/1/active_playlist/3/downvote', {})
+    self.assertEqual(response.status_code, 403)
 
 
