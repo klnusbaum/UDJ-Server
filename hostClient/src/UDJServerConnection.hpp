@@ -215,7 +215,7 @@ private:
   }
 
   static const QByteArray& getAPIVersionHeaderName(){
-    static const QByteArray API_VERSION_HEAER_NAME = "udj_api_version";
+    static const QByteArray API_VERSION_HEAER_NAME = "X-Udj-Api-Version";
     return API_VERSION_HEAER_NAME;
   }
 
@@ -225,12 +225,12 @@ private:
   }
 
   static const QByteArray& getTicketHeaderName(){
-    static const QByteArray ticketHeaderName = "udj_ticket_hash";
+    static const QByteArray ticketHeaderName = "X-Udj-Ticket-Hash";
     return ticketHeaderName;
   }
 
   static const QByteArray& getUserIdHeaderName(){
-    static const QByteArray userIdHeaderName = "user_id";
+    static const QByteArray userIdHeaderName = "X-Udj-User-Id";
     return userIdHeaderName;
   }
 
