@@ -309,6 +309,7 @@ void DataStore::setLibSongsSyncStatus(
 {
   QSqlQuery setSyncedQuery(database);
   for(int i=0; i< songs.size(); ++i){
+    std::cout << "Updaing status of song: " << songs[i] << std::endl;
     EXEC_SQL(
       "Error setting song to synced",
       setSyncedQuery.exec(

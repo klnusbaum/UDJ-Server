@@ -67,7 +67,16 @@ const std::vector<library_song_id_t> JSONHelper::getUpdatedLibIds(
   QNetworkReply *reply)
 {
   QByteArray responseData = reply->readAll();
-  QVariantList songsAdded = QtJson::Json::parse(responseData).toList();
+  QString responseString = QString::fromUtf8(responseData);
+  bool success;
+  QVariantList songsAdded = 
+    QtJson::Json::parse(responseString, success).toList();
+  if(!success){
+    std::cerr << "Error parsing json from a response to an add library entry" <<
+     "request" << std::endl <<
+      responseString.toStdString() << std::endl;
+  }
+  
   std::vector<library_song_id_t> toReturn(songsAdded.size());
   for(int i=0; i<songsAdded.size(); ++i){
     toReturn[i] = songsAdded[i].value<library_song_id_t>();
