@@ -10,8 +10,8 @@ import random
 from models import Ticket
 from datetime import datetime
 from datetime import timedelta
-from headers import getTicketHeader
-from headers import getUserIdHeader
+from udj.headers import getTicketHeader
+from udj.headers import getUserIdHeader
 
 def getUserForTicket(request):
   return Ticket.objects.get(ticket_hash=request.META[getTicketHeader()]).user
@@ -32,12 +32,6 @@ def isValidTicket(provided_hash):
     return True
   else:
     return False
-
-def hasValidTicket(request):
-  if getTicketHeader() not in request.META:
-    return False
-  else:
-    return isValidTicket(request.META[getTicketHeader()])
 
 def validAuthRequest(request):
   if not request.method == "POST":

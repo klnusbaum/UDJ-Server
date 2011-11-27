@@ -1,4 +1,4 @@
-from udj.auth import hasValidTicket
+from udj.auth import isValidTicket
 from udj.auth import ticketMatchesUser
 from django.http import HttpResponseNotAllowed
 from django.http import HttpResponseBadRequest
@@ -7,6 +7,7 @@ from udj.models import Event
 from udj.models import EventGoer
 from udj.auth import getUserForTicket
 from django.shortcuts import get_object_or_404
+from udj.headers import getTicketHeader
 
 def InParty(function):
   def wrapper(*args, **kwargs):
@@ -70,9 +71,15 @@ def TicketUserMatch(function):
     request = args[0]
     user_id = kwargs['user_id']
     
-    if not hasValidTicket(request):
-      return HttpResponseForbidden()
-    if not ticketMatchesUser(request, user_id):
+    if getTicketHeader() not in request.META:
+      responseString = "Must provide the " + getTicketHeader() + " header. "
+      responseString += "\n You provided the following headers:\n"
+      for key in request.META:
+        responseString += '\t ' + key + '\n'
+      return HttpResponseBadRequest(responseString)
+    elif not isValidTicket(request.META[getTicketHeader()]):
+      return HttpResponseForbidden("Invalid ticket")
+    elif not ticketMatchesUser(request, user_id):
       return HttpResponseForbidden()
     else:
       return function(*args, **kwargs)
