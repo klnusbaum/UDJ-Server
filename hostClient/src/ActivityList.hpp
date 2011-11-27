@@ -26,12 +26,12 @@ class QStandardItemModel;
 namespace UDJ{
 
 
-class MusicLibrary;
+class DataStore;
 
 class ActivityList : public QTreeView{
 Q_OBJECT
 public:
-  ActivityList(MusicLibrary *library, QWidget *parent=0);
+  ActivityList(DataStore *dataStore, QWidget *parent=0);
 
 signals:
   void libraryClicked();
@@ -54,7 +54,7 @@ private:
     return playlistTitle;
   }
 
-  MusicLibrary *library;
+  DataStore *dataStore;
   QStandardItemModel *model;
   void setupUi();
 private slots:

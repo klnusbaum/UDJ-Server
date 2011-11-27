@@ -17,16 +17,17 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "ActivePlaylistModel.hpp"
+#include "DataStore.hpp"
 
 namespace UDJ{
 
 ActivePlaylistModel::ActivePlaylistModel(
-	MusicLibrary* library,
+	DataStore* dataStore,
 	QObject* parent):
-	QSqlRelationalTableModel(parent, library->getDatabaseConnection()),
-	musicLibrary(library)
+	QSqlRelationalTableModel(parent, dataStore->getDatabaseConnection()),
+	dataStore(dataStore)
 {
-  setTable(MusicLibrary::getActivePlaylistViewName());
+  setTable(DataStore::getActivePlaylistViewName());
   select();
   setEditStrategy(QSqlTableModel::OnFieldChange);
 }
@@ -46,7 +47,7 @@ bool ActivePlaylistModel::updateVoteCount(const QModelIndex& index, int differen
 	}
 	const QModelIndex plIdIndex = index.sibling(index.row(), 0);
 	playlist_song_id_t plId = data(plIdIndex).value<playlist_song_id_t>();
-	if(musicLibrary->alterVoteCount(plId, difference)){
+	if(dataStore->alterVoteCount(plId, difference)){
 		select();
 	}
   //TODO should show error
@@ -54,7 +55,7 @@ bool ActivePlaylistModel::updateVoteCount(const QModelIndex& index, int differen
 }
 
 bool ActivePlaylistModel::addSongToPlaylist(library_song_id_t libraryId){
-	bool success = musicLibrary->addSongToActivePlaylist(libraryId);
+	bool success = dataStore->addSongToActivePlaylist(libraryId);
 	if(success){
 		select();
 	}
@@ -63,7 +64,7 @@ bool ActivePlaylistModel::addSongToPlaylist(library_song_id_t libraryId){
 
 bool ActivePlaylistModel::removeSongFromPlaylist(const QModelIndex& index){
 	playlist_song_id_t plId = data(index.sibling(index.row(), 0)).value<playlist_song_id_t>();
-	bool toReturn = musicLibrary->removeSongFromActivePlaylist(plId);
+	bool toReturn = dataStore->removeSongFromActivePlaylist(plId);
 	if(toReturn){
 		select();
 	}

@@ -23,16 +23,16 @@
 
 namespace UDJ{
 
-class MusicLibrary;
+class DataStore;
 
 class EventDashboard : public QWidget{
 Q_OBJECT
 public:
-  EventDashboard(MusicLibrary *musicLibrary, QWidget *parent=0);
+  EventDashboard(DataStore *dataStore, QWidget *parent=0);
   void refreshDisplay();
 private:
   void setupUi();
-  MusicLibrary *musicLibrary;
+  DataStore *dataStore;
 };
 
 

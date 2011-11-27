@@ -17,7 +17,7 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "CreateEventWidget.hpp"
-#include "MusicLibrary.hpp"
+#include "DataStore.hpp"
 #include <QLineEdit>
 #include <QPushButton>
 #include <QLabel>
@@ -30,10 +30,10 @@ namespace UDJ{
 
 
 CreateEventWidget::CreateEventWidget(
-  MusicLibrary *musicLibrary, 
+  DataStore *dataStore, 
   QWidget *parent):
   QWidget(parent),
-  musicLibrary(musicLibrary)
+  dataStore(dataStore)
 {
   setupUi();
   connect(
@@ -42,12 +42,12 @@ CreateEventWidget::CreateEventWidget(
     this,
     SLOT(doLogin()));
   connect(
-    musicLibrary,
+    dataStore,
     SIGNAL(eventCreated()),
     this,
     SLOT(eventCreateSuccess()));
   connect(
-    musicLibrary,
+    dataStore,
     SIGNAL(eventCreationFailed()),
     this,
     SLOT(eventCreateFail()));
@@ -79,7 +79,7 @@ void CreateEventWidget::doLogin(){
     0,
     1,
     this);
-  musicLibrary->createNewEvent(
+  dataStore->createNewEvent(
     nameEdit->text(),
     passwordEdit->text(),
     locationEdit->text());

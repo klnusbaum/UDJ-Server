@@ -25,7 +25,7 @@
 
 namespace UDJ{
 
-class MusicLibrary;
+class DataStore;
 class ActivePlaylistModel;
 class LibraryModel;
 
@@ -42,11 +42,11 @@ public:
   /**
    * \brief Constructs a ActivePlaylistView
    *
-   * @param musicLibrary The music library containing music that might be
+   * @param dataStore The music library containing music that might be
    * added to the playlist.
    * @param parent The parent widget.
    */
-  ActivePlaylistView(MusicLibrary* musicLibrary, LibraryModel *libraryModel, QWidget* parent=0);
+  ActivePlaylistView(DataStore* dataStore, LibraryModel *libraryModel, QWidget* parent=0);
 
   //@}
 
@@ -84,10 +84,10 @@ private:
   //@{
 
   /**
-   * \brief The music library containing music that could potentially be added
+   * \brief The data store containing music that could potentially be added
    * to the playlist.
    */
-  MusicLibrary* musicLibrary;
+  DataStore* dataStore;
 
   LibraryModel* libraryModel;
 

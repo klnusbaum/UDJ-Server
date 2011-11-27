@@ -18,7 +18,7 @@
  */
 
 #include "PlaybackWidget.hpp"
-#include "MusicLibrary.hpp"
+#include "DataStore.hpp"
 #include <QAction>
 #include <QLabel>
 #include <QTime>
@@ -30,8 +30,8 @@
 namespace UDJ{
 
 
-PlaybackWidget::PlaybackWidget(MusicLibrary *musicLibrary, QWidget *parent):
-  QWidget(parent), musicLibrary(musicLibrary)
+PlaybackWidget::PlaybackWidget(DataStore *dataStore, QWidget *parent):
+  QWidget(parent), dataStore(dataStore)
 {
   audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
   mediaObject = new Phonon::MediaObject(this);
@@ -83,11 +83,11 @@ void PlaybackWidget::stateChanged(
 }
 
 void PlaybackWidget::aboutToFinish(){
-  mediaObject->enqueue(musicLibrary->getNextSongToPlay());
+  mediaObject->enqueue(dataStore->getNextSongToPlay());
 }
 
 void PlaybackWidget::finished(){
-  Phonon::MediaSource nextSong = musicLibrary->takeNextSongToPlay();
+  Phonon::MediaSource nextSong = dataStore->takeNextSongToPlay();
   mediaObject->setCurrentSource(nextSong);
   mediaObject->play();
 }

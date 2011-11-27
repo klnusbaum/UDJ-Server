@@ -23,16 +23,16 @@
 class QStackedWidget;
 namespace UDJ{
 
-class MusicLibrary;
+class DataStore;
 class CreateEventWidget;
 class EventDashboard;
 
 class EventWidget : public QWidget{
 Q_OBJECT
 public:
-  EventWidget(MusicLibrary *musicLibrary, QWidget *parent=0);
+  EventWidget(DataStore *dataStore, QWidget *parent=0);
 private:
-  MusicLibrary *musicLibrary;
+  DataStore *dataStore;
   void setupUi();
   QStackedWidget *mainContent;
   CreateEventWidget *creatorWidget;

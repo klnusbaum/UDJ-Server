@@ -18,7 +18,7 @@
  */
 #include "JSONHelper.hpp"
 #include <QNetworkReply>
-#include "MusicLibrary.hpp"
+#include "DataStore.hpp"
 #include "qt-json/json.h"
 
 namespace UDJ{
@@ -68,7 +68,7 @@ const QByteArray JSONHelper::getJSONForLibAdd(
   QVariantList idMaps;
   for(id_iterator it=ids.begin(); it!=ids.end(); ++it){
     QVariantMap idMap;
-    idMap["server_id"] = QVariant::fromValue(MusicLibrary::getInvalidServerId());
+    idMap["server_id"] = QVariant::fromValue(DataStore::getInvalidServerId());
     idMap["client_id"] = QVariant::fromValue(*it);
     idMaps.append(idMap);
   }

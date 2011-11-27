@@ -23,7 +23,6 @@
 #include <QSqlDatabase>
 //#include <QFileSystemWatcher>
 #include <QSqlTableModel>
-#include "MusicLibrary.hpp"
 #include "LibraryModel.hpp"
 #include "UDJServerConnection.hpp"
 #include "PlaybackWidget.hpp"
@@ -42,6 +41,7 @@ class PlaylistView;
 class LibraryView;
 class ActivityList;
 class EventWidget;
+class DataStore;
 
 /**
  * \brief A class that is the main point of interaction with the user. 
@@ -96,7 +96,7 @@ private:
   /** \brief Used to display the contents of the users media library */
   LibraryView* libraryView;
   /** \brief The users media library */
-  MusicLibrary* musicLibrary;
+  DataStore* dataStore;
   /** \brief A widget used for displaying and modifying settings */
   SettingsWidget* settingsWidget;
   /** \brief A connection with the UDJ server */

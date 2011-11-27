@@ -34,10 +34,9 @@ public:
 	/** @name Constructors */
   //@{
 
-  /** \brief Constructs a MusicLibrary
+  /** \brief Constructs a LibraryView
    *
-   * @param musicLibrary The music library whose data this LibraryView should
-   * present
+   * @param model The Library model backing this view.
    * @param parent The parent widget
    */
   LibraryView(LibraryModel *model, QWidget* parent=0);

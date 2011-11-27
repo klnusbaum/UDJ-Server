@@ -19,10 +19,13 @@
 #ifndef ACTIVE_PLAYLIST_MODEL_HPP
 #define ACTIVE_PLAYLIST_MODEL_HPP
 
+#include "ConfigDefs.hpp"
 #include <QSqlRelationalTableModel>
-#include "MusicLibrary.hpp"
 
 namespace UDJ{
+
+
+class DataStore;
 
 /** 
  * \brief A model representing the data in the Playlist.
@@ -39,7 +42,7 @@ public:
    * @param serverConnection The connection the the UDJ server.
    * @param parent The parent QObject.
    */
-	ActivePlaylistModel(MusicLibrary *library, QObject* parent=0);
+	ActivePlaylistModel(DataStore *library, QObject* parent=0);
 
   //@}
 
@@ -97,8 +100,8 @@ private:
   /** @name Private Members */
   //@{
 
-  /** \brief The music library. */
-	MusicLibrary* musicLibrary;
+  /** \brief The data store. */
+	DataStore* dataStore;
 
   //@}
 };

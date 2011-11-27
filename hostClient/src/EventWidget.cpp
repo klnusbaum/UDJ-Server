@@ -17,7 +17,7 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "EventWidget.hpp"
-#include "MusicLibrary.hpp"
+#include "DataStore.hpp"
 #include "CreateEventWidget.hpp"
 #include "EventDashboard.hpp"
 #include <QVBoxLayout>
@@ -26,8 +26,8 @@
 
 namespace UDJ{
 
-EventWidget::EventWidget(MusicLibrary *musicLibrary, QWidget *parent)
-  :QWidget(parent), musicLibrary(musicLibrary)
+EventWidget::EventWidget(DataStore *dataStore, QWidget *parent)
+  :QWidget(parent), dataStore(dataStore)
 {
   setupUi();  
   connect(
@@ -38,9 +38,9 @@ EventWidget::EventWidget(MusicLibrary *musicLibrary, QWidget *parent)
 }
 
 void EventWidget::setupUi(){
-  creatorWidget = new CreateEventWidget(musicLibrary);
+  creatorWidget = new CreateEventWidget(dataStore);
   creatorWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-  eventDashboard = new EventDashboard(musicLibrary, this);
+  eventDashboard = new EventDashboard(dataStore, this);
   mainContent = new QStackedWidget(this);
   mainContent->addWidget(creatorWidget);
   mainContent->addWidget(eventDashboard);

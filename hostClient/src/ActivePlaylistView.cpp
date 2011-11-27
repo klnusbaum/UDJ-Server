@@ -17,7 +17,7 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "ActivePlaylistView.hpp"
-#include "MusicLibrary.hpp"
+#include "DataStore.hpp"
 #include <QHeaderView>
 #include <QSqlRecord>
 #include <QSqlField>
@@ -27,12 +27,12 @@
 
 namespace UDJ{
 
-ActivePlaylistView::ActivePlaylistView(MusicLibrary* musicLibrary, LibraryModel *libraryModel, QWidget* parent):
+ActivePlaylistView::ActivePlaylistView(DataStore* dataStore, LibraryModel *libraryModel, QWidget* parent):
   QTableView(parent),
-  musicLibrary(musicLibrary),
+  dataStore(dataStore),
   libraryModel(libraryModel)
 {
-  playlistModel = new ActivePlaylistModel(musicLibrary, this);
+  playlistModel = new ActivePlaylistModel(dataStore, this);
   horizontalHeader()->setStretchLastSection(true);
   setItemDelegateForColumn(6, new ActivePlaylistDelegate(this));
   setModel(playlistModel);

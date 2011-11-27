@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "MusicLibrary.hpp"
+#include "DataStore.hpp"
 #include <QDir>
 #include <QDesktopServices>
 #include <QDir>
@@ -27,7 +27,7 @@
 namespace UDJ{
 
 
-MusicLibrary::MusicLibrary(UDJServerConnection *serverConnection, QObject *parent)
+DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
  :QObject(parent),serverConnection(serverConnection)
 {
   metaDataGetter = new Phonon::MediaObject(this);
@@ -55,7 +55,7 @@ MusicLibrary::MusicLibrary(UDJServerConnection *serverConnection, QObject *paren
   syncLibrary();
 }
 
-void MusicLibrary::setupDB(){
+void DataStore::setupDB(){
   //TODO do all of this stuff in a seperate thread and return right away.
   QDir dbDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));  
   if(!dbDir.exists()){
@@ -99,13 +99,13 @@ void MusicLibrary::setupDB(){
 		setupQuery)
 }
 
-void MusicLibrary::clearMyLibrary(){
+void DataStore::clearMyLibrary(){
   QSqlQuery workQuery(database);
   workQuery.exec("DELETE FROM " + getLibraryTableName());
   //TODO inform the server of the cleared library
 }
 
-void MusicLibrary::setMusicLibrary(QList<Phonon::MediaSource> songs, QProgressDialog& progress){
+void DataStore::setMusicLibrary(QList<Phonon::MediaSource> songs, QProgressDialog& progress){
 	clearMyLibrary();
   //TODO tell the server to clear the library as well.
   for(int i =0; i<songs.size(); ++i){
@@ -118,7 +118,7 @@ void MusicLibrary::setMusicLibrary(QList<Phonon::MediaSource> songs, QProgressDi
   emit songsAdded();
 }
 
-void MusicLibrary::addSongToLibrary(Phonon::MediaSource song){
+void DataStore::addSongToLibrary(Phonon::MediaSource song){
   metaDataGetter->setCurrentSource(song);
   QString songName =	getSongName(song);
   QString artistName = getArtistName(song);
@@ -147,7 +147,7 @@ void MusicLibrary::addSongToLibrary(Phonon::MediaSource song){
 	serverConnection->addLibSongOnServer(songName, artistName, albumName, hostId);
 }
 
-QString MusicLibrary::getSongName(Phonon::MediaSource song) const{
+QString DataStore::getSongName(Phonon::MediaSource song) const{
   QStringList metaData = metaDataGetter->metaData(Phonon::TitleMetaData);  
   if(metaData.size() != 0){
     return metaData[0];
@@ -158,7 +158,7 @@ QString MusicLibrary::getSongName(Phonon::MediaSource song) const{
   }
 }
 
-QString MusicLibrary::getArtistName(Phonon::MediaSource song) const{
+QString DataStore::getArtistName(Phonon::MediaSource song) const{
   QStringList metaData = metaDataGetter->metaData(Phonon::ArtistMetaData);
   if(metaData.size() != 0 && metaData[0] != ""){
     return metaData[0];
@@ -168,7 +168,7 @@ QString MusicLibrary::getArtistName(Phonon::MediaSource song) const{
   }
 }
 
-QString MusicLibrary::getAlbumName(Phonon::MediaSource song) const{
+QString DataStore::getAlbumName(Phonon::MediaSource song) const{
   QStringList metaData = metaDataGetter->metaData(Phonon::AlbumMetaData);
   if(metaData.size() != 0 && metaData[0] != ""){
       return metaData[0];
@@ -178,7 +178,7 @@ QString MusicLibrary::getAlbumName(Phonon::MediaSource song) const{
   }
 }
 
-void MusicLibrary::updateServerIds(
+void DataStore::updateServerIds(
   const std::map<library_song_id_t, library_song_id_t> hostToServerIdMap)
 {
   QSqlQuery updateQuery(database);
@@ -205,12 +205,12 @@ void MusicLibrary::updateServerIds(
   }
 }
 
-bool MusicLibrary::alterVoteCount(playlist_song_id_t plId, int difference){
+bool DataStore::alterVoteCount(playlist_song_id_t plId, int difference){
   //TODO actually implement
 	return true;
 }
 
-bool MusicLibrary::addSongToActivePlaylist(library_song_id_t libraryId){
+bool DataStore::addSongToActivePlaylist(library_song_id_t libraryId){
 	QSqlQuery insertQuery("INSERT INTO " + getActivePlaylistTableName() +" "
 		"("+getActivePlaylistLibIdColName()+") VALUES ( ? );", database);
 	insertQuery.addBindValue(QVariant::fromValue(libraryId));
@@ -225,7 +225,7 @@ bool MusicLibrary::addSongToActivePlaylist(library_song_id_t libraryId){
 	return true;
 }
 
-bool MusicLibrary::removeSongFromActivePlaylist(playlist_song_id_t plId){
+bool DataStore::removeSongFromActivePlaylist(playlist_song_id_t plId){
 	QSqlQuery removeQuery("DELETE FROM " + getActivePlaylistTableName() + " "
 		"WHERE " + getActivePlaylistIdColName() +" = ? ;", database);
 	removeQuery.addBindValue(QVariant::fromValue(plId));
@@ -239,11 +239,11 @@ bool MusicLibrary::removeSongFromActivePlaylist(playlist_song_id_t plId){
 	return true;
 }
 
-QSqlDatabase MusicLibrary::getDatabaseConnection(){
+QSqlDatabase DataStore::getDatabaseConnection(){
   return database;
 }
 
-Phonon::MediaSource MusicLibrary::getNextSongToPlay(){
+Phonon::MediaSource DataStore::getNextSongToPlay(){
   QSqlQuery nextSongQuery("SELECT " + getLibFileColName() + " FROM " +
     getActivePlaylistViewName() + " LIMIT 1;");
   EXEC_SQL(
@@ -255,7 +255,7 @@ Phonon::MediaSource MusicLibrary::getNextSongToPlay(){
   return Phonon::MediaSource(nextSongQuery.value(0).toString());
 }
 
-Phonon::MediaSource MusicLibrary::takeNextSongToPlay(){
+Phonon::MediaSource DataStore::takeNextSongToPlay(){
   QSqlQuery nextSongQuery(
     "SELECT " + getLibFileColName() + ", " + 
     getActivePlaylistIdColName() +" FROM " +
@@ -281,7 +281,7 @@ Phonon::MediaSource MusicLibrary::takeNextSongToPlay(){
   return Phonon::MediaSource(filePath);
 }
 
-void MusicLibrary::createNewEvent(
+void DataStore::createNewEvent(
   const QString& name, 
   const QString& password, 
   const QString& location)
@@ -289,7 +289,7 @@ void MusicLibrary::createNewEvent(
   serverConnection->createNewEvent(name, password, location);
 }
 
-void MusicLibrary::syncLibrary(){
+void DataStore::syncLibrary(){
   QSqlQuery getUnsyncedSongs(database);
   EXEC_SQL(
     "Error querying for unsynced songs",

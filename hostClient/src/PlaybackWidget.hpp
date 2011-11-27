@@ -31,7 +31,7 @@ class QLabel;
 
 namespace UDJ{
 
-class MusicLibrary;
+class DataStore;
 
 
 class PlaybackWidget : public QWidget{
@@ -39,7 +39,7 @@ class PlaybackWidget : public QWidget{
 Q_OBJECT
 
 public:
-  PlaybackWidget(MusicLibrary *musicLibrary, QWidget *parent=0);
+  PlaybackWidget(DataStore *dataStore, QWidget *parent=0);
   void changeSong(Phonon::MediaSource song);
 
 private slots:
@@ -101,7 +101,7 @@ private:
   /** \brief The volume slider used to control playback volume. */
   Phonon::VolumeSlider *volumeSlider;
 
-  MusicLibrary *musicLibrary;
+  DataStore *dataStore;
 
 };
 

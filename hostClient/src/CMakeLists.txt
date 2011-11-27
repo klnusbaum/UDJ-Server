@@ -21,7 +21,7 @@ SET(UDJ_SRCS
   MetaWindow.cpp 
   MusicFinder.cpp 
   SettingsWidget.cpp 
-  MusicLibrary.cpp
+  DataStore.cpp
   ActivePlaylistView.cpp
   LibraryView.cpp
   ActivePlaylistDelegate.cpp
@@ -47,7 +47,7 @@ SET(UDJ_HDRS
 SET(UDJ_MOC_HDRS 
   MetaWindow.hpp 
   SettingsWidget.hpp
-  MusicLibrary.hpp
+  DataStore.hpp
   ActivePlaylistView.hpp
   LibraryView.hpp
   ActivePlaylistDelegate.hpp

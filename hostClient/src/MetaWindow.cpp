@@ -19,7 +19,7 @@
 #include "MetaWindow.hpp"
 #include "SettingsWidget.hpp"
 #include "MusicFinder.hpp"
-#include "MusicLibrary.hpp"
+#include "DataStore.hpp"
 #include "LibraryModel.hpp"
 #include "LibraryView.hpp"
 #include "ActivityList.hpp"
@@ -69,21 +69,22 @@ void MetaWindow::setMusicDir(){
   QProgressDialog progress(
     "Loading Library...", "Cancel", 0, numNewFiles, this); 
   progress.setWindowModality(Qt::WindowModal);
-  musicLibrary->setMusicLibrary(newMusic, progress);
+  dataStore->setMusicLibrary(newMusic, progress);
   progress.setValue(numNewFiles);
 }
 
 void MetaWindow::setupUi(){
 
-  playbackWidget = new PlaybackWidget(musicLibrary, this);
+  dataStore = new DataStore(serverConnection, this);
 
-  musicLibrary = new MusicLibrary(serverConnection, this);
-  libraryModel = new LibraryModel(this, musicLibrary);
+  playbackWidget = new PlaybackWidget(dataStore, this);
+
+  libraryModel = new LibraryModel(this, dataStore);
   libraryView = new LibraryView(libraryModel, this);
 
-  eventWidget = new EventWidget(musicLibrary, this);
+  eventWidget = new EventWidget(dataStore, this);
  
-  activityList = new ActivityList(musicLibrary);
+  activityList = new ActivityList(dataStore);
 
   contentStack = new QStackedWidget(this);
   contentStack->addWidget(libraryView);

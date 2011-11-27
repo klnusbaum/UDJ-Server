@@ -17,16 +17,16 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "EventDashboard.hpp"
-#include "MusicLibrary.hpp"
+#include "DataStore.hpp"
 #include <QLabel>
 #include <QVBoxLayout>
 
 namespace UDJ{
 
 
-EventDashboard::EventDashboard(MusicLibrary *musicLibrary, QWidget *parent)
+EventDashboard::EventDashboard(DataStore *dataStore, QWidget *parent)
   :QWidget(parent),
-  musicLibrary(musicLibrary)
+  dataStore(dataStore)
 {
   setupUi();
 }

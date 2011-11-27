@@ -17,18 +17,18 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "LibraryModel.hpp"
-#include "MusicLibrary.hpp"
+#include "DataStore.hpp"
 
 namespace UDJ{
 
 
-LibraryModel::LibraryModel(QObject *parent, MusicLibrary *library):
-  QSqlTableModel(parent, library->getDatabaseConnection())
+LibraryModel::LibraryModel(QObject *parent, DataStore *dataStore):
+  QSqlTableModel(parent, dataStore->getDatabaseConnection())
 {
-  setTable(MusicLibrary::getLibraryTableName());
+  setTable(DataStore::getLibraryTableName());
   select();
 
-  connect(library, SIGNAL(songsAdded()), this, SLOT(refresh()));
+  connect(dataStore, SIGNAL(songsAdded()), this, SLOT(refresh()));
 }
 
 void LibraryModel::refresh(){

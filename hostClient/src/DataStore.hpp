@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef MUSIC_LIBRARY_HPP
-#define MUSIC_LIBRARY_HPP
+#ifndef DATA_STORE_HPP
+#define DATA_STORE_HPP
 #include <QSqlDatabase>
 #include <phonon/mediaobject.h>
 #include <phonon/mediasource.h>
@@ -29,19 +29,19 @@ namespace UDJ{
 
 
 /** \brief A model representing the Hosts Music Library */
-class MusicLibrary : public QObject{
+class DataStore : public QObject{
 Q_OBJECT
 public:
 
   /** @name Constructor(s) and Destructor */
   //@{
 
-  /** \brief Constructs a MusicLibrary
+  /** \brief Constructs a DataStore
    *
    * @param serverConnection Connection to the UDJ server.
    * @param parent The parent widget.
    */
-  MusicLibrary(UDJServerConnection *serverConnection, QObject *parent=0);
+  DataStore(UDJServerConnection *serverConnection, QObject *parent=0);
 
   //@}
 
@@ -438,4 +438,4 @@ private slots:
 
 
 } //end namespace
-#endif //MUSIC_LIBRARY_HPP
+#endif //DATA_STORE_HPP

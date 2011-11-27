@@ -18,15 +18,15 @@
  */
 
 #include "ActivityList.hpp"
-#include "MusicLibrary.hpp"
+#include "DataStore.hpp"
 #include <QStandardItemModel>
 #include <QStandardItem>
 #include <QHeaderView>
 
 namespace UDJ{
 
-ActivityList::ActivityList(MusicLibrary *library, QWidget *parent):
-  QTreeView(parent), library(library)
+ActivityList::ActivityList(DataStore *dataStore, QWidget *parent):
+  QTreeView(parent), dataStore(dataStore)
 {
   setupUi(); 
   connect(

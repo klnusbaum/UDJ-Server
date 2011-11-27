@@ -28,12 +28,12 @@ class QProgressDialog;
 namespace UDJ{
 
 
-class MusicLibrary;
+class DataStore;
 
 class CreateEventWidget : public QWidget{
 Q_OBJECT
 public:
-  CreateEventWidget(MusicLibrary *musicLibrary, QWidget *parent=0);
+  CreateEventWidget(DataStore *dataStore, QWidget *parent=0);
 
 signals:
   void eventCreated();
@@ -46,7 +46,7 @@ private:
   QLabel *createLabel;
   QPushButton *createEventButton;
   QProgressDialog *createProgress;
-  MusicLibrary *musicLibrary;
+  DataStore *dataStore;
 
 private slots:
   void doLogin();
