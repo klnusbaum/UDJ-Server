@@ -35,10 +35,13 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
   connect(
     serverConnection,
     SIGNAL(
-      serverIdsUpdate(const std::map<library_song_id_t, library_song_id_t>)),
+      songsAddedOnServer(const std::vector<library_song_id_t>)
+    ),
     this,
     SLOT(
-      updateServerIds(const std::map<library_song_id_t, library_song_id_t>)));
+      setLibSongsSynced(const std::vector<library_song_id_t>)
+    )
+  );
 
   connect(
     serverConnection,
@@ -124,6 +127,7 @@ void DataStore::addSongToLibrary(Phonon::MediaSource song){
   QString artistName = getArtistName(song);
   QString albumName = getAlbumName(song);
   QString fileName = song.fileName();
+  int duration = metaDataGetter->totalTime() /1000;
 
   library_song_id_t hostId;
   QSqlQuery addQuery(
@@ -132,18 +136,22 @@ void DataStore::addSongToLibrary(Phonon::MediaSource song){
     getLibSongColName() + ","+
     getLibArtistColName() + ","+
     getLibAlbumColName() + ","+
-    getLibFileColName() + ") VALUES ( :song , :artist , :album , :file );", 
+    getLibFileColName() + "," +
+    getLibDurationColName() +")" +
+    "VALUES ( :song , :artist , :album , :file, :duration );", 
     database);
   
   addQuery.bindValue(":song", songName);
   addQuery.bindValue(":artist", artistName);
   addQuery.bindValue(":album", albumName);
   addQuery.bindValue(":file", fileName);
+  addQuery.bindValue(":duration", duration);
 	EXEC_INSERT(
 		"Failed to add song " << songName.toStdString(), 
 		addQuery,
     hostId)
-	serverConnection->addLibSongOnServer(songName, artistName, albumName, hostId);
+	serverConnection->addLibSongOnServer(
+    songName, artistName, albumName, duration, hostId);
 }
 
 QString DataStore::getSongName(Phonon::MediaSource song) const{
@@ -174,33 +182,6 @@ QString DataStore::getAlbumName(Phonon::MediaSource song) const{
   }
   else{
     return "Unknonwn";
-  }
-}
-
-void DataStore::updateServerIds(
-  const std::map<library_song_id_t, library_song_id_t> hostToServerIdMap)
-{
-  QSqlQuery updateQuery(database);
-	updateQuery.prepare(
-		"UPDATE " + getLibraryTableName() + " "
-		"SET " + getServerLibIdColName() + " = ? "
-		"WHERE " +getLibIdColName() + " = ? ;"
-		);
-  for(
-    std::map<library_song_id_t, library_song_id_t>::const_iterator it = 
-      hostToServerIdMap.begin();
-    it != hostToServerIdMap.end();
-    ++it
-  )
-  { 
-	  updateQuery.bindValue(
-      0, QVariant::fromValue<library_song_id_t>(it->second));
-	  updateQuery.bindValue(
-      1, QVariant::fromValue<library_song_id_t>(it->first));
-	  EXEC_SQL(
-		  "Updating server id didn't work!", 
-		  updateQuery.exec(), 
-		  updateQuery);
   }
 }
 
@@ -294,19 +275,50 @@ void DataStore::syncLibrary(){
     "Error querying for unsynced songs",
     getUnsyncedSongs.exec(
       "SELECT * FROM " + getLibraryTableName() + " WHERE " + 
-      getServerLibIdColName() + "=" + 
-      QString::number(getInvalidServerId()) + ";"),
+      getLibSyncStatusColName() + "!=" + 
+      QString::number(getLibIsSyncedStatus()) + ";"),
     getUnsyncedSongs)
 
-  std::cout << "Number of rows returned: " << getUnsyncedSongs.size() << "\n";
   while(getUnsyncedSongs.next()){  
     QSqlRecord currentRecord = getUnsyncedSongs.record();
-	  serverConnection->addLibSongOnServer(
-      currentRecord.value(getLibSongColName()).toString(),
-      currentRecord.value(getLibArtistColName()).toString(),
-      currentRecord.value(getLibAlbumColName()).toString(),
-      currentRecord.value(getLibIdColName()).value<library_song_id_t>());
+    if(currentRecord.value(getLibSyncStatusColName()) == 
+      getLibNeedsAddSyncStatus())
+    {
+	    serverConnection->addLibSongOnServer(
+        currentRecord.value(getLibSongColName()).toString(),
+        currentRecord.value(getLibArtistColName()).toString(),
+        currentRecord.value(getLibAlbumColName()).toString(),
+        currentRecord.value(getLibDurationColName()).toInt(),
+        currentRecord.value(getLibIdColName()).value<library_song_id_t>());
+    }
+    else if(currentRecord.value(getLibSyncStatusColName()) ==
+      getLibNeedsDeleteSyncStatus())
+    {
+      //TODO implement delete call here
+    }
   }
 }
+
+void DataStore::setLibSongsSynced(const std::vector<library_song_id_t> songs){
+  setLibSongsSyncStatus(songs, getLibIsSyncedStatus());
+}
+
+void DataStore::setLibSongsSyncStatus(
+  const std::vector<library_song_id_t> songs,
+  const lib_sync_status_t syncStatus)
+{
+  QSqlQuery setSyncedQuery(database);
+  for(int i=0; i< songs.size(); ++i){
+    EXEC_SQL(
+      "Error setting song to synced",
+      setSyncedQuery.exec(
+        "UPDATE " + getLibraryTableName() + " " +
+        "SET " + getLibSyncStatusColName() + "=" + QString::number(syncStatus) +
+        " WHERE "  +
+        getLibIdColName() + "=" + QString::number(songs[i]) + ";"),
+      setSyncedQuery)
+   }
+}
+  
 
 } //end namespace

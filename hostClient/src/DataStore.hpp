@@ -22,13 +22,14 @@
 #include <phonon/mediaobject.h>
 #include <phonon/mediasource.h>
 #include <QProgressDialog>
-#include "ConfigDefs.hpp"
 #include "UDJServerConnection.hpp"
 
 namespace UDJ{
 
 
-/** \brief A model representing the Hosts Music Library */
+/** 
+ * \brief A class that provides access to all persisten storage used by UDJ.
+ */
 class DataStore : public QObject{
 Q_OBJECT
 public:
@@ -113,11 +114,6 @@ public:
   /** @name Public Constants */
   //@{
 
-  static const library_song_id_t& getInvalidServerId(){
-    static const library_song_id_t invalidServerId = -1; 
-    return invalidServerId;
-  }
-
   /**
    * \brief Gets the name of the table in the musicdb that contains information
    * about the music library associated with the server conneciton.
@@ -192,31 +188,55 @@ public:
     return libIdColName;
   }
 
-  static const QString& getServerLibIdColName(){
-    static const QString serverLibIdColName = "server_lib_id";
-    return serverLibIdColName;
-  }
-
-  static const QString getLibSongColName(){
+  static const QString& getLibSongColName(){
     static const QString libSongColName = "song";
     return libSongColName;
   }
 
-  static const QString getLibArtistColName(){
+  static const QString& getLibArtistColName(){
     static const QString libArtistColName = "artist";
     return libArtistColName;
   }
   
-  static const QString getLibAlbumColName(){
+  static const QString& getLibAlbumColName(){
     static const QString libAlbumColName = "album";
     return libAlbumColName;
   }
 
-  static const QString getLibFileColName(){
+  static const QString& getLibFileColName(){
     static const QString libFileColName = "file_path";
     return libFileColName;
   }
 
+  static const QString& getLibDurationColName(){
+    static const QString libDurationColName = "duration";
+    return libDurationColName;
+  }
+
+  static const QString& getLibIsDeletedColName(){
+    static const QString libIsDeletedColName = "is_deleted";
+    return libIsDeletedColName;
+  }
+
+  static const QString& getLibSyncStatusColName(){
+    static const QString libSyncStatusColName = "sync_status";
+    return libSyncStatusColName;
+  }
+
+  static const lib_sync_status_t& getLibNeedsAddSyncStatus(){
+    static const lib_sync_status_t libNeedsAddSyncStatus = 1;
+    return libNeedsAddSyncStatus;
+  }
+
+  static const lib_sync_status_t& getLibNeedsDeleteSyncStatus(){
+    static const lib_sync_status_t libNeedsDeleteSyncStatus = 2;
+    return libNeedsDeleteSyncStatus;
+  }
+
+  static const lib_sync_status_t& getLibIsSyncedStatus(){
+    static const lib_sync_status_t libIsSyncedStatus = 0;
+    return libIsSyncedStatus;
+  }
 
  //@}
 
@@ -322,14 +342,23 @@ private:
       "CREATE TABLE IF NOT EXISTS " + 
       getLibraryTableName() +
       "(" + getLibIdColName() + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-
-      getServerLibIdColName() + " INTEGER DEFAULT " + 
-        QString::number(getInvalidServerId()) + ", " +
-
    	  getLibSongColName() + " TEXT NOT NULL, " +
-      getLibArtistColName() + " TEXT, "+
-      getLibAlbumColName() + " TEXT, " + 
-      getLibFileColName() + " TEXT);";
+      getLibArtistColName() + " TEXT NOT NULL, "+
+      getLibAlbumColName() + " TEXT NOT NULL, " + 
+      getLibFileColName() + " TEXT NOT NULL, " +
+      getLibDurationColName() + " INTEGER NOT NULL, "+
+      getLibIsDeletedColName() + " INTEGER DEFAULT 0, " + 
+      getLibSyncStatusColName() + " INTEGER DEFAULT " +
+        QString::number(getLibNeedsAddSyncStatus()) + " " +
+      "CHECK("+
+        getLibSyncStatusColName()+"="+
+          QString::number(getLibIsSyncedStatus()) +" OR " +
+        getLibSyncStatusColName()+"="+
+          QString::number(getLibNeedsAddSyncStatus()) +" OR " +
+        getLibSyncStatusColName()+"="+
+          QString::number(getLibNeedsDeleteSyncStatus()) +
+      "));";
+        
     return createLibQuerey;
   }
 
@@ -418,8 +447,10 @@ private:
 /** @name Private Slots */
 //@{
 private slots:
-  void updateServerIds(const std::map<library_song_id_t, library_song_id_t> 
-    hostToServerIdMap);
+  void setLibSongsSynced(const std::vector<library_song_id_t> songs);
+  void setLibSongsSyncStatus(
+    const std::vector<library_song_id_t> songs,
+    const lib_sync_status_t syncStatus);
 
 //@}
 

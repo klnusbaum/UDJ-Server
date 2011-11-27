@@ -51,6 +51,7 @@ void UDJServerConnection::addLibSongOnServer(
 	const QString& songName,
 	const QString& artistName,
 	const QString& albumName,
+  const int duration,
 	const library_song_id_t hostId)
 {
   if(!isLoggedIn){
@@ -58,11 +59,10 @@ void UDJServerConnection::addLibSongOnServer(
   }
   bool success = true;
 
-  lib_song_t songToAdd = {songName, artistName, albumName};
+  lib_song_t songToAdd = {hostId, songName, artistName, albumName, duration};
 
   const QByteArray songJSON = JSONHelper::getJSONForLibAdd(
     songToAdd,
-    hostId,
     success);
   QNetworkRequest addSongRequest(getLibAddSongUrl());
   prepareJSONRequest(addSongRequest);
@@ -124,9 +124,9 @@ void UDJServerConnection::setLoggedIn(QByteArray ticket, QByteArray userId){
 }
 
 void UDJServerConnection::handleAddSongReply(QNetworkReply *reply){
-  std::map<library_song_id_t, library_song_id_t> hostToServerIdMap =
-    JSONHelper::getHostToServerLibIdMap(reply);
-  emit serverIdsUpdate(hostToServerIdMap); 
+  std::vector<library_song_id_t> updatedIds =   
+    JSONHelper::getUpdatedLibIds(reply);
+  emit songsAddedOnServer(updatedIds);
 }
 
 void UDJServerConnection::createNewEvent(

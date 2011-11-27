@@ -129,7 +129,7 @@ void MetaWindow::setupUi(){
 void MetaWindow::createActions(){
   quitAction = new QAction(tr("&Quit"), this);
   quitAction->setShortcuts(QKeySequence::Quit);
-  addMusicAction = new QAction(tr("S&et Music Directory"), this);
+  addMusicAction = new QAction(tr("&Add Music"), this);
   addMusicAction->setShortcut(tr("Ctrl+A"));
   connect(addMusicAction, SIGNAL(triggered()), this, SLOT(addMusicToLibrary()));
   connect(quitAction, SIGNAL(triggered()), this, SLOT(close()));

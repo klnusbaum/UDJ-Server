@@ -23,83 +23,57 @@
 
 namespace UDJ{
 
-const QByteArray JSONHelper::getJSONForLibAdd(
-  const lib_song_t &song,
-  const library_song_id_t &id)
-{
+const QByteArray JSONHelper::getJSONForLibAdd(const lib_song_t &song){
   bool ok;
-  return getJSONForLibAdd(song, id, ok);
+  return getJSONForLibAdd(song, ok);
 }
 
 const QByteArray JSONHelper::getJSONForLibAdd(
   const lib_song_t &song,
-  const library_song_id_t &id,
   bool &success)
 {
   const std::vector<lib_song_t> songs(1, song);  
-  const std::vector<library_song_id_t> ids(1, id);  
-  return getJSONForLibAdd(songs, ids, success);
+  return getJSONForLibAdd(songs, success);
 }
 
 const QByteArray JSONHelper::getJSONForLibAdd(
-  const std::vector<lib_song_t> &songs,
-  const std::vector<library_song_id_t> &ids)
+  const std::vector<lib_song_t> &songs)
 {
   bool ok;
-  return getJSONForLibAdd(songs, ids, ok);
+  return getJSONForLibAdd(songs, ok);
 }
 
 
 const QByteArray JSONHelper::getJSONForLibAdd(
   const std::vector<lib_song_t>& songs,
-  const std::vector<library_song_id_t>& ids,
   bool &success)
 {
   typedef std::vector<lib_song_t>::const_iterator song_iterator;
-  typedef std::vector<library_song_id_t>::const_iterator id_iterator;
   QVariantList toAdd;
   for(song_iterator it=songs.begin(); it!=songs.end(); ++it){
     QVariantMap songToAdd;
+    songToAdd["id"] = QVariant::fromValue<library_song_id_t>(it->id);
     songToAdd["song"] = it->songName;
     songToAdd["artist"] = it->artistName;
     songToAdd["album"] = it->albumName;
+    songToAdd["duration"] = it->duration;
     toAdd.append(songToAdd);
   }
-  QVariantList idMaps;
-  for(id_iterator it=ids.begin(); it!=ids.end(); ++it){
-    QVariantMap idMap;
-    idMap["server_id"] = QVariant::fromValue(DataStore::getInvalidServerId());
-    idMap["client_id"] = QVariant::fromValue(*it);
-    idMaps.append(idMap);
-  }
 
-  QVariantMap addObject;
-  addObject["to_add"] = toAdd;
-  addObject["id_maps"] = idMaps;
-
-  return QtJson::Json::serialize(QVariant(addObject),success);
+  return QtJson::Json::serialize(QVariant(toAdd),success);
 }
 
-const std::map<library_song_id_t, library_song_id_t>
-  JSONHelper::getHostToServerLibIdMap(QNetworkReply *reply)
+const std::vector<library_song_id_t> JSONHelper::getUpdatedLibIds(
+  QNetworkReply *reply)
 {
-  std::map<library_song_id_t, library_song_id_t> toReturn;
-  QByteArray responseData = reply->readAll(); 
-  std::cout << "Response Data " << QString(responseData).toStdString() <<std::endl;
+  QByteArray responseData = reply->readAll();
   QVariantList songsAdded = QtJson::Json::parse(responseData).toList();
-  QVariantMap currentSong;
-  for(int i=0;i<songsAdded.size(); ++i){
-    currentSong = songsAdded.at(i).toMap();
-    toReturn[currentSong["client_id"].value<library_song_id_t>()] = 
-      currentSong["server_id"].value<library_song_id_t>();
+  std::vector<library_song_id_t> toReturn(songsAdded.size());
+  for(int i=0; i<songsAdded.size(); ++i){
+    toReturn[i] = songsAdded[i].value<library_song_id_t>();
   }
   return toReturn;
+  
 }
-
-
-
-
-
-
 
 } //end namespace UDJ

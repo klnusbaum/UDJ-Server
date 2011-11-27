@@ -23,7 +23,7 @@
 #include <QSqlDatabase>
 #include <QDateTime>
 #include <QObject>
-#include <map>
+#include <vector>
 #include <QNetworkRequest>
 
 class QNetworkAccessManager;
@@ -91,6 +91,7 @@ public:
 		const QString& songName,
 		const QString& artistName,
 		const QString& ablumName,
+    const int duration,
     const library_song_id_t hostid);
 
   void createNewEvent(
@@ -139,8 +140,7 @@ signals:
   
   void unableToConnect(const QString& errMessage);
 
-  void serverIdsUpdate(const std::map<library_song_id_t, library_song_id_t> 
-    hostToServerIdMap);
+  void songsAddedOnServer(const std::vector<library_song_id_t> addedIds);
 
   void eventCreated();
 
