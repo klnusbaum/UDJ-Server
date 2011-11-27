@@ -44,6 +44,7 @@ void UDJServerConnection::startConnection(
 void UDJServerConnection::prepareJSONRequest(QNetworkRequest &request){
   request.setHeader(QNetworkRequest::ContentTypeHeader, "text/json");
   request.setRawHeader(getTicketHeaderName(), ticket_hash);
+  
 }
 
 void UDJServerConnection::addLibSongOnServer(
@@ -139,6 +140,16 @@ void UDJServerConnection::createNewEvent(
 QUrl UDJServerConnection::getLibAddSongUrl() const{
   return QUrl(getServerUrlPath() + "users/" + QString::number(user_id) +
     "/library/songs");
+}
+
+QUrl UDJServerConnection::getLibDeleteAllUrl() const{
+  return QUrl(getServerUrlPath() + "users/" + QString::number(user_id) +
+    "/library");
+}
+
+void UDJServerConnection::clearMyLibrary(){
+
+
 }
 
 

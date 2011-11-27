@@ -84,7 +84,7 @@ public:
    *
    * @return True if the clearing of the library was sucessful, false otherwise.
    */
-	bool clearMyLibrary();
+	void clearMyLibrary();
 	
 
   void addLibSongOnServer(
@@ -178,6 +178,8 @@ private:
   //@{
 
   QUrl getLibAddSongUrl() const;
+
+  QUrl getLibDeleteAllUrl() const;
 
   static const QString & getServerPortNumber(){
     /** 

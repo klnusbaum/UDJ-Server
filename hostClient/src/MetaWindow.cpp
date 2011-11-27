@@ -54,22 +54,22 @@ MetaWindow::MetaWindow(
   setupMenus();
 }
 
-void MetaWindow::setMusicDir(){
+void MetaWindow::addMusicToLibrary(){
   //TODO: Check to see if musicDir is different than then current music dir
   QDir musicDir = QFileDialog::getExistingDirectory(this,
-    tr("Pick you music folder"),
+    tr("Pick folder to add"),
     QDir::homePath(),
     QFileDialog::ShowDirsOnly);
-  QList<Phonon::MediaSource> newMusic = 
+  QList<Phonon::MediaSource> musicToAdd = 
     MusicFinder::findMusicInDir(musicDir.absolutePath());   
-  if(newMusic.isEmpty()){
+  if(musicToAdd.isEmpty()){
     return;
   }
-  int numNewFiles = newMusic.size();
+  int numNewFiles = musicToAdd.size();
   QProgressDialog progress(
     "Loading Library...", "Cancel", 0, numNewFiles, this); 
   progress.setWindowModality(Qt::WindowModal);
-  dataStore->setMusicLibrary(newMusic, progress);
+  dataStore->addMusicToLibrary(musicToAdd, progress);
   progress.setValue(numNewFiles);
 }
 
@@ -129,15 +129,15 @@ void MetaWindow::setupUi(){
 void MetaWindow::createActions(){
   quitAction = new QAction(tr("&Quit"), this);
   quitAction->setShortcuts(QKeySequence::Quit);
-  setMusicDirAction = new QAction(tr("S&et Music Directory"), this);
-  setMusicDirAction->setShortcut(tr("Ctrl+E"));
-  connect(setMusicDirAction, SIGNAL(triggered()), this, SLOT(setMusicDir()));
+  addMusicAction = new QAction(tr("S&et Music Directory"), this);
+  addMusicAction->setShortcut(tr("Ctrl+A"));
+  connect(addMusicAction, SIGNAL(triggered()), this, SLOT(addMusicToLibrary()));
   connect(quitAction, SIGNAL(triggered()), this, SLOT(close()));
 }
 
 void MetaWindow::setupMenus(){
   QMenu *musicMenu = menuBar()->addMenu(tr("&Music"));
-  musicMenu->addAction(setMusicDirAction);
+  musicMenu->addAction(addMusicAction);
   musicMenu->addSeparator();
   musicMenu->addAction(quitAction);
 }

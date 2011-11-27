@@ -105,9 +105,9 @@ void DataStore::clearMyLibrary(){
   //TODO inform the server of the cleared library
 }
 
-void DataStore::setMusicLibrary(QList<Phonon::MediaSource> songs, QProgressDialog& progress){
-	clearMyLibrary();
-  //TODO tell the server to clear the library as well.
+void DataStore::addMusicToLibrary(
+  QList<Phonon::MediaSource> songs, QProgressDialog& progress)
+{
   for(int i =0; i<songs.size(); ++i){
     progress.setValue(i);
     if(progress.wasCanceled()){
@@ -143,7 +143,6 @@ void DataStore::addSongToLibrary(Phonon::MediaSource song){
 		"Failed to add song " << songName.toStdString(), 
 		addQuery,
     hostId)
-  //TODO should do error checking at this point and make sure hostId is valid
 	serverConnection->addLibSongOnServer(songName, artistName, albumName, hostId);
 }
 

@@ -28,7 +28,7 @@ namespace UDJ{
 class DataStore;
 
 /** 
- * \brief A model representing the data in the Playlist.
+ * \brief A model representing the data in the Active Playlist.
  */
 class ActivePlaylistModel : public QSqlRelationalTableModel{
 Q_OBJECT
@@ -37,12 +37,12 @@ public:
   //@{
 
   /**
-   * \brief Constructs an Active playlist model.
+   * \brief Constructs an Active Playlist Model.
    *
-   * @param serverConnection The connection the the UDJ server.
+   * @param  dataStore The DataStore which stores the active playlist.
    * @param parent The parent QObject.
    */
-	ActivePlaylistModel(DataStore *library, QObject* parent=0);
+	ActivePlaylistModel(DataStore *dataStore, QObject* parent=0);
 
   //@}
 

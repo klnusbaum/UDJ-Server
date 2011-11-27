@@ -48,18 +48,7 @@ public:
   /** @name Getters and Setters */
   //@{
 
-
-  /**
-   * \brief Sets the contents of the music library.
-   *
-   * Sets the hosts music library to a set of given songs. While doing this
-   * a progress bar is updated in order to keep the user informed.
-   *
-   * @param songs Songs which the hosts library should contain.
-   * @param progress A progress dialog to be updated as the music library
-   * is updated.
-   */
-  void setMusicLibrary(
+  void addMusicToLibrary(
     QList<Phonon::MediaSource> songs, 
     QProgressDialog& progress);
 

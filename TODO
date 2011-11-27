@@ -6,6 +6,7 @@ playing, fade into new song, then gradual return beat of new song to normal.
 -Handle the unable to connect signal in host client
 -Emit signal from UDJServerConnection is conneciotn is lost or something...
 -Import iTunes library capability
+-Handle song not being added to the server correctly.
 
 ANDROID APP
 -IMPORTANT: SWITCH TO HttpsURLConnection. This will give us automatic caching

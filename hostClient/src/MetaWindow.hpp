@@ -73,10 +73,7 @@ private slots:
   /** @name Private Slots */
   //@{
 
-  /**
-   * \brief Set's the users music library to a user selected directory.
-   */
-  void setMusicDir();
+  void addMusicToLibrary();
 
   void displayLibrary();
 
@@ -103,7 +100,7 @@ private:
 	UDJServerConnection* serverConnection;
 
   /** \brief Triggers selection of music directory. */
-  QAction *setMusicDirAction;
+  QAction *addMusicAction;
  
   /** \brief Causes the application to quit. */
   QAction *quitAction;
