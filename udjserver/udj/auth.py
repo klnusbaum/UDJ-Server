@@ -12,13 +12,15 @@ from datetime import datetime
 from datetime import timedelta
 from udj.headers import getTicketHeader
 from udj.headers import getUserIdHeader
+from udj.headers import getDjangoTicketHeader
 
 def getUserForTicket(request):
-  return Ticket.objects.get(ticket_hash=request.META[getTicketHeader()]).user
+  return Ticket.objects.get(
+    ticket_hash=request.META[getDjangoTicketHeader()]).user
 
 def ticketMatchesUser(request, provided_user_id):
   matchingTickets = Ticket.objects.filter(
-    ticket_hash=request.META[getTicketHeader()], 
+    ticket_hash=request.META[getDjangoTicketHeader()], 
     user__id=provided_user_id)
   return len(matchingTickets) > 0
   

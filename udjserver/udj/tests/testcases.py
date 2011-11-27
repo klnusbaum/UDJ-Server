@@ -10,6 +10,7 @@ from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
 from udj.headers import getTicketHeader
+from udj.headers import getDjangoTicketHeader
 from udj.headers import getUserIdHeader
 from udj.models import Ticket
 
@@ -43,19 +44,19 @@ class DoesServerOpsTestCase(TestCase):
    return self.client.put(
       url,
       data=payload, content_type='text/json', 
-      **{getTicketHeader() : self.ticket_hash})
+      **{getDjangoTicketHeader() : self.ticket_hash})
 
   def doPut(self, url):
-   return self.client.put(url, **{getTicketHeader() : self.ticket_hash})
+   return self.client.put(url, **{getDjangoTicketHeader() : self.ticket_hash})
 
   def doGet(self, url):
-    return self.client.get(url, **{getTicketHeader() : self.ticket_hash})
+    return self.client.get(url, **{getDjangoTicketHeader() : self.ticket_hash})
    
   def doDelete(self, url):
-    return self.client.delete(url, **{getTicketHeader() : self.ticket_hash})
+    return self.client.delete(url, **{getDjangoTicketHeader() : self.ticket_hash})
 
   def doPost(self, url, args):
-    return self.client.post(url, args, **{getTicketHeader() : self.ticket_hash})
+    return self.client.post(url, args, **{getDjangoTicketHeader() : self.ticket_hash})
 
 class User1TestCase(DoesServerOpsTestCase):
   username = "test1"

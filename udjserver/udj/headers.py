@@ -1,3 +1,6 @@
+def getDjangoTicketHeader():
+  return "HTTP_X_UDJ_TICKET_HASH"
+
 def getTicketHeader():
   return "X-Udj-Ticket-Hash"
 
