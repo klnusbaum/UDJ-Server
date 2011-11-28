@@ -133,9 +133,9 @@ void DataStore::addSongToLibrary(Phonon::MediaSource song){
   TagLib::FileRef f(fileName.toStdString().c_str());
   if(!f.isNull() && f.tag() && f.audioProperties()){
     TagLib::Tag *tag = f.tag();
-    QString songName =	TStringToQString(tag->title());
-    QString artistName = TStringToQString(tag->artist());
-    QString albumName = TStringToQString(tag->album());
+    songName =	TStringToQString(tag->title());
+    artistName = TStringToQString(tag->artist());
+    albumName = TStringToQString(tag->album());
     duration = f.audioProperties()->length();
   }
   else{
@@ -143,7 +143,8 @@ void DataStore::addSongToLibrary(Phonon::MediaSource song){
     return;
   }
 
-  library_song_id_t hostId;
+  std::cout << "Song name: " << songName.toStdString() << std::endl;
+  library_song_id_t hostId =-1;
   QSqlQuery addQuery(
     "INSERT INTO "+getLibraryTableName()+ 
     "("+
@@ -164,8 +165,10 @@ void DataStore::addSongToLibrary(Phonon::MediaSource song){
 		"Failed to add song " << songName.toStdString(), 
 		addQuery,
     hostId)
-	serverConnection->addLibSongOnServer(
-    songName, artistName, albumName, duration, hostId);
+  if(hostId != -1){
+	  serverConnection->addLibSongOnServer(
+      songName, artistName, albumName, duration, hostId);
+  }
 }
 
 bool DataStore::alterVoteCount(playlist_song_id_t plId, int difference){
