@@ -257,49 +257,16 @@ private:
 
   /** \brief Connection to the UDJ server */
   UDJServerConnection *serverConnection;
-  /** \brief Object used to determine metadata of MediaSources. */
-  Phonon::MediaObject* metaDataGetter;
+
   /** \brief Actual database connection */
   QSqlDatabase database;
+
 
   
   //@}
 
   /** @name Private Functions */
   //@{
-
-  /**
-   * \brief Determines the name of a song contained in a given MediaSource.
-   *
-   * Given a media source, this funciton uses a MediaObject to determine
-   * the name of the song in the media source.
-   *
-   * @param song Song for which the name is desired.
-   * @return Name of the given song.
-   */
-  QString getSongName(Phonon::MediaSource song) const;
-
-  /**
-   * \brief Determines the artist of a song contained in a given MediaSource.
-   *
-   * Given a media source, this funciton uses a MediaObject to determine
-   * the artist of the song in the media source.
-   *
-   * @param song Song for which the artist is desired.
-   * @return Artist of the given song.
-   */
-  QString getArtistName(Phonon::MediaSource song) const;
-
-  /**
-   * \brief Determines the album of a song contained in a given MediaSource.
-   *
-   * Given a media source, this funciton uses a MediaObject to determine
-   * the album of the song in the media source.
-   *
-   * @param song Song for which the album is desired.
-   * @return Album of the given song.
-   */
-  QString getAlbumName(Phonon::MediaSource song) const;
 
   /** \brief Does initiail database setup */
   void setupDB();
@@ -451,7 +418,6 @@ private slots:
   void setLibSongsSyncStatus(
     const std::vector<library_song_id_t> songs,
     const lib_sync_status_t syncStatus);
-
 //@}
 
 };

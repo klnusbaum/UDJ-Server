@@ -23,6 +23,10 @@
 #include <QSqlQuery>
 #include <QVariant>
 #include <QSqlRecord>
+#include <QThread>
+#include <tag.h>
+#include <tstring.h>
+#include <fileref.h>
 
 namespace UDJ{
 
@@ -30,7 +34,6 @@ namespace UDJ{
 DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
  :QObject(parent),serverConnection(serverConnection)
 {
-  metaDataGetter = new Phonon::MediaObject(this);
   setupDB();
   connect(
     serverConnection,
@@ -122,12 +125,23 @@ void DataStore::addMusicToLibrary(
 }
 
 void DataStore::addSongToLibrary(Phonon::MediaSource song){
-  metaDataGetter->setCurrentSource(song);
-  QString songName =	getSongName(song);
-  QString artistName = getArtistName(song);
-  QString albumName = getAlbumName(song);
   QString fileName = song.fileName();
-  int duration = metaDataGetter->totalTime() /1000;
+  QString songName;
+  QString artistName;
+  QString albumName;
+  int duration;
+  TagLib::FileRef f(fileName.toStdString().c_str());
+  if(!f.isNull() && f.tag() && f.audioProperties()){
+    TagLib::Tag *tag = f.tag();
+    QString songName =	TStringToQString(tag->title());
+    QString artistName = TStringToQString(tag->artist());
+    QString albumName = TStringToQString(tag->album());
+    duration = f.audioProperties()->length();
+  }
+  else{
+    //TODO throw error
+    return;
+  }
 
   library_song_id_t hostId;
   QSqlQuery addQuery(
@@ -152,37 +166,6 @@ void DataStore::addSongToLibrary(Phonon::MediaSource song){
     hostId)
 	serverConnection->addLibSongOnServer(
     songName, artistName, albumName, duration, hostId);
-}
-
-QString DataStore::getSongName(Phonon::MediaSource song) const{
-  QStringList metaData = metaDataGetter->metaData(Phonon::TitleMetaData);  
-  if(metaData.size() != 0){
-    return metaData[0];
-  }
-  else{
-    QFileInfo songFile(song.fileName());
-    return songFile.fileName();
-  }
-}
-
-QString DataStore::getArtistName(Phonon::MediaSource song) const{
-  QStringList metaData = metaDataGetter->metaData(Phonon::ArtistMetaData);
-  if(metaData.size() != 0 && metaData[0] != ""){
-    return metaData[0];
-  }
-  else{
-    return "Unknonwn";
-  }
-}
-
-QString DataStore::getAlbumName(Phonon::MediaSource song) const{
-  QStringList metaData = metaDataGetter->metaData(Phonon::AlbumMetaData);
-  if(metaData.size() != 0 && metaData[0] != ""){
-      return metaData[0];
-  }
-  else{
-    return "Unknonwn";
-  }
 }
 
 bool DataStore::alterVoteCount(playlist_song_id_t plId, int difference){
@@ -318,8 +301,8 @@ void DataStore::setLibSongsSyncStatus(
         " WHERE "  +
         getLibIdColName() + "=" + QString::number(songs[i]) + ";"),
       setSyncedQuery)
-   }
+  }
 }
-  
+
 
 } //end namespace
