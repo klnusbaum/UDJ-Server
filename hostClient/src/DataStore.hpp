@@ -245,6 +245,8 @@ public:
 signals:
   void songsAdded();
 
+  void songsModified();
+
   void eventCreated();
 
   void eventCreationFailed();

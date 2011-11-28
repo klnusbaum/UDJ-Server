@@ -283,6 +283,7 @@ void DataStore::syncLibrary(){
       //TODO implement delete call here
     }
   }
+  emit songsModified();
 }
 
 void DataStore::setLibSongsSynced(const std::vector<library_song_id_t> songs){
@@ -305,6 +306,7 @@ void DataStore::setLibSongsSyncStatus(
         getLibIdColName() + "=" + QString::number(songs[i]) + ";"),
       setSyncedQuery)
   }
+  emit songsModified();
 }
 
 

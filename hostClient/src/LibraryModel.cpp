@@ -29,6 +29,7 @@ LibraryModel::LibraryModel(QObject *parent, DataStore *dataStore):
   select();
 
   connect(dataStore, SIGNAL(songsAdded()), this, SLOT(refresh()));
+  connect(dataStore, SIGNAL(songsModified()), this, SLOT(refresh()));
 }
 
 void LibraryModel::refresh(){
