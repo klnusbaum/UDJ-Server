@@ -56,34 +56,15 @@ signals:
   void songAddRequest(const QModelIndex& songToAdd); 
 
   //@}
-protected:
 
-  /** @name Overriden from QWidget */
-  //@{
-
-  /** \brief . */
-  void contextMenuEvent(QContextMenuEvent* e);
-
-  //@}
+private slots:
+  void handleContextMenuRequest(const QPoint &pos);
 
 private:
-  /** @name Private Functions */
-  //@{
-  
-  /** \brief Get a list of actions to be displayed in the LibraryView's
-   * context menu.
-   *
-   * @return A list of action to be displayed in the LibraryView's context
-   * menu.
-   */
-  QList<QAction*> getContextMenuActions();
-
-  static const QString& getAddToPlaylistText(){
-    static const QString addToPlaylistText(tr("Add to playlist"));
-    return addToPlaylistText;
+  static const QString& getDeleteContextMenuItemName(){
+    static const QString deleteContextMenuItemName = tr("Delete");
+    return deleteContextMenuItemName;
   }
-
-  //@}
 };
 
 

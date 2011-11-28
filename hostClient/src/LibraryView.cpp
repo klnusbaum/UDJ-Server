@@ -32,27 +32,17 @@ LibraryView::LibraryView(LibraryModel *model, QWidget* parent):QTableView(parent
   horizontalHeader()->setStretchLastSection(true);
   setModel(model);
   setSelectionBehavior(QAbstractItemView::SelectRows);
+  setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
+    this, SLOT(handleContextMenuRequest(const QPoint&)));
 }
 
-void LibraryView::contextMenuEvent(QContextMenuEvent* e){
-  int contextRow = rowAt(e->y());
-  if(contextRow == -1){
-    return;
-  }
+void LibraryView::handleContextMenuRequest(const QPoint &pos){
+  QMenu contextMenu(this);
+  contextMenu.addAction(getDeleteContextMenuItemName());
+  QAction *returnedHaction = contextMenu.exec(QCursor::pos());
 
-  QAction* selected = 
-    QMenu::exec(getContextMenuActions(), e->globalPos());
-  if(selected->text() == getAddToPlaylistText()){
-    QModelIndex indexToAdd = indexAt(e->pos());
-    emit songAddRequest(indexToAdd);
-  }
 
-}
-
-QList<QAction*> LibraryView::getContextMenuActions(){
-  QList<QAction*> contextActions;
-  contextActions.append(new QAction(getAddToPlaylistText(), this));
-  return contextActions;
 }
 
 
