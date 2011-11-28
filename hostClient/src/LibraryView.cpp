@@ -40,6 +40,7 @@ LibraryView::LibraryView(LibraryModel *model, QWidget* parent):QTableView(parent
 void LibraryView::handleContextMenuRequest(const QPoint &pos){
   QMenu contextMenu(this);
   contextMenu.addAction(getDeleteContextMenuItemName());
+  contextMenu.addAction(getAddToPlaylistContextMenuItemName());
   QAction *returnedHaction = contextMenu.exec(QCursor::pos());
 
 

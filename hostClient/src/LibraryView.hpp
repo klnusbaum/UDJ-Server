@@ -65,6 +65,12 @@ private:
     static const QString deleteContextMenuItemName = tr("Delete");
     return deleteContextMenuItemName;
   }
+
+  static const QString& getAddToPlaylistContextMenuItemName(){
+    static const QString addToPlaylistContextMenuItemName = 
+      tr("Add to playlist");
+    return addToPlaylistContextMenuItemName;
+  }
 };
 
 
