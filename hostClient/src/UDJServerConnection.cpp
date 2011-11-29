@@ -86,10 +86,7 @@ void UDJServerConnection::authenticate(
 }
  
 void UDJServerConnection::recievedReply(QNetworkReply *reply){
-  if(reply->error() != QNetworkReply::NoError){
-    //TODO error handling code
-  }
-  else if(reply->request().url().path() == getAuthUrl().path()){
+  if(reply->request().url().path() == getAuthUrl().path()){
     handleAuthReply(reply);
   }
   else if(reply->request().url().path() == getLibAddSongUrl().path()){
@@ -100,9 +97,10 @@ void UDJServerConnection::recievedReply(QNetworkReply *reply){
 
 void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
   if(
+    reply->error() != QNetworkReply::NoError &&
     reply->hasRawHeader(getTicketHeaderName()) &&
-    reply->hasRawHeader(getUserIdHeaderName())
-  ){
+    reply->hasRawHeader(getUserIdHeaderName()))
+  {
     setLoggedIn(
       reply->rawHeader(getTicketHeaderName()),
       reply->rawHeader(getUserIdHeaderName())
