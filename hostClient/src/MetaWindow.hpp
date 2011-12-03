@@ -80,7 +80,6 @@ private slots:
   void displayEventWidget();
 
   void displayPlaylist(playlist_id_t playlist);
-
   
   //@}
 
@@ -117,8 +116,6 @@ private:
 
   EventWidget *eventWidget;
   QStackedWidget *contentStack;
-
-
 
   //@}
 

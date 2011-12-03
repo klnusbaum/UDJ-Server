@@ -49,6 +49,7 @@ public:
    */
 	UDJServerConnection(QObject *parent=NULL);
 
+
   //@}
 
   /** @name Connection Controlls */
@@ -98,6 +99,8 @@ public:
     const QString& partyName,
     const QString& password);
 
+  void endEvent();
+
 
   //@}
 
@@ -144,6 +147,10 @@ signals:
   void eventCreated();
 
   void eventCreationFailed(const QString& errMessage);
+
+  void endingEventFailed(const QString& errMessage);
+
+  void eventEnded();
   //@}
 
 
@@ -181,6 +188,8 @@ private:
   QUrl getLibAddSongUrl() const;
 
   QUrl getLibDeleteAllUrl() const;
+
+  QUrl getEndEventUrl() const;
 
   static const QString & getServerPortNumber(){
     /** 
@@ -252,6 +261,8 @@ private:
   void handleAddSongReply(QNetworkReply *reply);
 
   void handleCreateEventReply(QNetworkReply *reply);
+
+  void handleEndEventReply(QNetworkReply *reply);
 
 
   //@}

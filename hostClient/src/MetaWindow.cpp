@@ -156,5 +156,4 @@ void MetaWindow::displayPlaylist(playlist_id_t playlist){
 }
 
 
-
 } //end namespace

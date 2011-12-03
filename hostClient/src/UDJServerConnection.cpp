@@ -44,7 +44,6 @@ void UDJServerConnection::startConnection(
 void UDJServerConnection::prepareJSONRequest(QNetworkRequest &request){
   request.setHeader(QNetworkRequest::ContentTypeHeader, "text/json");
   request.setRawHeader(getTicketHeaderName(), ticket_hash);
-  
 }
 
 void UDJServerConnection::addLibSongOnServer(
@@ -95,6 +94,12 @@ void UDJServerConnection::createEvent(
   netAccessManager->put(createEventRequest, partyJSON);
 }
 
+void UDJServerConnection::endEvent(){
+  QNetworkRequest endEventRequest(getEndEventUrl());
+  endEventRequest.setRawHeader(getTicketHeaderName(), ticket_hash);
+  netAccessManager->deleteResource(endEventRequest);
+}
+
 
 void UDJServerConnection::recievedReply(QNetworkReply *reply){
   if(reply->request().url().path() == getAuthUrl().path()){
@@ -105,6 +110,9 @@ void UDJServerConnection::recievedReply(QNetworkReply *reply){
   }
   else if(reply->request().url().path() == getCreateEventUrl().path()){
     handleCreateEventReply(reply);
+  }
+  else if(reply->request().url().path() == getEndEventUrl().path()){
+    handleEndEventReply(reply);
   }
   reply->deleteLater();
 }
@@ -152,6 +160,14 @@ void UDJServerConnection::handleCreateEventReply(QNetworkReply *reply){
   emit eventCreated();
 }
 
+void UDJServerConnection::handleEndEventReply(QNetworkReply *reply){
+  if(reply->error() != QNetworkReply::NoError){
+    emit endingEventFailed("Failed to end event");
+    return;
+  }
+  emit eventEnded();
+}
+
 QUrl UDJServerConnection::getLibAddSongUrl() const{
   return QUrl(getServerUrlPath() + "users/" + QString::number(user_id) +
     "/library/songs");
@@ -160,6 +176,10 @@ QUrl UDJServerConnection::getLibAddSongUrl() const{
 QUrl UDJServerConnection::getLibDeleteAllUrl() const{
   return QUrl(getServerUrlPath() + "users/" + QString::number(user_id) +
     "/library");
+}
+
+QUrl UDJServerConnection::getEndEventUrl() const{
+  return QUrl(getServerUrlPath() + "events/" + QString::number(eventId));
 }
 
 void UDJServerConnection::clearMyLibrary(){
