@@ -66,7 +66,6 @@ void UDJServerConnection::addLibSongOnServer(
     success);
   QNetworkRequest addSongRequest(getLibAddSongUrl());
   prepareJSONRequest(addSongRequest);
-  std::cout << "payload: " << QString(songJSON).toStdString() << std::endl;
   netAccessManager->put(addSongRequest, songJSON);
 }
 
@@ -85,6 +84,18 @@ void UDJServerConnection::authenticate(
   dataBuffer->setParent(reply);
 }
  
+void UDJServerConnection::createEvent(
+  const QString& partyName,
+  const QString& password)
+{
+  QNetworkRequest createEventRequest(getCreateEventUrl());
+  prepareJSONRequest(createEventRequest);
+  const QByteArray partyJSON = JSONHelper::getCreateEventJSON(
+    partyName, password);
+  netAccessManager->put(createEventRequest, partyJSON);
+}
+
+
 void UDJServerConnection::recievedReply(QNetworkReply *reply){
   if(reply->request().url().path() == getAuthUrl().path()){
     handleAuthReply(reply);
@@ -92,12 +103,15 @@ void UDJServerConnection::recievedReply(QNetworkReply *reply){
   else if(reply->request().url().path() == getLibAddSongUrl().path()){
     handleAddSongReply(reply);
   }
+  else if(reply->request().url().path() == getCreateEventUrl().path()){
+    handleCreateEventReply(reply);
+  }
   reply->deleteLater();
 }
 
 void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
   if(
-    reply->error() != QNetworkReply::NoError &&
+    reply->error() == QNetworkReply::NoError &&
     reply->hasRawHeader(getTicketHeaderName()) &&
     reply->hasRawHeader(getUserIdHeaderName()))
   {
@@ -108,7 +122,9 @@ void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
     emit connectionEstablished();
   }
   else{
-    emit unableToConnect("Bad username and password");
+    QString error = tr("Unable to connect to server: error ") + 
+     QString::number(reply->error());
+    emit unableToConnect(error);
   }
 }
 
@@ -125,11 +141,14 @@ void UDJServerConnection::handleAddSongReply(QNetworkReply *reply){
   emit songsAddedOnServer(updatedIds);
 }
 
-void UDJServerConnection::createNewEvent(
-  const QString& name,
-  const QString& password,
-  const QString& location)
-{
+void UDJServerConnection::handleCreateEventReply(QNetworkReply *reply){
+  if(reply->error() != QNetworkReply::NoError){
+    emit eventCreationFailed("Failed to create event");
+    return;
+  }
+  //TODO handle bad json resturned from the server.
+  isHostingEvent =true;
+  eventId = JSONHelper::getEventId(reply);
   emit eventCreated();
 }
 

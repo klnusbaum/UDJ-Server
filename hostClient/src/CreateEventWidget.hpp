@@ -51,7 +51,7 @@ private:
 private slots:
   void doLogin();
   void eventCreateSuccess();
-  void eventCreateFail();
+  void eventCreateFail(const QString& errMessage);
 
 };
 

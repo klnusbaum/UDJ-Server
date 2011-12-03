@@ -112,7 +112,7 @@ void LoginWidget::displayLoginFailedMessage(const QString& errorMessage){
   QMessageBox::critical(
     this,
     tr("Login Failed"),
-    tr("Failed to login. Please check username and password"));
+    errorMessage);
 }
 
 

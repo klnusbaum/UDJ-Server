@@ -48,9 +48,9 @@ CreateEventWidget::CreateEventWidget(
     SLOT(eventCreateSuccess()));
   connect(
     dataStore,
-    SIGNAL(eventCreationFailed()),
+    SIGNAL(eventCreationFailed(const QString&)),
     this,
-    SLOT(eventCreateFail()));
+    SLOT(eventCreateFail(const QString&)));
 }
 
 
@@ -81,8 +81,7 @@ void CreateEventWidget::doLogin(){
     this);
   dataStore->createNewEvent(
     nameEdit->text(),
-    passwordEdit->text(),
-    locationEdit->text());
+    passwordEdit->text());
 }
 
 void CreateEventWidget::eventCreateSuccess(){
@@ -90,12 +89,12 @@ void CreateEventWidget::eventCreateSuccess(){
   emit eventCreated();
 }
 
-void CreateEventWidget::eventCreateFail(){
+void CreateEventWidget::eventCreateFail(const QString& errMessage){
   createProgress->setValue(1);
   QMessageBox::critical(
     this,
     tr("Event Creation Failed"),
-    tr("Failed to create event"));
+    errMessage);
 }
 
 

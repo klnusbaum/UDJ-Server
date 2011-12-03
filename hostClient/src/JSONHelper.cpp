@@ -82,7 +82,51 @@ const std::vector<library_song_id_t> JSONHelper::getUpdatedLibIds(
     toReturn[i] = songsAdded[i].value<library_song_id_t>();
   }
   return toReturn;
+}
+const QByteArray JSONHelper::getCreateEventJSON(
+  const QString& partyName,
+  const QString& password, 
+  float latitude,
+  float longitude)
+{
+  bool success;
+  return getCreateEventJSON(partyName, password, latitude, longitude, success);
+}
+
+const QByteArray JSONHelper::getCreateEventJSON(
+  const QString& partyName,
+  const QString& password, 
+  float latitude,
+  float longitude,
+  bool &success)
+{
+  QVariantMap eventToCreate;
+  eventToCreate["name"] = partyName;
+  if(password != ""){
+    eventToCreate["password"] = password;
+  }
+  if(latitude != getInvalidLat() && longitude != getInvalidLong()){
+    QVariantMap coords;
+    coords["latitude"] = latitude;
+    coords["longitude"] = longitude;
+    eventToCreate["coords"] = coords;
+  }
+  return QtJson::Json::serialize(QVariant(eventToCreate),success);
+}
+
+event_id_t JSONHelper::getEventId(QNetworkReply *reply){
+  QByteArray responseData = reply->readAll();
+  QString responseString = QString::fromUtf8(responseData);
+  bool success;
+  QVariantMap eventCreated = 
+    QtJson::Json::parse(responseString, success).toMap();
+  if(!success){
+    std::cerr << "Error parsing json from a response to an event creation" <<
+     "request" << std::endl <<
+      responseString.toStdString() << std::endl;
+  }
   
+  return eventCreated["event_id"].value<event_id_t>();
 }
 
 } //end namespace UDJ

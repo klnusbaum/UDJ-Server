@@ -54,9 +54,9 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
 
   connect(
     serverConnection,
-    SIGNAL(eventCreationFailed()),
+    SIGNAL(eventCreationFailed(const QString&)),
     this,
-    SIGNAL(eventCreationFailed()));
+    SIGNAL(eventCreationFailed(const QString&)));
 
   syncLibrary();
 }
@@ -249,10 +249,9 @@ Phonon::MediaSource DataStore::takeNextSongToPlay(){
 
 void DataStore::createNewEvent(
   const QString& name, 
-  const QString& password, 
-  const QString& location)
+  const QString& password)
 {
-  serverConnection->createNewEvent(name, password, location);
+  serverConnection->createEvent(name, password);
 }
 
 void DataStore::syncLibrary(){

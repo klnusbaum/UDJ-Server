@@ -33,7 +33,6 @@ typedef struct {
   int duration;
 } lib_song_t;
 
-
 class JSONHelper{
 
 public:
@@ -51,8 +50,33 @@ public:
     const std::vector<lib_song_t>& songs,
     bool &success);
 
+  static const QByteArray getCreateEventJSON(
+    const QString& partyName,
+    const QString& password="", 
+    float latitude=getInvalidLat(),
+    float longitude=getInvalidLong());
+
+  static const QByteArray getCreateEventJSON(
+    const QString& partyName,
+    const QString& password, 
+    float latitude,
+    float longitude,
+    bool &success);
+
   static const std::vector<library_song_id_t>
     getUpdatedLibIds(QNetworkReply *reply);
+
+  static event_id_t getEventId(QNetworkReply *reply);
+
+  static const float& getInvalidLat(){
+    static const float invalidLat = 100;
+    return invalidLat;
+  }
+
+  static const float& getInvalidLong(){
+    static const float invalidLong = 200;
+    return invalidLong;
+  }
 
 };
 

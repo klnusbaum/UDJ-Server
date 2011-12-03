@@ -94,10 +94,9 @@ public:
     const int duration,
     const library_song_id_t hostid);
 
-  void createNewEvent(
-    const QString& name,
-    const QString& password,
-    const QString& location);
+  void createEvent(
+    const QString& partyName,
+    const QString& password);
 
 
   //@}
@@ -144,7 +143,7 @@ signals:
 
   void eventCreated();
 
-  void eventCreationFailed();
+  void eventCreationFailed(const QString& errMessage);
   //@}
 
 
@@ -156,6 +155,8 @@ private:
   //@{
 
   bool isLoggedIn;
+  bool isHostingEvent;
+  
 
   /** \brief Id of the event associated with this conneciton */
   event_id_t eventId;
@@ -216,6 +217,12 @@ private:
     return AUTH_URL;
   }
 
+  static const QUrl& getCreateEventUrl(){
+    static const QUrl CREAT_EVENT_URL(getServerUrlPath() + "events/event");
+    return CREAT_EVENT_URL;
+  }
+
+
   static const QByteArray& getAPIVersionHeaderName(){
     static const QByteArray API_VERSION_HEAER_NAME = "X-Udj-Api-Version";
     return API_VERSION_HEAER_NAME;
@@ -243,6 +250,8 @@ private:
   void handleAuthReply(QNetworkReply* reply);
 
   void handleAddSongReply(QNetworkReply *reply);
+
+  void handleCreateEventReply(QNetworkReply *reply);
 
 
   //@}

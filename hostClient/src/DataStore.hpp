@@ -102,8 +102,7 @@ public:
 
   void createNewEvent(
     const QString& name, 
-    const QString& password, 
-    const QString& location);
+    const QString& password);
 
   Phonon::MediaSource getNextSongToPlay();
   
@@ -249,7 +248,7 @@ signals:
 
   void eventCreated();
 
-  void eventCreationFailed();
+  void eventCreationFailed(const QString& errMessage);
 //@}
 
 private:
