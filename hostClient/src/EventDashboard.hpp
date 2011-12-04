@@ -21,6 +21,8 @@
 #include <QWidget>
 
 
+class QLabel;
+
 namespace UDJ{
 
 class DataStore;
@@ -33,6 +35,11 @@ public:
 private:
   void setupUi();
   DataStore *dataStore;
+
+  QLabel *eventName;
+private slots:
+  void updateEventName();
+  
 };
 
 
