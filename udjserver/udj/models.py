@@ -12,6 +12,9 @@ class Event(models.Model):
   def __unicode__(self):
     return "Event " + str(self.id) + ": " + self.name
 
+  class Meta: 
+    unique_together = ("id", "host")
+
 class FinishedEvent(models.Model):
   event_id = models.IntegerField(unique=True)
   name = models.CharField(max_length=200)

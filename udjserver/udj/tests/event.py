@@ -36,6 +36,7 @@ class CreateEventTest(User2TestCase):
     self.assertEqual(json.loads(response.content)['event_id'] ,2)
     addedEvent = Event.objects.filter(id=2)
     self.assertEqual(addedEvent[0].name, partyName)
+    partyHost  = EventGoer.objects.get(event__id=2, user__id=3)
 
 class EndEventTest(User1TestCase):
   def testEndEvent(self):

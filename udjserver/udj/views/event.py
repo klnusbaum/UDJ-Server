@@ -65,6 +65,9 @@ def createEvent(request):
     toInsert.password_hash = m.hexdigest()
       
   toInsert.save()
+  
+  hostInsert = EventGoer(user=user, event=toInsert)
+  hostInsert.save()
   return HttpResponse('{"event_id" : ' + str(toInsert.id) + '}', status=201)
        
 def savePlayedSongs(endingEvent, finishedEvent):

@@ -34,6 +34,7 @@ namespace UDJ{
 DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
  :QObject(parent),serverConnection(serverConnection)
 {
+  eventName = "";
   setupDB();
   connect(
     serverConnection,
@@ -251,6 +252,7 @@ void DataStore::createNewEvent(
   const QString& name, 
   const QString& password)
 {
+  eventName = name;
   serverConnection->createEvent(name, password);
 }
 

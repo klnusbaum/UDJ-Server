@@ -20,6 +20,8 @@
 #include "DataStore.hpp"
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QPushButton>
 
 namespace UDJ{
 
@@ -34,9 +36,15 @@ EventDashboard::EventDashboard(DataStore *dataStore, QWidget *parent)
 
 void EventDashboard::setupUi(){
   QVBoxLayout *layout = new QVBoxLayout;
-  QLabel *placeHolder = new QLabel(tr("Event Dashboard"));
-  layout->addWidget(placeHolder);
-  setLayout(layout);
+  QHBoxLayout *header = new QHBoxLayout;
+
+  QLabel *eventName = new QLabel(dataStore->getEventName());
+  QPushButton *stopEventButton = new QPushButton(tr("Stop Event"));
+  header->addWidget(eventName);
+  header->addStretch();
+  header->addWidget(stopEventButton);
+ 
+  layout->addLayout(header);
 }
 
 void EventDashboard::refreshDisplay(){

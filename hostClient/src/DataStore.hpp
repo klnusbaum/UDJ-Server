@@ -107,6 +107,10 @@ public:
   Phonon::MediaSource getNextSongToPlay();
   
   Phonon::MediaSource takeNextSongToPlay();
+
+  const QString& getEventName(){
+    return eventName;
+  }
   
   //@}
 
@@ -262,6 +266,7 @@ private:
   /** \brief Actual database connection */
   QSqlDatabase database;
 
+  QString eventName;
 
   
   //@}
