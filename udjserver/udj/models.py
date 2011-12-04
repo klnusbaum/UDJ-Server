@@ -25,7 +25,7 @@ class FinishedEvent(models.Model):
   time_ended = models.DateTimeField(auto_now_add=True)
 
   def __unicode__(self):
-    return "Finished Event " + str(self.party_id) + ": " + self.name
+    return "Finished Event " + str(self.event_id) + ": " + self.name
 
 class LibraryEntry(models.Model):
   host_lib_song_id = models.IntegerField()

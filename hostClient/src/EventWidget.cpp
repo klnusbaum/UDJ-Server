@@ -22,6 +22,7 @@
 #include "EventDashboard.hpp"
 #include <QVBoxLayout>
 #include <QStackedWidget>
+#include <QMessageBox>
 
 
 namespace UDJ{
@@ -30,11 +31,6 @@ EventWidget::EventWidget(DataStore *dataStore, QWidget *parent)
   :QWidget(parent), dataStore(dataStore)
 {
   setupUi();  
-  connect(
-    creatorWidget,
-    SIGNAL(eventCreated()),
-    this,
-    SLOT(showEventDashboard()));
 }
 
 void EventWidget::setupUi(){
@@ -47,6 +43,19 @@ void EventWidget::setupUi(){
   QVBoxLayout *mainLayout = new QVBoxLayout;
   mainLayout->addWidget(mainContent);
   setLayout(mainLayout);
+
+  connect(
+    creatorWidget,
+    SIGNAL(eventCreated()),
+    this,
+    SLOT(showEventDashboard()));
+  connect(eventDashboard, SIGNAL(endEvent()), this, SLOT(endEvent()));
+  connect(dataStore, SIGNAL(eventEnded()), this, SLOT(eventEnded()));
+  connect(
+    dataStore, 
+    SIGNAL(eventEndingFailed(const QString)), 
+    this, 
+    SLOT(eventEndingFailed(const QString)));
 }
 
 void EventWidget::showEventDashboard(){
@@ -54,6 +63,20 @@ void EventWidget::showEventDashboard(){
   mainContent->setCurrentWidget(eventDashboard);
 }
 
+void EventWidget::endEvent(){
+  dataStore->endEvent();
+}
+
+void EventWidget::eventEnded(){
+  mainContent->setCurrentWidget(creatorWidget);
+}
+
+void EventWidget::eventEndingFailed(const QString errMessage){
+  QMessageBox::critical(
+    this,
+    tr("Ending Event Failed"),
+    errMessage);
+}
 
 
 }//end UDJ namespace

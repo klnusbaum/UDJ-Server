@@ -140,17 +140,18 @@ signals:
 
   void connectionEstablished();
   
-  void unableToConnect(const QString& errMessage);
+  void unableToConnect(const QString errMessage);
 
   void songsAddedOnServer(const std::vector<library_song_id_t> addedIds);
 
   void eventCreated();
 
-  void eventCreationFailed(const QString& errMessage);
-
-  void endingEventFailed(const QString& errMessage);
+  void eventCreationFailed(const QString errMessage);
 
   void eventEnded();
+
+  void eventEndingFailed(const QString errMessage);
+
   //@}
 
 
