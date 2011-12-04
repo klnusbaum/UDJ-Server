@@ -150,6 +150,8 @@ void UDJServerConnection::handleAddSongReply(QNetworkReply *reply){
 }
 
 void UDJServerConnection::handleCreateEventReply(QNetworkReply *reply){
+  //TODO
+  // Handle if a 409 response is returned
   if(reply->error() != QNetworkReply::NoError){
     emit eventCreationFailed("Failed to create event");
     return;
