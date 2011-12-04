@@ -40,9 +40,9 @@ LoginWidget::LoginWidget():QWidget(){
     SLOT(startMainGUI()));
   connect(
     serverConnection, 
-    SIGNAL(unableToConnect(const QString&)),
+    SIGNAL(unableToConnect(const QString)),
     this, 
-    SLOT(loginFailed(const QString&)));
+    SLOT(loginFailed(const QString)));
 }
 
 void LoginWidget::setupUi(){
@@ -96,7 +96,7 @@ void LoginWidget::startMainGUI(){
   close();
 }
 
-void LoginWidget::loginFailed(const QString& errorMessage){
+void LoginWidget::loginFailed(const QString errorMessage){
   loginProgress->setValue(1);
   displayLoginFailedMessage(errorMessage);
 }
@@ -108,7 +108,7 @@ void LoginWidget::displayBadCredFormatMessage(){
     tr("Please type in your username and password"));
 }
 
-void LoginWidget::displayLoginFailedMessage(const QString& errorMessage){
+void LoginWidget::displayLoginFailedMessage(const QString errorMessage){
   QMessageBox::critical(
     this,
     tr("Login Failed"),

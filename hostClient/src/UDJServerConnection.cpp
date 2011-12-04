@@ -164,7 +164,8 @@ void UDJServerConnection::handleCreateEventReply(QNetworkReply *reply){
 
 void UDJServerConnection::handleEndEventReply(QNetworkReply *reply){
   if(reply->error() != QNetworkReply::NoError){
-    emit endingEventFailed("Failed to end event");
+    emit eventEndingFailed(tr("Failed to end event") + 
+      QString::number(reply->error()) );
     return;
   }
   emit eventEnded();

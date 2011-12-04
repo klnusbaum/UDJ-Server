@@ -55,9 +55,16 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
 
   connect(
     serverConnection,
-    SIGNAL(eventCreationFailed(const QString&)),
+    SIGNAL(eventCreationFailed(const QString)),
     this,
-    SIGNAL(eventCreationFailed(const QString&)));
+    SIGNAL(eventCreationFailed(const QString)));
+
+  connect(serverConnection, SIGNAL(eventEnded()), this, SIGNAL(eventEnded()));
+  connect(
+    serverConnection, 
+    SIGNAL(eventEndingFailed(const QString)), 
+    this, 
+    SIGNAL(eventEndingFailed(const QString)));
 
   syncLibrary();
 }
@@ -310,5 +317,8 @@ void DataStore::setLibSongsSyncStatus(
   emit songsModified();
 }
 
+void DataStore::endEvent(){
+  serverConnection->endEvent();
+}
 
 } //end namespace

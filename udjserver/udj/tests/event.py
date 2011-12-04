@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from udj.tests.testcases import User1TestCase
 from udj.tests.testcases import User2TestCase
 from udj.tests.testcases import User3TestCase
+from udj.tests.testcases import User4TestCase
 from udj.models import Event
 from udj.models import LibraryEntry
 from udj.models import EventGoer
@@ -33,10 +34,12 @@ class CreateEventTest(User2TestCase):
     event = {'name' : partyName } 
     response = self.doJSONPut('/udj/events/event', json.dumps(event))
     self.assertEqual(response.status_code, 201, "Error: " + response.content)
-    self.assertEqual(json.loads(response.content)['event_id'] ,2)
-    addedEvent = Event.objects.filter(id=2)
-    self.assertEqual(addedEvent[0].name, partyName)
-    partyHost  = EventGoer.objects.get(event__id=2, user__id=3)
+    givenEventId = json.loads(response.content)['event_id']
+    addedEvent = Event.objects.get(id=givenEventId)
+    self.assertEqual(addedEvent.name, partyName)
+    partyHost  = EventGoer.objects.get(event__id=givenEventId, user__id=3)
+
+
 
 class EndEventTest(User1TestCase):
   def testEndEvent(self):
@@ -47,7 +50,7 @@ class EndEventTest(User1TestCase):
     self.assertEqual(finishedEvent.name, 'First Party') 
     self.assertEqual(finishedEvent.latitude, Decimal('40.113523'))
     self.assertEqual(finishedEvent.longitude, Decimal('-88.224006'))
-    self.assertEqual(finishedEvent.host, User.objects.filter(id=2)[0])
+    self.assertEqual(finishedEvent.host.id, 2)
     self.assertEqual(
       len(AvailableSong.objects.filter(library_entry__owning_user__id=2)),0)
 
@@ -55,6 +58,23 @@ class EndEventTest(User1TestCase):
     self.assertEqual(len(finishedSongs),2)
     self.assertTrue(FinishedPlaylistEntry.objects.filter(song__id=12).exists())
     self.assertTrue(FinishedPlaylistEntry.objects.filter(song__id=10).exists())
+
+class EndEventTestNoCurrentSong(User4TestCase):
+  def testEndEventNoCurrentSong(self):
+    response = self.doDelete('/udj/events/2')
+    self.assertEqual(len(Event.objects.filter(id=2)), 0)
+
+    finishedEvent = FinishedEvent.objects.get(event_id=2)
+    self.assertEqual(finishedEvent.name, 'Second Party') 
+    self.assertEqual(finishedEvent.latitude, Decimal('40.113523'))
+    self.assertEqual(finishedEvent.longitude, Decimal('-88.224006'))
+    self.assertEqual(finishedEvent.host.id,5)
+    self.assertEqual(
+      len(AvailableSong.objects.filter(library_entry__owning_user__id=5)),0)
+
+    finishedSongs = FinishedPlaylistEntry.objects.filter(event=finishedEvent)
+    self.assertEqual(len(finishedSongs),0)
+
 
 class JoinEventTest(User3TestCase):
   def testJoinEvent(self):

@@ -3,6 +3,7 @@ import hashlib
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
+from django.db import DatabaseError
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseNotFound
@@ -84,15 +85,17 @@ def savePlayedSongs(endingEvent, finishedEvent):
       event = finishedEvent).save()
 
 def saveCurrentSong(endEvent, finishedEvent):
-  currentSong = CurrentSong.objects.get(event=endEvent)
-  FinishedPlaylistEntry(
-    song = currentSong.song,
-    upvotes = currentSong.upvotes,
-    downvotes = currentSong.downvotes,
-    time_added = currentSong.time_added,
-    time_played = currentSong.time_played,
-    adder = currentSong.adder,
-    event = finishedEvent).save()
+  currentSong = CurrentSong.objects.filter(event=endEvent)
+  if currentSong.exists(): 
+    FinishedPlaylistEntry(
+      song = currentSong[0].song,
+      upvotes = currentSong[0].upvotes,
+      downvotes = currentSong[0].downvotes,
+      time_added = currentSong[0].time_added,
+      time_played = currentSong[0].time_played,
+      adder = currentSong[0].adder,
+      event = finishedEvent).save()
+   
       
 
 #Should be able to make only one call to the events table to ensure it:

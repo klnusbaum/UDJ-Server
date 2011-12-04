@@ -39,6 +39,9 @@ private:
   EventDashboard *eventDashboard;
 private slots:
   void showEventDashboard();
+  void endEvent();
+  void eventEnded();
+  void eventEndingFailed(const QString errMessage);
 };
 
 

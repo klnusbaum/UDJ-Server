@@ -58,12 +58,12 @@ private:
   bool hasValidCredsFormat() const;
 
   void displayBadCredFormatMessage();
-  void displayLoginFailedMessage(const QString& errorMessage);
+  void displayLoginFailedMessage(const QString errorMessage);
 
 private slots:
   void doLogin();
   void startMainGUI();
-  void loginFailed(const QString& errorMessage);
+  void loginFailed(const QString errorMessage);
 
 };
 

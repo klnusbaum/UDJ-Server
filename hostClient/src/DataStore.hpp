@@ -73,6 +73,11 @@ public:
 
   QSqlDatabase getDatabaseConnection();
 
+  const QString& getEventName(){
+    return eventName;
+  }
+  
+public slots:
   /**
    * \brief Alters the vote count associated with a specific song.
    *
@@ -104,14 +109,12 @@ public:
     const QString& name, 
     const QString& password);
 
+  void endEvent();
+
   Phonon::MediaSource getNextSongToPlay();
   
   Phonon::MediaSource takeNextSongToPlay();
 
-  const QString& getEventName(){
-    return eventName;
-  }
-  
   //@}
 
   /** @name Public Constants */
@@ -252,7 +255,11 @@ signals:
 
   void eventCreated();
 
-  void eventCreationFailed(const QString& errMessage);
+  void eventCreationFailed(const QString errMessage);
+
+  void eventEnded();
+
+  void eventEndingFailed(const QString errMessage);
 //@}
 
 private:

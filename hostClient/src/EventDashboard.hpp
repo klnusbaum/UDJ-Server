@@ -32,14 +32,15 @@ Q_OBJECT
 public:
   EventDashboard(DataStore *dataStore, QWidget *parent=0);
   void refreshDisplay();
+signals:
+  void endEvent();
 private:
   void setupUi();
   DataStore *dataStore;
-
   QLabel *eventName;
+
 private slots:
   void updateEventName();
-  
 };
 
 

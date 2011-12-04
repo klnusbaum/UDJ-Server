@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "EventWidget.hpp"
 #include "EventDashboard.hpp"
 #include "DataStore.hpp"
 #include <QLabel>
@@ -41,6 +42,7 @@ void EventDashboard::setupUi(){
 
   eventName = new QLabel(tr("Event Name: ") + dataStore->getEventName());
   QPushButton *stopEventButton = new QPushButton(tr("Stop Event"));
+  connect(stopEventButton, SIGNAL(clicked()), this, SIGNAL(endEvent()));
   header->addWidget(eventName);
   header->addStretch();
   header->addWidget(stopEventButton);
