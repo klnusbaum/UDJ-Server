@@ -1,5 +1,6 @@
 from udj.auth import isValidTicket
 from udj.auth import ticketMatchesUser
+from django.http import HttpResponse
 from django.http import HttpResponseNotAllowed
 from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
@@ -10,6 +11,17 @@ from django.shortcuts import get_object_or_404
 from udj.headers import getTicketHeader
 from udj.headers import getDjangoTicketHeader
 
+def IsntCurrentlyHosting(function):
+  def wrapper(*args, **kwargs):
+    request = args[0]
+    user = getUserForTicket(request)
+    hosts = Event.objects.filter(host=user)
+    if hosts.exists():
+      return HttpResponse(status=409)
+    else:
+      return function(*args, **kwargs)
+  return wrapper
+   
 def InParty(function):
   def wrapper(*args, **kwargs):
     request = args[0]

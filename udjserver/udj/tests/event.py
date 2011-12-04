@@ -192,3 +192,11 @@ class TestSetCurentSong(User1TestCase):
     self.assertEqual(newCurrent.downvotes, 0)
     oldCurrent = PlayedPlaylistEntry.objects.get(
       client_request_id=1, adder=3, event=1)
+
+class TestDoubleEventCreate(User1TestCase):
+  def testDoubleEventCreate(self):
+    partyName = "A Bitchn' Party"
+    event = {'name' : partyName } 
+    response = self.doJSONPut('/udj/events/event', json.dumps(event))
+    self.assertEqual(response.status_code, 409)
+

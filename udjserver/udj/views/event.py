@@ -16,6 +16,7 @@ from udj.decorators import IsEventHost
 from udj.decorators import CanLoginToEvent
 from udj.decorators import IsUserOrHost
 from udj.decorators import InParty
+from udj.decorators import IsntCurrentlyHosting
 from udj.models import Event
 from udj.models import LibraryEntry
 from udj.models import AvailableSong
@@ -32,17 +33,18 @@ from udj.JSONCodecs import getJSONForAvailableSongs
 from udj.JSONCodecs import getJSONForCurrentSong
 
 
-@AcceptsMethods('GET')
 @NeedsAuth
+@AcceptsMethods('GET')
 def getNearbyEvents(request, latitude, longitude):
   #TODO actually have this only return nearby events
   events = Event.objects.all()
   events_json = getJSONForEvents(events)
   return HttpResponse(events_json)  
 
+@NeedsAuth
 @AcceptsMethods('PUT')
 @NeedsJSON
-@NeedsAuth
+@IsntCurrentlyHosting
 def createEvent(request):
   user = getUserForTicket(request)
   event = json.loads(request.raw_post_data)
