@@ -76,6 +76,10 @@ public:
   const QString& getEventName(){
     return eventName;
   }
+
+  event_id_t getEventId(){
+    return serverConnection->getEventId();
+  }
   
 public slots:
   /**

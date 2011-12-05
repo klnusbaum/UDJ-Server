@@ -33,7 +33,7 @@ EventDashboard::EventDashboard(DataStore *dataStore, QWidget *parent)
   dataStore(dataStore)
 {
   setupUi();
-  connect(dataStore, SIGNAL(eventCreated()), this, SLOT(updateEventName()));
+  connect(dataStore, SIGNAL(eventCreated()), this, SLOT(updateEventInfo()));
 }
 
 
@@ -42,10 +42,17 @@ void EventDashboard::setupUi(){
   QVBoxLayout *layout = new QVBoxLayout;
   QHBoxLayout *header = new QHBoxLayout;
 
-  eventName = new QLabel(tr("Event Name: ") + dataStore->getEventName());
+  QVBoxLayout *eventInfo = new QVBoxLayout;
+
+  eventName = new QLabel();
+  eventId = new QLabel();
+
+  eventInfo->addWidget(eventName);
+  eventInfo->addWidget(eventId);
+  
   QPushButton *stopEventButton = new QPushButton(tr("Stop Event"));
   connect(stopEventButton, SIGNAL(clicked()), this, SLOT(endEvent()));
-  header->addWidget(eventName);
+  header->addLayout(eventInfo);
   header->addStretch();
   header->addWidget(stopEventButton);
  
@@ -61,8 +68,10 @@ void EventDashboard::setupUi(){
   showMainWidget();
 }
 
-void EventDashboard::updateEventName(){
+void EventDashboard::updateEventInfo(){
   eventName->setText(tr("Event Name: ") + dataStore->getEventName());
+  eventId->setText(tr("Event Id: ") + 
+    QString::number(dataStore->getEventId()));
 }
 
 void EventDashboard::endEvent(){

@@ -36,10 +36,11 @@ private:
   void setupUi();
   DataStore *dataStore;
   QLabel *eventName;
+  QLabel *eventId;
   QWidget *mainContent;
 
 private slots:
-  void updateEventName();
+  void updateEventInfo();
   void endEvent();
   void handleEventEnded();
   void handleEventEndingFailed(const QString errMessage);

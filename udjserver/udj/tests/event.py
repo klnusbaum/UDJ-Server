@@ -17,7 +17,7 @@ from decimal import Decimal
 from datetime import datetime
 
 class GetEventsTest(User1TestCase):
-  def testGetEvents(self):
+  def testGetNearbyEvents(self):
     response = self.doGet('/udj/events/48.2222/-88.44454')
     self.assertEqual(response.status_code, 200)
     events = json.loads(response.content)
@@ -27,6 +27,12 @@ class GetEventsTest(User1TestCase):
     self.assertEqual(events[0]['longitude'], -88.224006) 
     self.assertTrue("password" not in events[0])
     self.assertTrue("password_hash" not in events[0])
+
+  def testGetEvents(self):
+    response = self.doGet('/udj/events?name=party')
+    self.assertEqual(response.status_code, 200)
+    events = json.loads(response.content)
+    self.assertEqual(len(events), 2)
 
 class CreateEventTest(User2TestCase):
   def testCreateEvent(self):

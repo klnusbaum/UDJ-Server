@@ -40,6 +40,16 @@ def getEventHost(event_id):
 
 @NeedsAuth
 @AcceptsMethods('GET')
+def getEvents(request):
+  if not request.GET.__contains__('name'):
+    return HttpResponseBadRequest("Must include name parameter")
+  events = Event.objects.filter(name__icontains=request.GET['name'])
+  events_json = getJSONForEvents(events)
+  return HttpResponse(events_json)
+  
+
+@NeedsAuth
+@AcceptsMethods('GET')
 def getNearbyEvents(request, latitude, longitude):
   #TODO actually have this only return nearby events
   events = Event.objects.all()
