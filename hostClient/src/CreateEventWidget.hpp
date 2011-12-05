@@ -18,7 +18,7 @@
  */
 #ifndef CREATE_EVENT_WIDGET_HPP
 #define CREATE_EVENT_WIDGET_HPP
-#include <QWidget>
+#include "WidgetWithLoader.hpp"
 
 class QLineEdit;
 class QPushButton;
@@ -30,7 +30,7 @@ namespace UDJ{
 
 class DataStore;
 
-class CreateEventWidget : public QWidget{
+class CreateEventWidget : public WidgetWithLoader{
 Q_OBJECT
 public:
   CreateEventWidget(DataStore *dataStore, QWidget *parent=0);
@@ -45,7 +45,7 @@ private:
   QLineEdit *locationEdit;
   QLabel *createLabel;
   QPushButton *createEventButton;
-  QProgressDialog *createProgress;
+  QWidget *eventForm;
   DataStore *dataStore;
 
 private slots:

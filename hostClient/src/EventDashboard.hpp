@@ -18,17 +18,15 @@
  */
 #ifndef EVENT_DASHBOARD_HPP
 #define EVENT_DASHBOARD_HPP
-#include <QWidget>
-
+#include "WidgetWithLoader.hpp"
 
 class QLabel;
-class QProgressDialog;
 
 namespace UDJ{
 
 class DataStore;
 
-class EventDashboard : public QWidget{
+class EventDashboard : public WidgetWithLoader{
 Q_OBJECT
 public:
   EventDashboard(DataStore *dataStore, QWidget *parent=0);
@@ -38,7 +36,7 @@ private:
   void setupUi();
   DataStore *dataStore;
   QLabel *eventName;
-  QProgressDialog *stopProgress;
+  QWidget *mainContent;
 
 private slots:
   void updateEventName();

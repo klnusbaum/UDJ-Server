@@ -29,7 +29,7 @@ namespace UDJ{
 
 
 EventDashboard::EventDashboard(DataStore *dataStore, QWidget *parent)
-  :QWidget(parent),
+  :WidgetWithLoader(tr("Ending event..."),parent),
   dataStore(dataStore)
 {
   setupUi();
@@ -38,7 +38,7 @@ EventDashboard::EventDashboard(DataStore *dataStore, QWidget *parent)
 
 
 void EventDashboard::setupUi(){
-  stopProgress=NULL;
+  mainContent = new QWidget(this);
   QVBoxLayout *layout = new QVBoxLayout;
   QHBoxLayout *header = new QHBoxLayout;
 
@@ -50,13 +50,15 @@ void EventDashboard::setupUi(){
   header->addWidget(stopEventButton);
  
   layout->addLayout(header);
-  setLayout(layout);
+  mainContent->setLayout(layout);
+  setMainWidget(mainContent);
   connect(dataStore, SIGNAL(eventEnded()), this, SLOT(handleEventEnded()));
   connect(
     dataStore, 
     SIGNAL(eventEndingFailed(const QString)), 
     this, 
     SLOT(handleEventEndingFailed(const QString)));
+  showMainWidget();
 }
 
 void EventDashboard::updateEventName(){
@@ -64,22 +66,17 @@ void EventDashboard::updateEventName(){
 }
 
 void EventDashboard::endEvent(){
-  stopProgress = new QProgressDialog(
-    tr("Stoping Event..."), 
-    tr("Cancel"),
-    0,
-    0,
-    this);
+  showLoadingText();
   dataStore->endEvent();
 }
 
 void EventDashboard::handleEventEnded(){
-  stopProgress->accept();
+  showMainWidget(); 
   emit eventEnded();
 }
 
 void EventDashboard::handleEventEndingFailed(const QString errMessage){
-  stopProgress->accept();
+  showMainWidget(); 
   QMessageBox::critical(
     this,
     tr("Ending Event Failed"),

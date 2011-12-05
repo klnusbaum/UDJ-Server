@@ -32,7 +32,7 @@ namespace UDJ{
 CreateEventWidget::CreateEventWidget(
   DataStore *dataStore, 
   QWidget *parent):
-  QWidget(parent),
+  WidgetWithLoader(tr("Creating Event..."), parent),
   dataStore(dataStore)
 {
   setupUi();
@@ -55,6 +55,7 @@ CreateEventWidget::CreateEventWidget(
 
 
 void CreateEventWidget::setupUi(){
+  eventForm = new QWidget(this);
   nameEdit = new QLineEdit(tr("Name of event"));
   passwordEdit = new QLineEdit(tr("Password (optional)"));
   locationEdit = new QLineEdit(tr("Location (optional)"));
@@ -69,28 +70,25 @@ void CreateEventWidget::setupUi(){
   mainLayout->addWidget(locationEdit);
   mainLayout->addWidget(createEventButton);
 
-  setLayout(mainLayout);
+  eventForm->setLayout(mainLayout);
+  setMainWidget(eventForm);
+  showMainWidget();
 }
 
 void CreateEventWidget::doLogin(){
-  createProgress = new QProgressDialog(
-    tr("Creating event..."),
-    tr("Cancel"),
-    0,
-    1,
-    this);
+  showLoadingText();
   dataStore->createNewEvent(
     nameEdit->text(),
     passwordEdit->text());
 }
 
 void CreateEventWidget::eventCreateSuccess(){
-  createProgress->setValue(1);
+  showMainWidget();
   emit eventCreated();
 }
 
 void CreateEventWidget::eventCreateFail(const QString& errMessage){
-  createProgress->setValue(1);
+  showMainWidget();
   QMessageBox::critical(
     this,
     tr("Event Creation Failed"),
