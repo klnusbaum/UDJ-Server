@@ -38,6 +38,7 @@ EventDashboard::EventDashboard(DataStore *dataStore, QWidget *parent)
 
 
 void EventDashboard::setupUi(){
+  stopProgress=NULL;
   QVBoxLayout *layout = new QVBoxLayout;
   QHBoxLayout *header = new QHBoxLayout;
 
@@ -63,14 +64,22 @@ void EventDashboard::updateEventName(){
 }
 
 void EventDashboard::endEvent(){
+  stopProgress = new QProgressDialog(
+    tr("Stoping Event..."), 
+    tr("Cancel"),
+    0,
+    0,
+    this);
   dataStore->endEvent();
 }
 
 void EventDashboard::handleEventEnded(){
+  stopProgress->accept();
   emit eventEnded();
 }
 
 void EventDashboard::handleEventEndingFailed(const QString errMessage){
+  stopProgress->accept();
   QMessageBox::critical(
     this,
     tr("Ending Event Failed"),

@@ -19,18 +19,17 @@
 #ifndef LOGIN_WIDGET_HPP
 #define LOGIN_WIDGET_HPP
 
-#include <QWidget>
+#include <QStackedWidget>
 
 class QLabel;
 class QLineEdit;
 class QPushButton;
-class QProgressDialog;
 
 namespace UDJ{
 
 class UDJServerConnection;
 
-class LoginWidget : public QWidget{
+class LoginWidget : public QStackedWidget{
 Q_OBJECT
 public:
   LoginWidget();
@@ -40,8 +39,9 @@ private:
   QLineEdit *usernameBox;
   QLineEdit *passwordBox;
   QPushButton *loginButton;
+  QWidget *loginDisplay;
+  QLabel *loggingInLabel;
   UDJServerConnection *serverConnection;
-  QProgressDialog *loginProgress;
 
   void setupUi();
 
@@ -55,16 +55,10 @@ private:
     return passwordHint;
   }
 
-  bool hasValidCredsFormat() const;
-
-  void displayBadCredFormatMessage();
-  void displayLoginFailedMessage(const QString errorMessage);
-
 private slots:
   void doLogin();
   void startMainGUI();
-  void loginFailed(const QString errorMessage);
-
+  void displayLoginFailedMessage(const QString errorMessage);
 };
 
 

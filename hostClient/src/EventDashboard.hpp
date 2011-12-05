@@ -22,6 +22,7 @@
 
 
 class QLabel;
+class QProgressDialog;
 
 namespace UDJ{
 
@@ -37,6 +38,7 @@ private:
   void setupUi();
   DataStore *dataStore;
   QLabel *eventName;
+  QProgressDialog *stopProgress;
 
 private slots:
   void updateEventName();

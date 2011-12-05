@@ -24,13 +24,13 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QGridLayout>
-#include <QProgressDialog>
 #include <QMessageBox>
+
 
 namespace UDJ{
 
 
-LoginWidget::LoginWidget():QWidget(){
+LoginWidget::LoginWidget():QStackedWidget(){
   serverConnection = new UDJServerConnection(this);
   setupUi();
   connect(
@@ -42,14 +42,12 @@ LoginWidget::LoginWidget():QWidget(){
     serverConnection, 
     SIGNAL(unableToConnect(const QString)),
     this, 
-    SLOT(loginFailed(const QString)));
+    SLOT(displayLoginFailedMessage(const QString)));
 }
 
 void LoginWidget::setupUi(){
-
-  loginProgress = NULL;
+  loginDisplay = new QWidget(this);
   logo = new QLabel("UDJ", this);
-
   usernameBox = new QLineEdit(getUsernameHint(), this);
   passwordBox = new QLineEdit(getPasswordHint(), this);
   passwordBox->setEchoMode(QLineEdit::Password);
@@ -60,55 +58,30 @@ void LoginWidget::setupUi(){
   layout->addWidget(passwordBox,2,0,1,2);
   layout->addWidget(loginButton,3,1,1,1);
   
-  setLayout(layout);
-
   connect(loginButton, SIGNAL(clicked(bool)), this, SLOT(doLogin()));
-}
+  loginDisplay->setLayout(layout);
 
-bool LoginWidget::hasValidCredsFormat() const{
-  return 
-    usernameBox->text() != "" &&
-    usernameBox->text() != getUsernameHint() &&
-    passwordBox->text() != "" &&
-    passwordBox->text() != getPasswordHint();
+  loggingInLabel = new QLabel(tr("Logging in..."));
+  
+  addWidget(loginDisplay);
+  addWidget(loggingInLabel);
+  setCurrentWidget(loginDisplay);
 }
 
 void LoginWidget::doLogin(){
-  if(hasValidCredsFormat()){
-    loginProgress = new QProgressDialog(
-      tr("Logging in..."), 
-      tr("Cancel"),
-      0,
-      1,
-      this);
-    serverConnection->startConnection(usernameBox->text(), passwordBox->text());
-  }
-  else{
-    displayBadCredFormatMessage();
-  }
+  setCurrentWidget(loggingInLabel);
+  serverConnection->startConnection(usernameBox->text(), passwordBox->text());
 }
 
 void LoginWidget::startMainGUI(){
-  loginProgress->setValue(1);
   MetaWindow *metaWindow = new MetaWindow(serverConnection);
   metaWindow->show();
   serverConnection->setParent(metaWindow);
   close();
 }
 
-void LoginWidget::loginFailed(const QString errorMessage){
-  loginProgress->setValue(1);
-  displayLoginFailedMessage(errorMessage);
-}
-
-void LoginWidget::displayBadCredFormatMessage(){
-  QMessageBox::critical(
-    this,
-    tr("Bad creditials"),
-    tr("Please type in your username and password"));
-}
-
 void LoginWidget::displayLoginFailedMessage(const QString errorMessage){
+  setCurrentWidget(loginDisplay);
   QMessageBox::critical(
     this,
     tr("Login Failed"),
