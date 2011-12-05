@@ -1,8 +1,23 @@
 [
+  { 
+    "model": "udj.eventid", 
+    "pk" : 1,
+    "fields" : {
+    
+    }
+  },
+  { 
+    "model": "udj.eventid", 
+    "pk" : 2,
+    "fields" : {
+    
+    }
+  },
   {
     "pk": 1, 
     "model": "udj.event", 
     "fields": {
+      "event_id" : 1,
       "time_started": "2011-11-21 00:07:11", 
       "longitude": "-88.224006", 
       "host": 2, 
@@ -15,6 +30,7 @@
     "pk": 2, 
     "model": "udj.event", 
     "fields": {
+      "event_id" : 2,
       "time_started": "2011-12-04 00:07:11", 
       "longitude": "-88.224006", 
       "host": 5, 

@@ -19,6 +19,7 @@ from udj.decorators import IsUserOrHost
 from udj.decorators import InParty
 from udj.decorators import IsntCurrentlyHosting
 from udj.models import Event
+from udj.models import EventId
 from udj.models import LibraryEntry
 from udj.models import AvailableSong
 from udj.models import EventGoer
@@ -33,6 +34,9 @@ from udj.JSONCodecs import getJSONForEvents
 from udj.JSONCodecs import getJSONForAvailableSongs
 from udj.JSONCodecs import getJSONForCurrentSong
 
+
+def getEventHost(event_id):
+  return Event.objects.get(event_id__id=event_id).host
 
 @NeedsAuth
 @AcceptsMethods('GET')
@@ -49,10 +53,12 @@ def getNearbyEvents(request, latitude, longitude):
 def createEvent(request):
   user = getUserForTicket(request)
   event = json.loads(request.raw_post_data)
+  eventId = EventId()
+  eventId.save()
 
   if 'name' not in event:
     return HttpResponseBadRequest("Must include a name attribute")
-  toInsert = Event(name=event['name'], host=user)
+  toInsert = Event(name=event['name'], host=user, event_id=eventId)
 
   if 'coords' in event:
     if 'latitude' not in event['coords'] or 'longitude' not in event['coords']:
@@ -71,7 +77,7 @@ def createEvent(request):
   
   hostInsert = EventGoer(user=user, event=toInsert)
   hostInsert.save()
-  return HttpResponse('{"event_id" : ' + str(toInsert.id) + '}', status=201)
+  return HttpResponse('{"event_id" : ' + str(eventId.id) + '}', status=201)
        
 def savePlayedSongs(endingEvent, finishedEvent):
   for playedSong in PlayedPlaylistEntry.objects.filter(event=endingEvent):
@@ -110,10 +116,10 @@ def saveCurrentSong(endEvent, finishedEvent):
 def endEvent(request, event_id):
   #TODO We have a race condition here. Gonna need to wrap this in a transaction
   #in the future
-  toDelete = Event.objects.get(id=event_id)
+  toDelete = Event.objects.get(event_id__id=event_id)
   host = toDelete.host
   finishedEvent = FinishedEvent(
-    event_id=toDelete.id,
+    event_id=toDelete.event_id,
     name=toDelete.name, 
     host=toDelete.host, 
     latitude = toDelete.latitude,
@@ -157,7 +163,7 @@ def availableMusic(request, event_id):
 
 @InParty
 def getAvailableMusic(request, event_id):
-  event = Event.objects.get(pk=event_id)
+  event = Event.objects.get(event_id__id=event_id)
   if(not request.GET.__contains__('query')):
     return HttpResponseBadRequest('Must specify query')
   query = request.GET.__getitem__('query')
@@ -175,8 +181,10 @@ def getAvailableMusic(request, event_id):
 @InParty
 @AcceptsMethods('GET')
 def getRandomMusic(request, event_id):
+  host = getEventHost(event_id) 
   rand_limit = request.GET.get('max_randoms',20)
-  randomSongs = AvailableSong.objects.order_by('?')[:rand_limit]
+  randomSongs = AvailableSong.objects.filter(
+    library_entry__owning_user=host).order_by('?')[:rand_limit]
   return HttpResponse(getJSONForAvailableSongs(randomSongs))
 
 @IsEventHost
@@ -249,7 +257,7 @@ def setCurrentSong(request, event_id):
   if(not request.POST.__contains__('playlist_entry_id')):
     return HttpResponseBadRequest(
       'Please specifiy the playlist entry to set as the current song')
-  event = Event.objects.get(pk=event_id) 
+  event = Event.objects.get(event_id__id=event_id) 
   moveCurrentSong2PlayedSong(event)
   movePlaylistEntry2CurrentSong(
     event, request.POST.__getitem__('playlist_entry_id'))

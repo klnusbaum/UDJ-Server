@@ -1,7 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+class EventId(models.Model):
+  
+  def __unicode__(self):
+    return "Event Id: " + str(self.id)
+
 class Event(models.Model):
+  event_id = models.ForeignKey(EventId, unique=True)
   name = models.CharField(max_length=200)
   host = models.ForeignKey(User, unique=True)
   latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
@@ -16,7 +22,7 @@ class Event(models.Model):
     unique_together = ("id", "host")
 
 class FinishedEvent(models.Model):
-  event_id = models.IntegerField(unique=True)
+  event_id = models.ForeignKey(EventId, unique=True)
   name = models.CharField(max_length=200)
   host = models.ForeignKey(User)
   latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)

@@ -27,7 +27,7 @@ def getActivePlaylist(request, event_id):
   My guess is that if you help write the software for DMBSes, this query is
   going to make your cry. My sincerest apologies.
   """
-  playlistEntries = ActivePlaylistEntry.objects.filter(event__id=event_id).\
+  playlistEntries = ActivePlaylistEntry.objects.filter(event__event_id__id=event_id).\
     extra(
       select={
         'upvotes' : 'SELECT COUNT(*) FROM udj_upvote where ' +\
@@ -47,13 +47,13 @@ def getActivePlaylist(request, event_id):
 def hasBeenPlayed(song, event_id, user):
   return \
     CurrentSong.objects.filter(
-      event__id=event_id, 
+      event__event_id__id=event_id, 
       adder=user, 
       client_request_id=song['client_request_id']
     ).exists() \
     or \
     PlayedPlaylistEntry.objects.filter(
-      event__id=event_id,
+      event__event_id__id=event_id,
       adder=user, 
       client_request_id=song['client_request_id']
     )
@@ -62,7 +62,7 @@ def addSong2ActivePlaylist(song, event_id, adding_user):
   toReturn = ActivePlaylistEntry(
     song=LibraryEntry.objects.get(pk=song['lib_id']),
     adder=adding_user,
-    event=Event.objects.get(pk=event_id),
+    event=Event.objects.get(event_id__id=event_id),
     client_request_id=song['client_request_id'])
   toReturn.save()
   UpVote(playlist_entry=toReturn, user=adding_user).save()
@@ -82,7 +82,7 @@ def addToPlaylist(request, event_id):
     inQueue = ActivePlaylistEntry.objects.filter(
       adder=user, 
       client_request_id=song['client_request_id'],
-      event__id=event_id)
+      event__event_id__id=event_id)
 
     #If the song is already in the queue
     if inQueue.exists():

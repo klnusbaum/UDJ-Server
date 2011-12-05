@@ -37,7 +37,7 @@ def InParty(function):
 def IsUserOrHost(function):
   def wrapper(*args, **kwargs):
     request = args[0]
-    event = get_object_or_404(Event, id__exact=kwargs['event_id'])
+    event = get_object_or_404(Event, event_id__id__exact=kwargs['event_id'])
     user = getUserForTicket(request)
     if event.host == user or user.id == int(kwargs['user_id']):
       return function(*args, **kwargs)
@@ -52,16 +52,10 @@ def CanLoginToEvent(function):
   return wrapper
 
 
-def EventExists(function):
-  def wrapper(*args, **kwargs):
-    event = get_object_or_404(Event, id__exact=kwargs['event_id'])
-    return function(*args, **kwargs)
-  return wrapper
-
 def IsEventHost(function):
   def wrapper(*args, **kwargs):
     request = args[0]
-    event = get_object_or_404(Event, id__exact=kwargs['event_id'])
+    event = get_object_or_404(Event, event_id__id__exact=kwargs['event_id'])
     user = getUserForTicket(request)
     if event.host != user:
       return HttpResponseForbidden("Only the host may do that")
