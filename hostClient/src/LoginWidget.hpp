@@ -19,7 +19,7 @@
 #ifndef LOGIN_WIDGET_HPP
 #define LOGIN_WIDGET_HPP
 
-#include <QStackedWidget>
+#include "WidgetWithLoader.hpp"
 
 class QLabel;
 class QLineEdit;
@@ -29,7 +29,7 @@ namespace UDJ{
 
 class UDJServerConnection;
 
-class LoginWidget : public QStackedWidget{
+class LoginWidget : public WidgetWithLoader{
 Q_OBJECT
 public:
   LoginWidget();
@@ -40,7 +40,6 @@ private:
   QLineEdit *passwordBox;
   QPushButton *loginButton;
   QWidget *loginDisplay;
-  QLabel *loggingInLabel;
   UDJServerConnection *serverConnection;
 
   void setupUi();

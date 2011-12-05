@@ -35,6 +35,7 @@ SET(UDJ_SRCS
   EventWidget.cpp
   CreateEventWidget.cpp
   EventDashboard.cpp
+  WidgetWithLoader.cpp
 )
 
 SET(UDJ_HDRS 
@@ -61,6 +62,7 @@ SET(UDJ_MOC_HDRS
   EventWidget.hpp
   CreateEventWidget.hpp
   EventDashboard.hpp
+  WidgetWithLoader.hpp
 )
 
 

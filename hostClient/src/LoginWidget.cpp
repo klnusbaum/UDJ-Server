@@ -30,7 +30,7 @@
 namespace UDJ{
 
 
-LoginWidget::LoginWidget():QStackedWidget(){
+LoginWidget::LoginWidget():WidgetWithLoader(tr("Logging in...")){
   serverConnection = new UDJServerConnection(this);
   setupUi();
   connect(
@@ -61,15 +61,12 @@ void LoginWidget::setupUi(){
   connect(loginButton, SIGNAL(clicked(bool)), this, SLOT(doLogin()));
   loginDisplay->setLayout(layout);
 
-  loggingInLabel = new QLabel(tr("Logging in..."));
-  
-  addWidget(loginDisplay);
-  addWidget(loggingInLabel);
-  setCurrentWidget(loginDisplay);
+  setMainWidget(loginDisplay);
+  showMainWidget(); 
 }
 
 void LoginWidget::doLogin(){
-  setCurrentWidget(loggingInLabel);
+  showLoadingText();
   serverConnection->startConnection(usernameBox->text(), passwordBox->text());
 }
 
@@ -81,6 +78,7 @@ void LoginWidget::startMainGUI(){
 }
 
 void LoginWidget::displayLoginFailedMessage(const QString errorMessage){
+  showMainWidget();
   setCurrentWidget(loginDisplay);
   QMessageBox::critical(
     this,
