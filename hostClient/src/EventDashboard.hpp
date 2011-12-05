@@ -31,9 +31,8 @@ class EventDashboard : public QWidget{
 Q_OBJECT
 public:
   EventDashboard(DataStore *dataStore, QWidget *parent=0);
-  void refreshDisplay();
 signals:
-  void endEvent();
+  void eventEnded();
 private:
   void setupUi();
   DataStore *dataStore;
@@ -41,6 +40,9 @@ private:
 
 private slots:
   void updateEventName();
+  void endEvent();
+  void handleEventEnded();
+  void handleEventEndingFailed(const QString errMessage);
 };
 
 

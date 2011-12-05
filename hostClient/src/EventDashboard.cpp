@@ -23,6 +23,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QPushButton>
+#include <QMessageBox>
 
 namespace UDJ{
 
@@ -42,21 +43,38 @@ void EventDashboard::setupUi(){
 
   eventName = new QLabel(tr("Event Name: ") + dataStore->getEventName());
   QPushButton *stopEventButton = new QPushButton(tr("Stop Event"));
-  connect(stopEventButton, SIGNAL(clicked()), this, SIGNAL(endEvent()));
+  connect(stopEventButton, SIGNAL(clicked()), this, SLOT(endEvent()));
   header->addWidget(eventName);
   header->addStretch();
   header->addWidget(stopEventButton);
  
   layout->addLayout(header);
   setLayout(layout);
+  connect(dataStore, SIGNAL(eventEnded()), this, SLOT(handleEventEnded()));
+  connect(
+    dataStore, 
+    SIGNAL(eventEndingFailed(const QString)), 
+    this, 
+    SLOT(handleEventEndingFailed(const QString)));
 }
 
 void EventDashboard::updateEventName(){
   eventName->setText(tr("Event Name: ") + dataStore->getEventName());
 }
 
-void EventDashboard::refreshDisplay(){
+void EventDashboard::endEvent(){
+  dataStore->endEvent();
+}
 
+void EventDashboard::handleEventEnded(){
+  emit eventEnded();
+}
+
+void EventDashboard::handleEventEndingFailed(const QString errMessage){
+  QMessageBox::critical(
+    this,
+    tr("Ending Event Failed"),
+    errMessage);
 }
 
 

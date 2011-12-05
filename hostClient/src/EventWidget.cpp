@@ -22,7 +22,6 @@
 #include "EventDashboard.hpp"
 #include <QVBoxLayout>
 #include <QStackedWidget>
-#include <QMessageBox>
 
 
 namespace UDJ{
@@ -49,34 +48,22 @@ void EventWidget::setupUi(){
     SIGNAL(eventCreated()),
     this,
     SLOT(showEventDashboard()));
-  connect(eventDashboard, SIGNAL(endEvent()), this, SLOT(endEvent()));
-  connect(dataStore, SIGNAL(eventEnded()), this, SLOT(eventEnded()));
   connect(
-    dataStore, 
-    SIGNAL(eventEndingFailed(const QString)), 
-    this, 
-    SLOT(eventEndingFailed(const QString)));
+    eventDashboard,
+    SIGNAL(eventEnded()),
+    this,
+    SLOT(eventEnded()));
 }
 
 void EventWidget::showEventDashboard(){
-  eventDashboard->refreshDisplay(); 
   mainContent->setCurrentWidget(eventDashboard);
 }
 
-void EventWidget::endEvent(){
-  dataStore->endEvent();
-}
 
 void EventWidget::eventEnded(){
   mainContent->setCurrentWidget(creatorWidget);
 }
 
-void EventWidget::eventEndingFailed(const QString errMessage){
-  QMessageBox::critical(
-    this,
-    tr("Ending Event Failed"),
-    errMessage);
-}
 
 
 }//end UDJ namespace
