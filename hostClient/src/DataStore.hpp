@@ -247,6 +247,36 @@ public slots:
     static const lib_sync_status_t libIsSyncedStatus = 0;
     return libIsSyncedStatus;
   }
+  
+  static const QString& getPlaylistTableName(){
+    static const QString playlistTableName = "playlist";
+    return playlistTableName;
+  }
+
+  static const QString& getPlaylistIdColName(){
+    static const QString playlistIdColName = "id";
+    return playlistIdColName;
+  }
+
+  static const QString& getPlaylistNameColName(){
+    static const QString playlistNameColName = "name";
+    return playlistNameColName;
+  }
+
+  static const QString& getPlaylistEntryIdColName(){
+    static const QString playlistEntryIdColName = "id";
+    return playlistEntryIdColName;
+  }
+
+  static const QString& getPlaylistEntrySongIdColName(){
+    static const QString playlistEntrySongIdColName = "lib_id";
+    return playlistEntrySongIdColName;
+  }
+  
+  static const QString& getPlaylistEntryNumberColName(){
+    static const QString playlistEntryNumberColName = "entry_number";
+    return playlistEntryNumberColName;
+  }
 
  //@}
 
@@ -346,6 +376,24 @@ private:
     return createLibQuerey;
   }
 
+  static const QString& getCreatePlaylistTableQuery(){
+    static const QString createPlaylistTableQuery = 
+      "CREATE TABLE IF NOT EXISTS " +
+      getPlaylistTableName() + "(" +
+      getPlaylistIdColName() + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+      getPlaylistNameColName() + " TEXT NOT NULL);";
+    return createPlaylistTableQuery;
+  }
+
+  static const QString& getCreatePlaylistEntryTableQuery(){
+    static const QString createPlaylistEntryTableQuery = 
+      "CREATE TABLE IF NOT EXISTS " +
+      getPlaylistEntryIdColName() + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+      getPlaylistEntrySongIdColName() + " INTEGER REFERENCES " +
+        getLibraryTableName() +"(" + getLibIdColName()+ ") ON DELETE CASCADE, "+
+      getPlaylistEntryNumberColName() + " INTEGER NOT NULL);";
+    return createPlaylistEntryTableQuery;
+  }
 
   static const QString& getCreateActivePlaylistQuery(){
     static const QString createActivePlaylistQuery = 
