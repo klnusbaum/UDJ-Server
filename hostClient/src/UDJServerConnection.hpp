@@ -72,6 +72,7 @@ public:
    * @return The id of the event this connection is associated with.
    */
 	inline event_id_t  getEventId(){
+    //TODO really need to save this to persistent storage
 		return eventId;
 	}
 
@@ -80,6 +81,7 @@ public:
   /** @name Modifiers */
   //@{
 	
+public slots:
   /**
    * \brief Removes all songs from the library associated with this conneciton.
    *
@@ -94,6 +96,8 @@ public:
 		const QString& ablumName,
     const int duration,
     const library_song_id_t hostid);
+
+  void addSongToAvailableSongs(library_song_id_t songToAdd);
 
   void createEvent(
     const QString& partyName,
@@ -152,11 +156,15 @@ signals:
 
   void eventEndingFailed(const QString errMessage);
 
+  void songsAddedToAvailableMusic(
+    const std::vector<library_song_id_t> songAdded);
+
   //@}
 
 
 private slots:
   void recievedReply(QNetworkReply *reply);
+
 
 private:
   /** @name Private Members */
@@ -189,6 +197,8 @@ private:
   QUrl getLibAddSongUrl() const;
 
   QUrl getLibDeleteAllUrl() const;
+
+  QUrl getAddSongToAvailableUrl() const;
 
   QUrl getEndEventUrl() const;
 
@@ -259,11 +269,13 @@ private:
 
   void handleAuthReply(QNetworkReply* reply);
 
-  void handleAddSongReply(QNetworkReply *reply);
+  void handleAddLibSongsReply(QNetworkReply *reply);
 
   void handleCreateEventReply(QNetworkReply *reply);
 
   void handleEndEventReply(QNetworkReply *reply);
+
+  void handleAddAvailableSongReply(QNetworkReply *reply);
 
 
   //@}

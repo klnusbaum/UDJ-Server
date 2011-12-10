@@ -114,6 +114,69 @@ const QByteArray JSONHelper::getCreateEventJSON(
   return QtJson::Json::serialize(QVariant(eventToCreate),success);
 }
 
+const QByteArray JSONHelper::getAddToAvailableJSON(
+  const library_song_id_t& toAdd)
+{
+  bool success;
+  return getAddToAvailableJSON(toAdd, success);
+
+}
+
+const QByteArray JSONHelper::getAddToAvailableJSON(
+  const library_song_id_t& toAdd, 
+  bool &success)
+{
+  std::vector<library_song_id_t> toAddVector(1, toAdd);
+  return getAddToAvailableJSON(toAddVector, success);
+}
+
+const QByteArray JSONHelper::getAddToAvailableJSON(
+  const std::vector<library_song_id_t>& toAdd)
+{
+  bool success;
+  return getAddToAvailableJSON(toAdd, success);
+}
+
+const QByteArray JSONHelper::getAddToAvailableJSON(
+  const std::vector<library_song_id_t>& toAdd, 
+  bool &success)
+{
+  QVariantList toSerialize;
+  for(
+    std::vector<library_song_id_t>::const_iterator it = toAdd.begin();
+    it != toAdd.end();
+    ++it
+  )
+  {
+    toSerialize.append(QVariant::fromValue<library_song_id_t>(*it));
+  }
+  
+  return QtJson::Json::serialize(toSerialize, success);
+}
+
+const std::vector<library_song_id_t> JSONHelper::getAddedAvailableSongs(
+  QNetworkReply *reply)
+{
+  QByteArray responseData = reply->readAll();
+  QString responseString = QString::fromUtf8(responseData);
+  bool success;
+  QVariantList addedSongs = QtJson::Json::parse(responseData, success).toList();
+  if(!success){
+    std::cerr << "Error processing result from add to available music" << 
+      std::endl;
+  }
+  std::vector<library_song_id_t> toReturn(addedSongs.size());
+  for(
+    QVariantList::const_iterator it = addedSongs.begin();
+    it != addedSongs.end();
+    ++it
+  )
+  {
+    toReturn.push_back(it->value<library_song_id_t>());
+  }
+  return toReturn;
+}
+
 event_id_t JSONHelper::getEventId(QNetworkReply *reply){
   QByteArray responseData = reply->readAll();
   QString responseString = QString::fromUtf8(responseData);

@@ -28,8 +28,7 @@ LibraryModel::LibraryModel(QObject *parent, DataStore *dataStore):
   setTable(DataStore::getLibraryTableName());
   select();
 
-  connect(dataStore, SIGNAL(songsAddedToLib()), this, SLOT(refresh()));
-  connect(dataStore, SIGNAL(songsModifiedInLib()), this, SLOT(refresh()));
+  connect(dataStore, SIGNAL(libSongsModified()), this, SLOT(refresh()));
 }
 
 void LibraryModel::refresh(){

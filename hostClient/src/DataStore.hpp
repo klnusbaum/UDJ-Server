@@ -83,46 +83,6 @@ public:
     return serverConnection->getEventId();
   }
   
-public slots:
-  /**
-   * \brief Alters the vote count associated with a specific song.
-   *
-   * @param plId Id of the song whose vote count is to be altered.
-   * @param difference The amount by which the vote count should be altered.
-   * @return True if the altering was sucessful, false otherwise.
-   */
-	bool alterVoteCount(playlist_song_id_t plId, int difference);
-
-  /**
-   * \brief Adds the specified song to the playlist.
-   *
-   * @param libraryId Id of the song to add to the playlist.
-   * @return True if the addition of the song was sucessful, false otherwise.
-   */
-	bool addSongToActivePlaylist(playlist_song_id_t libraryId);
-
-  /**
-   * \brief Removes the specified song from the playlist.
-   *
-   * @param libraryId Id of the song to remove the playlist.
-   * @return True if the removal of the song was sucessful, false otherwise.
-   */
-	bool removeSongFromActivePlaylist(playlist_song_id_t plId);
-
-  void clearMyLibrary();
-
-  void createNewEvent(
-    const QString& name, 
-    const QString& password);
-
-  void endEvent();
-
-  Phonon::MediaSource getNextSongToPlay();
-  
-  Phonon::MediaSource takeNextSongToPlay();
-
-  //@}
-
   /** @name Public Constants */
   //@{
 
@@ -334,12 +294,57 @@ public slots:
 
  //@}
 
+/** @name Public slots */
+//@{
+public slots:
+
+  void addSongToAvailableSongs(library_song_id_t song_id);
+
+  /**
+   * \brief Alters the vote count associated with a specific song.
+   *
+   * @param plId Id of the song whose vote count is to be altered.
+   * @param difference The amount by which the vote count should be altered.
+   * @return True if the altering was sucessful, false otherwise.
+   */
+	bool alterVoteCount(playlist_song_id_t plId, int difference);
+
+  /**
+   * \brief Adds the specified song to the playlist.
+   *
+   * @param libraryId Id of the song to add to the playlist.
+   * @return True if the addition of the song was sucessful, false otherwise.
+   */
+	bool addSongToActivePlaylist(playlist_song_id_t libraryId);
+
+  /**
+   * \brief Removes the specified song from the playlist.
+   *
+   * @param libraryId Id of the song to remove the playlist.
+   * @return True if the removal of the song was sucessful, false otherwise.
+   */
+	bool removeSongFromActivePlaylist(playlist_song_id_t plId);
+
+  void clearMyLibrary();
+
+  void createNewEvent(
+    const QString& name, 
+    const QString& password);
+
+  void endEvent();
+
+  Phonon::MediaSource getNextSongToPlay();
+  
+  Phonon::MediaSource takeNextSongToPlay();
+
+  //@}
+
 /** @name Signals */
 //@{
 signals:
-  void songsAddedToLib();
+  void libSongsModified();
 
-  void songsModifiedInLib();
+  void availableSongsModified();
 
   void eventCreated();
 
@@ -577,6 +582,10 @@ private slots:
   void setLibSongsSyncStatus(
     const std::vector<library_song_id_t> songs,
     const lib_sync_status_t syncStatus);
+  void setAvailableSongsSynced(const std::vector<library_song_id_t> songs);
+  void setAvailableSongsSyncStatus(
+    const std::vector<library_song_id_t> songs,
+    const avail_music_sync_status_t syncStatus);
 //@}
 
 };

@@ -34,6 +34,8 @@ public:
 private:
   DataStore *dataStore;
   QSqlRelationalTableModel *availableMusicModel;  
+private slots:
+  void updateView();
 };
 
 

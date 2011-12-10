@@ -34,8 +34,16 @@ AvailableMusicView::AvailableMusicView(DataStore *dataStore, QWidget *parent):
   availableMusicModel->setTable(DataStore::getAvailableMusicViewName());
   availableMusicModel->select();
   setSelectionBehavior(QAbstractItemView::SelectRows);
+  connect(
+    dataStore,
+    SIGNAL(availableSongsModified()),
+    this,
+    SLOT(updateView()));
 }
 
+void AvailableMusicView::updateView(){
+  availableMusicModel->select();
+}
 
 
 } //end namespace

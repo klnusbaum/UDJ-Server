@@ -63,10 +63,26 @@ public:
     float longitude,
     bool &success);
 
+  static const QByteArray getAddToAvailableJSON(const library_song_id_t& toAdd);
+
+  static const QByteArray getAddToAvailableJSON(
+    const library_song_id_t& toAdd, 
+    bool &success);
+
+  static const QByteArray getAddToAvailableJSON(
+    const std::vector<library_song_id_t>& toAdd);
+
+  static const QByteArray getAddToAvailableJSON(
+    const std::vector<library_song_id_t>& toAdd, 
+    bool &success);
+
   static const std::vector<library_song_id_t>
     getUpdatedLibIds(QNetworkReply *reply);
 
   static event_id_t getEventId(QNetworkReply *reply);
+
+  static const std::vector<library_song_id_t> getAddedAvailableSongs(
+    QNetworkReply *reply);
 
   static const float& getInvalidLat(){
     static const float invalidLat = 100;

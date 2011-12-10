@@ -66,6 +66,12 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
     this, 
     SIGNAL(eventEndingFailed(const QString)));
 
+  connect(
+    serverConnection,
+    SIGNAL(songsAddedToAvailableMusic(const std::vector<library_song_id_t>)),
+    this,
+    SLOT(setAvailableSongsSynced(const std::vector<library_song_id_t>)));
+
   syncLibrary();
 }
 
@@ -140,7 +146,7 @@ void DataStore::addMusicToLibrary(
     }
     addSongToLibrary(songs[i]);
   }
-  emit songsAddedToLib();
+  emit libSongsModified();
 }
 
 void DataStore::addSongToLibrary(Phonon::MediaSource song){
@@ -188,6 +194,10 @@ void DataStore::addSongToLibrary(Phonon::MediaSource song){
 	  serverConnection->addLibSongOnServer(
       songName, artistName, albumName, duration, hostId);
   }
+}
+
+void DataStore::addSongToAvailableSongs(library_song_id_t toAdd){
+  
 }
 
 bool DataStore::alterVoteCount(playlist_song_id_t plId, int difference){
@@ -302,7 +312,6 @@ void DataStore::syncLibrary(){
       //TODO implement delete call here
     }
   }
-  emit songsModifiedInLib();
 }
 
 void DataStore::setLibSongsSynced(const std::vector<library_song_id_t> songs){
@@ -325,11 +334,38 @@ void DataStore::setLibSongsSyncStatus(
         getLibIdColName() + "=" + QString::number(songs[i]) + ";"),
       setSyncedQuery)
   }
-  emit songsModifiedInLib();
+  emit libSongsModified();
 }
 
 void DataStore::endEvent(){
   serverConnection->endEvent();
 }
+
+void DataStore::setAvailableSongsSynced(
+  const std::vector<library_song_id_t> songs)
+{
+  setAvailableSongsSyncStatus(songs, getAvailableEntryIsSyncedStatus());
+}
+
+void DataStore::setAvailableSongsSyncStatus(
+  const std::vector<library_song_id_t> songs,
+  const avail_music_sync_status_t syncStatus)
+{
+  QSqlQuery setSyncedQuery(database);
+  for(int i=0; i< songs.size(); ++i){
+    std::cout << "Updaing status of available song: " << songs[i] << std::endl;
+    EXEC_SQL(
+      "Error setting song to synced",
+      setSyncedQuery.exec(
+        "UPDATE " + getAvailableMusicTableName() + " " +
+        "SET " + getAvailableEntrySyncStatusColName() + "=" + 
+        QString::number(syncStatus) +
+        " WHERE "  +
+        getLibIdColName() + "=" + QString::number(songs[i]) + ";"),
+      setSyncedQuery)
+  }
+  emit availableSongsModified();
+}
+
 
 } //end namespace

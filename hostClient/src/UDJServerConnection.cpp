@@ -100,19 +100,31 @@ void UDJServerConnection::endEvent(){
   netAccessManager->deleteResource(endEventRequest);
 }
 
+void UDJServerConnection::addSongToAvailableSongs(library_song_id_t songToAdd){
+  QNetworkRequest addSongToAvailableRequest(getAddSongToAvailableUrl());
+  prepareJSONRequest(addSongToAvailableRequest);
+  const QByteArray songAddJSON = JSONHelper::getAddToAvailableJSON(songToAdd);
+  netAccessManager->put(addSongToAvailableRequest, songAddJSON);
+}
 
 void UDJServerConnection::recievedReply(QNetworkReply *reply){
   if(reply->request().url().path() == getAuthUrl().path()){
     handleAuthReply(reply);
   }
   else if(reply->request().url().path() == getLibAddSongUrl().path()){
-    handleAddSongReply(reply);
+    handleAddLibSongsReply(reply);
   }
   else if(reply->request().url().path() == getCreateEventUrl().path()){
     handleCreateEventReply(reply);
   }
   else if(reply->request().url().path() == getEndEventUrl().path()){
     handleEndEventReply(reply);
+  }
+  else if(reply->request().url().path() == getAddSongToAvailableUrl().path()){
+    handleAddAvailableSongReply(reply);
+  }
+  else{
+    std::cerr << "Recieved unknown response" << std::endl;
   }
   reply->deleteLater();
 }
@@ -143,10 +155,16 @@ void UDJServerConnection::setLoggedIn(QByteArray ticket, QByteArray userId){
   isLoggedIn = true;
 }
 
-void UDJServerConnection::handleAddSongReply(QNetworkReply *reply){
-  std::vector<library_song_id_t> updatedIds =   
+void UDJServerConnection::handleAddLibSongsReply(QNetworkReply *reply){
+  const std::vector<library_song_id_t> updatedIds =   
     JSONHelper::getUpdatedLibIds(reply);
   emit songsAddedToLibOnServer(updatedIds);
+}
+
+void UDJServerConnection::handleAddAvailableSongReply(QNetworkReply *reply){
+  std::vector<library_song_id_t> addedIds = 
+    JSONHelper::getAddedAvailableSongs(reply);
+  emit songsAddedToAvailableMusic(addedIds); 
 }
 
 void UDJServerConnection::handleCreateEventReply(QNetworkReply *reply){
@@ -183,6 +201,11 @@ QUrl UDJServerConnection::getLibDeleteAllUrl() const{
 
 QUrl UDJServerConnection::getEndEventUrl() const{
   return QUrl(getServerUrlPath() + "events/" + QString::number(eventId));
+}
+
+QUrl UDJServerConnection::getAddSongToAvailableUrl() const{
+  return QUrl(getServerUrlPath() + "events/" + QString::number(eventId) +
+    "/available_music");
 }
 
 void UDJServerConnection::clearMyLibrary(){
