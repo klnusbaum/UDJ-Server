@@ -23,14 +23,12 @@
 #include <QSqlField>
 #include "ActivePlaylistDelegate.hpp"
 #include "ActivePlaylistModel.hpp"
-#include "LibraryModel.hpp"
 
 namespace UDJ{
 
-ActivePlaylistView::ActivePlaylistView(DataStore* dataStore, LibraryModel *libraryModel, QWidget* parent):
+ActivePlaylistView::ActivePlaylistView(DataStore* dataStore, QWidget* parent):
   QTableView(parent),
-  dataStore(dataStore),
-  libraryModel(libraryModel)
+  dataStore(dataStore)
 {
   playlistModel = new ActivePlaylistModel(dataStore, this);
   horizontalHeader()->setStretchLastSection(true);
@@ -43,18 +41,12 @@ QString ActivePlaylistView::getFilePath(const QModelIndex& songIndex) const{
   return playlistModel->getFilePath(songIndex);
 }
 
-void ActivePlaylistView::addSongToPlaylist(const QModelIndex& libraryIndex){
-  library_song_id_t libraryId = libraryModel->data(
-    libraryIndex.sibling(libraryIndex.row(),0)).value<library_song_id_t>();
-	if(! playlistModel->addSongToPlaylist(libraryId)){
-		//TODO display error message
-	}
+void ActivePlaylistView::addSongToPlaylist(const library_song_id_t& songId){
+  //TODO implement this
 }
 
-void ActivePlaylistView::removeSong(const QModelIndex& index){
-	if(! playlistModel->removeSongFromPlaylist(index)){
-		//TODO display error message
-	}
+void ActivePlaylistView::removeSong(const playlist_song_id_t& playlistId){
+  //TODO implement this
 }
 
 bool ActivePlaylistView::isVotesColumn(int columnIndex){

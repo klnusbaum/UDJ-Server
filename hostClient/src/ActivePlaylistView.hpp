@@ -21,6 +21,7 @@
 #include <QTableView>
 #include <QSqlDatabase>
 #include <phonon/mediasource.h>
+#include "ConfigDefs.hpp"
 
 
 namespace UDJ{
@@ -46,7 +47,7 @@ public:
    * added to the playlist.
    * @param parent The parent widget.
    */
-  ActivePlaylistView(DataStore* dataStore, LibraryModel *libraryModel, QWidget* parent=0);
+  ActivePlaylistView(DataStore* dataStore, QWidget* parent=0);
 
   //@}
 
@@ -66,7 +67,7 @@ public slots:
    * @param libraryIndex Index in the library model corresponding to the
    * song that should be added.
    */
-  void addSongToPlaylist(const QModelIndex& libraryIndex);
+  void addSongToPlaylist(const library_song_id_t& songId);
   
   /**
    * \brief Removes the given song from the playlist.
@@ -74,7 +75,7 @@ public slots:
    * @param index The index in the playlist model that corresponds to the song
    * which should be removed.
    */
-	void removeSong(const QModelIndex& index);
+	void removeSong(const playlist_song_id_t& playlistId);
 
   //@}
 
@@ -88,8 +89,6 @@ private:
    * to the playlist.
    */
   DataStore* dataStore;
-
-  LibraryModel* libraryModel;
 
   /** \brief The model containing the playlist data */
   ActivePlaylistModel* playlistModel;

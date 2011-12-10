@@ -60,7 +60,7 @@ void EventDashboard::setupUi(){
 
 
   eventControls = new QTabWidget;
-  eventControls->addTab(new EventMusicDisplay, tr("Music"));
+  eventControls->addTab(new EventMusicDisplay(dataStore), tr("Music"));
   eventControls->addTab(new EventUsersDisplay, tr("Users"));
  
   layout->addLayout(header);

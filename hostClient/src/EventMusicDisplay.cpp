@@ -17,6 +17,8 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "EventMusicDisplay.hpp"
+#include "ActivePlaylistView.hpp"
+#include "DataStore.hpp"
 #include <QHBoxLayout>
 #include <QLabel>
 
@@ -24,9 +26,12 @@
 namespace UDJ{
 
 
-EventMusicDisplay::EventMusicDisplay(QWidget *parent):QWidget(parent){
+EventMusicDisplay::EventMusicDisplay(DataStore *dataStore, QWidget *parent):
+  QWidget(parent),
+  dataStore(dataStore)
+{
   QHBoxLayout *layout = new QHBoxLayout;
-  layout->addWidget(new QLabel("Music stuff goes here"));
+  layout->addWidget(new ActivePlaylistView(dataStore, this));
   setLayout(layout);
 }
 
