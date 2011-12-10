@@ -278,6 +278,26 @@ public slots:
     return playlistEntryNumberColName;
   }
 
+  static const QString& getPlaylistEntryTableName(){
+    static const QString playlistEntryTableName = "playlist_entry";
+    return playlistEntryTableName;
+  }
+
+  static const QString& getAvailableMusicTableName(){
+    static const QString availableMusicTableName = "available_music";
+    return availableMusicTableName;
+  }
+
+  static const QString& getAvailableEntryIdColName(){
+    static const QString availableEntryIdColName = "id";
+    return availableEntryIdColName;
+  }
+
+  static const QString& getAvailableEntryLibIdColName(){
+    static const QString availableEntryLibIdColName = "lib_id";
+    return availableEntryLibIdColName;
+  }
+
  //@}
 
 /** @name Signals */
@@ -388,12 +408,25 @@ private:
   static const QString& getCreatePlaylistEntryTableQuery(){
     static const QString createPlaylistEntryTableQuery = 
       "CREATE TABLE IF NOT EXISTS " +
+      getPlaylistEntryTableName() + "(" + 
       getPlaylistEntryIdColName() + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
       getPlaylistEntrySongIdColName() + " INTEGER REFERENCES " +
         getLibraryTableName() +"(" + getLibIdColName()+ ") ON DELETE CASCADE, "+
       getPlaylistEntryNumberColName() + " INTEGER NOT NULL);";
     return createPlaylistEntryTableQuery;
   }
+
+  static const QString& getCreateAvailableMusicQuery(){
+    static const QString createAvailableMusicQuery = 
+      "CREATE TABLE IF NOT EXISTS " +
+      getAvailableMusicTableName() + "(" +
+      getAvailableEntryIdColName() + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+      getAvailableEntryLibIdColName() + " INTEGER REFERENCES " +
+        getLibraryTableName() +"(" + getLibIdColName()+ ") ON DELETE CASCADE);";
+    return createAvailableMusicQuery;
+  }
+      
+      
 
   static const QString& getCreateActivePlaylistQuery(){
     static const QString createActivePlaylistQuery = 
