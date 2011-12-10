@@ -28,7 +28,6 @@ namespace UDJ{
 
 class DataStore;
 class ActivePlaylistModel;
-class LibraryModel;
 
 /**
  * \brief Used to view the items in a PlaylistModel
@@ -100,4 +99,4 @@ private:
 
 
 } //end namespace
-#endif //PLAYLIST_VIEW_HPP
+#endif //ACTIVE_PLAYLIST_VIEW_HPP

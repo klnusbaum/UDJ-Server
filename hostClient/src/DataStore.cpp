@@ -39,7 +39,7 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
   connect(
     serverConnection,
     SIGNAL(
-      songsAddedOnServer(const std::vector<library_song_id_t>)
+      songsAddedToLibOnServer(const std::vector<library_song_id_t>)
     ),
     this,
     SLOT(
@@ -68,6 +68,17 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
 
   syncLibrary();
 }
+
+DataStore::~DataStore(){
+  QSqlQuery tearDownQuery(database);
+  EXEC_SQL(
+    "Error deleteing contents of AvailableMusic",
+    tearDownQuery.exec(getDeleteAvailableMusicQuery()),
+    tearDownQuery
+  )
+}
+
+  
 
 void DataStore::setupDB(){
   //TODO do all of this stuff in a seperate thread and return right away.
@@ -129,7 +140,7 @@ void DataStore::addMusicToLibrary(
     }
     addSongToLibrary(songs[i]);
   }
-  emit songsAdded();
+  emit songsAddedToLib();
 }
 
 void DataStore::addSongToLibrary(Phonon::MediaSource song){
@@ -291,7 +302,7 @@ void DataStore::syncLibrary(){
       //TODO implement delete call here
     }
   }
-  emit songsModified();
+  emit songsModifiedInLib();
 }
 
 void DataStore::setLibSongsSynced(const std::vector<library_song_id_t> songs){
@@ -314,7 +325,7 @@ void DataStore::setLibSongsSyncStatus(
         getLibIdColName() + "=" + QString::number(songs[i]) + ";"),
       setSyncedQuery)
   }
-  emit songsModified();
+  emit songsModifiedInLib();
 }
 
 void DataStore::endEvent(){

@@ -146,7 +146,7 @@ void UDJServerConnection::setLoggedIn(QByteArray ticket, QByteArray userId){
 void UDJServerConnection::handleAddSongReply(QNetworkReply *reply){
   std::vector<library_song_id_t> updatedIds =   
     JSONHelper::getUpdatedLibIds(reply);
-  emit songsAddedOnServer(updatedIds);
+  emit songsAddedToLibOnServer(updatedIds);
 }
 
 void UDJServerConnection::handleCreateEventReply(QNetworkReply *reply){

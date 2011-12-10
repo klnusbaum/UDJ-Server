@@ -16,36 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "LibraryModel.hpp"
+#include "AvailableMusicView.hpp"
 #include "DataStore.hpp"
+#include <QSqlRelationalTableModel>
+
 
 namespace UDJ{
 
 
-LibraryModel::LibraryModel(QObject *parent, DataStore *dataStore):
-  QSqlTableModel(parent, dataStore->getDatabaseConnection())
+AvailableMusicView::AvailableMusicView(DataStore *dataStore, QWidget *parent):
+  QTableView(parent),
+  dataStore(dataStore)
 {
-  setTable(DataStore::getLibraryTableName());
-  select();
-
-  connect(dataStore, SIGNAL(songsAddedToLib()), this, SLOT(refresh()));
-  connect(dataStore, SIGNAL(songsModifiedInLib()), this, SLOT(refresh()));
-}
-
-void LibraryModel::refresh(){
-  select();
-}
-
-QString LibraryModel::getSongNameFromSource(const Phonon::MediaSource &source) const{
-  QString filename = source.fileName();
-  for(int i =0; i < rowCount(); ++i){
-    if(data(index(i,4)).toString() == filename){
-      return data(index(i,1)).toString();
-    }
-  }
-  return "";
+  availableMusicModel = 
+    new QSqlRelationalTableModel(this, dataStore->getDatabaseConnection());
+  setModel(availableMusicModel);
+  availableMusicModel->setTable(DataStore::getAvailableMusicViewName());
+  availableMusicModel->select();
+  setSelectionBehavior(QAbstractItemView::SelectRows);
 }
 
 
-}
 
+} //end namespace

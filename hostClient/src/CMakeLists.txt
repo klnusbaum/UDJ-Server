@@ -38,6 +38,7 @@ SET(UDJ_SRCS
   WidgetWithLoader.cpp
   EventMusicDisplay.cpp
   EventUsersDisplay.cpp
+  AvailableMusicView.cpp
 )
 
 SET(UDJ_HDRS 
@@ -67,6 +68,7 @@ SET(UDJ_MOC_HDRS
   WidgetWithLoader.hpp
   EventMusicDisplay.hpp
   EventUsersDisplay.hpp
+  AvailableMusicView.hpp
 )
 
 

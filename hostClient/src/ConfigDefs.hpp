@@ -29,6 +29,7 @@ typedef long playlist_id_t;
 typedef long event_id_t;
 typedef long user_id_t;
 typedef int lib_sync_status_t;
+typedef int avail_music_sync_status_t;
 
 } //end namespace
 

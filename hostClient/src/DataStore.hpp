@@ -43,6 +43,8 @@ public:
    * @param parent The parent widget.
    */
   DataStore(UDJServerConnection *serverConnection, QObject *parent=0);
+ 
+  ~DataStore();
 
   //@}
 
@@ -298,14 +300,46 @@ public slots:
     return availableEntryLibIdColName;
   }
 
+  static const QString& getAvailableEntryIsDeletedColName(){
+    static const QString availEntryIsDeletedColName = "is_deleted";
+    return availEntryIsDeletedColName;
+  }
+
+  static const QString& getAvailableEntrySyncStatusColName(){
+    static const QString availEntrySyncStatusColName = "sync_status";
+    return availEntrySyncStatusColName;
+  }
+
+  static const avail_music_sync_status_t& getAvailableEntryNeedsAddSyncStatus(){
+    static const avail_music_sync_status_t availEntryNeedsAddSyncStatus = 1;
+    return availEntryNeedsAddSyncStatus;
+  }
+
+  static const avail_music_sync_status_t& 
+    getAvailableEntryNeedsDeleteSyncStatus()
+  {
+    static const avail_music_sync_status_t availEntryNeedsDeleteSyncStatus = 2;
+    return availEntryNeedsDeleteSyncStatus;
+  }
+
+  static const avail_music_sync_status_t& getAvailableEntryIsSyncedStatus(){
+    static const avail_music_sync_status_t availEntryIsSyncedStatus = 0;
+    return availEntryIsSyncedStatus;
+  }
+
+  static const QString& getAvailableMusicViewName(){
+    static const QString availableMusicViewName ="available_music_view";
+    return availableMusicViewName;
+  }
+
  //@}
 
 /** @name Signals */
 //@{
 signals:
-  void songsAdded();
+  void songsAddedToLib();
 
-  void songsModified();
+  void songsModifiedInLib();
 
   void eventCreated();
 
@@ -422,7 +456,18 @@ private:
       getAvailableMusicTableName() + "(" +
       getAvailableEntryIdColName() + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
       getAvailableEntryLibIdColName() + " INTEGER REFERENCES " +
-        getLibraryTableName() +"(" + getLibIdColName()+ ") ON DELETE CASCADE);";
+        getLibraryTableName() +"(" + getLibIdColName()+ ") ON DELETE CASCADE," +
+      getAvailableEntryIsDeletedColName() + " INTEGER DEFAULT 0, " + 
+      getAvailableEntrySyncStatusColName() + " INTEGER DEFAULT " +
+        QString::number(getAvailableEntryNeedsAddSyncStatus()) + " " +
+      "CHECK("+
+        getAvailableEntrySyncStatusColName()+"="+
+          QString::number(getAvailableEntryIsSyncedStatus()) +" OR " +
+        getAvailableEntrySyncStatusColName()+"="+
+          QString::number(getAvailableEntryNeedsAddSyncStatus()) +" OR " +
+        getAvailableEntrySyncStatusColName()+"="+
+          QString::number(getAvailableEntryNeedsDeleteSyncStatus()) +
+      "));";
     return createAvailableMusicQuery;
   }
       
@@ -505,6 +550,22 @@ private:
     getActivePlaylistLibIdColName() + ");"
     "END;";
     return activePlaylistInsertTriggerQuery;
+  }
+
+  static const QString& getCreateAvailableMusicViewQuery(){
+    static const QString createAvailableMusicViewQuery = 
+      "CREATE VIEW IF NOT EXISTS "+getAvailableMusicViewName() + " " + 
+      "AS SELECT * FROM " + getAvailableMusicTableName() + " INNER JOIN " +
+      getLibraryTableName() + " ON " + getAvailableMusicTableName() + "." +
+      getAvailableEntryLibIdColName() + "=" + getLibraryTableName() + "." +
+      getLibIdColName() +";";
+    return createAvailableMusicViewQuery;
+  }
+
+  static const QString& getDeleteAvailableMusicQuery(){
+		static const QString deleteAvailableMusicQuery = 
+      "DELETE FROM " + getAvailableMusicTableName() + ";";
+    return deleteAvailableMusicQuery;
   }
 
  //@}

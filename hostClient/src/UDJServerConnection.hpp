@@ -142,7 +142,7 @@ signals:
   
   void unableToConnect(const QString errMessage);
 
-  void songsAddedOnServer(const std::vector<library_song_id_t> addedIds);
+  void songsAddedToLibOnServer(const std::vector<library_song_id_t> addedIds);
 
   void eventCreated();
 

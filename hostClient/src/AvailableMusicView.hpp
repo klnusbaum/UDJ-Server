@@ -16,26 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "EventMusicDisplay.hpp"
-#include "ActivePlaylistView.hpp"
-#include "AvailableMusicView.hpp"
-#include "DataStore.hpp"
-#include <QHBoxLayout>
-#include <QLabel>
+#ifndef AVAILABLE_MUSIC_VIEW_HPP
+#define AVAILABLE_MUSIC_VIEW_HPP
+#include <QTableView>
+#include "ConfigDefs.hpp"
 
+class QSqlRelationalTableModel;
 
 namespace UDJ{
 
+class DataStore;
 
-EventMusicDisplay::EventMusicDisplay(DataStore *dataStore, QWidget *parent):
-  QWidget(parent),
-  dataStore(dataStore)
-{
-  QHBoxLayout *layout = new QHBoxLayout;
-  layout->addWidget(new ActivePlaylistView(dataStore, this));
-  layout->addWidget(new AvailableMusicView(dataStore, this));
-  setLayout(layout);
-}
+class AvailableMusicView : public QTableView{
+Q_OBJECT
+public:
+  AvailableMusicView(DataStore *dataStore, QWidget *parent=0);
+private:
+  DataStore *dataStore;
+  QSqlRelationalTableModel *availableMusicModel;  
+};
 
 
 } //end namespace
+#endif //AVAILABLE_MUSIC_VIEW_HPP
