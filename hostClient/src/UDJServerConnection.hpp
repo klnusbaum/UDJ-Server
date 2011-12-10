@@ -213,7 +213,7 @@ private:
   
   static const QString& getServerUrlPath(){
     static const QString SERVER_URL_PATH= 
-      "http://klnusbaum.dyndns.org:" + getServerPortNumber() + "/udj/";
+      "http://localhost:" + getServerPortNumber() + "/udj/";
     return SERVER_URL_PATH;
   }
 
