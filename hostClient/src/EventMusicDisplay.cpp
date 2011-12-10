@@ -16,39 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef EVENT_DASHBOARD_HPP
-#define EVENT_DASHBOARD_HPP
-#include "WidgetWithLoader.hpp"
+#include "EventMusicDisplay.hpp"
+#include <QHBoxLayout>
+#include <QLabel>
 
-class QLabel;
-class QTabWidget;
 
 namespace UDJ{
 
-class DataStore;
 
-class EventDashboard : public WidgetWithLoader{
-Q_OBJECT
-public:
-  EventDashboard(DataStore *dataStore, QWidget *parent=0);
-signals:
-  void eventEnded();
-private:
-  void setupUi();
-  DataStore *dataStore;
-  QLabel *eventName;
-  QLabel *eventId;
-  QWidget *mainContent;
-  QTabWidget *eventControls;
-
-private slots:
-  void updateEventInfo();
-  void endEvent();
-  void handleEventEnded();
-  void handleEventEndingFailed(const QString errMessage);
-};
+EventMusicDisplay::EventMusicDisplay(QWidget *parent):QWidget(parent){
+  QHBoxLayout *layout = new QHBoxLayout;
+  layout->addWidget(new QLabel("Music stuff goes here"));
+  setLayout(layout);
+}
 
 
-}//end namespace UDJ
-
-#endif //EVENT_DASHBOARD_HPP
+} //end namespace

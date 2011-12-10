@@ -19,11 +19,14 @@
 #include "EventWidget.hpp"
 #include "EventDashboard.hpp"
 #include "DataStore.hpp"
+#include "EventUsersDisplay.hpp"
+#include "EventMusicDisplay.hpp"
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QMessageBox>
+#include <QTabWidget>
 
 namespace UDJ{
 
@@ -41,7 +44,6 @@ void EventDashboard::setupUi(){
   mainContent = new QWidget(this);
   QVBoxLayout *layout = new QVBoxLayout;
   QHBoxLayout *header = new QHBoxLayout;
-
   QVBoxLayout *eventInfo = new QVBoxLayout;
 
   eventName = new QLabel();
@@ -55,8 +57,14 @@ void EventDashboard::setupUi(){
   header->addLayout(eventInfo);
   header->addStretch();
   header->addWidget(stopEventButton);
+
+
+  eventControls = new QTabWidget;
+  eventControls->addTab(new EventMusicDisplay, tr("Music"));
+  eventControls->addTab(new EventUsersDisplay, tr("Users"));
  
   layout->addLayout(header);
+  layout->addWidget(eventControls);
   mainContent->setLayout(layout);
   setMainWidget(mainContent);
   connect(dataStore, SIGNAL(eventEnded()), this, SLOT(handleEventEnded()));
