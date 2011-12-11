@@ -165,7 +165,7 @@ const std::vector<library_song_id_t> JSONHelper::getAddedAvailableSongs(
     std::cerr << "Error processing result from add to available music" << 
       std::endl;
   }
-  std::vector<library_song_id_t> toReturn(addedSongs.size());
+  std::vector<library_song_id_t> toReturn;
   for(
     QVariantList::const_iterator it = addedSongs.begin();
     it != addedSongs.end();

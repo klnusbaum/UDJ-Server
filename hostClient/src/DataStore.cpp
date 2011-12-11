@@ -396,7 +396,7 @@ void DataStore::setAvailableSongsSyncStatus(
         "SET " + getAvailableEntrySyncStatusColName() + "=" + 
         QString::number(syncStatus) +
         " WHERE "  +
-        getLibIdColName() + "=" + QString::number(songs[i]) + ";"),
+        getAvailableEntryLibIdColName() + "=" + QString::number(songs[i]) + ";"),
       setSyncedQuery)
   }
   emit availableSongsModified();
