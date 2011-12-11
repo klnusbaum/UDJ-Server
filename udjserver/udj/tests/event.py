@@ -157,7 +157,7 @@ class TestGetAvailableMusic(User2TestCase):
    results = json.loads(response.content)
 
 class TestPutAvailableMusic(User1TestCase):
-  def testPut(self): 
+  def testSimplePut(self): 
     toAdd=[13]
     response = self.doJSONPut(
       '/udj/events/1/available_music', json.dumps(toAdd))
@@ -165,9 +165,45 @@ class TestPutAvailableMusic(User1TestCase):
     results = json.loads(response.content)
     self.assertEqual(len(results), 1)
     self.assertEqual(results[0], 13)
-    addedSong = AvailableSong.objects.filter(
+    AvailableSong.objects.get(
       library_entry__host_lib_song_id=13, library_entry__owning_user__id=2)
-    self.assertEqual(len(addedSong), 1)
+
+  def testMultiPut(self):
+    toAdd = [13,12]
+    response = self.doJSONPut(
+      '/udj/events/1/available_music', json.dumps(toAdd))
+    self.assertEqual(response.status_code, 201, response.content)
+    results = json.loads(response.content)
+    self.assertEqual(len(results), 2)
+    self.assertTrue(13 in results)
+    self.assertTrue(12 in results)
+    AvailableSong.objects.get(
+      library_entry__host_lib_song_id=13, library_entry__owning_user__id=2)
+    AvailableSong.objects.get(
+      library_entry__host_lib_song_id=12, library_entry__owning_user__id=2)
+
+  def testDoublePut(self):
+    toAdd = [13]
+    response = self.doJSONPut(
+      '/udj/events/1/available_music', json.dumps(toAdd))
+    self.assertEqual(response.status_code, 201, response.content)
+    results = json.loads(response.content)
+    self.assertEqual(len(results), 1)
+    self.assertTrue(13 in results)
+    AvailableSong.objects.get(
+      library_entry__host_lib_song_id=13, library_entry__owning_user__id=2)
+    toAdd = [13, 12]
+    response = self.doJSONPut(
+      '/udj/events/1/available_music', json.dumps(toAdd))
+    self.assertEqual(response.status_code, 201, response.content)
+    results = json.loads(response.content)
+    self.assertEqual(len(results), 2)
+    self.assertTrue(13 in results)
+    self.assertTrue(12 in results)
+    AvailableSong.objects.get(
+      library_entry__host_lib_song_id=13, library_entry__owning_user__id=2)
+    AvailableSong.objects.get(
+      library_entry__host_lib_song_id=12, library_entry__owning_user__id=2)
 
 class TestCantPutAvailableMusic(User2TestCase):
   def testPut(self): 

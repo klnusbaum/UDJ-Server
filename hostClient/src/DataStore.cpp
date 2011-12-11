@@ -403,7 +403,6 @@ void DataStore::setAvailableSongsSyncStatus(
 }
 
 void DataStore::syncAvailableMusic(){
-  std::cout << "In sync available music\n";
   QSqlQuery getUnsyncedSongs(database);
   EXEC_SQL(
     "Error querying for unsynced songs",

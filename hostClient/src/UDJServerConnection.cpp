@@ -172,9 +172,11 @@ void UDJServerConnection::handleAddLibSongsReply(QNetworkReply *reply){
 }
 
 void UDJServerConnection::handleAddAvailableSongReply(QNetworkReply *reply){
-  std::vector<library_song_id_t> addedIds = 
-    JSONHelper::getAddedAvailableSongs(reply);
-  emit songsAddedToAvailableMusic(addedIds); 
+  if(reply->error() == QNetworkReply::NoError){
+    std::vector<library_song_id_t> addedIds = 
+      JSONHelper::getAddedAvailableSongs(reply);
+    emit songsAddedToAvailableMusic(addedIds); 
+  }
 }
 
 void UDJServerConnection::handleCreateEventReply(QNetworkReply *reply){

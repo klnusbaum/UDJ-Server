@@ -204,9 +204,11 @@ def addToAvailableMusic(request, event_id):
   toAdd = json.loads(request.raw_post_data)
   added = []
   for song_id in toAdd:
-    addSong = AvailableSong(library_entry=LibraryEntry.objects.get(
-      host_lib_song_id=song_id, owning_user=host))
-    addSong.save()
+    if not AvailableSong.objects.filter(library_entry__host_lib_song_id=song_id,
+      library_entry__owning_user=host).exists():
+      addSong = AvailableSong(library_entry=LibraryEntry.objects.get(
+        host_lib_song_id=song_id, owning_user=host))
+      addSong.save()
     added.append(song_id)
 
   return HttpResponse(json.dumps(added), status=201)

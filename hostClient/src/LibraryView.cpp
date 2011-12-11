@@ -72,7 +72,6 @@ void LibraryView::handleContextMenuRequest(const QPoint &pos){
 }
 
 void LibraryView::addSongToAvailableMusic(){
-  std::cout << "In add song to available music\n";
   QModelIndexList selected = selectedIndexes();
   std::vector<library_song_id_t> toAdd;
   std::set<int> rows;
