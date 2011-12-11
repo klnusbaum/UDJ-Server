@@ -20,7 +20,6 @@
 #include "SettingsWidget.hpp"
 #include "MusicFinder.hpp"
 #include "DataStore.hpp"
-#include "LibraryModel.hpp"
 #include "LibraryView.hpp"
 #include "ActivityList.hpp"
 #include "EventWidget.hpp"
@@ -79,8 +78,7 @@ void MetaWindow::setupUi(){
 
   playbackWidget = new PlaybackWidget(dataStore, this);
 
-  libraryModel = new LibraryModel(this, dataStore);
-  libraryView = new LibraryView(libraryModel, this);
+  libraryView = new LibraryView(dataStore, this);
 
   eventWidget = new EventWidget(dataStore, this);
  

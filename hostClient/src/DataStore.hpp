@@ -75,12 +75,16 @@ public:
 
   QSqlDatabase getDatabaseConnection();
 
-  const QString& getEventName(){
+  inline const QString& getEventName() const{
     return eventName;
   }
 
-  event_id_t getEventId(){
+  inline event_id_t getEventId() const{
     return serverConnection->getEventId();
+  }
+
+  inline bool isCurrentlyHosting() const{
+    return serverConnection->getIsHosting();
   }
   
   /** @name Public Constants */
@@ -300,6 +304,8 @@ public slots:
 
   void addSongToAvailableSongs(library_song_id_t song_id);
 
+  void addSongsToAvailableSongs(const std::vector<library_song_id_t>& song_ids);
+
   /**
    * \brief Alters the vote count associated with a specific song.
    *
@@ -383,6 +389,8 @@ private:
    */
   void syncLibrary();
 
+  void syncAvailableMusic();
+
 
   //@}
 
@@ -459,8 +467,7 @@ private:
     static const QString createAvailableMusicQuery = 
       "CREATE TABLE IF NOT EXISTS " +
       getAvailableMusicTableName() + "(" +
-      getAvailableEntryIdColName() + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-      getAvailableEntryLibIdColName() + " INTEGER REFERENCES " +
+      getAvailableEntryLibIdColName() + " INTEGER UNIQUE REFERENCES " +
         getLibraryTableName() +"(" + getLibIdColName()+ ") ON DELETE CASCADE," +
       getAvailableEntryIsDeletedColName() + " INTEGER DEFAULT 0, " + 
       getAvailableEntrySyncStatusColName() + " INTEGER DEFAULT " +

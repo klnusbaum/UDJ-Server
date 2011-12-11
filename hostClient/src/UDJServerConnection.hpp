@@ -76,6 +76,10 @@ public:
 		return eventId;
 	}
 
+  inline bool getIsHosting(){
+    return isHostingEvent;
+  }
+
   //@}
 
   /** @name Modifiers */
@@ -98,6 +102,8 @@ public slots:
     const library_song_id_t hostid);
 
   void addSongToAvailableSongs(library_song_id_t songToAdd);
+  void addSongsToAvailableSongs(
+    const std::vector<library_song_id_t>& songsToAdd);
 
   void createEvent(
     const QString& partyName,

@@ -23,7 +23,6 @@
 #include <QSqlDatabase>
 //#include <QFileSystemWatcher>
 #include <QSqlTableModel>
-#include "LibraryModel.hpp"
 #include "UDJServerConnection.hpp"
 #include "PlaybackWidget.hpp"
 
@@ -106,7 +105,6 @@ private:
  
 //  QFileSystemWatcher* fileWatcher;
 
-  LibraryModel *libraryModel;
 
   QWidget *mainWidget;
   

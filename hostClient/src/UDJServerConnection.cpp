@@ -101,10 +101,20 @@ void UDJServerConnection::endEvent(){
 }
 
 void UDJServerConnection::addSongToAvailableSongs(library_song_id_t songToAdd){
+  std::vector<library_song_id_t> toAddVector(1, songToAdd);
+  addSongsToAvailableSongs(toAddVector);
+}
+
+void UDJServerConnection::addSongsToAvailableSongs(
+  const std::vector<library_song_id_t>& songsToAdd)
+{
+  if(songsToAdd.size() <= 0){
+    return;
+  }
   QNetworkRequest addSongToAvailableRequest(getAddSongToAvailableUrl());
   prepareJSONRequest(addSongToAvailableRequest);
-  const QByteArray songAddJSON = JSONHelper::getAddToAvailableJSON(songToAdd);
-  netAccessManager->put(addSongToAvailableRequest, songAddJSON);
+  const QByteArray songsAddJSON = JSONHelper::getAddToAvailableJSON(songsToAdd);
+  netAccessManager->put(addSongToAvailableRequest, songsAddJSON);
 }
 
 void UDJServerConnection::recievedReply(QNetworkReply *reply){

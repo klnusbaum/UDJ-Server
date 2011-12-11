@@ -25,6 +25,7 @@ class QContextMenuEvent;
 namespace UDJ{
 
 class LibraryModel;
+class DataStore;
 
 /** \brief A class for viewing the current contents of the users music library.
 */
@@ -36,10 +37,10 @@ public:
 
   /** \brief Constructs a LibraryView
    *
-   * @param model The Library model backing this view.
+   * @param dataStore The data store being used by the applicaiton.
    * @param parent The parent widget
    */
-  LibraryView(LibraryModel *model, QWidget* parent=0);
+  LibraryView(DataStore *dataStore, QWidget* parent=0);
 
   //@}
 signals:
@@ -61,6 +62,15 @@ private slots:
   void handleContextMenuRequest(const QPoint &pos);
 
 private:
+
+  DataStore *dataStore;
+  LibraryModel *libraryModel;
+  QAction *deleteSongAction;
+  QAction *addToPlaylistAction;
+  QAction *addToAvailableMusicAction;
+
+  void createActions();
+
   static const QString& getDeleteContextMenuItemName(){
     static const QString deleteContextMenuItemName = tr("Delete");
     return deleteContextMenuItemName;
@@ -71,6 +81,15 @@ private:
       tr("Add to playlist");
     return addToPlaylistContextMenuItemName;
   }
+
+  static const QString& getAddToAvailableContextMenuItemName(){
+    static const QString addToAvailableContextMenuItemName = 
+      tr("Add to Available Music");
+    return addToAvailableContextMenuItemName;
+  }
+
+private slots:
+  void addSongToAvailableMusic();
 };
 
 

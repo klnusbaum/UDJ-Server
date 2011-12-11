@@ -168,7 +168,6 @@ void DataStore::addSongToLibrary(Phonon::MediaSource song){
     return;
   }
 
-  std::cout << "Song name: " << songName.toStdString() << std::endl;
   library_song_id_t hostId =-1;
   QSqlQuery addQuery(
     "INSERT INTO "+getLibraryTableName()+ 
@@ -187,9 +186,10 @@ void DataStore::addSongToLibrary(Phonon::MediaSource song){
   addQuery.bindValue(":file", fileName);
   addQuery.bindValue(":duration", duration);
 	EXEC_INSERT(
-		"Failed to add song " << songName.toStdString(), 
+		"Failed to add song library" << songName.toStdString(), 
 		addQuery,
-    hostId)
+    hostId,
+    library_song_id_t)
   if(hostId != -1){
 	  serverConnection->addLibSongOnServer(
       songName, artistName, albumName, duration, hostId);
@@ -197,7 +197,36 @@ void DataStore::addSongToLibrary(Phonon::MediaSource song){
 }
 
 void DataStore::addSongToAvailableSongs(library_song_id_t toAdd){
-  
+  std::vector<library_song_id_t> toAddVector(1, toAdd);
+  addSongsToAvailableSongs(toAddVector);
+}
+
+void DataStore::addSongsToAvailableSongs(
+  const std::vector<library_song_id_t>& song_ids)
+{
+  for(
+    std::vector<library_song_id_t>::const_iterator it = song_ids.begin();
+    it != song_ids.end();
+    ++it
+  )
+  {
+    QSqlQuery addQuery(
+      "INSERT INTO "+ getAvailableMusicTableName()+ 
+      "("+ getAvailableEntryLibIdColName() +")" +
+      "VALUES ( :libid );", 
+      database);
+    
+    library_song_id_t added_lib_id = -1;
+    addQuery.bindValue(
+      ":libid", 
+      QVariant::fromValue<const library_song_id_t>(*it));
+	  EXEC_INSERT(
+		  "Failed to add song to available music" << *it, 
+		  addQuery,
+      added_lib_id, 
+      library_song_id_t)
+  }
+  syncAvailableMusic();
 }
 
 bool DataStore::alterVoteCount(playlist_song_id_t plId, int difference){
@@ -365,6 +394,37 @@ void DataStore::setAvailableSongsSyncStatus(
       setSyncedQuery)
   }
   emit availableSongsModified();
+}
+
+void DataStore::syncAvailableMusic(){
+  QSqlQuery getUnsyncedSongs(database);
+  EXEC_SQL(
+    "Error querying for unsynced songs",
+    getUnsyncedSongs.exec(
+      "SELECT * FROM " + getAvailableMusicTableName() + " WHERE " + 
+      getAvailableEntrySyncStatusColName() + "!=" + 
+      QString::number(getAvailableEntryIsSyncedStatus()) + ";"),
+    getUnsyncedSongs)
+
+  std::vector<library_song_id_t> toAdd;
+  while(getUnsyncedSongs.next()){  
+    QSqlRecord currentRecord = getUnsyncedSongs.record();
+    if(currentRecord.value(getAvailableEntrySyncStatusColName()) == 
+      getAvailableEntryNeedsAddSyncStatus())
+    {
+      toAdd.push_back(currentRecord.value(
+        getAvailableEntryLibIdColName()).value<library_song_id_t>());
+    }
+    else if(currentRecord.value(getLibSyncStatusColName()) ==
+      getLibNeedsDeleteSyncStatus())
+    {
+      //TODO implement delete call here
+    }
+    if(toAdd.size() <= 0){
+      serverConnection->addSongsToAvailableSongs(toAdd);
+    }
+  }
+
 }
 
 

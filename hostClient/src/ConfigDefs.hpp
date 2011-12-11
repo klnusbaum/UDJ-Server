@@ -48,7 +48,7 @@ typedef int avail_music_sync_status_t;
 		std::cerr << std::endl; \
 	} \
 
-#define EXEC_INSERT( MESSAGE, QSQLOBJECT, RESULT_VAR) \
+#define EXEC_INSERT( MESSAGE, QSQLOBJECT, RESULT_VAR, RESULT_VAR_TYPE) \
   QSQLOBJECT.exec(); \
   if( QSQLOBJECT.lastError().type() != QSqlError::NoError ){ \
 		std::cerr << MESSAGE << " IN FILE " << __FILE__ << " AT LINE " \
@@ -60,7 +60,7 @@ typedef int avail_music_sync_status_t;
 		std::cerr << std::endl; \
   } \
   else{ \
-    RESULT_VAR = QSQLOBJECT.lastInsertId().value<library_song_id_t>(); \
+    RESULT_VAR = QSQLOBJECT.lastInsertId().value< RESULT_VAR_TYPE >(); \
   }
 
 #else

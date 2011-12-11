@@ -32,7 +32,7 @@ public:
   LibraryModel(QObject *parent, DataStore *dataStore);
   QString getSongNameFromSource(
     const Phonon::MediaSource &source) const;
-
+  
 private slots:
   void refresh();
 private:
