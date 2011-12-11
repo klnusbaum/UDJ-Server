@@ -426,9 +426,9 @@ void DataStore::syncAvailableMusic(){
     {
       //TODO implement delete call here
     }
-    if(toAdd.size() > 0){
-      serverConnection->addSongsToAvailableSongs(toAdd);
-    }
+  }
+  if(toAdd.size() > 0){
+    serverConnection->addSongsToAvailableSongs(toAdd);
   }
 }
 
