@@ -254,11 +254,6 @@ public:
     return availableMusicTableName;
   }
 
-  static const QString& getAvailableEntryIdColName(){
-    static const QString availableEntryIdColName = "id";
-    return availableEntryIdColName;
-  }
-
   static const QString& getAvailableEntryLibIdColName(){
     static const QString availableEntryLibIdColName = "lib_id";
     return availableEntryLibIdColName;
@@ -467,7 +462,7 @@ private:
     static const QString createAvailableMusicQuery = 
       "CREATE TABLE IF NOT EXISTS " +
       getAvailableMusicTableName() + "(" +
-      getAvailableEntryLibIdColName() + " INTEGER UNIQUE REFERENCES " +
+      getAvailableEntryLibIdColName() + " INTEGER PRIMARY KEY REFERENCES " +
         getLibraryTableName() +"(" + getLibIdColName()+ ") ON DELETE CASCADE," +
       getAvailableEntryIsDeletedColName() + " INTEGER DEFAULT 0, " + 
       getAvailableEntrySyncStatusColName() + " INTEGER DEFAULT " +
@@ -593,6 +588,7 @@ private slots:
   void setAvailableSongsSyncStatus(
     const std::vector<library_song_id_t> songs,
     const avail_music_sync_status_t syncStatus);
+  void eventCleanUp();
 //@}
 
 };

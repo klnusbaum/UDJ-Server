@@ -34,6 +34,7 @@ namespace UDJ{
 DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
  :QObject(parent),serverConnection(serverConnection)
 {
+  serverConnection->setParent(this);
   eventName = "";
   setupDB();
   connect(
@@ -60,6 +61,7 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
     SIGNAL(eventCreationFailed(const QString)));
 
   connect(serverConnection, SIGNAL(eventEnded()), this, SIGNAL(eventEnded()));
+  connect(serverConnection, SIGNAL(eventEnded()), this, SLOT(eventCleanUp()));
   connect(
     serverConnection, 
     SIGNAL(eventEndingFailed(const QString)), 
@@ -76,12 +78,7 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
 }
 
 DataStore::~DataStore(){
-  QSqlQuery tearDownQuery(database);
-  EXEC_SQL(
-    "Error deleteing contents of AvailableMusic",
-    tearDownQuery.exec(getDeleteAvailableMusicQuery()),
-    tearDownQuery
-  )
+  eventCleanUp();
 }
 
   
@@ -127,6 +124,15 @@ void DataStore::setupDB(){
 	EXEC_SQL(
 		"Error creating insert trigger for activePlaylist view.",
   	setupQuery.exec(getActivePlaylistInsertTriggerQuery()),
+		setupQuery)
+
+	EXEC_SQL(
+		"Error creating available music",
+  	setupQuery.exec(getCreateAvailableMusicQuery()),
+		setupQuery)
+	EXEC_SQL(
+		"Error creating available music",
+  	setupQuery.exec(getCreateAvailableMusicViewQuery()),
 		setupQuery)
 }
 
@@ -211,8 +217,8 @@ void DataStore::addSongsToAvailableSongs(
   )
   {
     QSqlQuery addQuery(
-      "INSERT INTO "+ getAvailableMusicTableName()+ 
-      "("+ getAvailableEntryLibIdColName() +")" +
+      "INSERT INTO "+ getAvailableMusicTableName()+ " ("+
+      getAvailableEntryLibIdColName() +") " +
       "VALUES ( :libid );", 
       database);
     
@@ -397,6 +403,7 @@ void DataStore::setAvailableSongsSyncStatus(
 }
 
 void DataStore::syncAvailableMusic(){
+  std::cout << "In sync available music\n";
   QSqlQuery getUnsyncedSongs(database);
   EXEC_SQL(
     "Error querying for unsynced songs",
@@ -420,12 +427,19 @@ void DataStore::syncAvailableMusic(){
     {
       //TODO implement delete call here
     }
-    if(toAdd.size() <= 0){
+    if(toAdd.size() > 0){
       serverConnection->addSongsToAvailableSongs(toAdd);
     }
   }
-
 }
 
+void DataStore::eventCleanUp(){
+  QSqlQuery tearDownQuery(database);
+  EXEC_SQL(
+    "Error deleteing contents of AvailableMusic",
+    tearDownQuery.exec(getDeleteAvailableMusicQuery()),
+    tearDownQuery
+  )
+}
 
 } //end namespace

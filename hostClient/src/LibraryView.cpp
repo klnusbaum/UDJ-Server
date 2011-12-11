@@ -22,6 +22,8 @@
 #include <QHeaderView>
 #include <QContextMenuEvent>
 #include <QMenu>
+#include <QSqlRecord>
+#include <set>
 	
 
 namespace UDJ{
@@ -61,18 +63,38 @@ void LibraryView::createActions(){
 
 void LibraryView::handleContextMenuRequest(const QPoint &pos){
   QMenu contextMenu(this);
-  contextMenu.addAction(getDeleteContextMenuItemName());
-  contextMenu.addAction(getAddToPlaylistContextMenuItemName());
   if(dataStore->isCurrentlyHosting()){
-    contextMenu.addAction(getAddToAvailableContextMenuItemName());
+    contextMenu.addAction(addToAvailableMusicAction);
   }
+  contextMenu.addAction(addToPlaylistAction);
+  contextMenu.addAction(deleteSongAction);
   contextMenu.exec(QCursor::pos());
 }
 
 void LibraryView::addSongToAvailableMusic(){
+  std::cout << "In add song to available music\n";
   QModelIndexList selected = selectedIndexes();
-  
-
+  std::vector<library_song_id_t> toAdd;
+  std::set<int> rows;
+  for(
+    QModelIndexList::const_iterator it = selected.begin();
+    it != selected.end();
+    ++it
+  )
+  {
+    rows.insert(it->row()); 
+  }
+  for(
+    std::set<int>::const_iterator it = rows.begin();
+    it != rows.end();
+    ++it
+  )
+  {
+    QSqlRecord libRecordToAdd = libraryModel->record(*it);
+    toAdd.push_back(libRecordToAdd.value(
+      DataStore::getLibIdColName()).value<library_song_id_t>());
+  }
+  dataStore->addSongsToAvailableSongs(toAdd);
 }
 
 

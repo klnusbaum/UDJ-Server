@@ -46,7 +46,6 @@ MetaWindow::MetaWindow(
   :QMainWindow(parent,flags),
   serverConnection(serverConnection)
 {
-  serverConnection->setParent(this);
 
   createActions();
   setupUi();
