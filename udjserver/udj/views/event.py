@@ -30,6 +30,7 @@ from udj.models import PlayedPlaylistEntry
 from udj.models import ActivePlaylistEntry
 from udj.models import UpVote
 from udj.models import DownVote
+from udj.models import DeletedPlaylistEntry
 from udj.JSONCodecs import getJSONForEvents
 from udj.JSONCodecs import getJSONForAvailableSongs
 from udj.JSONCodecs import getJSONForCurrentSong
@@ -141,6 +142,7 @@ def endEvent(request, event_id):
   saveCurrentSong(toDelete, finishedEvent)
   toDelete.delete()
   AvailableSong.objects.filter(library_entry__owning_user=host).delete()
+  DeletedPlaylistEntry.objects.filter(event__id=event_id).delete()
   
   return HttpResponse("Party ended")
 

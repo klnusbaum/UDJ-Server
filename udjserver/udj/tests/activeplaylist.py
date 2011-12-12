@@ -6,6 +6,7 @@ from udj.tests import User3TestCase
 from udj.models import UpVote
 from udj.models import DownVote
 from udj.models import ActivePlaylistEntry
+from udj.models import DeletedPlaylistEntry
 from udj.models import PlayedPlaylistEntry
 from udj.models import CurrentSong
 
@@ -194,4 +195,14 @@ class TestVoting(User3TestCase):
     response = self.doPost('/udj/events/1/active_playlist/3/downvote', {})
     self.assertEqual(response.status_code, 403)
 
+class TestRemoveSong(User1TestCase):
+  def testBasicRemove(self):
+    playlist_id=3
+    response = self.doDelete('/udj/events/1/active_playlist/3')
+    self.assertEqual(response.status_code, 200)
+    DeletedPlaylistEntry.objects.get(original_id=3)
+    self.assertFalse(ActivePlaylistEntry.objects.filter(pk=3).exists())
 
+  def testDuplicateRemove(self):
+    response = self.doDelete('/udj/events/1/active_playlist/7')
+    self.assertEqual(response.status_code, 200)

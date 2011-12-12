@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseForbidden
+from udj.decorators import IsEventHost
 from udj.decorators import AcceptsMethods
 from udj.decorators import NeedsJSON
 from udj.decorators import NeedsAuth
@@ -15,6 +16,7 @@ from udj.models import CurrentSong
 from udj.models import UpVote
 from udj.models import DownVote
 from udj.models import PlayedPlaylistEntry
+from udj.models import DeletedPlaylistEntry
 from udj.JSONCodecs import getJSONForActivePlaylistEntries
 from udj.JSONCodecs import getActivePlaylistEntryDictionary
 from udj.auth import getUserForTicket
@@ -133,3 +135,17 @@ def voteSong(request, event_id, playlist_id, VoteType):
   VoteType(playlist_entry=entryToVote, user=votingUser).save()
   return HttpResponse()
 
+@NeedsAuth
+@IsEventHost
+@AcceptsMethods('DELETE')
+def removeSongFromActivePlaylist(request, event_id, playlist_id):
+  if DeletedPlaylistEntry.objects.filter(original_id=playlist_id, 
+    event__id=event_id):
+    return HttpResponse()
+
+  toRemove = get_object_or_404(
+    ActivePlaylistEntry, pk=playlist_id, event__id=event_id)
+  DeletedPlaylistEntry(original_id=playlist_id, adder=toRemove.adder,
+    event=toRemove.event, client_request_id=toRemove.client_request_id).save()
+  toRemove.delete()
+  return HttpResponse()

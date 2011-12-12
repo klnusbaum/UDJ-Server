@@ -9,6 +9,7 @@ from udj.models import LibraryEntry
 from udj.models import EventGoer
 from udj.models import ActivePlaylistEntry
 from udj.models import FinishedEvent
+from udj.models import DeletedPlaylistEntry
 from udj.models import FinishedPlaylistEntry
 from udj.models import AvailableSong
 from udj.models import PlayedPlaylistEntry
@@ -57,13 +58,16 @@ class EndEventTest(User1TestCase):
     self.assertEqual(finishedEvent.latitude, Decimal('40.113523'))
     self.assertEqual(finishedEvent.longitude, Decimal('-88.224006'))
     self.assertEqual(finishedEvent.host.id, 2)
-    self.assertEqual(
-      len(AvailableSong.objects.filter(library_entry__owning_user__id=2)),0)
 
     finishedSongs = FinishedPlaylistEntry.objects.filter(event=finishedEvent)
     self.assertEqual(len(finishedSongs),2)
     self.assertTrue(FinishedPlaylistEntry.objects.filter(song__id=12).exists())
     self.assertTrue(FinishedPlaylistEntry.objects.filter(song__id=10).exists())
+    
+    self.assertEqual(
+      len(AvailableSong.objects.filter(library_entry__owning_user__id=2)),0)
+    self.assertFalse(DeletedPlaylistEntry.objects.filter(event__id=1).exists())
+
 
 class EndEventTestNoCurrentSong(User4TestCase):
   def testEndEventNoCurrentSong(self):

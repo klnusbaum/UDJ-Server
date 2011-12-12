@@ -38,4 +38,6 @@ urlpatterns += patterns('udj.views.activeplaylist',
     'voteSongUp'),
   (r'^events/(?P<event_id>\d+)/active_playlist/(?P<playlist_id>\d+)/downvote$', 
     'voteSongDown'),
+  (r'^events/(?P<event_id>\d+)/active_playlist/(?P<playlist_id>\d+)$', 
+    'removeSongFromActivePlaylist'),
 )

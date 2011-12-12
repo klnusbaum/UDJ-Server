@@ -92,6 +92,16 @@ class PlayedPlaylistEntry(models.Model):
   def __unicode__(self):
     return self.song.song
 
+class DeletedPlaylistEntry(models.Model):
+  original_id = models.IntegerField(unique=True)
+  adder = models.ForeignKey(User)
+  event = models.ForeignKey(Event)
+  client_request_id = models.IntegerField()
+
+  class Meta:
+    unique_together = ("adder", "client_request_id", "event")
+  
+
 class FinishedPlaylistEntry(models.Model):
   song = models.ForeignKey(LibraryEntry)
   upvotes = models.IntegerField()
