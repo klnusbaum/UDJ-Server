@@ -24,8 +24,6 @@ SET(UDJ_SRCS
   DataStore.cpp
   ActivePlaylistView.cpp
   LibraryView.cpp
-  ActivePlaylistDelegate.cpp
-	ActivePlaylistModel.cpp
 	UDJServerConnection.cpp
   JSONHelper.cpp
   LibraryModel.cpp
@@ -54,8 +52,6 @@ SET(UDJ_MOC_HDRS
   DataStore.hpp
   ActivePlaylistView.hpp
   LibraryView.hpp
-  ActivePlaylistDelegate.hpp
-	ActivePlaylistModel.hpp
 	DifferenceSpinner.hpp
 	UDJServerConnection.hpp
   LibraryModel.hpp

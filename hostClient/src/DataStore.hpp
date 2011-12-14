@@ -149,19 +149,19 @@ public:
     return priorityColName;
   }
 
-  static const QString& getDefaultVoteCount(){
-    static const QString defaultVoteCount = "1";
-    return defaultVoteCount;
-  }
-
-  static const QString& getDefaultPriority(){
-    static const QString defaultPriority = "1";
-    return defaultPriority;
-  }
-
   static const QString& getLibIdColName(){
     static const QString libIdColName = "id";
     return libIdColName;
+  }
+
+  static const QString& getUpVoteColName(){
+    static const QString upVoteColName = "up_votes";
+    return upVoteColName;
+  }
+
+  static const QString& getDownVoteColName(){
+    static const QString downVoteColName = "down_votes";
+    return downVoteColName;
   }
 
   static const QString& getLibSongColName(){
@@ -477,8 +477,6 @@ private:
       "));";
     return createAvailableMusicQuery;
   }
-      
-      
 
   static const QString& getCreateActivePlaylistQuery(){
     static const QString createActivePlaylistQuery = 
@@ -487,8 +485,9 @@ private:
    	  getActivePlaylistIdColName() + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
    	  getActivePlaylistLibIdColName() + " INTEGER REFERENCES " +
         getLibraryTableName() +"(" + getLibIdColName()+ ") ON DELETE CASCADE, "+
-   	  getVoteCountColName() + " INTEGER DEFAULT " +getDefaultVoteCount() + "," +
-      getPriorityColName() + " INTEGER DEFAULT " +getDefaultPriority() + "," +
+      getDownVoteColName() + " INTEGER NOT NULL, " +
+      getUpVoteColName() + " INTEGER NOT NULL, " +
+      getPriorityColName() + " INTEGER NOT NULL," +
    	  getTimeAddedColName() + " TEXT DEFAULT CURRENT_TIMESTAMP);";
     return createActivePlaylistQuery;
   }
@@ -496,67 +495,14 @@ private:
   static const QString& getCreateActivePlaylistViewQuery(){
     static const QString createActivePlaylistViewQuery = 
       "CREATE VIEW IF NOT EXISTS "+getActivePlaylistViewName() + " " + 
-      "AS SELECT * FROM " + getActivePlaylistTableName() + " INNER JOIN " +
+      "AS SELECT * , (" + getUpVoteColName() + " - " + getDownVoteColName() +
+      ") AS " + getVoteCountColName() + " FROM " + getActivePlaylistTableName()
+       + " INNER JOIN " +
       getLibraryTableName() + " ON " + getActivePlaylistTableName() + "." +
       getActivePlaylistLibIdColName() + "=" + getLibraryTableName() + "." +
-      getLibIdColName() +" " 
-      "ORDER BY " +getPriorityColName() + " DESC, " +
-      getTimeAddedColName() +" DESC;";
+      getLibIdColName() +" "
+      "ORDER BY " +getPriorityColName() + " ASC;";
     return createActivePlaylistViewQuery;
-  }
-
-  static const QString& getActivePlaylistUpdateTriggerName(){
-    static const QString activePlaylistUpdateTriggerName = "updateVotes";
-    return activePlaylistUpdateTriggerName;
-  }
-
-  static const QString& getActivePlaylistUpdateTriggerQuery(){
-    static const QString activePlaylistUpdateTriggerQuery =
-  	"CREATE TRIGGER IF NOT EXISTS " +getActivePlaylistUpdateTriggerName() + " "
-    "INSTEAD OF "
-    "UPDATE ON " + getActivePlaylistViewName() + " BEGIN "
-    "UPDATE " + getActivePlaylistTableName() + " SET " + getVoteCountColName() +
-    "=new."+getVoteCountColName() + " "
-    "WHERE  " + getActivePlaylistIdColName() + 
-    "=old."+ getActivePlaylistIdColName() + ";"
-    "END;";
-    return activePlaylistUpdateTriggerQuery;
-  }
-
-  static const QString& getActivePlaylistDeleteTriggerName(){
-    static const QString activePlaylistDeleteTriggerName = 
-      "deleteSongFromActivePlaylist";
-    return activePlaylistDeleteTriggerName;
-  }
-
-  static const QString& getActivePlaylistDeleteTriggerQuery(){
-    static const QString activePlaylistDeleteTriggerQuery =
-		  "CREATE TRIGGER IF NOT EXISTS "+ getActivePlaylistDeleteTriggerName()+ " "
-		  "INSTEAD OF DELETE ON " +getActivePlaylistViewName() +  " "
-		  "BEGIN "
-		  "DELETE FROM " + getActivePlaylistTableName() + " "
-		  "where " + getActivePlaylistIdColName() +  " "
-      "= old." + getActivePlaylistIdColName() +";"
-		  "END;";
-    return activePlaylistDeleteTriggerQuery;
-  }
-
-  static const QString& getActivePlaylistInsertTriggerName(){
-    static const QString activePlaylistInsertTriggerName = 
-      "insertSongInActivePlaylist";
-    return activePlaylistInsertTriggerName;
-  }
-
-  static const QString& getActivePlaylistInsertTriggerQuery(){
-    static const QString activePlaylistInsertTriggerQuery = 
-  	"CREATE TRIGGER IF NOT EXISTS " + getActivePlaylistInsertTriggerName() + " "
-    "INSTEAD OF "
-    "INSERT ON " + getActivePlaylistViewName() + " BEGIN "
-    "INSERT INTO " + getActivePlaylistTableName() + " "
-    "(" + getActivePlaylistLibIdColName() + ") VALUES (new." +
-    getActivePlaylistLibIdColName() + ");"
-    "END;";
-    return activePlaylistInsertTriggerQuery;
   }
 
   static const QString& getCreateAvailableMusicViewQuery(){

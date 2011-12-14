@@ -111,20 +111,6 @@ void DataStore::setupDB(){
   	setupQuery.exec(getCreateActivePlaylistViewQuery()),
 		setupQuery)
 
-	EXEC_SQL(
-		"Error creating update trigger for activePlaylist view.",
-  	setupQuery.exec(getActivePlaylistUpdateTriggerQuery()),
-		setupQuery)
-
-	EXEC_SQL(
-		"Error creating delete trigger for activePlaylist view.",
-		setupQuery.exec(getActivePlaylistDeleteTriggerQuery()),
-		setupQuery)
-
-	EXEC_SQL(
-		"Error creating insert trigger for activePlaylist view.",
-  	setupQuery.exec(getActivePlaylistInsertTriggerQuery()),
-		setupQuery)
 
 	EXEC_SQL(
 		"Error creating available music",

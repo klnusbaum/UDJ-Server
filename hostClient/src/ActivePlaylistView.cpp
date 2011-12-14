@@ -19,10 +19,7 @@
 #include "ActivePlaylistView.hpp"
 #include "DataStore.hpp"
 #include <QHeaderView>
-#include <QSqlRecord>
-#include <QSqlField>
-#include "ActivePlaylistDelegate.hpp"
-#include "ActivePlaylistModel.hpp"
+#include <QSqlRelationalTableModel>
 
 namespace UDJ{
 
@@ -30,29 +27,15 @@ ActivePlaylistView::ActivePlaylistView(DataStore* dataStore, QWidget* parent):
   QTableView(parent),
   dataStore(dataStore)
 {
-  playlistModel = new ActivePlaylistModel(dataStore, this);
+  setEditTriggers(QAbstractItemView::NoEditTriggers);
+  QSqlRelationalTableModel *model = 
+    new QSqlRelationalTableModel(this, dataStore->getDatabaseConnection());
+  model->setTable(DataStore::getActivePlaylistViewName());
   horizontalHeader()->setStretchLastSection(true);
-  setItemDelegateForColumn(6, new ActivePlaylistDelegate(this));
-  setModel(playlistModel);
+  setModel(model);
   setSelectionBehavior(QAbstractItemView::SelectRows);
 }
   
-QString ActivePlaylistView::getFilePath(const QModelIndex& songIndex) const{
-  return playlistModel->getFilePath(songIndex);
-}
-
-void ActivePlaylistView::addSongToPlaylist(const library_song_id_t& songId){
-  //TODO implement this
-}
-
-void ActivePlaylistView::removeSong(const playlist_song_id_t& playlistId){
-  //TODO implement this
-}
-
-bool ActivePlaylistView::isVotesColumn(int columnIndex){
-  return columnIndex == 3; 
-}
-
 
 } //end namespace
 

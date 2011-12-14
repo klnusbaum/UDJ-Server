@@ -19,15 +19,11 @@
 #ifndef ACTIVE_PLAYLIST_VIEW_HPP
 #define ACTIVE_PLAYLIST_VIEW_HPP
 #include <QTableView>
-#include <QSqlDatabase>
-#include <phonon/mediasource.h>
-#include "ConfigDefs.hpp"
 
 
 namespace UDJ{
 
 class DataStore;
-class ActivePlaylistModel;
 
 /**
  * \brief Used to view the items in a PlaylistModel
@@ -50,34 +46,6 @@ public:
 
   //@}
 
-  QString getFilePath(const QModelIndex& songIndex) const;
-
-  static bool isVotesColumn(int columnIndex);
-
-
-public slots:
-
-  /** @name Public slots */
-  //@{
-
-  /** 
-   * \brief Adds song to the playlist.
-   * 
-   * @param libraryIndex Index in the library model corresponding to the
-   * song that should be added.
-   */
-  void addSongToPlaylist(const library_song_id_t& songId);
-  
-  /**
-   * \brief Removes the given song from the playlist.
-   * 
-   * @param index The index in the playlist model that corresponds to the song
-   * which should be removed.
-   */
-	void removeSong(const playlist_song_id_t& playlistId);
-
-  //@}
-
 private:
 
   /** @name Private Members */
@@ -88,10 +56,6 @@ private:
    * to the playlist.
    */
   DataStore* dataStore;
-
-  /** \brief The model containing the playlist data */
-  ActivePlaylistModel* playlistModel;
-
 
   //@}
 
