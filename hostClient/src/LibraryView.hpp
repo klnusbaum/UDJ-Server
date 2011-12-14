@@ -21,10 +21,10 @@
 #include <QTableView>
 
 class QContextMenuEvent;
+class QSqlRelationalTableModel;
 
 namespace UDJ{
 
-class LibraryModel;
 class DataStore;
 
 /** \brief A class for viewing the current contents of the users music library.
@@ -43,28 +43,13 @@ public:
   LibraryView(DataStore *dataStore, QWidget* parent=0);
 
   //@}
-signals:
-  
-  /** @name Signals */
-  //@{
-
-  /** \brief Emitted when a song is requested to be added to the curren
-   * playlist.
-   *
-   * @param songToAdd The model index in the music library of the song
-   * that is being requested to be added to the playlist.
-   */
-  void songAddRequest(const QModelIndex& songToAdd); 
-
-  //@}
-
 private slots:
   void handleContextMenuRequest(const QPoint &pos);
 
 private:
 
   DataStore *dataStore;
-  LibraryModel *libraryModel;
+  QSqlRelationalTableModel *libraryModel;
   QAction *deleteSongAction;
   QAction *addToPlaylistAction;
   QAction *addToAvailableMusicAction;
@@ -90,6 +75,7 @@ private:
 
 private slots:
   void addSongToAvailableMusic();
+  void refresh();
 };
 
 

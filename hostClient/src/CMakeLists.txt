@@ -26,7 +26,6 @@ SET(UDJ_SRCS
   LibraryView.cpp
 	UDJServerConnection.cpp
   JSONHelper.cpp
-  LibraryModel.cpp
   qt-json/json.cpp
   LoginWidget.cpp
   ActivityList.cpp
@@ -54,7 +53,6 @@ SET(UDJ_MOC_HDRS
   LibraryView.hpp
 	DifferenceSpinner.hpp
 	UDJServerConnection.hpp
-  LibraryModel.hpp
   LoginWidget.hpp
   ActivityList.hpp
   PlaybackWidget.hpp

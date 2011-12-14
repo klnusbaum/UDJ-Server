@@ -17,8 +17,8 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "LibraryView.hpp"
-#include "LibraryModel.hpp"
 #include "DataStore.hpp"
+#include <QSqlRelationalTableModel>
 #include <QHeaderView>
 #include <QContextMenuEvent>
 #include <QMenu>
@@ -33,7 +33,10 @@ LibraryView::LibraryView(DataStore *dataStore, QWidget* parent):
   QTableView(parent),
   dataStore(dataStore)
 {
-  libraryModel = new LibraryModel(this, dataStore);
+  libraryModel = 
+    new QSqlRelationalTableModel(this, dataStore->getDatabaseConnection());
+  libraryModel->setTable(DataStore::getLibraryTableName());
+  libraryModel->select();
   setEditTriggers(QAbstractItemView::NoEditTriggers);
   verticalHeader()->hide();
   horizontalHeader()->setStretchLastSection(true);
@@ -43,8 +46,12 @@ LibraryView::LibraryView(DataStore *dataStore, QWidget* parent):
   createActions();
   connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
     this, SLOT(handleContextMenuRequest(const QPoint&)));
+  connect(dataStore, SIGNAL(libSongsModified()), this, SLOT(refresh()));
 }
 
+void LibraryView::refresh(){
+  libraryModel->select();
+}
 void LibraryView::createActions(){
   deleteSongAction = new QAction(getDeleteContextMenuItemName(), this);
   addToPlaylistAction = new QAction(
