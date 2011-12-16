@@ -111,6 +111,8 @@ public slots:
 
   void endEvent();
 
+  void getActivePlaylist();
+
 
   //@}
 
@@ -165,6 +167,8 @@ signals:
   void songsAddedToAvailableMusic(
     const std::vector<library_song_id_t> songAdded);
 
+  void newActivePlaylist(const QVariantList newPlaylist);
+
   //@}
 
 
@@ -207,6 +211,8 @@ private:
   QUrl getAddSongToAvailableUrl() const;
 
   QUrl getEndEventUrl() const;
+
+  QUrl getActivePlaylistUrl() const;
 
   static const QString & getServerPortNumber(){
     /** 
@@ -282,6 +288,8 @@ private:
   void handleEndEventReply(QNetworkReply *reply);
 
   void handleAddAvailableSongReply(QNetworkReply *reply);
+
+  void handleRecievedActivePlaylist(QNetworkReply *reply);
 
 
   //@}

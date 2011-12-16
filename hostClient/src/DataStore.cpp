@@ -74,6 +74,12 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
     this,
     SLOT(setAvailableSongsSynced(const std::vector<library_song_id_t>)));
 
+  connect(
+    serverConnection,
+    SIGNAL(newActivePlaylist(const QVariantList)),
+    this,
+    SLOT(setActivePlaylist(const QVariantList)));
+
   syncLibrary();
 }
 
@@ -221,10 +227,6 @@ void DataStore::addSongsToAvailableSongs(
   syncAvailableMusic();
 }
 
-bool DataStore::alterVoteCount(playlist_song_id_t plId, int difference){
-  //TODO actually implement
-	return true;
-}
 
 bool DataStore::addSongToActivePlaylist(library_song_id_t libraryId){
 	QSqlQuery insertQuery("INSERT INTO " + getActivePlaylistTableName() +" "
@@ -425,6 +427,59 @@ void DataStore::eventCleanUp(){
     tearDownQuery.exec(getDeleteAvailableMusicQuery()),
     tearDownQuery
   )
+}
+
+void DataStore::clearActivePlaylist(){
+  QSqlQuery deleteActivePlayilstQuery(database);
+  EXEC_SQL(
+    "Error clearing active playlist table.",
+    deleteActivePlayilstQuery.exec(getClearActivePlaylistQuery()),
+    deleteActivePlayilstQuery)
+}
+
+void DataStore::addSong2ActivePlaylistFromQVariant(
+  const QVariantMap &songToAdd, int priority)
+{
+  QSqlQuery addQuery(
+    "INSERT INTO "+getActivePlaylistTableName()+ 
+    "("+
+    getActivePlaylistIdColName() + ","+
+    getActivePlaylistLibIdColName() + ","+
+    getDownVoteColName() + ","+
+    getUpVoteColName() + "," +
+    getPriorityColName() + "," +
+    getTimeAddedColName() +"," +
+    getAdderIdColName() + ")" +
+    " VALUES ( :id , :libid , :down , :up, :pri , :time , :adder );", 
+    database);
+ 
+  addQuery.bindValue(":id", songToAdd["id"]);
+  addQuery.bindValue(":libid", songToAdd["lib_song_id"]);
+  addQuery.bindValue(":down", songToAdd["down_votes"]);
+  addQuery.bindValue(":up", songToAdd["up_votes"]);
+  addQuery.bindValue(":pri", priority);
+  addQuery.bindValue(":time", songToAdd["time_added"]);
+  addQuery.bindValue(":adder", songToAdd["adder_id"]);
+
+  long insertId;
+	EXEC_INSERT(
+		"Failed to add song library" << songToAdd["song"].toString().toStdString(),
+		addQuery,
+    insertId,
+    long)
+}
+
+void DataStore::setActivePlaylist(const QVariantList newSongs){
+  std::cout << "in set active playlist\n";
+  clearActivePlaylist();
+  for(int i=0; i<newSongs.size(); ++i){
+    addSong2ActivePlaylistFromQVariant(newSongs[i].toMap(), i); 
+  }
+  emit activePlaylistModified();
+}
+
+void DataStore::refreshActivePlaylist(){
+  serverConnection->getActivePlaylist();
 }
 
 } //end namespace

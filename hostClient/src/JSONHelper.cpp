@@ -192,4 +192,18 @@ event_id_t JSONHelper::getEventId(QNetworkReply *reply){
   return eventCreated["event_id"].value<event_id_t>();
 }
 
+const QVariantList JSONHelper::getActivePlaylistFromJSON(QNetworkReply *reply){
+  QByteArray responseData = reply->readAll();
+  QString responseString = QString::fromUtf8(responseData);
+  bool success;
+  QVariantList activePlaylist = 
+    QtJson::Json::parse(responseString, success).toList();
+  if(!success){
+    std::cerr << "Error parsing json from a response to an event creation" <<
+     "request" << std::endl <<
+      responseString.toStdString() << std::endl;
+  }
+  return activePlaylist;
+}
+
 } //end namespace UDJ

@@ -86,6 +86,11 @@ public:
   inline bool isCurrentlyHosting() const{
     return serverConnection->getIsHosting();
   }
+
+  Phonon::MediaSource getNextSongToPlay();
+  
+  Phonon::MediaSource takeNextSongToPlay();
+
   
   /** @name Public Constants */
   //@{
@@ -147,6 +152,11 @@ public:
   static const QString& getPriorityColName(){
     static const QString priorityColName = "priority";
     return priorityColName;
+  }
+
+  static const QString& getAdderIdColName(){
+    static const QString adderIdColName = "adderId";
+    return adderIdColName;
   }
 
   static const QString& getLibIdColName(){
@@ -301,14 +311,7 @@ public slots:
 
   void addSongsToAvailableSongs(const std::vector<library_song_id_t>& song_ids);
 
-  /**
-   * \brief Alters the vote count associated with a specific song.
-   *
-   * @param plId Id of the song whose vote count is to be altered.
-   * @param difference The amount by which the vote count should be altered.
-   * @return True if the altering was sucessful, false otherwise.
-   */
-	bool alterVoteCount(playlist_song_id_t plId, int difference);
+  void refreshActivePlaylist();
 
   /**
    * \brief Adds the specified song to the playlist.
@@ -334,9 +337,7 @@ public slots:
 
   void endEvent();
 
-  Phonon::MediaSource getNextSongToPlay();
   
-  Phonon::MediaSource takeNextSongToPlay();
 
   //@}
 
@@ -354,6 +355,8 @@ signals:
   void eventEnded();
 
   void eventEndingFailed(const QString errMessage);
+ 
+  void activePlaylistModified();
 //@}
 
 private:
@@ -385,6 +388,11 @@ private:
   void syncLibrary();
 
   void syncAvailableMusic();
+
+  void clearActivePlaylist();
+
+  void addSong2ActivePlaylistFromQVariant(
+    const QVariantMap &songToAdd, int priority);
 
 
   //@}
@@ -482,12 +490,13 @@ private:
     static const QString createActivePlaylistQuery = 
       "CREATE TABLE IF NOT EXISTS " +
       getActivePlaylistTableName() +  "(" +
-   	  getActivePlaylistIdColName() + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+   	  getActivePlaylistIdColName() + " INTEGER PRIMARY KEY, " +
    	  getActivePlaylistLibIdColName() + " INTEGER REFERENCES " +
         getLibraryTableName() +"(" + getLibIdColName()+ ") ON DELETE CASCADE, "+
       getDownVoteColName() + " INTEGER NOT NULL, " +
       getUpVoteColName() + " INTEGER NOT NULL, " +
-      getPriorityColName() + " INTEGER NOT NULL," +
+      getPriorityColName() + " INTEGER NOT NULL, " +
+      getAdderIdColName() + " INTEGER NOT NULL, " +
    	  getTimeAddedColName() + " TEXT DEFAULT CURRENT_TIMESTAMP);";
     return createActivePlaylistQuery;
   }
@@ -521,6 +530,12 @@ private:
     return deleteAvailableMusicQuery;
   }
 
+  static const QString& getClearActivePlaylistQuery(){
+    static const QString clearActivePlaylistQuery = 
+      "DELETE FROM " + getActivePlaylistTableName() + ";";
+    return clearActivePlaylistQuery;
+  }
+
  //@}
 
 /** @name Private Slots */
@@ -535,6 +550,7 @@ private slots:
     const std::vector<library_song_id_t> songs,
     const avail_music_sync_status_t syncStatus);
   void eventCleanUp();
+  void setActivePlaylist(const QVariantList newSongs);
 //@}
 
 };

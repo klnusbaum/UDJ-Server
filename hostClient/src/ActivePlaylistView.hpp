@@ -20,6 +20,7 @@
 #define ACTIVE_PLAYLIST_VIEW_HPP
 #include <QTableView>
 
+class QSqlRelationalTableModel;
 
 namespace UDJ{
 
@@ -57,7 +58,13 @@ private:
    */
   DataStore* dataStore;
 
+
+  QSqlRelationalTableModel *model;
   //@}
+
+private slots:
+
+  void refreshDisplay(); 
 
 };
 

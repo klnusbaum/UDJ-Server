@@ -20,6 +20,7 @@
 #define JSON_HELPER_HPP
 #include "ConfigDefs.hpp"
 #include <vector>
+#include <QVariantList>
 
 class QNetworkReply;
 
@@ -83,6 +84,8 @@ public:
 
   static const std::vector<library_song_id_t> getAddedAvailableSongs(
     QNetworkReply *reply);
+
+  static const QVariantList getActivePlaylistFromJSON(QNetworkReply *reply);
 
   static const float& getInvalidLat(){
     static const float invalidLat = 100;

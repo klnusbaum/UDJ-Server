@@ -53,10 +53,18 @@ void EventDashboard::setupUi(){
   eventInfo->addWidget(eventId);
   
   QPushButton *stopEventButton = new QPushButton(tr("Stop Event"));
+  QPushButton *refreshPlaylist = new QPushButton(tr("Playist Refresh"));
   connect(stopEventButton, SIGNAL(clicked()), this, SLOT(endEvent()));
+  connect(
+    refreshPlaylist, 
+    SIGNAL(clicked()), 
+    dataStore, 
+    SLOT(refreshActivePlaylist())
+  );
   header->addLayout(eventInfo);
   header->addStretch();
   header->addWidget(stopEventButton);
+  header->addWidget(refreshPlaylist);
 
 
   eventControls = new QTabWidget;

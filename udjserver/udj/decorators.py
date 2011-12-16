@@ -26,7 +26,7 @@ def InParty(function):
   def wrapper(*args, **kwargs):
     request = args[0]
     user = getUserForTicket(request)
-    event = get_object_or_404(Event, id__exact=kwargs['event_id'])
+    event = get_object_or_404(Event, event_id__id__exact=kwargs['event_id'])
     event_goers = EventGoer.objects.filter(user=user, event=event)
     if len(event_goers) != 1:
       return HttpResponseForbidden()

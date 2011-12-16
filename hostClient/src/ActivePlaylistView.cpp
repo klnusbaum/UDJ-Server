@@ -28,15 +28,23 @@ ActivePlaylistView::ActivePlaylistView(DataStore* dataStore, QWidget* parent):
   dataStore(dataStore)
 {
   setEditTriggers(QAbstractItemView::NoEditTriggers);
-  QSqlRelationalTableModel *model = 
+  model = 
     new QSqlRelationalTableModel(this, dataStore->getDatabaseConnection());
   model->setTable(DataStore::getActivePlaylistViewName());
   model->select();
   horizontalHeader()->setStretchLastSection(true);
   setModel(model);
   setSelectionBehavior(QAbstractItemView::SelectRows);
+  connect(
+    dataStore,
+    SIGNAL(activePlaylistModified()),
+    this, 
+    SLOT(refreshDisplay()));
 }
   
+void ActivePlaylistView::refreshDisplay(){
+  model->select();
+}
 
 } //end namespace
 
