@@ -154,6 +154,37 @@ const QByteArray JSONHelper::getAddToAvailableJSON(
   return QtJson::Json::serialize(toSerialize, success);
 }
 
+const QByteArray JSONHelper::getAddToActiveJSON(
+  const std::vector<client_request_id_t>& requestIds,
+  const std::vector<library_song_id_t>& libIds)
+{
+  bool success;
+  return getAddToActiveJSON(requestIds, libIds, success);
+}
+
+const QByteArray JSONHelper::getAddToActiveJSON(
+  const std::vector<client_request_id_t>& requestIds,
+  const std::vector<library_song_id_t>& libIds,
+  bool &success)
+{
+  QVariantList toSerialize;
+  std::vector<library_song_id_t>::const_iterator songIt = libIds.begin();
+  for(
+    std::vector<client_request_id_t>::const_iterator requestIt = 
+      requestIds.begin();
+    requestIt != requestIds.end() && songIt != libIds.end();
+    ++requestIt, ++songIt)
+  {
+    QVariantMap requestToAdd;
+    requestToAdd["lib_id"] = QVariant::fromValue<library_song_id_t>(*songIt);
+    requestToAdd["add_request_id"] = 
+      QVariant::fromValue<client_request_id_t>(*songIt);
+    toSerialize.append(requestToAdd);
+  }
+  return QtJson::Json::serialize(toSerialize, success);
+}
+
+
 const std::vector<library_song_id_t> JSONHelper::getAddedAvailableSongs(
   QNetworkReply *reply)
 {
@@ -205,5 +236,6 @@ const QVariantList JSONHelper::getActivePlaylistFromJSON(QNetworkReply *reply){
   }
   return activePlaylist;
 }
+
 
 } //end namespace UDJ

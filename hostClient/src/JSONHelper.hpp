@@ -77,6 +77,15 @@ public:
     const std::vector<library_song_id_t>& toAdd, 
     bool &success);
 
+  static const QByteArray getAddToActiveJSON(
+    const std::vector<client_request_id_t>& requestIds,
+    const std::vector<library_song_id_t>& libIds);
+
+  static const QByteArray getAddToActiveJSON(
+    const std::vector<client_request_id_t>& requestIds,
+    const std::vector<library_song_id_t>& libIds,
+    bool &success);
+
   static const std::vector<library_song_id_t>
     getUpdatedLibIds(QNetworkReply *reply);
 

@@ -8,7 +8,8 @@ playing, fade into new song, then gradual return beat of new song to normal.
 -Import iTunes library capability
 -Handle song not being added to the server correctly.
 -If a song is removed from the library mid event, need to make sure that
-the available music, and active playlist are all updated accordingly
+the available music, active playlist, and anything else that references the
+library table is updated accordingly
 
 ANDROID APP
 -IMPORTANT: SWITCH TO HttpsURLConnection. This will give us automatic caching

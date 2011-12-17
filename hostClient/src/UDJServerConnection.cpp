@@ -23,6 +23,7 @@
 #include "UDJServerConnection.hpp"
 #include "JSONHelper.hpp"
 
+Q_DECLARE_METATYPE(std::vector<UDJ::client_request_id_t>)
 namespace UDJ{
 
 UDJServerConnection::UDJServerConnection(QObject *parent):QObject(parent),
@@ -123,6 +124,30 @@ void UDJServerConnection::getActivePlaylist(){
   netAccessManager->get(getActivePlaylistRequest);
 }
 
+void UDJServerConnection::addSongToActivePlaylist(
+  client_request_id_t requestId, 
+  library_song_id_t songId)
+{
+  std::vector<client_request_id_t> requestIds(1, requestId);
+  std::vector<library_song_id_t> songIds(1, songId);
+  addSongsToActivePlaylist(requestIds, songIds);
+}
+
+void UDJServerConnection::addSongsToActivePlaylist(
+  const std::vector<client_request_id_t>& requestIds, 
+  const std::vector<library_song_id_t>& songIds)
+{
+  QNetworkRequest add2ActivePlaylistRequest(getActivePlaylistAddUrl());
+  add2ActivePlaylistRequest.setRawHeader(getTicketHeaderName(), ticket_hash);
+  const QByteArray songsAddJSON = JSONHelper::getAddToActiveJSON(
+    requestIds,
+    songIds);
+  QNetworkReply *reply = 
+    netAccessManager->put(add2ActivePlaylistRequest, songsAddJSON);
+  reply->setProperty(getActivePlaylistRequestIdsPropertyName(),
+    QVariant::fromValue<std::vector<client_request_id_t> >(requestIds));
+}
+
 void UDJServerConnection::recievedReply(QNetworkReply *reply){
   if(reply->request().url().path() == getAuthUrl().path()){
     handleAuthReply(reply);
@@ -141,6 +166,9 @@ void UDJServerConnection::recievedReply(QNetworkReply *reply){
   }
   else if(reply->request().url().path() == getActivePlaylistUrl().path()){
     handleRecievedActivePlaylist(reply);
+  }
+  else if(reply->request().url().path() == getActivePlaylistAddUrl().path()){
+    handleRecievedActivePlaylistAdd(reply);
   }
   else{
     std::cerr << "Recieved unknown response" << std::endl;
@@ -216,6 +244,15 @@ void UDJServerConnection::handleRecievedActivePlaylist(QNetworkReply *reply){
   }
 }
 
+void UDJServerConnection::handleRecievedActivePlaylistAdd(QNetworkReply *reply){
+  if(reply->error() == QNetworkReply::NoError){
+    emit songsAddedToActivePlaylist(reply->property(
+      getActivePlaylistRequestIdsPropertyName()).
+        value<std::vector<client_request_id_t> >());
+  }
+}
+
+
 QUrl UDJServerConnection::getLibAddSongUrl() const{
   return QUrl(getServerUrlPath() + "users/" + QString::number(user_id) +
     "/library/songs");
@@ -238,6 +275,11 @@ QUrl UDJServerConnection::getAddSongToAvailableUrl() const{
 QUrl UDJServerConnection::getActivePlaylistUrl() const{
   return QUrl(getServerUrlPath() + "events/" + QString::number(eventId) +
     "/active_playlist");
+}
+
+QUrl UDJServerConnection::getActivePlaylistAddUrl() const{
+  return QUrl(getServerUrlPath() + "events/" + QString::number(eventId) +
+    "/active_playlist/songs");
 }
 
 void UDJServerConnection::clearMyLibrary(){

@@ -301,6 +301,37 @@ public:
     return availableMusicViewName;
   }
 
+  static const QString& getPlaylistAddRequestsTableName(){
+    static const QString playlistAddRequestsTableName = "playlist_add_requests";
+    return playlistAddRequestsTableName;
+  }
+
+  static const QString& getPlaylistAddIdColName(){
+    static const QString playlistAddIdColName = "addId";
+    return playlistAddIdColName;
+  }
+
+  static const QString& getPlaylistAddLibIdColName(){
+    static const QString playlistAddLibIdColName = "libId";
+    return playlistAddLibIdColName;
+  }
+
+  static const QString& getPlaylistAddSycnStatusColName(){
+    static const QString playlistAddSyncStatusColName = "sync_status";
+    return playlistAddSyncStatusColName;
+  }
+
+  static const playlist_add_sync_status_t& getPlaylistAddNeedsSync(){
+    static const playlist_add_sync_status_t needsSyncStatus=1;
+    return needsSyncStatus;
+  }
+
+  static const playlist_add_sync_status_t& getPlaylistAddIsSynced(){
+    static const playlist_add_sync_status_t isSynced=0;
+    return isSynced;
+  }
+
+
  //@}
 
 /** @name Public slots */
@@ -317,17 +348,21 @@ public slots:
    * \brief Adds the specified song to the playlist.
    *
    * @param libraryId Id of the song to add to the playlist.
-   * @return True if the addition of the song was sucessful, false otherwise.
    */
-	bool addSongToActivePlaylist(playlist_song_id_t libraryId);
+	void addSongToActivePlaylist(library_song_id_t libraryId);
+
+	void addSongsToActivePlaylist(
+    const std::vector<library_song_id_t>& libraryId);
 
   /**
    * \brief Removes the specified song from the playlist.
    *
-   * @param libraryId Id of the song to remove the playlist.
-   * @return True if the removal of the song was sucessful, false otherwise.
+   * @param plId Id of the song to remove the playlist.
    */
-	bool removeSongFromActivePlaylist(playlist_song_id_t plId);
+	void removeSongFromActivePlaylist(playlist_song_id_t plId);
+
+  void removeSongsFromActivePlaylist(
+    const std::vector<playlist_song_id_t>& pl_ids);
 
   void clearMyLibrary();
 
@@ -357,6 +392,8 @@ signals:
   void eventEndingFailed(const QString errMessage);
  
   void activePlaylistModified();
+
+  void playlistAddRequestsSynced();
 //@}
 
 private:
@@ -393,6 +430,8 @@ private:
 
   void addSong2ActivePlaylistFromQVariant(
     const QVariantMap &songToAdd, int priority);
+
+  void syncPlaylistAddRequests();
 
 
   //@}
@@ -536,6 +575,19 @@ private:
     return clearActivePlaylistQuery;
   }
 
+  static const QString& getCreatePlaylistAddRequestsTableQuery(){
+    static const QString createPlaylistAddRequestsTableQuery =
+      "CREATE TABLE IF NOT EXISTS " + getPlaylistAddRequestsTableName() +
+      "(" + getPlaylistAddIdColName() + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+   	  getPlaylistAddLibIdColName() + " INTEGER REFERENCES " +
+        getLibraryTableName() +"(" + getLibIdColName()+ 
+        ") ON DELETE SET NULL, " +
+      getPlaylistAddSycnStatusColName() + " INTEGER DEFAULT " +
+        getPlaylistAddNeedsSync() + 
+      ");";
+    return createPlaylistAddRequestsTableQuery;
+  }
+
  //@}
 
 /** @name Private Slots */
@@ -551,6 +603,8 @@ private slots:
     const avail_music_sync_status_t syncStatus);
   void eventCleanUp();
   void setActivePlaylist(const QVariantList newSongs);
+  void setPlaylistAddRequestsSynced(const std::vector<client_request_id_t> 
+    toSetSynced);
 //@}
 
 };

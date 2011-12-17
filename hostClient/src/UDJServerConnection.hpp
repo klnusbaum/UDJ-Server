@@ -113,6 +113,13 @@ public slots:
 
   void getActivePlaylist();
 
+  void addSongToActivePlaylist(
+    client_request_id_t requestId, 
+    library_song_id_t songId);
+
+  void addSongsToActivePlaylist(
+    const std::vector<client_request_id_t>& requestIds, 
+    const std::vector<library_song_id_t>& songIds);
 
   //@}
 
@@ -169,6 +176,8 @@ signals:
 
   void newActivePlaylist(const QVariantList newPlaylist);
 
+  void songsAddedToActivePlaylist(const std::vector<client_request_id_t> ids);
+
   //@}
 
 
@@ -213,6 +222,8 @@ private:
   QUrl getEndEventUrl() const;
 
   QUrl getActivePlaylistUrl() const;
+
+  QUrl getActivePlaylistAddUrl() const;
 
   static const QString & getServerPortNumber(){
     /** 
@@ -275,6 +286,10 @@ private:
     return userIdHeaderName;
   }
 
+  static const char* getActivePlaylistRequestIdsPropertyName(){
+    static const char* activePlaylistRequestIdsPropertyName = "request_ids";
+    return activePlaylistRequestIdsPropertyName;
+  }
 
 
   void authenticate(const QString& username, const QString& password);
@@ -291,6 +306,7 @@ private:
 
   void handleRecievedActivePlaylist(QNetworkReply *reply);
 
+  void handleRecievedActivePlaylistAdd(QNetworkReply *reply);
 
   //@}
 
