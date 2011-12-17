@@ -52,6 +52,7 @@ LibraryView::LibraryView(DataStore *dataStore, QWidget* parent):
 void LibraryView::refresh(){
   libraryModel->select();
 }
+
 void LibraryView::createActions(){
   deleteSongAction = new QAction(getDeleteContextMenuItemName(), this);
   addToPlaylistAction = new QAction(

@@ -19,6 +19,11 @@
 #include "AvailableMusicView.hpp"
 #include "DataStore.hpp"
 #include <QSqlRelationalTableModel>
+#include <QAction>
+#include <QMenu>
+#include <QModelIndex>
+#include <QSqlRecord>
+#include <set>
 
 
 namespace UDJ{
@@ -34,11 +39,66 @@ AvailableMusicView::AvailableMusicView(DataStore *dataStore, QWidget *parent):
   availableMusicModel->setTable(DataStore::getAvailableMusicViewName());
   availableMusicModel->select();
   setSelectionBehavior(QAbstractItemView::SelectRows);
+  setContextMenuPolicy(Qt::CustomContextMenu);
+  createActions();
+  connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
+    this, SLOT(handleContextMenuRequest(const QPoint&)));
   connect(
     dataStore,
     SIGNAL(availableSongsModified()),
     this,
     SLOT(updateView()));
+}
+
+void AvailableMusicView::createActions(){
+  removeFromAvailableMusic = new QAction(getRemoveMenuItemName(), this); 
+  addToActivePlaylist = new QAction(getAdd2ActivePlaylistMenuItemName(), this);
+  connect(
+    removeFromAvailableMusic,
+    SIGNAL(triggered()),
+    this,
+    SLOT(removeSongsFromAvailableMusic()));
+  connect(
+    addToActivePlaylist,
+    SIGNAL(triggered()),
+    this,
+    SLOT(addSongsToActivePlaylist()));
+}
+
+void AvailableMusicView::handleContextMenuRequest(const QPoint &pos){
+  QMenu contextMenu(this);
+  contextMenu.addAction(removeFromAvailableMusic);
+  contextMenu.addAction(addToActivePlaylist);
+  contextMenu.exec(QCursor::pos());
+}
+
+void AvailableMusicView::addSongsToActivePlaylist(){
+  QModelIndexList selected = selectedIndexes();
+  std::vector<library_song_id_t> toAdd;
+  std::set<int> rows;
+  for(
+    QModelIndexList::const_iterator it = selected.begin();
+    it != selected.end();
+    ++it
+  )
+  {
+    rows.insert(it->row()); 
+  }
+  for(
+    std::set<int>::const_iterator it = rows.begin();
+    it != rows.end();
+    ++it
+  )
+  {
+    QSqlRecord libRecordToAdd = availableMusicModel->record(*it);
+    toAdd.push_back(libRecordToAdd.value(
+      DataStore::getActivePlaylistLibIdColName()).value<library_song_id_t>());
+  }
+  dataStore->addSongsToActivePlaylist(toAdd); 
+}
+
+void AvailableMusicView::removeSongsFromAvailableMusic(){
+
 }
 
 void AvailableMusicView::updateView(){

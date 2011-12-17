@@ -22,6 +22,7 @@
 #include "ConfigDefs.hpp"
 
 class QSqlRelationalTableModel;
+class QAction;
 
 namespace UDJ{
 
@@ -34,8 +35,27 @@ public:
 private:
   DataStore *dataStore;
   QSqlRelationalTableModel *availableMusicModel;  
+  QAction *removeFromAvailableMusic;
+  QAction *addToActivePlaylist;
+
+  void createActions();
+
+  static const QString& getRemoveMenuItemName(){
+    static const QString removeMenuItemName = tr("Remove");
+    return removeMenuItemName;
+  }
+
+  static const QString& getAdd2ActivePlaylistMenuItemName(){
+    static const QString add2ActivePlaylistMenuItemName = 
+      tr("Add To Active Playlist");
+    return add2ActivePlaylistMenuItemName;
+  }
+
 private slots:
   void updateView();
+  void handleContextMenuRequest(const QPoint &pos);
+  void addSongsToActivePlaylist();
+  void removeSongsFromAvailableMusic();
 };
 
 
