@@ -228,6 +228,8 @@ void UDJServerConnection::handleCreateEventReply(QNetworkReply *reply){
   // Handle if a 409 response is returned
   if(reply->error() != QNetworkReply::NoError){
     emit eventCreationFailed("Failed to create event");
+    QByteArray errormsg = reply->readAll();
+    DEBUG_MESSAGE(QString(errormsg).toStdString())
     return;
   }
   //TODO handle bad json resturned from the server.
@@ -258,6 +260,10 @@ void UDJServerConnection::handleRecievedActivePlaylistAdd(QNetworkReply *reply){
     std::vector<client_request_id_t> requestedIds = 
       property.value<std::vector<client_request_id_t> >();
     emit songsAddedToActivePlaylist(requestedIds);
+  }
+  else{
+    QByteArray error = reply->readAll();
+    DEBUG_MESSAGE(QString(error).toStdString())
   }
 }
 

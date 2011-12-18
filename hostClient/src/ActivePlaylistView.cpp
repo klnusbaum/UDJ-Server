@@ -38,6 +38,11 @@ ActivePlaylistView::ActivePlaylistView(DataStore* dataStore, QWidget* parent):
   setSelectionBehavior(QAbstractItemView::SelectRows);
   connect(
     dataStore,
+    SIGNAL(eventCreated()),
+    this,
+    SLOT(refreshDisplay()));
+  connect(
+    dataStore,
     SIGNAL(activePlaylistModified()),
     this, 
     SLOT(refreshDisplay()));

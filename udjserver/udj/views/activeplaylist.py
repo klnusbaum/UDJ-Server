@@ -47,7 +47,6 @@ def getActivePlaylist(request, event_id):
   return HttpResponse(getJSONForActivePlaylistEntries(playlistEntries))
 
 def hasBeenAdded(song, event_id, user):
-
   return \
     ActivePlaylistEntry.objects.filter(
       adder=user, 
@@ -75,17 +74,13 @@ def hasBeenAdded(song, event_id, user):
 
   
 def addSong2ActivePlaylist(song, event_id, adding_user):
-  print "in adding song to active playlist"
   added = ActivePlaylistEntry(
     song=LibraryEntry.objects.get(pk=song['lib_id']),
     adder=adding_user,
     event=Event.objects.get(event_id__id=event_id),
     client_request_id=song['client_request_id'])
-  print "before save"
   added.save()
-  print "after save"
   UpVote(playlist_entry=added, user=adding_user).save()
-  print "after upvote"
 
 #TODO Need to add a check to make sure that they aren't trying to add
 #a song  that's not in the available music.

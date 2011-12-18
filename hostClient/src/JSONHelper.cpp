@@ -177,7 +177,7 @@ const QByteArray JSONHelper::getAddToActiveJSON(
   {
     QVariantMap requestToAdd;
     requestToAdd["lib_id"] = QVariant::fromValue<library_song_id_t>(*songIt);
-    requestToAdd["add_request_id"] = 
+    requestToAdd["client_request_id"] = 
       QVariant::fromValue<client_request_id_t>(*songIt);
     toSerialize.append(requestToAdd);
   }

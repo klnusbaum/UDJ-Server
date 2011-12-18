@@ -363,7 +363,6 @@ void DataStore::setLibSongsSyncStatus(
 {
   QSqlQuery setSyncedQuery(database);
   for(int i=0; i< songs.size(); ++i){
-    DEBUG_MESSAGE("Updaing status of song: " << songs[i])
     EXEC_SQL(
       "Error setting song to synced",
       setSyncedQuery.exec(
@@ -392,7 +391,6 @@ void DataStore::setAvailableSongsSyncStatus(
 {
   QSqlQuery setSyncedQuery(database);
   for(int i=0; i< songs.size(); ++i){
-    DEBUG_MESSAGE("Updaing status of available song: " << songs[i])
     EXEC_SQL(
       "Error setting song to synced",
       setSyncedQuery.exec(
