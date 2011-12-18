@@ -23,6 +23,7 @@
 #include <QMenu>
 #include <QModelIndex>
 #include <QSqlRecord>
+#include <QHeaderView>
 #include <set>
 
 
@@ -38,6 +39,7 @@ AvailableMusicView::AvailableMusicView(DataStore *dataStore, QWidget *parent):
   setModel(availableMusicModel);
   availableMusicModel->setTable(DataStore::getAvailableMusicViewName());
   availableMusicModel->select();
+  horizontalHeader()->setStretchLastSection(true);
   setSelectionBehavior(QAbstractItemView::SelectRows);
   setContextMenuPolicy(Qt::CustomContextMenu);
   createActions();
@@ -67,8 +69,8 @@ void AvailableMusicView::createActions(){
 
 void AvailableMusicView::handleContextMenuRequest(const QPoint &pos){
   QMenu contextMenu(this);
-  contextMenu.addAction(removeFromAvailableMusic);
   contextMenu.addAction(addToActivePlaylist);
+  contextMenu.addAction(removeFromAvailableMusic);
   contextMenu.exec(QCursor::pos());
 }
 

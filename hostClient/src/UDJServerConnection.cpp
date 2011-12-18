@@ -138,10 +138,17 @@ void UDJServerConnection::addSongsToActivePlaylist(
   const std::vector<library_song_id_t>& songIds)
 {
   QNetworkRequest add2ActivePlaylistRequest(getActivePlaylistAddUrl());
-  add2ActivePlaylistRequest.setRawHeader(getTicketHeaderName(), ticket_hash);
+  prepareJSONRequest(add2ActivePlaylistRequest);
+  bool success;
   const QByteArray songsAddJSON = JSONHelper::getAddToActiveJSON(
     requestIds,
-    songIds);
+    songIds,
+    success);
+  if(!success){
+    //TODO handle error
+    DEBUG_MESSAGE("Error serializing active playlist addition reuqest")
+    return;
+  }
   QNetworkReply *reply = 
     netAccessManager->put(add2ActivePlaylistRequest, songsAddJSON);
   reply->setProperty(getActivePlaylistRequestIdsPropertyName(),
@@ -246,9 +253,11 @@ void UDJServerConnection::handleRecievedActivePlaylist(QNetworkReply *reply){
 
 void UDJServerConnection::handleRecievedActivePlaylistAdd(QNetworkReply *reply){
   if(reply->error() == QNetworkReply::NoError){
-    emit songsAddedToActivePlaylist(reply->property(
-      getActivePlaylistRequestIdsPropertyName()).
-        value<std::vector<client_request_id_t> >());
+    QVariant property = reply->property(
+      getActivePlaylistRequestIdsPropertyName());
+    std::vector<client_request_id_t> requestedIds = 
+      property.value<std::vector<client_request_id_t> >();
+    emit songsAddedToActivePlaylist(requestedIds);
   }
 }
 

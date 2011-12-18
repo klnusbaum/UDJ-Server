@@ -131,6 +131,10 @@ void DataStore::setupDB(){
 		"Error creating available music",
   	setupQuery.exec(getCreateAvailableMusicViewQuery()),
 		setupQuery)
+	EXEC_SQL(
+		"Error creating available music",
+  	setupQuery.exec(getCreatePlaylistAddRequestsTableQuery()),
+		setupQuery)
 }
 
 void DataStore::clearMyLibrary(){
@@ -439,6 +443,16 @@ void DataStore::eventCleanUp(){
     tearDownQuery.exec(getDeleteAvailableMusicQuery()),
     tearDownQuery
   )
+  EXEC_SQL(
+    "Error deleteing contents of AvailableMusic",
+    tearDownQuery.exec(getClearActivePlaylistQuery()),
+    tearDownQuery
+  )
+  EXEC_SQL(
+    "Error deleteing contents of AvailableMusic",
+    tearDownQuery.exec(getDeleteAddRequestsQuery()),
+    tearDownQuery
+  )
 }
 
 void DataStore::clearActivePlaylist(){
@@ -506,14 +520,13 @@ void DataStore::syncPlaylistAddRequests(){
     //TODO handle error here
     return;
   }
-  std::vector<library_song_id_t> songIds(needsSyncQuery.size());
-  std::vector<client_request_id_t> requestIds(needsSyncQuery.size());
-  int i=0;
+  std::vector<library_song_id_t> songIds;
+  std::vector<client_request_id_t> requestIds;
   while(needsSyncQuery.next()){
-    songIds[i] = needsSyncQuery.record().value(
-      getPlaylistAddLibIdColName()).value<library_song_id_t>();
-    requestIds[i++] = needsSyncQuery.record().value(
-      getPlaylistAddIdColName()).value<client_request_id_t>();
+    songIds.push_back(needsSyncQuery.record().value(
+      getPlaylistAddLibIdColName()).value<library_song_id_t>());
+    requestIds.push_back(needsSyncQuery.record().value(
+      getPlaylistAddIdColName()).value<client_request_id_t>());
   }
   serverConnection->addSongsToActivePlaylist(requestIds, songIds);
 }

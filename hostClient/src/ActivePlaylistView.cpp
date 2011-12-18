@@ -32,6 +32,7 @@ ActivePlaylistView::ActivePlaylistView(DataStore* dataStore, QWidget* parent):
     new QSqlRelationalTableModel(this, dataStore->getDatabaseConnection());
   model->setTable(DataStore::getActivePlaylistViewName());
   model->select();
+  verticalHeader()->hide();
   horizontalHeader()->setStretchLastSection(true);
   setModel(model);
   setSelectionBehavior(QAbstractItemView::SelectRows);

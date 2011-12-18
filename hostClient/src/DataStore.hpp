@@ -575,6 +575,13 @@ private:
     return clearActivePlaylistQuery;
   }
 
+  static const QString& getDeleteAddRequestsQuery(){
+    static const QString deleteAddRequestsQuery = 
+      "DELETE FROM " + getPlaylistAddRequestsTableName() + ";";
+    return deleteAddRequestsQuery;
+  }
+
+
   static const QString& getCreatePlaylistAddRequestsTableQuery(){
     static const QString createPlaylistAddRequestsTableQuery =
       "CREATE TABLE IF NOT EXISTS " + getPlaylistAddRequestsTableName() +
@@ -583,7 +590,7 @@ private:
         getLibraryTableName() +"(" + getLibIdColName()+ 
         ") ON DELETE SET NULL, " +
       getPlaylistAddSycnStatusColName() + " INTEGER DEFAULT " +
-        getPlaylistAddNeedsSync() + 
+        QString::number(getPlaylistAddNeedsSync()) + 
       ");";
     return createPlaylistAddRequestsTableQuery;
   }
