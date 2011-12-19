@@ -46,39 +46,42 @@ def getActivePlaylist(request, event_id):
     
   return HttpResponse(getJSONForActivePlaylistEntries(playlistEntries))
 
-def hasBeenAdded(song, event_id, user):
+def hasBeenAdded(song_request, event_id, user):
   return \
     ActivePlaylistEntry.objects.filter(
       adder=user, 
-      client_request_id=song['client_request_id'],
+      client_request_id=song_request['client_request_id'],
       event__event_id__id=event_id
     ).exists() \
   or \
     CurrentSong.objects.filter(
       event__event_id__id=event_id, 
       adder=user, 
-      client_request_id=song['client_request_id']
+      client_request_id=song_request['client_request_id']
     ).exists() \
   or \
     PlayedPlaylistEntry.objects.filter(
       event__event_id__id=event_id,
       adder=user, 
-      client_request_id=song['client_request_id']
+      client_request_id=song_request['client_request_id']
     ).exists() \
   or \
     DeletedPlaylistEntry.objects.filter(
       event__event_id__id=event_id,
       adder=user, 
-      client_request_id=song['client_request_id']
+      client_request_id=song_request['client_request_id']
     ).exists()
 
   
-def addSong2ActivePlaylist(song, event_id, adding_user):
+def addSong2ActivePlaylist(song_request, event_id, adding_user):
+  event = Event.objects.get(event_id__id=event_id)
+  songToAdd = LibraryEntry.objects.get(
+      host_lib_song_id=song_request['lib_id'], owning_user=event.host)
   added = ActivePlaylistEntry(
-    song=LibraryEntry.objects.get(pk=song['lib_id']),
+    song=songToAdd,
     adder=adding_user,
-    event=Event.objects.get(event_id__id=event_id),
-    client_request_id=song['client_request_id'])
+    event=event,
+    client_request_id=song_request['client_request_id'])
   added.save()
   UpVote(playlist_entry=added, user=adding_user).save()
 
@@ -91,9 +94,9 @@ def addSong2ActivePlaylist(song, event_id, adding_user):
 def addToPlaylist(request, event_id):
   user = getUserForTicket(request)
   songsToAdd = json.loads(request.raw_post_data)
-  for song in songsToAdd:
-    if not hasBeenAdded(song, event_id, user):
-      addSong2ActivePlaylist(song, event_id, user)
+  for song_request in songsToAdd:
+    if not hasBeenAdded(song_request, event_id, user):
+      addSong2ActivePlaylist(song_request, event_id, user)
   
   return HttpResponse(status = 201)
 

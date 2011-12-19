@@ -24,6 +24,8 @@
 #include <QProgressDialog>
 #include "UDJServerConnection.hpp"
 
+class QTimer;
+
 namespace UDJ{
 
 
@@ -43,8 +45,6 @@ public:
    * @param parent The parent widget.
    */
   DataStore(UDJServerConnection *serverConnection, QObject *parent=0);
- 
-  ~DataStore();
 
   //@}
 
@@ -409,6 +409,7 @@ private:
 
   QString eventName;
 
+  QTimer *activePlaylistRefreshTimer;
   
   //@}
 

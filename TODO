@@ -43,6 +43,8 @@ just merge the song requests
 -Test exception cases. 
 -Test for commands that are being issued to a party that is over.
 -Test events with passwords
+-Need to do json validation. Make sure it's good json and make sure it looks
+like its supposed to (i.e. doesn't have certain attributes missing)
 
 
 OVERALL

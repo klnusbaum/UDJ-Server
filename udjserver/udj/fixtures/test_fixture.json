@@ -403,8 +403,8 @@
     "model": "auth.user", 
     "fields": {
       "username": "test1", 
-      "first_name": "", 
-      "last_name": "", 
+      "first_name": "Kurtis", 
+      "last_name": "Big boy", 
       "is_active": true, 
       "is_superuser": false, 
       "is_staff": false, 
@@ -421,8 +421,8 @@
     "model": "auth.user", 
     "fields": {
       "username": "test2", 
-      "first_name": "", 
-      "last_name": "", 
+      "first_name": "Carl", 
+      "last_name": "Carlson", 
       "is_active": true, 
       "is_superuser": false, 
       "is_staff": false, 
@@ -439,8 +439,8 @@
     "model": "auth.user", 
     "fields": {
       "username": "test3", 
-      "first_name": "", 
-      "last_name": "", 
+      "first_name": "Lenny", 
+      "last_name": "Leonard", 
       "is_active": true, 
       "is_superuser": false, 
       "is_staff": false, 
@@ -457,8 +457,8 @@
     "model": "auth.user",
     "fields": {
       "username": "test4",
-      "first_name": "",
-      "last_name": "",
+      "first_name": "Bart",
+      "last_name": "Simpson",
       "is_active": true,
       "is_superuser": false,
       "is_staff": false,

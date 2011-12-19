@@ -24,6 +24,7 @@
 #include <QVariant>
 #include <QSqlRecord>
 #include <QThread>
+#include <QTimer>
 #include <tag.h>
 #include <tstring.h>
 #include <fileref.h>
@@ -35,6 +36,8 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
  :QObject(parent),serverConnection(serverConnection)
 {
   serverConnection->setParent(this);
+  activePlaylistRefreshTimer = new QTimer(this);
+  activePlaylistRefreshTimer->setInterval(5000);
   eventName = "";
   setupDB();
   connect(
@@ -56,11 +59,22 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
 
   connect(
     serverConnection,
+    SIGNAL(eventCreated()),
+    activePlaylistRefreshTimer,
+    SLOT(start()));
+
+  connect(
+    serverConnection,
     SIGNAL(eventCreationFailed(const QString)),
     this,
     SIGNAL(eventCreationFailed(const QString)));
 
   connect(serverConnection, SIGNAL(eventEnded()), this, SIGNAL(eventEnded()));
+  connect(
+    serverConnection, 
+    SIGNAL(eventEnded()), 
+    activePlaylistRefreshTimer, 
+    SLOT(stop()));
   connect(serverConnection, SIGNAL(eventEnded()), this, SLOT(eventCleanUp()));
   connect(
     serverConnection, 
@@ -86,13 +100,12 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
     this,
     SLOT(setPlaylistAddRequestsSynced(const std::vector<client_request_id_t>)));
   syncLibrary();
-}
 
-DataStore::~DataStore(){
-  eventCleanUp();
+  connect(activePlaylistRefreshTimer,
+    SIGNAL(timeout()),
+    this,
+    SLOT(refreshActivePlaylist()));
 }
-
-  
 
 void DataStore::setupDB(){
   //TODO do all of this stuff in a seperate thread and return right away.
@@ -543,16 +556,15 @@ void DataStore::setPlaylistAddRequestsSynced(
   QSqlQuery needsSyncQuery(database);
   needsSyncQuery.prepare(
     "UPDATE " + getPlaylistAddRequestsTableName() +  
-    "SET " + getPlaylistAddSycnStatusColName() + " = " +
+    " SET " + getPlaylistAddSycnStatusColName() + " = " +
     QString::number(getPlaylistAddIsSynced()) + " where " +
     getPlaylistAddIdColName() + " = ? ;");
   needsSyncQuery.addBindValue(toUpdate);
   EXEC_BULK_QUERY(
-    "Error setting active playlist add requests as synced",
+    "Error setting active playlist add requests as synced" << std::endl <<
+    "vector size was: " << requestIds.size(),
     needsSyncQuery)
   refreshActivePlaylist();  
 }
-
-
 
 } //end namespace

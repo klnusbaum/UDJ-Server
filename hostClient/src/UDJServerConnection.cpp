@@ -119,6 +119,7 @@ void UDJServerConnection::addSongsToAvailableSongs(
 }
 
 void UDJServerConnection::getActivePlaylist(){
+  DEBUG_MESSAGE("Getting active playlist");
   QNetworkRequest getActivePlaylistRequest(getActivePlaylistUrl());
   getActivePlaylistRequest.setRawHeader(getTicketHeaderName(), ticket_hash);
   netAccessManager->get(getActivePlaylistRequest);
@@ -149,6 +150,7 @@ void UDJServerConnection::addSongsToActivePlaylist(
     DEBUG_MESSAGE("Error serializing active playlist addition reuqest")
     return;
   }
+  DEBUG_MESSAGE("Sending this json: " << QString(songsAddJSON).toStdString())
   QNetworkReply *reply = 
     netAccessManager->put(add2ActivePlaylistRequest, songsAddJSON);
   reply->setProperty(getActivePlaylistRequestIdsPropertyName(),
