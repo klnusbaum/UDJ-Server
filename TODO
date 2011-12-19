@@ -45,6 +45,8 @@ just merge the song requests
 -Test events with passwords
 -Need to do json validation. Make sure it's good json and make sure it looks
 like its supposed to (i.e. doesn't have certain attributes missing)
+-Validate that the libid's that are being requested to be added to the
+active playlist to make sure that they belong to the host of the party.
 
 
 OVERALL
