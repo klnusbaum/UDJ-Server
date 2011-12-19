@@ -64,7 +64,11 @@ void PlaybackWidget::sourceChanged(const Phonon::MediaSource &source){
 }
 
 void PlaybackWidget::metaDataChanged(){
-	songTitle->setText(mediaObject->metaData(Phonon::TitleMetaData).at(0));
+  QStringList titleInfo = mediaObject->metaData(Phonon::TitleMetaData);
+  if(titleInfo.size() > 1){
+    songTitle->setText(titleInfo.at(0));
+  }
+   
 }
 
 
@@ -171,6 +175,7 @@ void PlaybackWidget::createActions(){
   connect(pauseAction, SIGNAL(triggered()), mediaObject, SLOT(pause()));
   connect(stopAction, SIGNAL(triggered()), mediaObject, SLOT(stop()));
 }
+
 
 
 } //end namespace UDJ
