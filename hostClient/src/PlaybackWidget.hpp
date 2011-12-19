@@ -80,6 +80,8 @@ private slots:
 
    void metaDataChanged();
 
+   void setNewSource(Phonon::MediaSource newSong);
+
 private:
   /** \brief Sets up all the actions used by the MetaWindow. */
   void createActions();

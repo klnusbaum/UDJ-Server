@@ -50,6 +50,12 @@ PlaybackWidget::PlaybackWidget(DataStore *dataStore, QWidget *parent):
     SIGNAL(metaDataChanged()), 
     this,
     SLOT(metaDataChanged()));
+  connect(
+    dataStore,
+    SIGNAL(manualSongChange(Phonon::MediaSource)),
+    this,
+    SLOT(setNewSource(Phonon::MediaSource)));
+    
 
   Phonon::createPath(mediaObject, audioOutput);
 }
@@ -176,6 +182,10 @@ void PlaybackWidget::createActions(){
   connect(stopAction, SIGNAL(triggered()), mediaObject, SLOT(stop()));
 }
 
+void PlaybackWidget::setNewSource(Phonon::MediaSource newSong){
+  mediaObject->setCurrentSource(newSong);
+  mediaObject->play();
+}
 
 
 } //end namespace UDJ

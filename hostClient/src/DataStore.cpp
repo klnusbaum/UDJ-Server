@@ -335,6 +335,24 @@ Phonon::MediaSource DataStore::takeNextSongToPlay(){
   return Phonon::MediaSource(filePath);
 }
 
+void DataStore::setCurrentSong(playlist_song_id_t songToPlay){
+  QSqlQuery getSongQuery(
+    "SELECT " + getLibFileColName() + "  FROM " +
+    getActivePlaylistViewName() + " WHERE " + 
+    getActivePlaylistIdColName() + " = " + QString::number(songToPlay) + ";", 
+    database);
+  EXEC_SQL(
+    "Getting song for manual playlist set failed.",
+    getSongQuery.exec(),
+    getSongQuery)
+  getSongQuery.next();
+  if(getSongQuery.isValid()){
+    QString filePath = getSongQuery.value(0).toString();
+    emit manualSongChange(Phonon::MediaSource(filePath));
+    serverConnection->setCurrentSong(songToPlay);
+  }
+}
+
 void DataStore::createNewEvent(
   const QString& name, 
   const QString& password)

@@ -372,6 +372,8 @@ public slots:
 
   void endEvent();
 
+
+  void setCurrentSong(playlist_song_id_t songToPlay);
   
 
   //@}
@@ -394,6 +396,8 @@ signals:
   void activePlaylistModified();
 
   void playlistAddRequestsSynced();
+
+  void manualSongChange(Phonon::MediaSource newSong);
 //@}
 
 private:

@@ -54,8 +54,10 @@ void ActivePlaylistView::refreshDisplay(){
 }
 
 void ActivePlaylistView::setCurrentSong(const QModelIndex& index){
-  QSqlRecord libRecordToAdd = model->record(index.row());
-  
+  QSqlRecord songToPlayRecord = model->record(index.row());
+  QVariant data = 
+    songToPlayRecord.value(DataStore::getActivePlaylistIdColName());
+  dataStore->setCurrentSong(data.value<playlist_song_id_t>());
 }
 
 } //end namespace
