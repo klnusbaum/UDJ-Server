@@ -66,6 +66,8 @@ private slots:
 
   void refreshDisplay(); 
 
+  void setCurrentSong(const QModelIndex& index);
+
 };
 
 

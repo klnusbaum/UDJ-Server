@@ -209,6 +209,19 @@
     }
   }, 
   {
+    "pk": 14, 
+    "model": "udj.libraryentry", 
+    "fields": {
+      "album": "Bulls On Parade", 
+      "duration" : 389,
+      "is_deleted": false, 
+      "host_lib_song_id": 1, 
+      "artist": "Rage Against the Machine", 
+      "song": "Evil Empire", 
+      "owning_user": 3
+    }
+  }, 
+  {
     "pk": 1, 
     "model": "udj.availablesong", 
     "fields": {

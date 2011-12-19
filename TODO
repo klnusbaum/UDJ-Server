@@ -3,16 +3,16 @@ HOST CLIENT
 And what's more, songs should fade into one another. Like a real dj would.
 Sync the beat of the new song to the beat of the the one that is currently
 playing, fade into new song, then gradual return beat of new song to normal.
--Handle the unable to connect signal in host client
 -Emit signal from UDJServerConnection is conneciotn is lost or something...
 -Import iTunes library capability
--Handle song not being added to the server correctly.
--If a song is removed from the library mid event, need to make sure that
+*Handle song not being added to the server correctly.
+*If a song is removed from the library mid event, need to make sure that
 the available music, active playlist, and anything else that references the
 library table is updated accordingly
+*make sure ticket is always up to date
 
 ANDROID APP
--IMPORTANT: SWITCH TO HttpsURLConnection. This will give us automatic caching
+*IMPORTANT: SWITCH TO HttpsURLConnection. This will give us automatic caching
 compression. Also security. Also, this is what the android team is throwing
 themselves behind so it will be getting the most attention.
 -Users should be able to remove songs they added form the playlist
@@ -21,14 +21,11 @@ themselves behind so it will be getting the most attention.
 -Parties without passwords
 -Get nearby parties
 -Be able to refresh near by parties
--Handle responses from server indicating that the party is over.
--Ditch the tab layout for tablets. We can display both the playlist and the
+*Handle responses from server indicating that the party is over.
+*Ditch the tab layout for tablets. We can display both the playlist and the
 library in that case.
 -Switch all the dialogs to fragments and stop using the 
 depercated onCreateDialogs and what not.
--We don't need to send a whole PlaylistEntry every time we're adding one, just
-the server_lib_id and the client_playlist_id, the rest should be derivable by
-ther server.
 -Grey out playlist items that haven't been succesfully added to the server yet.
 -Once library search results have been obtained, we should save them if the
 activity get's paused, that way when it's resumed we can just load 'em right
@@ -39,13 +36,13 @@ SERVER
 -If two users add the same song within a certain threshold of oneanother (e.g.
 the same song was added by two different users within 10 seconds of one another)
 just merge the song requests
--If requests are made for a party that is over, notify client
+*If requests are made for a party that is over, notify client
 -Test exception cases. 
 -Test for commands that are being issued to a party that is over.
--Test events with passwords
+*Test events with passwords
 -Need to do json validation. Make sure it's good json and make sure it looks
 like its supposed to (i.e. doesn't have certain attributes missing)
--Validate that the libid's that are being requested to be added to the
+*Validate that the libid's that are being requested to be added to the
 active playlist to make sure that they belong to the host of the party.
 
 

@@ -76,7 +76,9 @@ private slots:
    */
    void finished();
 
+   void play();
 
+   void metaDataChanged();
 
 private:
   /** \brief Sets up all the actions used by the MetaWindow. */

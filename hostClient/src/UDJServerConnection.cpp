@@ -119,7 +119,6 @@ void UDJServerConnection::addSongsToAvailableSongs(
 }
 
 void UDJServerConnection::getActivePlaylist(){
-  DEBUG_MESSAGE("Getting active playlist");
   QNetworkRequest getActivePlaylistRequest(getActivePlaylistUrl());
   getActivePlaylistRequest.setRawHeader(getTicketHeaderName(), ticket_hash);
   netAccessManager->get(getActivePlaylistRequest);
@@ -150,11 +149,17 @@ void UDJServerConnection::addSongsToActivePlaylist(
     DEBUG_MESSAGE("Error serializing active playlist addition reuqest")
     return;
   }
-  DEBUG_MESSAGE("Sending this json: " << QString(songsAddJSON).toStdString())
   QNetworkReply *reply = 
     netAccessManager->put(add2ActivePlaylistRequest, songsAddJSON);
   reply->setProperty(getActivePlaylistRequestIdsPropertyName(),
     QVariant::fromValue<std::vector<client_request_id_t> >(requestIds));
+}
+
+void UDJServerConnection::setCurrentSong(playlist_song_id_t currentSong){
+  QNetworkRequest setCurrentSongRequest(getCurrentSongUrl());
+  setCurrentSongRequest.setRawHeader(getTicketHeaderName(), ticket_hash);
+  QString params = "playlist_entry_id="+QString::number(currentSong);
+  netAccessManager->post(setCurrentSongRequest, params.toUtf8());
 }
 
 void UDJServerConnection::recievedReply(QNetworkReply *reply){
@@ -179,8 +184,11 @@ void UDJServerConnection::recievedReply(QNetworkReply *reply){
   else if(reply->request().url().path() == getActivePlaylistAddUrl().path()){
     handleRecievedActivePlaylistAdd(reply);
   }
+  else if(reply->request().url().path() == getCurrentSongUrl().path()){
+    handleRecievedCurrentSongSet(reply);
+  }
   else{
-    std::cerr << "Recieved unknown response" << std::endl;
+    DEBUG_MESSAGE("Recieved unknown response")
   }
   reply->deleteLater();
 }
@@ -269,6 +277,16 @@ void UDJServerConnection::handleRecievedActivePlaylistAdd(QNetworkReply *reply){
   }
 }
 
+void UDJServerConnection::handleRecievedCurrentSongSet(QNetworkReply *reply){
+  if(reply->error() == QNetworkReply::NoError){
+    emit currentSongSet();
+  }
+  else{
+    DEBUG_MESSAGE(QString(reply->readAll()).toStdString());
+    emit currentSongSetError();
+  }
+}
+
 
 QUrl UDJServerConnection::getLibAddSongUrl() const{
   return QUrl(getServerUrlPath() + "users/" + QString::number(user_id) +
@@ -298,6 +316,12 @@ QUrl UDJServerConnection::getActivePlaylistAddUrl() const{
   return QUrl(getServerUrlPath() + "events/" + QString::number(eventId) +
     "/active_playlist/songs");
 }
+
+QUrl UDJServerConnection::getCurrentSongUrl() const{
+  return QUrl(getServerUrlPath() + "events/" + QString::number(eventId) +
+    "/current_song");
+}
+
 
 void UDJServerConnection::clearMyLibrary(){
 //TODO implement this

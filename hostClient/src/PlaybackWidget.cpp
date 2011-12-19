@@ -45,6 +45,11 @@ PlaybackWidget::PlaybackWidget(DataStore *dataStore, QWidget *parent):
   connect(mediaObject, SIGNAL(currentSourceChanged(Phonon::MediaSource)),
     this, SLOT(sourceChanged(Phonon::MediaSource)));
   connect(mediaObject, SIGNAL(finished()), this, SLOT(finished()));
+  connect(
+    mediaObject,
+    SIGNAL(metaDataChanged()), 
+    this,
+    SLOT(metaDataChanged()));
 
   Phonon::createPath(mediaObject, audioOutput);
 }
@@ -55,7 +60,20 @@ void PlaybackWidget::tick(qint64 time){
 }
 
 void PlaybackWidget::sourceChanged(const Phonon::MediaSource &source){
+	//songTitle->setText(mediaObject->metaData(Phonon::TitleMetaData).at(0));
+}
+
+void PlaybackWidget::metaDataChanged(){
 	songTitle->setText(mediaObject->metaData(Phonon::TitleMetaData).at(0));
+}
+
+
+void PlaybackWidget::play(){
+  if(mediaObject->currentSource().type() == Phonon::MediaSource::Empty){
+    Phonon::MediaSource nextSong = dataStore->takeNextSongToPlay();
+    mediaObject->setCurrentSource(nextSong);
+  }
+  mediaObject->play();
 }
 
 void PlaybackWidget::stateChanged(
@@ -149,7 +167,7 @@ void PlaybackWidget::createActions(){
   stopAction->setShortcut(tr("Ctrl+S"));
   stopAction->setEnabled(false);
 
-  connect(playAction, SIGNAL(triggered()), mediaObject, SLOT(play()));
+  connect(playAction, SIGNAL(triggered()), this, SLOT(play()));
   connect(pauseAction, SIGNAL(triggered()), mediaObject, SLOT(pause()));
   connect(stopAction, SIGNAL(triggered()), mediaObject, SLOT(stop()));
 }

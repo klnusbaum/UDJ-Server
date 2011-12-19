@@ -1,5 +1,6 @@
 import json
 from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.http import HttpRequest
 from django.http import HttpResponse
@@ -100,12 +101,14 @@ def addToPlaylist(request, event_id):
   
   return HttpResponse(status = 201)
 
+@csrf_exempt
 @NeedsAuth
 @InParty
 @AcceptsMethods('POST')
 def voteSongDown(request, event_id, playlist_id):
   return voteSong(request, event_id, playlist_id, DownVote)
 
+@csrf_exempt
 @NeedsAuth
 @InParty
 @AcceptsMethods('POST')

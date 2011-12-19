@@ -99,12 +99,23 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
     SIGNAL(songsAddedToActivePlaylist(const std::vector<client_request_id_t>)),
     this,
     SLOT(setPlaylistAddRequestsSynced(const std::vector<client_request_id_t>)));
-  syncLibrary();
 
   connect(activePlaylistRefreshTimer,
     SIGNAL(timeout()),
     this,
     SLOT(refreshActivePlaylist()));
+
+  connect(
+    serverConnection,
+    SIGNAL(currentSongSet()),
+    this,
+    SLOT(refreshActivePlaylist()));
+  syncLibrary();
+  connect(
+    this,
+    SIGNAL(eventCreated()),
+    this,
+    SLOT(eventCleanUp())); 
 }
 
 void DataStore::setupDB(){
@@ -312,19 +323,15 @@ Phonon::MediaSource DataStore::takeNextSongToPlay(){
     "Getting next song in take failed",
     nextSongQuery.exec(),
     nextSongQuery)
-  nextSongQuery.first();
+  nextSongQuery.next();
+  if(!nextSongQuery.isValid()){
+    return Phonon::MediaSource("");
+  }
   QString filePath = nextSongQuery.value(0).toString();
-  playlist_song_id_t  toDeleteId  = 
+  playlist_song_id_t  currentSongId  = 
     nextSongQuery.value(1).value<playlist_song_id_t>();
   
-  QSqlQuery deleteNextSongQuery(
-    "DELETE FROM " + getActivePlaylistViewName() + " WHERE " + 
-    getActivePlaylistIdColName() + "=" +QString::number(toDeleteId) + ";", 
-    database);
-  EXEC_SQL(
-    "Error deleting song in takeNextSong",
-    deleteNextSongQuery.exec(),
-    deleteNextSongQuery)
+  serverConnection->setCurrentSong(currentSongId);
   return Phonon::MediaSource(filePath);
 }
 
@@ -454,11 +461,13 @@ void DataStore::eventCleanUp(){
     tearDownQuery.exec(getDeleteAvailableMusicQuery()),
     tearDownQuery
   )
+  emit availableSongsModified();
   EXEC_SQL(
     "Error deleteing contents of AvailableMusic",
     tearDownQuery.exec(getClearActivePlaylistQuery()),
     tearDownQuery
   )
+  emit activePlaylistModified();
   EXEC_SQL(
     "Error deleteing contents of AvailableMusic",
     tearDownQuery.exec(getDeleteAddRequestsQuery()),

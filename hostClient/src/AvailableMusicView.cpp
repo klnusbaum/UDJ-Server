@@ -50,11 +50,6 @@ AvailableMusicView::AvailableMusicView(DataStore *dataStore, QWidget *parent):
     SIGNAL(availableSongsModified()),
     this,
     SLOT(updateView()));
-  connect(
-    dataStore,
-    SIGNAL(eventCreated()),
-    this,
-    SLOT(updateView()));
 }
 
 void AvailableMusicView::createActions(){

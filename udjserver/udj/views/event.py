@@ -1,9 +1,11 @@
 import json
 import hashlib
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from django.db import DatabaseError
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseNotFound
@@ -228,6 +230,7 @@ def removeFromAvailableMusic(request, event_id, song_id):
     return HttpResponseNotFound("id " + str(song_id) + " doesn't exist")
   return HttpResponse()
 
+@csrf_exempt
 @NeedsAuth
 @AcceptsMethods(['GET', 'POST'])
 def currentSong(request, event_id):
@@ -242,7 +245,10 @@ def getCurrentSong(request, event_id):
   return HttpResponse(getJSONForCurrentSong(currentSong))
 
 def moveCurrentSong2PlayedSong(given_event):
-  currentSong = CurrentSong.objects.get(event=given_event)
+  try:
+    currentSong = CurrentSong.objects.get(event=given_event)
+  except ObjectDoesNotExist:
+   return
   PlayedPlaylistEntry(
     song = currentSong.song,
     upvotes = currentSong.upvotes,

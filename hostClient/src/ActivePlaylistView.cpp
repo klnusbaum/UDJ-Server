@@ -20,6 +20,7 @@
 #include "DataStore.hpp"
 #include <QHeaderView>
 #include <QSqlRelationalTableModel>
+#include <QSqlRecord>
 
 namespace UDJ{
 
@@ -38,18 +39,23 @@ ActivePlaylistView::ActivePlaylistView(DataStore* dataStore, QWidget* parent):
   setSelectionBehavior(QAbstractItemView::SelectRows);
   connect(
     dataStore,
-    SIGNAL(eventCreated()),
-    this,
-    SLOT(refreshDisplay()));
-  connect(
-    dataStore,
     SIGNAL(activePlaylistModified()),
     this, 
     SLOT(refreshDisplay()));
+  connect(
+    this,
+    SIGNAL(activated(const QModelIndex&)),
+    this,
+    SLOT(setCurrentSong(const QModelIndex&)));
 }
   
 void ActivePlaylistView::refreshDisplay(){
   model->select();
+}
+
+void ActivePlaylistView::setCurrentSong(const QModelIndex& index){
+  QSqlRecord libRecordToAdd = model->record(index.row());
+  
 }
 
 } //end namespace

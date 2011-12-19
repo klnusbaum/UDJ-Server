@@ -121,6 +121,8 @@ public slots:
     const std::vector<client_request_id_t>& requestIds, 
     const std::vector<library_song_id_t>& songIds);
 
+  void setCurrentSong(playlist_song_id_t currentSong);
+
   //@}
 
 signals:
@@ -178,6 +180,10 @@ signals:
 
   void songsAddedToActivePlaylist(const std::vector<client_request_id_t> ids);
 
+  void currentSongSet();
+
+  void currentSongSetError();
+
   //@}
 
 
@@ -224,6 +230,8 @@ private:
   QUrl getActivePlaylistUrl() const;
 
   QUrl getActivePlaylistAddUrl() const;
+
+  QUrl getCurrentSongUrl() const;
 
   static const QString & getServerPortNumber(){
     /** 
@@ -307,6 +315,8 @@ private:
   void handleRecievedActivePlaylist(QNetworkReply *reply);
 
   void handleRecievedActivePlaylistAdd(QNetworkReply *reply);
+
+  void handleRecievedCurrentSongSet(QNetworkReply *reply);
 
   //@}
 

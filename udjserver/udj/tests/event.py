@@ -259,6 +259,19 @@ class TestSetCurentSong(User1TestCase):
     oldCurrent = PlayedPlaylistEntry.objects.get(
       client_request_id=1, adder=3, event=1)
 
+class TestSetCurrentSong2(User4TestCase):
+  def testSetWithNoCurrentSong(self):
+    libentry = LibraryEntry.objects.get(pk=14)
+    AvailableSong(library_entry=libentry).save();
+    activeEntry = ActivePlaylistEntry(
+      song=libentry, adder=User.objects.get(pk=5),
+      event=Event.objects.get(pk=2), client_request_id=3)
+    activeEntry.save()
+    response = self.doPost(
+      '/udj/events/2/current_song', 
+      {'playlist_entry_id' : str(activeEntry.id)})
+    self.assertEqual(response.status_code, 200)
+
 class TestDuplicateHostEventCreate(User1TestCase):
   def testDuplicatHostEventCreate(self):
     partyName = "A Bitchn' Party"
