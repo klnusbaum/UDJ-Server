@@ -18,7 +18,7 @@
  */
 #include "LibraryView.hpp"
 #include "DataStore.hpp"
-#include <QSqlRelationalTableModel>
+#include <QSqlQueryModel>
 #include <QHeaderView>
 #include <QContextMenuEvent>
 #include <QMenu>
@@ -33,11 +33,7 @@ LibraryView::LibraryView(DataStore *dataStore, QWidget* parent):
   QTableView(parent),
   dataStore(dataStore)
 {
-  libraryModel = 
-    new QSqlRelationalTableModel(this, dataStore->getDatabaseConnection());
-  libraryModel->setTable(DataStore::getLibraryTableName());
-  libraryModel->select();
-  setEditTriggers(QAbstractItemView::NoEditTriggers);
+  libraryModel = new QSqlQueryModel(this);
   verticalHeader()->hide();
   horizontalHeader()->setStretchLastSection(true);
   setModel(libraryModel);
@@ -47,10 +43,14 @@ LibraryView::LibraryView(DataStore *dataStore, QWidget* parent):
   connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
     this, SLOT(handleContextMenuRequest(const QPoint&)));
   connect(dataStore, SIGNAL(libSongsModified()), this, SLOT(refresh()));
+  refresh();
 }
 
 void LibraryView::refresh(){
-  libraryModel->select();
+  libraryModel->setQuery(
+    "SELECT * FROM " + DataStore::getLibraryTableName() + " WHERE " +
+    DataStore::getLibIsDeletedColName() + "=0;", 
+    dataStore->getDatabaseConnection());
 }
 
 void LibraryView::createActions(){

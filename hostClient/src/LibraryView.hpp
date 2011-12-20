@@ -23,7 +23,7 @@
 #include <vector>
 
 class QContextMenuEvent;
-class QSqlRelationalTableModel;
+class QSqlQueryModel;
 
 namespace UDJ{
 
@@ -51,11 +51,13 @@ private slots:
 private:
 
   DataStore *dataStore;
-  QSqlRelationalTableModel *libraryModel;
+  QSqlQueryModel *libraryModel;
   QAction *deleteSongAction;
   QAction *addToAvailableMusicAction;
 
   void createActions();
+
+  std::vector<library_song_id_t> getSelectedSongs();
 
   static const QString& getDeleteContextMenuItemName(){
     static const QString deleteContextMenuItemName = tr("Delete");
@@ -72,8 +74,6 @@ private slots:
   void addSongToAvailableMusic();
   void deleteSongs();
   void refresh();
-private:
-  std::vector<library_song_id_t> getSelectedSongs();
 };
 
 
