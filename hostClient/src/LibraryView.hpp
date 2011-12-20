@@ -53,7 +53,6 @@ private:
   DataStore *dataStore;
   QSqlRelationalTableModel *libraryModel;
   QAction *deleteSongAction;
-  QAction *addToPlaylistAction;
   QAction *addToAvailableMusicAction;
 
   void createActions();

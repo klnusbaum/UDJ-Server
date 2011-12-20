@@ -54,7 +54,7 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
   connect(
     serverConnection,
     SIGNAL(
-      songDeletedOnServer(library_song_id_t)
+      songDeletedFromLibOnServer(library_song_id_t)
     ),
     this,
     SLOT(
@@ -243,7 +243,7 @@ void DataStore::removeSongsFromLibrary(std::vector<library_song_id_t> toRemove){
     toDelete << QVariant::fromValue<library_song_id_t>(*it);
   }
   QSqlQuery bulkDelete(database);
-  bulkDelete.prepare("UPDATE " + getLibraryTableName() + 
+  bulkDelete.prepare("UPDATE " + getLibraryTableName() +  " "
     "SET " + getLibIsDeletedColName() + "=1, "+
     getLibSyncStatusColName() + "=" + 
       QString::number(getLibNeedsDeleteSyncStatus()) + " "

@@ -200,6 +200,7 @@ void UDJServerConnection::recievedReply(QNetworkReply *reply){
   }
   else{
     DEBUG_MESSAGE("Recieved unknown response")
+    DEBUG_MESSAGE(reply->request().url().path().toStdString())
   }
   reply->deleteLater();
 }
@@ -237,11 +238,17 @@ void UDJServerConnection::handleAddLibSongsReply(QNetworkReply *reply){
 }
 
 void UDJServerConnection::handleDeleteLibSongsReply(QNetworkReply *reply){
-  QString path = reply->request().url().path();
-  QRegExp rx("/udj/users/" + QString::number(user_id) + "/library/(\\d+)");
-  rx.indexIn(path);
-  library_song_id_t songDeleted = rx.cap(1).toLong();
-  emit songDeletedFromLibOnServer(songDeleted);
+  if(reply->error() == QNetworkReply::NoError){
+    QString path = reply->request().url().path();
+    QRegExp rx("/udj/users/" + QString::number(user_id) + "/library/(\\d+)");
+    rx.indexIn(path);
+    library_song_id_t songDeleted = rx.cap(1).toLong();
+    emit songDeletedFromLibOnServer(songDeleted);
+  }
+  else{
+    DEBUG_MESSAGE("Error deleting lib song on server: " << 
+      QString(reply->readAll()).toStdString())
+  }
 }
 
 void UDJServerConnection::handleAddAvailableSongReply(QNetworkReply *reply){
@@ -342,7 +349,7 @@ QUrl UDJServerConnection::getCurrentSongUrl() const{
 }
 
 bool UDJServerConnection::isLibDeleteUrl(QString path) const{
-  QRegExp rx("^udj/users/" + QString::number(user_id) + "/library/\\d+$");
+  QRegExp rx("^/udj/users/" + QString::number(user_id) + "/library/\\d+$");
   return rx.exactMatch(path);
 }
 

@@ -75,7 +75,6 @@ void LibraryView::handleContextMenuRequest(const QPoint &pos){
   if(dataStore->isCurrentlyHosting()){
     contextMenu.addAction(addToAvailableMusicAction);
   }
-  contextMenu.addAction(addToPlaylistAction);
   contextMenu.addAction(deleteSongAction);
   contextMenu.exec(QCursor::pos());
 }
