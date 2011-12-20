@@ -66,15 +66,14 @@ void PlaybackWidget::tick(qint64 time){
 }
 
 void PlaybackWidget::sourceChanged(const Phonon::MediaSource &source){
-	//songTitle->setText(mediaObject->metaData(Phonon::TitleMetaData).at(0));
+
 }
 
 void PlaybackWidget::metaDataChanged(){
   QStringList titleInfo = mediaObject->metaData(Phonon::TitleMetaData);
-  if(titleInfo.size() > 1){
+  if(titleInfo.size() > 0){
     songTitle->setText(titleInfo.at(0));
   }
-   
 }
 
 
