@@ -56,6 +56,7 @@ private slots:
   void handleContextMenuRequest(const QPoint &pos);
   void addSongsToActivePlaylist();
   void removeSongsFromAvailableMusic();
+  void addSongToActivePlaylist(const QModelIndex& index);
 };
 
 

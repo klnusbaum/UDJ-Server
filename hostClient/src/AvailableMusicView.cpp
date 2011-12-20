@@ -34,6 +34,7 @@ AvailableMusicView::AvailableMusicView(DataStore *dataStore, QWidget *parent):
   QTableView(parent),
   dataStore(dataStore)
 {
+  setEditTriggers(QAbstractItemView::NoEditTriggers);
   availableMusicModel = 
     new QSqlRelationalTableModel(this, dataStore->getDatabaseConnection());
   setModel(availableMusicModel);
@@ -50,6 +51,11 @@ AvailableMusicView::AvailableMusicView(DataStore *dataStore, QWidget *parent):
     SIGNAL(availableSongsModified()),
     this,
     SLOT(updateView()));
+  connect(
+    this,
+    SIGNAL(activated(const QModelIndex&)),
+    this,
+    SLOT(addSongToActivePlaylist(const QModelIndex&)));
 }
 
 void AvailableMusicView::createActions(){
@@ -107,5 +113,11 @@ void AvailableMusicView::updateView(){
   availableMusicModel->select();
 }
 
+void AvailableMusicView::addSongToActivePlaylist(const QModelIndex& index){
+  QSqlRecord songToPlayRecord = availableMusicModel->record(index.row());
+  QVariant data = 
+    songToPlayRecord.value(DataStore::getAvailableEntryLibIdColName());
+  dataStore->addSongToActivePlaylist(data.value<library_song_id_t>());
+}
 
 } //end namespace
