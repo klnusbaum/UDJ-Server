@@ -18,7 +18,9 @@
  */
 #ifndef LIBRARY_VIEW_HPP
 #define LIBRARY_VIEW_HPP
+#include "ConfigDefs.hpp"
 #include <QTableView>
+#include <vector>
 
 class QContextMenuEvent;
 class QSqlRelationalTableModel;
@@ -61,12 +63,6 @@ private:
     return deleteContextMenuItemName;
   }
 
-  static const QString& getAddToPlaylistContextMenuItemName(){
-    static const QString addToPlaylistContextMenuItemName = 
-      tr("Add to playlist");
-    return addToPlaylistContextMenuItemName;
-  }
-
   static const QString& getAddToAvailableContextMenuItemName(){
     static const QString addToAvailableContextMenuItemName = 
       tr("Add to Available Music");
@@ -75,7 +71,10 @@ private:
 
 private slots:
   void addSongToAvailableMusic();
+  void deleteSongs();
   void refresh();
+private:
+  std::vector<library_song_id_t> getSelectedSongs();
 };
 
 

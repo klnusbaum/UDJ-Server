@@ -53,6 +53,18 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
 
   connect(
     serverConnection,
+    SIGNAL(
+      songDeletedOnServer(library_song_id_t)
+    ),
+    this,
+    SLOT(
+      setLibSongSynced(library_song_id_t)
+    )
+  );
+
+
+  connect(
+    serverConnection,
     SIGNAL(eventCreated()),
     this,
     SIGNAL(eventCreated()));
@@ -161,12 +173,6 @@ void DataStore::setupDB(){
 		setupQuery)
 }
 
-void DataStore::clearMyLibrary(){
-  QSqlQuery workQuery(database);
-  workQuery.exec("DELETE FROM " + getLibraryTableName());
-  //TODO inform the server of the cleared library
-}
-
 void DataStore::addMusicToLibrary(
   QList<Phonon::MediaSource> songs, QProgressDialog& progress)
 {
@@ -224,6 +230,30 @@ void DataStore::addSongToLibrary(Phonon::MediaSource song){
   if(hostId != -1){
 	  serverConnection->addLibSongOnServer(
       songName, artistName, albumName, duration, hostId);
+  }
+}
+
+void DataStore::removeSongsFromLibrary(std::vector<library_song_id_t> toRemove){
+  QVariantList toDelete;
+  for(
+    std::vector<library_song_id_t>::const_iterator it= toRemove.begin();
+    it!=toRemove.end();
+    ++it)
+  {
+    toDelete << QVariant::fromValue<library_song_id_t>(*it);
+  }
+  QSqlQuery bulkDelete(database);
+  bulkDelete.prepare("UPDATE " + getLibraryTableName() + 
+    "SET " + getLibIsDeletedColName() + "=1, "+
+    getLibSyncStatusColName() + "=" + 
+      QString::number(getLibNeedsDeleteSyncStatus()) + " "
+    "WHERE " + getLibIdColName() + "= ?"); 
+  bulkDelete.addBindValue(toDelete);
+  EXEC_BULK_QUERY("Error removing songs from library", 
+    bulkDelete)
+  if(bulkDelete.lastError().type() == QSqlError::NoError){
+    emit libSongsModified();
+    syncLibrary();
   }
 }
 
@@ -386,9 +416,15 @@ void DataStore::syncLibrary(){
     else if(currentRecord.value(getLibSyncStatusColName()) ==
       getLibNeedsDeleteSyncStatus())
     {
-      //TODO implement delete call here
+      serverConnection->deleteLibSongOnServer(
+        currentRecord.value(getLibIdColName()).value<library_song_id_t>());
     }
   }
+}
+
+void DataStore::setLibSongSynced(library_song_id_t song){
+  std::vector<library_song_id_t> songVector(1,song);
+  setLibSongsSynced(songVector);
 }
 
 void DataStore::setLibSongsSynced(const std::vector<library_song_id_t> songs){

@@ -55,12 +55,13 @@ void LibraryView::refresh(){
 
 void LibraryView::createActions(){
   deleteSongAction = new QAction(getDeleteContextMenuItemName(), this);
-  addToPlaylistAction = new QAction(
-    getAddToPlaylistContextMenuItemName(), this);
   addToAvailableMusicAction = new QAction(
     getAddToAvailableContextMenuItemName(), this);
-  //TODO do something with the delete action
-  //TODO do something with the add to playlist action
+  connect(
+    deleteSongAction, 
+    SIGNAL(triggered()), 
+    this, 
+    SLOT(deleteSongs()));
   connect(
     addToAvailableMusicAction, 
     SIGNAL(triggered()), 
@@ -79,9 +80,9 @@ void LibraryView::handleContextMenuRequest(const QPoint &pos){
   contextMenu.exec(QCursor::pos());
 }
 
-void LibraryView::addSongToAvailableMusic(){
+std::vector<library_song_id_t> LibraryView::getSelectedSongs(){
   QModelIndexList selected = selectedIndexes();
-  std::vector<library_song_id_t> toAdd;
+  std::vector<library_song_id_t> selectedIds;
   std::set<int> rows;
   for(
     QModelIndexList::const_iterator it = selected.begin();
@@ -98,10 +99,18 @@ void LibraryView::addSongToAvailableMusic(){
   )
   {
     QSqlRecord libRecordToAdd = libraryModel->record(*it);
-    toAdd.push_back(libRecordToAdd.value(
+    selectedIds.push_back(libRecordToAdd.value(
       DataStore::getLibIdColName()).value<library_song_id_t>());
   }
-  dataStore->addSongsToAvailableSongs(toAdd);
+  return selectedIds;
+}
+
+void LibraryView::addSongToAvailableMusic(){
+  dataStore->addSongsToAvailableSongs(getSelectedSongs());
+}
+
+void LibraryView::deleteSongs(){
+  dataStore->removeSongsFromLibrary(getSelectedSongs());
 }
 
 

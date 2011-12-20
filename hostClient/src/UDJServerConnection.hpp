@@ -86,13 +86,6 @@ public:
   //@{
 	
 public slots:
-  /**
-   * \brief Removes all songs from the library associated with this conneciton.
-   *
-   * @return True if the clearing of the library was sucessful, false otherwise.
-   */
-	void clearMyLibrary();
-	
 
   void addLibSongOnServer(
 		const QString& songName,
@@ -100,6 +93,8 @@ public slots:
 		const QString& ablumName,
     const int duration,
     const library_song_id_t hostid);
+
+  void deleteLibSongOnServer(library_song_id_t toDeleteId);
 
   void addSongToAvailableSongs(library_song_id_t songToAdd);
   void addSongsToAvailableSongs(
@@ -130,40 +125,14 @@ signals:
   /** @name Signals */
   //@{
 
-  /**
-   * \brief Emitted when an event goer leaves.
-   *
-   * @param eventGoerId Id of the event goer who left.
-   */
-	void eventGoerLeft(user_id_t eventGoerId);
-
-  /**
-   * \brief Emitted when an event goers joins the event.
-   *
-   * @param eventGoerId Id of the event goer who joined.
-   */
-	void eventGoerJoined(user_id_t eventGoerId);
-
-  /**
-   * \brief Emitted when a song is added to the main playlist.
-   *
-   * @param libraryId Library id of the song added to the playlist.
-   */
-	void songAddedToMainPlaylist(library_song_id_t libraryId);
-  
-  /**
-   * \brief Emitted when the vote count for song in the playlist is changed.
-   *
-   * @param  playlistId Id of the song in the playlist whose vote count was
-   * changed.
-   */
-	void voteCountChanged(playlist_song_id_t playlistId);
-
   void connectionEstablished();
   
   void unableToConnect(const QString errMessage);
 
   void songsAddedToLibOnServer(const std::vector<library_song_id_t> addedIds);
+
+  void songDeletedFromLibOnServer(
+    const library_song_id_t deletedId);
 
   void eventCreated();
 
@@ -221,7 +190,7 @@ private:
 
   QUrl getLibAddSongUrl() const;
 
-  QUrl getLibDeleteAllUrl() const;
+  QUrl getLibDeleteSongUrl(library_song_id_t toDelete) const;
 
   QUrl getAddSongToAvailableUrl() const;
 
@@ -232,6 +201,8 @@ private:
   QUrl getActivePlaylistAddUrl() const;
 
   QUrl getCurrentSongUrl() const;
+
+  bool isLibDeleteUrl(QString path) const;
 
   static const QString & getServerPortNumber(){
     /** 
@@ -305,6 +276,8 @@ private:
   void handleAuthReply(QNetworkReply* reply);
 
   void handleAddLibSongsReply(QNetworkReply *reply);
+
+  void handleDeleteLibSongsReply(QNetworkReply *reply);
 
   void handleCreateEventReply(QNetworkReply *reply);
 

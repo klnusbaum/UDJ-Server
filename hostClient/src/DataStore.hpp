@@ -62,6 +62,8 @@ public:
    */
   void addSongToLibrary(Phonon::MediaSource song);
 
+  void removeSongsFromLibrary(std::vector<library_song_id_t> toRemove);
+
   /**
    * \brief Given a media source, determines the song name from the current
    * model data.
@@ -364,8 +366,6 @@ public slots:
   void removeSongsFromActivePlaylist(
     const std::vector<playlist_song_id_t>& pl_ids);
 
-  void clearMyLibrary();
-
   void createNewEvent(
     const QString& name, 
     const QString& password);
@@ -605,6 +605,7 @@ private:
 /** @name Private Slots */
 //@{
 private slots:
+  void setLibSongSynced(library_song_id_t song);
   void setLibSongsSynced(const std::vector<library_song_id_t> songs);
   void setLibSongsSyncStatus(
     const std::vector<library_song_id_t> songs,
