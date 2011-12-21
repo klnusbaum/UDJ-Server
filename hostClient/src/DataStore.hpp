@@ -603,6 +603,51 @@ private:
     return createPlaylistAddRequestsTableQuery;
   }
 
+  static const QString& getPlaylistRemoveRequestsTableName(){
+    static const QString playlistRemoveRequestsTableName = 
+      "playlist_remove_requests";
+    return playlistRemoveRequestsTableName;
+  }
+ 
+  static const QString& getPlaylistRemoveIdColName(){
+    static const QString playlistRemoveRequestIdColName = "id";
+    return playlistRemoveRequestIdColName;
+  }
+  
+  static const QString& getPlaylistRemoveLibIdColName(){
+    static const QString playlistRemoveLibIdColName = "libid";
+    return playlistRemoveLibIdColName;
+  }
+
+  static const QString& getPlaylistRemoveSycnStatusColName(){
+    static const QString playlistRemoveSycnStatusColName = "sync_status";
+    return playlistRemoveSycnStatusColName;
+  }
+
+  static const playlist_remove_sync_status_t& getPlaylistRemoveNeedsSync(){
+    static const playlist_remove_sync_status_t needs_sync = 1;
+    return needs_sync;
+  }
+
+  static const playlist_remove_sync_status_t& getPlaylistRemoveIsSynced(){
+    static const playlist_remove_sync_status_t isSynced = 0;
+    return isSynced;
+  }
+
+  static const QString& getCreatePlaylistRemoveRequestsTableQuery(){
+    static const QString createPlaylistRemoveRequestsTableQuery =
+      "CREATE TABLE IF NOT EXISTS " + getPlaylistRemoveRequestsTableName() +
+      "(" + getPlaylistRemoveIdColName() + 
+         " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+   	  getPlaylistRemoveLibIdColName() + " INTEGER REFERENCES " +
+        getLibraryTableName() +"(" + getLibIdColName()+ 
+        ") ON DELETE SET NULL, " +
+      getPlaylistRemoveSycnStatusColName() + " INTEGER DEFAULT " +
+        QString::number(getPlaylistRemoveNeedsSync()) + 
+      ");";
+    return createPlaylistRemoveRequestsTableQuery;
+  }
+
  //@}
 
 /** @name Private Slots */
