@@ -360,12 +360,6 @@ void DataStore::removeSongFromActivePlaylist(playlist_song_id_t plId){
   removeSongsFromActivePlaylist(toRemove);
 }
 
-void DataStore::removeSongsFromActivePlaylist(
-  const std::vector<library_song_id_t>& pl_ids)
-{
-
-}
-
 QSqlDatabase DataStore::getDatabaseConnection(){
   return database;
 }
@@ -678,5 +672,71 @@ void DataStore::setPlaylistAddRequestsSynced(
     needsSyncQuery)
   refreshActivePlaylist();  
 }
+
+
+void DataStore::removeSongsFromActivePlaylist(
+  const std::vector<playlist_song_id_t>& toRemove)
+{
+  QVariantList toInsert;
+  for(
+    std::vector<playlist_song_id_t>::const_iterator it= toRemove.begin();
+    it!=toRemove.end();
+    ++it)
+  {
+    toInsert << QVariant::fromValue<playlist_song_id_t>(*it);
+  }
+  QSqlQuery needsInsertQuery(database);
+  needsInsertQuery.prepare(
+    "INSERT INTO " + getPlaylistRemoveRequestsTableName() +  
+    " (" + getPlaylistRemoveEntryIdColName() + ") VALUES( ? );");
+  needsInsertQuery.addBindValue(toInsert);
+  EXEC_BULK_QUERY(
+    "Error setting active playlist add requests as synced" << std::endl <<
+    "vector size was: " << toRemove.size(),
+    needsInsertQuery)
+  syncPlaylistRemoveRequests();
+}
+
+void DataStore::syncPlaylistRemoveRequests(){
+  QSqlQuery needsSyncQuery(database);
+	EXEC_SQL(
+		"Error getting remove requests that need syncing", 
+		needsSyncQuery.exec("SELECT * FROM " + 
+      getPlaylistRemoveRequestsTableName() +
+      " where " + getPlaylistRemoveSycnStatusColName() + " = " +
+      QString::number(getPlaylistRemoveNeedsSync()) + ";"
+     ), 
+		needsSyncQuery)	
+  if(!needsSyncQuery.isActive()){
+    //TODO handle error here
+    return;
+  }
+  std::vector<playlist_song_id_t> playlistIds;
+  while(needsSyncQuery.next()){
+    playlistIds.push_back(needsSyncQuery.record().value(
+      getPlaylistRemoveEntryIdColName()).value<playlist_song_id_t>());
+  }
+  serverConnection->removeSongsFromActivePlaylist(playlistIds);
+}
+
+void DataStore::setPlaylistRemoveRequestSynced(
+  const playlist_song_id_t id)
+{
+  QSqlQuery needsSyncQuery(database);
+  needsSyncQuery.prepare(
+    "UPDATE " + getPlaylistRemoveRequestsTableName() +  
+    " SET " + getPlaylistRemoveSycnStatusColName() + " = " +
+    QString::number(getPlaylistRemoveIsSynced()) + " where " +
+    getPlaylistRemoveEntryIdColName() + " = ? ;");
+  needsSyncQuery.addBindValue(QVariant::fromValue<playlist_song_id_t>(id));
+  EXEC_SQL(
+    "Error setting playlist remove to synced with id of " << id,
+    needsSyncQuery.exec(),
+    needsSyncQuery)
+  if(needsSyncQuery.lastError().type() == QSqlError::NoError){
+    refreshActivePlaylist();  
+  }
+}
+
 
 } //end namespace

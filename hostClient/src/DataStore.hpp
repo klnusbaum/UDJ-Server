@@ -441,6 +441,8 @@ private:
 
   void syncPlaylistAddRequests();
 
+  void syncPlaylistRemoveRequests();
+
 
   //@}
 
@@ -596,7 +598,7 @@ private:
       "(" + getPlaylistAddIdColName() + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
    	  getPlaylistAddLibIdColName() + " INTEGER REFERENCES " +
         getLibraryTableName() +"(" + getLibIdColName()+ 
-        ") ON DELETE SET NULL, " +
+        ") ON DELETE SET NULL , " +
       getPlaylistAddSycnStatusColName() + " INTEGER DEFAULT " +
         QString::number(getPlaylistAddNeedsSync()) + 
       ");";
@@ -614,8 +616,8 @@ private:
     return playlistRemoveRequestIdColName;
   }
   
-  static const QString& getPlaylistRemoveLibIdColName(){
-    static const QString playlistRemoveLibIdColName = "libid";
+  static const QString& getPlaylistRemoveEntryIdColName(){
+    static const QString playlistRemoveLibIdColName = "playlist_id";
     return playlistRemoveLibIdColName;
   }
 
@@ -639,9 +641,7 @@ private:
       "CREATE TABLE IF NOT EXISTS " + getPlaylistRemoveRequestsTableName() +
       "(" + getPlaylistRemoveIdColName() + 
          " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-   	  getPlaylistRemoveLibIdColName() + " INTEGER REFERENCES " +
-        getLibraryTableName() +"(" + getLibIdColName()+ 
-        ") ON DELETE SET NULL, " +
+   	  getPlaylistRemoveEntryIdColName() + " INTEGER UNIQUE, " +
       getPlaylistRemoveSycnStatusColName() + " INTEGER DEFAULT " +
         QString::number(getPlaylistRemoveNeedsSync()) + 
       ");";
@@ -667,6 +667,7 @@ private slots:
   void setActivePlaylist(const QVariantList newSongs);
   void setPlaylistAddRequestsSynced(const std::vector<client_request_id_t> 
     toSetSynced);
+  void setPlaylistRemoveRequestSynced(const playlist_song_id_t id);
 //@}
 
 };

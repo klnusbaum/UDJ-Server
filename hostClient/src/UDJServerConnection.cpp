@@ -181,6 +181,14 @@ void UDJServerConnection::addSongsToActivePlaylist(
     QVariant::fromValue<std::vector<client_request_id_t> >(requestIds));
 }
 
+void UDJServerConnection::removeSongsFromActivePlaylist(
+  const std::vector<playlist_song_id_t>& playlistIds)
+{
+
+
+}
+
+
 void UDJServerConnection::setCurrentSong(playlist_song_id_t currentSong){
   QNetworkRequest setCurrentSongRequest(getCurrentSongUrl());
   setCurrentSongRequest.setRawHeader(getTicketHeaderName(), ticket_hash);

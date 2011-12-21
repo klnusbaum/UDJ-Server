@@ -120,6 +120,9 @@ public slots:
     const std::vector<client_request_id_t>& requestIds, 
     const std::vector<library_song_id_t>& songIds);
 
+  void removeSongsFromActivePlaylist(
+    const std::vector<playlist_song_id_t>& playlistIds);
+
   void setCurrentSong(playlist_song_id_t currentSong);
 
   //@}
