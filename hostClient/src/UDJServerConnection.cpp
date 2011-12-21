@@ -285,7 +285,7 @@ void UDJServerConnection::handleDeleteAvailableMusicReply(
 {
   if(reply->error() == QNetworkReply::NoError){
     QString path = reply->request().url().path();
-    QRegExp rx("/udj/events/" + QString::number(user_id) + 
+    QRegExp rx("/udj/events/" + QString::number(eventId) + 
       "/available_music/(\\d+)");
     rx.indexIn(path);
     library_song_id_t songDeleted = rx.cap(1).toLong();

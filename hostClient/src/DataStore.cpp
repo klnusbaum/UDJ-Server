@@ -509,7 +509,6 @@ void DataStore::setAvailableSongsSyncStatus(
 {
   QSqlQuery setSyncedQuery(database);
   for(int i=0; i< songs.size(); ++i){
-    DEBUG_MESSAGE("execing sync")
     EXEC_SQL(
       "Error setting song to synced",
       setSyncedQuery.exec(
