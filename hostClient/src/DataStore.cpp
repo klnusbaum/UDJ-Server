@@ -88,6 +88,7 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
     activePlaylistRefreshTimer, 
     SLOT(stop()));
   connect(serverConnection, SIGNAL(eventEnded()), this, SLOT(eventCleanUp()));
+
   connect(
     serverConnection, 
     SIGNAL(eventEndingFailed(const QString)), 
@@ -129,12 +130,20 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
     SIGNAL(currentSongSet()),
     this,
     SLOT(refreshActivePlaylist()));
-  syncLibrary();
+
   connect(
     this,
     SIGNAL(eventCreated()),
     this,
     SLOT(eventCleanUp())); 
+
+  connect(
+    serverConnection,
+    SIGNAL(songRemovedFromActivePlaylist(const playlist_song_id_t)),
+    this,
+    SLOT(setPlaylistRemoveRequestSynced(const playlist_song_id_t)));
+
+  syncLibrary();
 }
 
 void DataStore::setupDB(){

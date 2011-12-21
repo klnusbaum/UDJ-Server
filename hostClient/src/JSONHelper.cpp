@@ -16,9 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "JSONHelper.hpp"
 #include <QNetworkReply>
-#include "DataStore.hpp"
+#include "JSONHelper.hpp"
 #include "qt-json/json.h"
 
 namespace UDJ{

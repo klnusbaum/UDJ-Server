@@ -158,6 +158,8 @@ signals:
 
   void songsAddedToActivePlaylist(const std::vector<client_request_id_t> ids);
 
+  void songRemovedFromActivePlaylist(const playlist_song_id_t songId);
+
   void currentSongSet();
 
   void currentSongSetError();
@@ -211,11 +213,15 @@ private:
 
   QUrl getActivePlaylistAddUrl() const;
 
+  QUrl getActivePlaylistRemoveUrl(playlist_song_id_t toDelete) const;
+
   QUrl getCurrentSongUrl() const;
 
-  bool isLibDeleteUrl(QString path) const;
+  bool isLibDeleteUrl(const QString& path) const;
  
-  bool isAvailableMusicDeleteUrl(QString path) const;
+  bool isAvailableMusicDeleteUrl(const QString& path) const;
+
+  bool isActivePlaylistRemoveUrl(const QString& path) const;
 
   static const QString & getServerPortNumber(){
     /** 
@@ -303,6 +309,8 @@ private:
   void handleRecievedActivePlaylist(QNetworkReply *reply);
 
   void handleRecievedActivePlaylistAdd(QNetworkReply *reply);
+
+  void handleRecievedActivePlaylistRemove(QNetworkReply *reply);
 
   void handleRecievedCurrentSongSet(QNetworkReply *reply);
 
