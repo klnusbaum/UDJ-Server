@@ -53,7 +53,7 @@ void ActivityList::setupUi(){
   model = new QStandardItemModel(this);
   model->appendRow(new QStandardItem(getLibraryTitle()));
   model->appendRow(new QStandardItem(getEventTitle()));
-  model->appendRow(new QStandardItem(getPlaylistTitle()));
+//  model->appendRow(new QStandardItem(getPlaylistTitle()));
   setModel(model);
   header()->hide();
 }

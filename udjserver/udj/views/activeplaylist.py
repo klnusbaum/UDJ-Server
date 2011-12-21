@@ -133,7 +133,7 @@ def voteSong(request, event_id, playlist_id, VoteType):
 @AcceptsMethods('DELETE')
 def removeSongFromActivePlaylist(request, event_id, playlist_id):
   if DeletedPlaylistEntry.objects.filter(original_id=playlist_id, 
-    event__id=event_id):
+    event__id=event_id).exists():
     return HttpResponse()
 
   toRemove = get_object_or_404(

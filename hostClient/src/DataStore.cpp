@@ -187,6 +187,10 @@ void DataStore::setupDB(){
 		"Error creating available music",
   	setupQuery.exec(getCreatePlaylistAddRequestsTableQuery()),
 		setupQuery)
+	EXEC_SQL(
+		"Error creating available music",
+  	setupQuery.exec(getCreatePlaylistRemoveRequestsTableQuery()),
+		setupQuery)
 }
 
 void DataStore::addMusicToLibrary(

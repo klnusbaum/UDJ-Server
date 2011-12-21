@@ -36,7 +36,7 @@ public:
 signals:
   void libraryClicked();
   void eventClicked();
-  void playlistClicked(playlist_id_t playlistId);
+//  void playlistClicked(playlist_id_t playlistId);
 
 private:
   static const QString& getLibraryTitle(){
@@ -49,10 +49,10 @@ private:
     return eventTitle;
   }
 
-  static const QString& getPlaylistTitle(){
+ /* static const QString& getPlaylistTitle(){
     static const QString playlistTitle(tr("Playlist"));
     return playlistTitle;
-  }
+  }*/
 
   DataStore *dataStore;
   QStandardItemModel *model;

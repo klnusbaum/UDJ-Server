@@ -18,9 +18,12 @@
  */
 #ifndef ACTIVE_PLAYLIST_VIEW_HPP
 #define ACTIVE_PLAYLIST_VIEW_HPP
+#include "ConfigDefs.hpp"
 #include <QTableView>
+#include <vector>
 
 class QSqlRelationalTableModel;
+class QAction;
 
 namespace UDJ{
 
@@ -49,6 +52,10 @@ public:
 
 private:
 
+  std::vector<playlist_song_id_t> getSelectedSongs() const;
+
+  void createActions();
+
   /** @name Private Members */
   //@{
 
@@ -60,6 +67,8 @@ private:
 
 
   QSqlRelationalTableModel *model;
+
+  QAction *removeSongAction;
   //@}
 
 private slots:
@@ -67,6 +76,10 @@ private slots:
   void refreshDisplay(); 
 
   void setCurrentSong(const QModelIndex& index);
+
+  void handleContextMenuRequest(const QPoint& pos);
+
+  void removeSongs();
 
 };
 

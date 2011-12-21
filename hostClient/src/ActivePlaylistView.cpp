@@ -21,6 +21,10 @@
 #include <QHeaderView>
 #include <QSqlRelationalTableModel>
 #include <QSqlRecord>
+#include <QAction>
+#include <QMenu>
+#include <QContextMenuEvent>
+#include <set>
 
 namespace UDJ{
 
@@ -28,6 +32,7 @@ ActivePlaylistView::ActivePlaylistView(DataStore* dataStore, QWidget* parent):
   QTableView(parent),
   dataStore(dataStore)
 {
+  setContextMenuPolicy(Qt::CustomContextMenu);
   setEditTriggers(QAbstractItemView::NoEditTriggers);
   model = 
     new QSqlRelationalTableModel(this, dataStore->getDatabaseConnection());
@@ -35,6 +40,7 @@ ActivePlaylistView::ActivePlaylistView(DataStore* dataStore, QWidget* parent):
   model->select();
   verticalHeader()->hide();
   horizontalHeader()->setStretchLastSection(true);
+  createActions();
   setModel(model);
   setSelectionBehavior(QAbstractItemView::SelectRows);
   connect(
@@ -47,6 +53,8 @@ ActivePlaylistView::ActivePlaylistView(DataStore* dataStore, QWidget* parent):
     SIGNAL(activated(const QModelIndex&)),
     this,
     SLOT(setCurrentSong(const QModelIndex&)));
+  connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
+    this, SLOT(handleContextMenuRequest(const QPoint&)));
 }
   
 void ActivePlaylistView::refreshDisplay(){
@@ -58,6 +66,50 @@ void ActivePlaylistView::setCurrentSong(const QModelIndex& index){
   QVariant data = 
     songToPlayRecord.value(DataStore::getActivePlaylistIdColName());
   dataStore->setCurrentSong(data.value<playlist_song_id_t>());
+}
+
+std::vector<library_song_id_t> ActivePlaylistView::getSelectedSongs() const{
+  QModelIndexList selected = selectedIndexes();
+  std::vector<playlist_song_id_t> selectedIds;
+  std::set<int> rows;
+  for(
+    QModelIndexList::const_iterator it = selected.begin();
+    it != selected.end();
+    ++it
+  )
+  {
+    rows.insert(it->row()); 
+  }
+  for(
+    std::set<int>::const_iterator it = rows.begin();
+    it != rows.end();
+    ++it
+  )
+  {
+    QSqlRecord playlistRecord = model->record(*it);
+    selectedIds.push_back(playlistRecord.value(
+      DataStore::getActivePlaylistIdColName()).value<playlist_song_id_t>());
+  }
+  return selectedIds;
+}
+
+void ActivePlaylistView::createActions(){
+  removeSongAction = new QAction(tr("Remove Song"), this);
+  connect(
+    removeSongAction,
+    SIGNAL(triggered()),
+    this,
+    SLOT(removeSongs()));
+}
+
+void ActivePlaylistView::handleContextMenuRequest(const QPoint& pos){
+  QMenu contextMenu(this);
+  contextMenu.addAction(removeSongAction);
+  contextMenu.exec(QCursor::pos());
+}
+
+void ActivePlaylistView::removeSongs(){
+  dataStore->removeSongsFromActivePlaylist(getSelectedSongs());
 }
 
 } //end namespace

@@ -114,11 +114,11 @@ void MetaWindow::setupUi(){
     this,
     SLOT(displayEventWidget()));
 
-  connect(
+  /*connect(
     activityList,
     SIGNAL(playlistClicked(playlist_id_t)),
     this,
-    SLOT(displayPlaylist(playlist_id_t)));
+    SLOT(displayPlaylist(playlist_id_t)));*/
 
   resize(800,600);
 }
