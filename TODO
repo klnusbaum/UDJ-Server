@@ -10,6 +10,11 @@ playing, fade into new song, then gradual return beat of new song to normal.
 the available music, active playlist, and anything else that references the
 library table is updated accordingly
 *make sure ticket is always up to date
+*current syncing model always assumes that a library entry or available 
+music entry is successfully and completely added with the server before any
+potential delete operations is started. need to enforce this work flow some
+how. For instance, don't even allow a syncstatus to change unless it's set to
+isSynched. Should be a simple trigger on the database.
 
 ANDROID APP
 *IMPORTANT: SWITCH TO HttpsURLConnection. This will give us automatic caching

@@ -102,6 +102,13 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
 
   connect(
     serverConnection,
+    SIGNAL(songRemovedFromAvailableMusicOnServer(const library_song_id_t)),
+    this,
+    SLOT(setAvailableSongSynced(const library_song_id_t)));
+
+
+  connect(
+    serverConnection,
     SIGNAL(newActivePlaylist(const QVariantList)),
     this,
     SLOT(setActivePlaylist(const QVariantList)));
@@ -290,6 +297,37 @@ void DataStore::addSongsToAvailableSongs(
   syncAvailableMusic();
 }
 
+void DataStore::removeSongsFromAvailableMusic(
+  const std::vector<library_song_id_t>& song_ids)
+{
+  if(song_ids.size() < 1){
+    return;
+  }
+  QVariantList toDelete;
+  for(
+    std::vector<library_song_id_t>::const_iterator it = song_ids.begin();
+    it!=song_ids.end();
+    ++it)
+  {
+    toDelete << QVariant::fromValue<library_song_id_t>(*it);
+  }
+  QSqlQuery bulkUpdate(database);
+  bulkUpdate.prepare(
+    "UPDATE " + getAvailableMusicTableName() + " " 
+    "SET " + getAvailableEntrySyncStatusColName() + "=" + 
+      QString::number(getAvailableEntryNeedsDeleteSyncStatus()) +
+    " WHERE "  + getLibIdColName() + "= ? ;");
+  bulkUpdate.addBindValue(toDelete);
+
+  EXEC_BULK_QUERY("Error inserting songs into add queue for active playlist", 
+    bulkUpdate)
+  if(bulkUpdate.laseError().type() == QSqlError::NoError){
+    syncAvailableMusic();
+  }
+}
+
+
+
 
 void DataStore::addSongToActivePlaylist(library_song_id_t libraryId){
   std::vector<library_song_id_t> toAdd(1, libraryId);
@@ -453,6 +491,11 @@ void DataStore::endEvent(){
   serverConnection->endEvent();
 }
 
+void DataStore::setAvailableSongSynced(const library_song_id_t songs){
+  std::vector<library_song_id_t> songVector(1,songs);
+  setAvailableSongsSynced(songVector);
+}
+
 void DataStore::setAvailableSongsSynced(
   const std::vector<library_song_id_t> songs)
 {
@@ -489,6 +532,7 @@ void DataStore::syncAvailableMusic(){
     getUnsyncedSongs)
 
   std::vector<library_song_id_t> toAdd;
+  std::vector<library_song_id_t> toDelete;
   while(getUnsyncedSongs.next()){  
     QSqlRecord currentRecord = getUnsyncedSongs.record();
     if(currentRecord.value(getAvailableEntrySyncStatusColName()) == 
@@ -500,11 +544,15 @@ void DataStore::syncAvailableMusic(){
     else if(currentRecord.value(getLibSyncStatusColName()) ==
       getLibNeedsDeleteSyncStatus())
     {
-      //TODO implement delete call here
+      toDelete.push_back(currentRecord.value(
+        getAvailableEntryLibIdColName()).value<library_song_id_t>());
     }
   }
   if(toAdd.size() > 0){
     serverConnection->addSongsToAvailableSongs(toAdd);
+  }
+  if(toDelete.size() > 0){
+    serverConnection->removeSongsFromAvailableMusic(toDelete);
   }
 }
 

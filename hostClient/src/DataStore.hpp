@@ -356,6 +356,9 @@ public slots:
 	void addSongsToActivePlaylist(
     const std::vector<library_song_id_t>& libraryId);
 
+  void removeSongsFromAvailableMusic(
+    const std::vector<library_song_id_t>& libraryId);
+
   /**
    * \brief Removes the specified song from the playlist.
    *
@@ -610,6 +613,7 @@ private slots:
   void setLibSongsSyncStatus(
     const std::vector<library_song_id_t> songs,
     const lib_sync_status_t syncStatus);
+  void setAvailableSongSynced(const library_song_id_t songs);
   void setAvailableSongsSynced(const std::vector<library_song_id_t> songs);
   void setAvailableSongsSyncStatus(
     const std::vector<library_song_id_t> songs,

@@ -80,9 +80,9 @@ void AvailableMusicView::handleContextMenuRequest(const QPoint &pos){
   contextMenu.exec(QCursor::pos());
 }
 
-void AvailableMusicView::addSongsToActivePlaylist(){
+std::vector<library_song_id_t> AvailableMusicView::getSelectedSongs() const{
   QModelIndexList selected = selectedIndexes();
-  std::vector<library_song_id_t> toAdd;
+  std::vector<library_song_id_t> selectedLibs;
   std::set<int> rows;
   for(
     QModelIndexList::const_iterator it = selected.begin();
@@ -99,14 +99,18 @@ void AvailableMusicView::addSongsToActivePlaylist(){
   )
   {
     QSqlRecord libRecordToAdd = availableMusicModel->record(*it);
-    toAdd.push_back(libRecordToAdd.value(
+    selectedLibs.push_back(libRecordToAdd.value(
       DataStore::getActivePlaylistLibIdColName()).value<library_song_id_t>());
   }
-  dataStore->addSongsToActivePlaylist(toAdd); 
+  return selectedLibs;
+}
+
+void AvailableMusicView::addSongsToActivePlaylist(){
+  dataStore->addSongsToActivePlaylist(getSelectedSongs()); 
 }
 
 void AvailableMusicView::removeSongsFromAvailableMusic(){
-
+  dataStore->removeSongsFromAvailableMusic(getSelectedSongs());  
 }
 
 void AvailableMusicView::updateView(){

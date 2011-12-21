@@ -19,6 +19,7 @@
 #ifndef AVAILABLE_MUSIC_VIEW_HPP
 #define AVAILABLE_MUSIC_VIEW_HPP
 #include <QTableView>
+#include <vector>
 #include "ConfigDefs.hpp"
 
 class QSqlRelationalTableModel;
@@ -37,6 +38,7 @@ private:
   QSqlRelationalTableModel *availableMusicModel;  
   QAction *removeFromAvailableMusic;
   QAction *addToActivePlaylist;
+  std::vector<library_song_id_t> getSelectedSongs() const;
 
   void createActions();
 

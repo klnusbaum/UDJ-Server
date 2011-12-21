@@ -97,8 +97,12 @@ public slots:
   void deleteLibSongOnServer(library_song_id_t toDeleteId);
 
   void addSongToAvailableSongs(library_song_id_t songToAdd);
+
   void addSongsToAvailableSongs(
     const std::vector<library_song_id_t>& songsToAdd);
+
+  void removeSongsFromAvailableMusic(
+    const std::vector<library_song_id_t>& songsToRemove);
 
   void createEvent(
     const QString& partyName,
@@ -144,6 +148,8 @@ signals:
 
   void songsAddedToAvailableMusic(
     const std::vector<library_song_id_t> songAdded);
+
+  void songRemovedFromAvailableMusicOnServer(const library_song_id_t deletedId);
 
   void newActivePlaylist(const QVariantList newPlaylist);
 
@@ -194,6 +200,8 @@ private:
 
   QUrl getAddSongToAvailableUrl() const;
 
+  QUrl getAvailableMusicRemoveUrl(library_song_id_t toDelete) const;
+
   QUrl getEndEventUrl() const;
 
   QUrl getActivePlaylistUrl() const;
@@ -203,6 +211,8 @@ private:
   QUrl getCurrentSongUrl() const;
 
   bool isLibDeleteUrl(QString path) const;
+ 
+  bool isAvailableMusicDeleteUrl(QString path) const;
 
   static const QString & getServerPortNumber(){
     /** 
@@ -284,6 +294,8 @@ private:
   void handleEndEventReply(QNetworkReply *reply);
 
   void handleAddAvailableSongReply(QNetworkReply *reply);
+
+  void handleDeleteAvailableMusicReply(QNetworkReply *reply);
 
   void handleRecievedActivePlaylist(QNetworkReply *reply);
 

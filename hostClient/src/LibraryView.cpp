@@ -49,7 +49,9 @@ LibraryView::LibraryView(DataStore *dataStore, QWidget* parent):
 void LibraryView::refresh(){
   libraryModel->setQuery(
     "SELECT * FROM " + DataStore::getLibraryTableName() + " WHERE " +
-    DataStore::getLibIsDeletedColName() + "=0;", 
+    DataStore::getLibIsDeletedColName() + "=0 AND " +
+    DataStore::getLibSyncStatusColName() + " != " +
+    QString::number(DataStore::getLibNeedsAddSyncStatus()) + ";", 
     dataStore->getDatabaseConnection());
 }
 

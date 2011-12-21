@@ -126,6 +126,24 @@ void UDJServerConnection::addSongsToAvailableSongs(
   netAccessManager->put(addSongToAvailableRequest, songsAddJSON);
 }
 
+void UDJServerConnection::removeSongsFromAvailableMusic(
+  const std::vector<library_song_id_t>& songsToRemove)
+{
+  if(songsToRemove.size() <= 0){
+    return;
+  }
+  for(
+    std::vector<library_song_id_t>::const_iterator it = songsToRemove.begin();
+    it != songsToRemove.end();
+    ++it)
+  {
+    QNetworkRequest removeSongFromAvailableRequest(
+      getAvailableMusicRemoveUrl(*it));
+    prepareJSONRequest(removeSongFromAvailableRequest);
+    netAccessManager->deleteResource(removeSongFromAvailableRequest);
+  }
+}
+
 void UDJServerConnection::getActivePlaylist(){
   QNetworkRequest getActivePlaylistRequest(getActivePlaylistUrl());
   getActivePlaylistRequest.setRawHeader(getTicketHeaderName(), ticket_hash);
@@ -198,6 +216,9 @@ void UDJServerConnection::recievedReply(QNetworkReply *reply){
   else if(isLibDeleteUrl(reply->request().url().path())){
     handleDeleteLibSongsReply(reply);
   }
+  else if(isAvailableMusicDeleteUrl(reply->request().url().path())){
+    handleDeleteAvailableMusicReply(reply);
+  }
   else{
     DEBUG_MESSAGE("Recieved unknown response")
     DEBUG_MESSAGE(reply->request().url().path().toStdString())
@@ -256,6 +277,19 @@ void UDJServerConnection::handleAddAvailableSongReply(QNetworkReply *reply){
     std::vector<library_song_id_t> addedIds = 
       JSONHelper::getAddedAvailableSongs(reply);
     emit songsAddedToAvailableMusic(addedIds); 
+  }
+}
+
+void UDJServerConnection::handleDeleteAvailableMusicReply(
+  QNetworkReply *reply)
+{
+  if(reply->error() == QNetworkReply::NoError){
+    QString path = reply->request().url().path();
+    QRegExp rx("/udj/events/" + QString::number(user_id) + 
+      "/available_music/(\\d+)");
+    rx.indexIn(path);
+    library_song_id_t songDeleted = rx.cap(1).toLong();
+    emit songRemovedFromAvailableMusicOnServer(songDeleted);
   }
 }
 
@@ -324,6 +358,13 @@ QUrl UDJServerConnection::getLibDeleteSongUrl(library_song_id_t toDelete) const{
     "/library/" + QString::number(toDelete));
 }
 
+QUrl UDJServerConnection::getAvailableMusicRemoveUrl(
+  library_song_id_t toDelete) const
+{
+  return QUrl(getServerUrlPath() + "events/" + QString::number(eventId) +
+    "/available_music/" + QString::number(toDelete));
+}
+
 QUrl UDJServerConnection::getEndEventUrl() const{
   return QUrl(getServerUrlPath() + "events/" + QString::number(eventId));
 }
@@ -350,6 +391,12 @@ QUrl UDJServerConnection::getCurrentSongUrl() const{
 
 bool UDJServerConnection::isLibDeleteUrl(QString path) const{
   QRegExp rx("^/udj/users/" + QString::number(user_id) + "/library/\\d+$");
+  return rx.exactMatch(path);
+}
+
+bool UDJServerConnection::isAvailableMusicDeleteUrl(QString path) const{
+  QRegExp rx("^/udj/events/" + QString::number(eventId) + 
+    "/available_music/\\d+$");
   return rx.exactMatch(path);
 }
 
