@@ -314,14 +314,15 @@ void DataStore::removeSongsFromAvailableMusic(
   QSqlQuery bulkUpdate(database);
   bulkUpdate.prepare(
     "UPDATE " + getAvailableMusicTableName() + " " 
-    "SET " + getAvailableEntrySyncStatusColName() + "=" + 
-      QString::number(getAvailableEntryNeedsDeleteSyncStatus()) +
-    " WHERE "  + getLibIdColName() + "= ? ;");
+    "SET " + getAvailableEntrySyncStatusColName() + " = " + 
+      QString::number(getAvailableEntryNeedsDeleteSyncStatus()) + ", " +
+    getAvailableEntryIsDeletedColName() + "=1 "+
+    " WHERE "  + getAvailableEntryLibIdColName() + " = ? ;");
   bulkUpdate.addBindValue(toDelete);
 
   EXEC_BULK_QUERY("Error inserting songs into add queue for active playlist", 
     bulkUpdate)
-  if(bulkUpdate.laseError().type() == QSqlError::NoError){
+  if(bulkUpdate.lastError().type() == QSqlError::NoError){
     syncAvailableMusic();
   }
 }
@@ -508,6 +509,7 @@ void DataStore::setAvailableSongsSyncStatus(
 {
   QSqlQuery setSyncedQuery(database);
   for(int i=0; i< songs.size(); ++i){
+    DEBUG_MESSAGE("execing sync")
     EXEC_SQL(
       "Error setting song to synced",
       setSyncedQuery.exec(
