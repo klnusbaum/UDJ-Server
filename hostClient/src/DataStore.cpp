@@ -583,6 +583,11 @@ void DataStore::eventCleanUp(){
     tearDownQuery.exec(getDeleteAddRequestsQuery()),
     tearDownQuery
   )
+  EXEC_SQL(
+    "Error deleteing contents of AvailableMusic",
+    tearDownQuery.exec(getDeleteRemoveRequestsQuery()),
+    tearDownQuery
+  )
 }
 
 void DataStore::clearActivePlaylist(){

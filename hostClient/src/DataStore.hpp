@@ -709,8 +709,10 @@ private:
   /** \brief Actual database connection */
   QSqlDatabase database;
 
+  /** \brief Name of current event being hosted. */
   QString eventName;
 
+  /** \brief Timer used to refresh the active playlist. */
   QTimer *activePlaylistRefreshTimer;
   
   //@}
@@ -727,15 +729,35 @@ private:
    */
   void syncLibrary();
 
+  /**
+   * \brief Syncs the available music table with the server.
+   */
   void syncAvailableMusic();
 
+  /** 
+   * \brief Deletes all the entries in the active playlist table.
+   */
   void clearActivePlaylist();
 
+  /** 
+   * \brief Adds a song to the active playlist table.
+   *
+   * @param songToAdd A QVariantMap which represents the song to be added to
+   * the active playlsit table.
+   * @param pritority The priority of the song to be added to the active 
+   * playlist. 
+   */
   void addSong2ActivePlaylistFromQVariant(
     const QVariantMap &songToAdd, int priority);
 
+  /** 
+   * \brief Syncs all the requests for additions to the active playlst.
+   */
   void syncPlaylistAddRequests();
 
+  /** 
+   * \brief Syncs all the requests for removals from the active playlst.
+   */
   void syncPlaylistRemoveRequests();
 
 
@@ -763,8 +785,11 @@ private:
     return musicDBName;
   }
 
-
-
+  /** 
+   * \brief Gets the query used to create the library table.
+   *
+   * @return The query used to create the library table.
+   */
   static const QString& getCreateLibraryQuery(){
     static const QString createLibQuerey = 
       "CREATE TABLE IF NOT EXISTS " + 
@@ -790,6 +815,11 @@ private:
     return createLibQuerey;
   }
 
+  /** 
+   * \brief Gets the query used to create the playlist table.
+   *
+   * @return The query used to create the playlist table.
+   */
   static const QString& getCreatePlaylistTableQuery(){
     static const QString createPlaylistTableQuery = 
       "CREATE TABLE IF NOT EXISTS " +
@@ -799,6 +829,11 @@ private:
     return createPlaylistTableQuery;
   }
 
+  /** 
+   * \brief Gets the query used to create the playlist entry table.
+   *
+   * @return The query used to create the playlist entry table.
+   */
   static const QString& getCreatePlaylistEntryTableQuery(){
     static const QString createPlaylistEntryTableQuery = 
       "CREATE TABLE IF NOT EXISTS " +
@@ -813,6 +848,11 @@ private:
     return createPlaylistEntryTableQuery;
   }
 
+  /** 
+   * \brief Gets the query used to create the available music table.
+   *
+   * @return The query used to create the available music table.
+   */
   static const QString& getCreateAvailableMusicQuery(){
     static const QString createAvailableMusicQuery = 
       "CREATE TABLE IF NOT EXISTS " +
@@ -833,6 +873,11 @@ private:
     return createAvailableMusicQuery;
   }
 
+  /** 
+   * \brief Gets the query used to create the active playlist table.
+   *
+   * @return The query used to create the active playlist table.
+   */
   static const QString& getCreateActivePlaylistQuery(){
     static const QString createActivePlaylistQuery = 
       "CREATE TABLE IF NOT EXISTS " +
@@ -848,6 +893,12 @@ private:
     return createActivePlaylistQuery;
   }
 
+  /** 
+   * \brief Gets the query used to create the active playlist view (
+   * a join between the active playlist and the library table).
+   *
+   * @return The query used to create the active playlist view.
+   */
   static const QString& getCreateActivePlaylistViewQuery(){
     static const QString createActivePlaylistViewQuery = 
       "CREATE VIEW IF NOT EXISTS "+getActivePlaylistViewName() + " " + 
@@ -861,6 +912,12 @@ private:
     return createActivePlaylistViewQuery;
   }
 
+  /** 
+   * \brief Gets the query used to create the available music view (a join
+   * between the available music table and the library table).
+   *
+   * @return The query used to create the available music view.
+   */
   static const QString& getCreateAvailableMusicViewQuery(){
     static const QString createAvailableMusicViewQuery = 
       "CREATE VIEW IF NOT EXISTS "+getAvailableMusicViewName() + " " + 
@@ -871,23 +928,58 @@ private:
     return createAvailableMusicViewQuery;
   }
 
+  /**
+   * \brief Gets the query used to delete all entries in the available music
+   * table.
+   *
+   * @return The query used to delete all entries in the available music
+   * table.
+   */
   static const QString& getDeleteAvailableMusicQuery(){
 		static const QString deleteAvailableMusicQuery = 
       "DELETE FROM " + getAvailableMusicTableName() + ";";
     return deleteAvailableMusicQuery;
   }
 
+  /**
+   * \brief Gets the query used to delete all entries in the active playlist
+   * table.
+   *
+   * @return The query used to delete all entries in the active playlist
+   * table.
+   */
   static const QString& getClearActivePlaylistQuery(){
     static const QString clearActivePlaylistQuery = 
       "DELETE FROM " + getActivePlaylistTableName() + ";";
     return clearActivePlaylistQuery;
   }
 
+  /**
+   * \brief Gets the query used to delete all entries in the active playlist
+   * add requests table.
+   *
+   * @return The query used to delete all entries in the active playlist
+   * add requests table.
+   */
   static const QString& getDeleteAddRequestsQuery(){
     static const QString deleteAddRequestsQuery = 
       "DELETE FROM " + getPlaylistAddRequestsTableName() + ";";
     return deleteAddRequestsQuery;
   }
+
+  /**
+   * \brief Gets the query used to delete all entries in the active playlist
+   * remove requests table.
+   *
+   * @return The query used to delete all entries in the active playlist
+   * remove requests table.
+   */
+  static const QString& getDeleteRemoveRequestsQuery(){
+    static const QString deleteRemoveRequestsQuery = 
+      "DELETE FROM " + getPlaylistRemoveRequestsTableName() + ";";
+    return deleteRemoveRequestsQuery;
+  }
+
 
   /**
    * Gets the name of the active playlist add request table.
@@ -899,32 +991,69 @@ private:
     return playlistAddRequestsTableName;
   }
 
+  /** 
+   * \brief Get the name fo the id column in the playlist add request table.
+   *
+   * @return The name fo the id column in the playlist add request table.
+   */
   static const QString& getPlaylistAddIdColName(){
     static const QString playlistAddIdColName = "addId";
     return playlistAddIdColName;
   }
 
+  /** 
+   * \brief Get the name for the lib id column in the playlist add request 
+   * table.
+   *
+   * @return The name fo the lib id column in the playlist add request table.
+   */
   static const QString& getPlaylistAddLibIdColName(){
     static const QString playlistAddLibIdColName = "libId";
     return playlistAddLibIdColName;
   }
 
+  /** 
+   * \brief Get the name fo the sync status column in the playlist add request 
+   * table.
+   *
+   * @return The name fo the lib sync status column in the playlist add 
+   * request table.
+   */
   static const QString& getPlaylistAddSycnStatusColName(){
     static const QString playlistAddSyncStatusColName = "sync_status";
     return playlistAddSyncStatusColName;
   }
 
+  /** 
+   * \brief Gets the sync status used in the playlist add request table to 
+   * indicate that an add needs to be synced.
+   *
+   * @return The sync status used in the playlist add request table to 
+   * indicate that an add needs to be synced.
+   */
   static const playlist_add_sync_status_t& getPlaylistAddNeedsSync(){
     static const playlist_add_sync_status_t needsSyncStatus=1;
     return needsSyncStatus;
   }
 
+  /** 
+   * \brief Gets the sync status used in the playlist add request table to 
+   * indicate that an add is synced.
+   *
+   * @return The sync status used in the playlist add request table to 
+   * indicate that an add is synced.
+   */
   static const playlist_add_sync_status_t& getPlaylistAddIsSynced(){
     static const playlist_add_sync_status_t isSynced=0;
     return isSynced;
   }
 
 
+  /**
+   * \brief Gets the query used to create the playlist add request table.
+   *
+   * @return The query used to create the playlist add request table.
+   */
   static const QString& getCreatePlaylistAddRequestsTableQuery(){
     static const QString createPlaylistAddRequestsTableQuery =
       "CREATE TABLE IF NOT EXISTS " + getPlaylistAddRequestsTableName() +
@@ -938,37 +1067,80 @@ private:
     return createPlaylistAddRequestsTableQuery;
   }
 
+  /**
+   * Gets the name of the active playlist remove request table.
+   *
+   * @return the name of the active playlist remove request table.
+   */
   static const QString& getPlaylistRemoveRequestsTableName(){
     static const QString playlistRemoveRequestsTableName = 
       "playlist_remove_requests";
     return playlistRemoveRequestsTableName;
   }
  
+  /** 
+   * \brief Get the name for the lib id column in the playlist remove request 
+   * table.
+   *
+   * @return The name fo the lib id column in the playlist remove request table.
+   */
   static const QString& getPlaylistRemoveIdColName(){
     static const QString playlistRemoveRequestIdColName = "id";
     return playlistRemoveRequestIdColName;
   }
   
+  /** 
+   * \brief Get the name for the lib id column in the playlist remove request 
+   * table.
+   *
+   * @return The name fo the lib id column in the playlist remove request table.
+   */
   static const QString& getPlaylistRemoveEntryIdColName(){
     static const QString playlistRemoveLibIdColName = "playlist_id";
     return playlistRemoveLibIdColName;
   }
 
+  /** 
+   * \brief Get the name fo the sync status column in the playlist remove 
+   * request table.
+   *
+   * @return The name fo the lib sync status column in the playlist remove 
+   * request table.
+   */
   static const QString& getPlaylistRemoveSycnStatusColName(){
     static const QString playlistRemoveSycnStatusColName = "sync_status";
     return playlistRemoveSycnStatusColName;
   }
 
+  /** 
+   * \brief Gets the sync status used in the playlist edd request table to 
+   * indicate that an remove is synced.
+   *
+   * @return The sync status used in the playlist remove request table to 
+   * indicate that an remove is synced.
+   */
   static const playlist_remove_sync_status_t& getPlaylistRemoveNeedsSync(){
     static const playlist_remove_sync_status_t needs_sync = 1;
     return needs_sync;
   }
 
+  /** 
+   * \brief Gets the sync status used in the playlist remove request table to 
+   * indicate that an remove is synced.
+   *
+   * @return The sync status used in the playlist remove request table to 
+   * indicate that an remove is synced.
+   */
   static const playlist_remove_sync_status_t& getPlaylistRemoveIsSynced(){
     static const playlist_remove_sync_status_t isSynced = 0;
     return isSynced;
   }
 
+  /**
+   * \brief Gets the query used to create the playlist remove request table.
+   *
+   * @return The query used to create the playlist remove request table.
+   */
   static const QString& getCreatePlaylistRemoveRequestsTableQuery(){
     static const QString createPlaylistRemoveRequestsTableQuery =
       "CREATE TABLE IF NOT EXISTS " + getPlaylistRemoveRequestsTableName() +
@@ -986,21 +1158,88 @@ private:
 /** @name Private Slots */
 //@{
 private slots:
+  
+  /**
+   * \brief Sets the sync status of a library song to synced.
+   *
+   * @param song The id of the song whose sync status should be set to synced.
+   */
   void setLibSongSynced(library_song_id_t song);
+  
+  /**
+   * \brief Sets the sync status of the given library songs to synced.
+   *
+   * @param songs The ids of the songs whose sync status should be set 
+   * to synced.
+   */
   void setLibSongsSynced(const std::vector<library_song_id_t> songs);
+  
+  /**
+   * \brief Sets the sync status of the given library songs to the given
+   * given sync status.
+   *
+   * @param songs The ids of the songs whose sync status should be set.
+   * @param syncStatus The sync status to which the given songs should be set. 
+   */
   void setLibSongsSyncStatus(
     const std::vector<library_song_id_t> songs,
     const lib_sync_status_t syncStatus);
+  
+  /**
+   * \brief Sets the sync status of an available song entry to synced.
+   *
+   * @param song The id of the song whose sync status should be set to synced.
+   */
   void setAvailableSongSynced(const library_song_id_t songs);
+  
+  /**
+   * \brief Sets the sync statuses of the give available song entries to synced.
+   *
+   * @param songs The ids of the songs whose sync status should be set to 
+   * synced.
+   */
   void setAvailableSongsSynced(const std::vector<library_song_id_t> songs);
+  
+  /**
+   * \brief Sets the sync statuses of the give available song entries to the
+   * given sync status.
+   *
+   * @param songs The ids of the songs whose sync status should be set.
+   * @param syncStatus The sync status to which the songs should be set.
+   */
   void setAvailableSongsSyncStatus(
     const std::vector<library_song_id_t> songs,
     const avail_music_sync_status_t syncStatus);
+  
+  /**
+   * \brief Preforms certain cleanup operations once an event has ended.
+   */
   void eventCleanUp();
+  
+  /**
+   * \brief Sets the active playlist to the given songs.
+   *
+   * @param newSongs The new songs which should populate the active playlist.
+   */
   void setActivePlaylist(const QVariantList newSongs);
+
+  /**
+   * \brief Sets the given playlist add request sync statuses' to sycned.
+   *
+   * @param toSetSynced The add request whose sync statuses' should be set
+   * to synced.
+   */
   void setPlaylistAddRequestsSynced(const std::vector<client_request_id_t> 
     toSetSynced);
+
+  /**
+   * \brief Sets the given playlist remove request sync statuses' to sycned.
+   *
+   * @param toSetSynced The remove request whose sync statuses' should be set
+   * to synced.
+   */
   void setPlaylistRemoveRequestSynced(const playlist_song_id_t id);
+
 //@}
 
 };
