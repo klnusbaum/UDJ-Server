@@ -33,14 +33,24 @@ namespace UDJ{
 
 class DataStore;
 
-
+/** \brief Widget used for controlling music playback. */
 class PlaybackWidget : public QWidget{
 
 Q_OBJECT
 
 public:
+  /** @name Constructors */
+  //@{
+
+  /**
+   * \brief Constructs a Playback widget.
+   *
+   * @param dataStore The DataStore backing this instance of UDJ.
+   * @param parent The parent widget.
+   */
   PlaybackWidget(DataStore *dataStore, QWidget *parent=0);
-  void changeSong(Phonon::MediaSource song);
+
+  //@}
 
 private slots:
   /**
@@ -76,36 +86,70 @@ private slots:
    */
    void finished();
 
+   /** \brief Start playback. */
    void play();
 
+   /** \brief Handles when meta data is changed. */
    void metaDataChanged();
 
+   /**
+    * \brief Sets the currently playing song to the given new song.
+    *
+    * @param newSong The new song that should be playing.
+    */
    void setNewSource(Phonon::MediaSource newSong);
 
+  //@}
+
 private:
+  
+  /** @name Private Functions */
+  //@{
+
   /** \brief Sets up all the actions used by the MetaWindow. */
   void createActions();
+
+  /** \brief Initializes UI. */
   void setupUi();
+
+  //@}
+
+  /** @name Private Memeber */
+  //@{
+
   /** \brief Causes playback to start */
   QAction *playAction;
+
   /** \brief Pauses playback */
   QAction *pauseAction;
+
   /** \brief Stops playback */
   QAction *stopAction;
-/** \brief Used to display the name of the currently playing song. */
+
+  /** \brief Used to display the name of the currently playing song. */
 	QLabel *songTitle;
+
   /** \bried Used to display the time played of the current song. */
   QLabel *timeLabel;
+
   /** \brief The main seeker to change the songs current playback position. */
   Phonon::SeekSlider *seekSlider;
+
   /** \brief The primary media object used for song playback. */
   Phonon::MediaObject *mediaObject;
+
   /** \brief The primary audioOutput device used for song playback. */
   Phonon::AudioOutput *audioOutput;
+
   /** \brief The volume slider used to control playback volume. */
   Phonon::VolumeSlider *volumeSlider;
 
+  /**
+   * \brief The data store backing this instance of UDJ.
+   */
   DataStore *dataStore;
+
+  //@}
 
 };
 

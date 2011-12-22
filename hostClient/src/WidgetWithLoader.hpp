@@ -25,21 +25,69 @@ class QLabel;
 
 namespace UDJ{
 
+/** \brief A widget which can be in a state of "loading" */
 class WidgetWithLoader : public QStackedWidget{
 Q_OBJECT
 public:
+
+  /** @name Constructors */
+  //@{
+
+  /**
+   * \brief Constructs a WidgetWithLoader.
+   *
+   * @param dataStore The DataStore backing this instance of UDJ.
+   * @param parent The parent widget.
+   */
   WidgetWithLoader(QString loadingText, QWidget *parent=0);
 
+  //@}
+
+  /** @name Setters */
+  //@{
+
+  /**
+   * \brief Sets the main widget that should be displayed when not in a loading 
+   * state.
+   * 
+   * @param mainWidget The widget that should be displayed when not in a loading
+   * state.
+   */
   void setMainWidget(QWidget *mainWidget);
+
+  //@}
 public slots:
+
+  /** @name Public Slots */
+  //@{
+
+  /** 
+   * \brief Display the text indicating that the widget is in a "loading"
+   * state.
+   */
   void showLoadingText();
+
+  /** \brief Display the main widget. */
   void showMainWidget();
 
+  //@}
+
 private:
+
+  /** @name Private Memebers */
+  //@{
+
+  /** \brief Lable used to display the loading text. */
   QLabel *loadingLabel;
+
+  /** \brief Main widget to be displayed when not in a loading state. */
   QWidget *mainWidget;
 
+  //@}
+
 };
+
+
 }//end namespace udj
 
 #endif //WIDGET_WITH_LOADER_HPP

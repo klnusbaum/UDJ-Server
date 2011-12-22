@@ -72,13 +72,22 @@ private slots:
   /** @name Private Slots */
   //@{
 
+  /**
+   * \brief Displays stuff for adding songs to a library.
+   */
   void addMusicToLibrary();
 
+  /**
+   * \brief Displays the library view in the main content panel.
+   */
   void displayLibrary();
 
+  /**
+   * \brief Displays the event widget in the main content panel.
+   */
   void displayEventWidget();
 
-  void displayPlaylist(playlist_id_t playlist);
+  //void displayPlaylist(playlist_id_t playlist);
   
   //@}
 
@@ -106,13 +115,19 @@ private:
 //  QFileSystemWatcher* fileWatcher;
 
 
+  /** \brief The main display widget. */
   QWidget *mainWidget;
   
+  /** \brief The list of potential activites that can be done in UDJ. */
   ActivityList *activityList;
 
+  /** \brief Widget used for controlling music playback. */
   PlaybackWidget *playbackWidget;
 
+  /** \brief Widget used for displaying event related UI components. */
   EventWidget *eventWidget;
+
+  /** \brief Stack used to display various UI components. */
   QStackedWidget *contentStack;
 
   //@}
@@ -125,6 +140,7 @@ private:
   /** \brief Sets up the MetaWindow's menus. */
   void setupMenus();
 
+  /** \brief Creates the actions used in the MetaWindow */
   void createActions();
   
   //@}

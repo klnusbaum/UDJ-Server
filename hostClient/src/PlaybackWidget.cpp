@@ -119,12 +119,6 @@ void PlaybackWidget::finished(){
   mediaObject->play();
 }
 
-void PlaybackWidget::changeSong(Phonon::MediaSource song){
-  mediaObject->stop();
-  mediaObject->setCurrentSource(song);
-  mediaObject->play();
-}
-
 void PlaybackWidget::setupUi(){
 
 	songTitle = new QLabel(this);
