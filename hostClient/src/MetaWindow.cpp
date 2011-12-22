@@ -148,9 +148,10 @@ void MetaWindow::displayEventWidget(){
   contentStack->setCurrentWidget(eventWidget);
 }
 
+/*
 void MetaWindow::displayPlaylist(playlist_id_t playlist){
 
-}
+}*/
 
 
 } //end namespace
