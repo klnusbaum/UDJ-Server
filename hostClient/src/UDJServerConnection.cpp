@@ -93,14 +93,14 @@ void UDJServerConnection::deleteLibSongOnServer(library_song_id_t toDeleteId){
 }
  
 void UDJServerConnection::createEvent(
-  const QString& partyName,
+  const QString& eventName,
   const QString& password)
 {
   QNetworkRequest createEventRequest(getCreateEventUrl());
   prepareJSONRequest(createEventRequest);
-  const QByteArray partyJSON = JSONHelper::getCreateEventJSON(
-    partyName, password);
-  netAccessManager->put(createEventRequest, partyJSON);
+  const QByteArray eventJSON = JSONHelper::getCreateEventJSON(
+    eventName, password);
+  netAccessManager->put(createEventRequest, eventJSON);
 }
 
 void UDJServerConnection::endEvent(){

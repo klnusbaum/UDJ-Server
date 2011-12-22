@@ -115,7 +115,7 @@ public:
    * @return A bytearray containing the generated JSON.
    */
   static const QByteArray getCreateEventJSON(
-    const QString& partyName,
+    const QString& eventName,
     const QString& password, 
     float latitude,
     float longitude,

@@ -83,24 +83,24 @@ const std::vector<library_song_id_t> JSONHelper::getUpdatedLibIds(
   return toReturn;
 }
 const QByteArray JSONHelper::getCreateEventJSON(
-  const QString& partyName,
+  const QString& eventName,
   const QString& password, 
   float latitude,
   float longitude)
 {
   bool success;
-  return getCreateEventJSON(partyName, password, latitude, longitude, success);
+  return getCreateEventJSON(eventName, password, latitude, longitude, success);
 }
 
 const QByteArray JSONHelper::getCreateEventJSON(
-  const QString& partyName,
+  const QString& eventName,
   const QString& password, 
   float latitude,
   float longitude,
   bool &success)
 {
   QVariantMap eventToCreate;
-  eventToCreate["name"] = partyName;
+  eventToCreate["name"] = eventName;
   if(password != ""){
     eventToCreate["password"] = password;
   }
