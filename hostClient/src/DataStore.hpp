@@ -455,7 +455,7 @@ public:
    * @return The name of the playlist id column in the playlist entry table.
    */
   static const QString& getPlaylistEntryPlaylistIdColName(){
-    static const playlistEntryPlaylistIdColName = "playlist_id";
+    static const QString playlistEntryPlaylistIdColName = "playlist_id";
     return playlistEntryPlaylistIdColName;
   }
 
@@ -471,31 +471,63 @@ public:
     return playlistEntryNumberColName;
   }
 
+  /** 
+   * \brief Get the name of the available music table.
+   *
+   * \brief The name of the available music table.
+   */
   static const QString& getAvailableMusicTableName(){
     static const QString availableMusicTableName = "available_music";
     return availableMusicTableName;
   }
 
+  /** 
+   * \brief Get the name of the library id column. This is the column which 
+   * connects * a particular record in the available entry table to the 
+   * corresponding entry in the library table.
+   *
+   * @return The name of the library id column.
+   */
   static const QString& getAvailableEntryLibIdColName(){
     static const QString availableEntryLibIdColName = "lib_id";
     return availableEntryLibIdColName;
   }
 
+  /** 
+   * \brief Get the name of the "is deleted" column.
+   *
+   * @return The name of the "is deleted" column.
+   */
   static const QString& getAvailableEntryIsDeletedColName(){
     static const QString availEntryIsDeletedColName = "is_deleted";
     return availEntryIsDeletedColName;
   }
 
+  /** 
+   * \brief Get the name of the sync status column.
+   *
+   * @return The name of the sync status column.
+   */
   static const QString& getAvailableEntrySyncStatusColName(){
     static const QString availEntrySyncStatusColName = "sync_status";
     return availEntrySyncStatusColName;
   }
 
+  /**
+   * \brief Gets the availabe music entry "needs add" sync status.
+   *
+   * @return The availabe music entry "needs add" sync status.
+   */
   static const avail_music_sync_status_t& getAvailableEntryNeedsAddSyncStatus(){
     static const avail_music_sync_status_t availEntryNeedsAddSyncStatus = 1;
     return availEntryNeedsAddSyncStatus;
   }
 
+  /**
+   * \brief Gets the availabe music entry "needs delete" sync status.
+   *
+   * @return The availabe music entry "needs delete" sync status.
+   */
   static const avail_music_sync_status_t& 
     getAvailableEntryNeedsDeleteSyncStatus()
   {
@@ -503,44 +535,25 @@ public:
     return availEntryNeedsDeleteSyncStatus;
   }
 
+  /**
+   * \brief Gets the availabe music entry "is sycned" sync status.
+   *
+   * @return The availabe music entry "is sycned" sync status.
+   */
   static const avail_music_sync_status_t& getAvailableEntryIsSyncedStatus(){
     static const avail_music_sync_status_t availEntryIsSyncedStatus = 0;
     return availEntryIsSyncedStatus;
   }
 
+  /**
+   * \brief Gets the name of the available music view. This is a view which is a
+   * join between the available music table and the library table.
+   *
+   * @return The name of the available music view.
+   */
   static const QString& getAvailableMusicViewName(){
     static const QString availableMusicViewName ="available_music_view";
     return availableMusicViewName;
-  }
-
-  static const QString& getPlaylistAddRequestsTableName(){
-    static const QString playlistAddRequestsTableName = "playlist_add_requests";
-    return playlistAddRequestsTableName;
-  }
-
-  static const QString& getPlaylistAddIdColName(){
-    static const QString playlistAddIdColName = "addId";
-    return playlistAddIdColName;
-  }
-
-  static const QString& getPlaylistAddLibIdColName(){
-    static const QString playlistAddLibIdColName = "libId";
-    return playlistAddLibIdColName;
-  }
-
-  static const QString& getPlaylistAddSycnStatusColName(){
-    static const QString playlistAddSyncStatusColName = "sync_status";
-    return playlistAddSyncStatusColName;
-  }
-
-  static const playlist_add_sync_status_t& getPlaylistAddNeedsSync(){
-    static const playlist_add_sync_status_t needsSyncStatus=1;
-    return needsSyncStatus;
-  }
-
-  static const playlist_add_sync_status_t& getPlaylistAddIsSynced(){
-    static const playlist_add_sync_status_t isSynced=0;
-    return isSynced;
   }
 
 
@@ -550,10 +563,25 @@ public:
 //@{
 public slots:
 
+  /**
+   * \brief Add the given song to the list of available songs.
+   *
+   * @param song_id The id of the song to be added to the list of available 
+   * songs.
+   */
   void addSongToAvailableSongs(library_song_id_t song_id);
 
+  /**
+   * \brief Add a list of songs to the list of available songs.
+   *
+   * @param song_ids The ids of the songs to be added to the list of available 
+   * songs.
+   */
   void addSongsToAvailableSongs(const std::vector<library_song_id_t>& song_ids);
 
+  /**
+   * \brief Refresh the active playlist table.
+   */
   void refreshActivePlaylist();
 
   /**
@@ -563,54 +591,111 @@ public slots:
    */
 	void addSongToActivePlaylist(library_song_id_t libraryId);
 
+  /** 
+   * \brief Add the given songs to the active playlist.
+   *
+   * @param libraryIds The ids of the songs to be added to the active playlist.
+   */
 	void addSongsToActivePlaylist(
-    const std::vector<library_song_id_t>& libraryId);
+    const std::vector<library_song_id_t>& libraryIds);
 
+  /** 
+   * \brief Remove the given songs to the list of available songs.
+   *
+   * @param libraryIds The ids of the songs to be removed to the 
+   * the list of available songs.
+   */
   void removeSongsFromAvailableMusic(
-    const std::vector<library_song_id_t>& libraryId);
+    const std::vector<library_song_id_t>& libraryIds);
 
   /**
-   * \brief Removes the specified song from the playlist.
+   * \brief Removes the specified song from the active playlist.
    *
-   * @param plId Id of the song to remove the playlist.
+   * @param plId Id of the song to remove from the active playlist.
    */
 	void removeSongFromActivePlaylist(playlist_song_id_t plId);
 
+  /**
+   * \brief Removes the specified songs from the active playlist.
+   *
+   * @param pl_ids Ids of the songs to be removed from the active playlist.
+   */
   void removeSongsFromActivePlaylist(
     const std::vector<playlist_song_id_t>& pl_ids);
 
+  /** 
+   * \brief Creates a new event with the given name and password.
+   *
+   * @param name The name of the event.
+   * @param password The password for the event (maybe empty).
+   */
   void createNewEvent(
     const QString& name, 
     const QString& password);
 
+  /** 
+   * \brief Ends the current event.
+   */
   void endEvent();
 
-
+  /** 
+   * \brief Sets the current song to the speicified song.
+   *
+   * @param songToPlay The playlist id of the song to be played.
+   */
   void setCurrentSong(playlist_song_id_t songToPlay);
-  
 
   //@}
 
+signals:
+
 /** @name Signals */
 //@{
-signals:
+
+  /**
+   * \brief Emitted when the library table is modified.
+   */
   void libSongsModified();
 
+  /**
+   * \brief Emitted when the list of available songs is modified.
+   */
   void availableSongsModified();
 
+  /**
+   * \brief Emitted when an event is created.
+   */
   void eventCreated();
 
+  /**
+   * \brief Emitted when the creation of an event fails.
+   *
+   * @param errMessage Error message describing what happened.
+   */
   void eventCreationFailed(const QString errMessage);
 
+  /**
+   * \brief Emitted when the event ends.
+   */
   void eventEnded();
 
+  /**
+   * \brief Emitted when ending an event fails.
+   */
   void eventEndingFailed(const QString errMessage);
  
+  /**
+   * \brief Emitted when the active playlist is modified.
+   */
   void activePlaylistModified();
 
-  void playlistAddRequestsSynced();
-
+  /**
+   * \brief Emitted when the current song is manually changed.
+   *
+   * @param newSong The song that should be set as the current song.
+   */
   void manualSongChange(Phonon::MediaSource newSong);
+
 //@}
 
 private:
@@ -802,6 +887,41 @@ private:
     static const QString deleteAddRequestsQuery = 
       "DELETE FROM " + getPlaylistAddRequestsTableName() + ";";
     return deleteAddRequestsQuery;
+  }
+
+  /**
+   * Gets the name of the active playlist add request table.
+   *
+   * @return the name of the active playlist add request table.
+   */
+  static const QString& getPlaylistAddRequestsTableName(){
+    static const QString playlistAddRequestsTableName = "playlist_add_requests";
+    return playlistAddRequestsTableName;
+  }
+
+  static const QString& getPlaylistAddIdColName(){
+    static const QString playlistAddIdColName = "addId";
+    return playlistAddIdColName;
+  }
+
+  static const QString& getPlaylistAddLibIdColName(){
+    static const QString playlistAddLibIdColName = "libId";
+    return playlistAddLibIdColName;
+  }
+
+  static const QString& getPlaylistAddSycnStatusColName(){
+    static const QString playlistAddSyncStatusColName = "sync_status";
+    return playlistAddSyncStatusColName;
+  }
+
+  static const playlist_add_sync_status_t& getPlaylistAddNeedsSync(){
+    static const playlist_add_sync_status_t needsSyncStatus=1;
+    return needsSyncStatus;
+  }
+
+  static const playlist_add_sync_status_t& getPlaylistAddIsSynced(){
+    static const playlist_add_sync_status_t isSynced=0;
+    return isSynced;
   }
 
 
