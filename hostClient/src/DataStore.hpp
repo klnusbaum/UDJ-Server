@@ -62,6 +62,11 @@ public:
    */
   void addSongToLibrary(Phonon::MediaSource song);
 
+  /**
+   * \brief Removes the given songs from the music library. 
+   *
+   * @param toRemove The list of songs to be removed from the library.
+   */
   void removeSongsFromLibrary(std::vector<library_song_id_t> toRemove);
 
   /**
@@ -75,23 +80,60 @@ public:
    */
   QString getSongNameFromSource(const Phonon::MediaSource &source) const;
 
+  /**
+   * \brief Gets the raw connection to the actual database that the DataStore
+   * uses.
+   *
+   * @return The connection to the database backing the DataStore.
+   */
   QSqlDatabase getDatabaseConnection();
 
+  /** 
+   * \brief Gets the name of the current event.
+   *
+   * @return The name of the current event.
+   */
   inline const QString& getEventName() const{
     return eventName;
   }
 
+  /** 
+   * \brief Gets the id of the current event.
+   *
+   * @return The id of the current event.
+   */
   inline event_id_t getEventId() const{
     return serverConnection->getEventId();
   }
 
+  /** 
+   * \brief Gets whether or not this instance of UDJ is currently hosting an
+   * event.
+   *
+   * @return True if this instance of UDJ is currently hosting an event. 
+   * False otherwise.
+   */
   inline bool isCurrentlyHosting() const{
     return serverConnection->getIsHosting();
   }
 
+  /** 
+   * \brief Retrieves the next song should be played but does not
+   * remove it from the active playlist.
+   *
+   * @return The next song that is going to be played.
+   */
   Phonon::MediaSource getNextSongToPlay();
   
+  /** 
+   * \brief Retrieves the next song that should be played and removes it
+   * from the active playlist.
+   *
+   * @return The next song that should be played.
+   */
   Phonon::MediaSource takeNextSongToPlay();
+
+  //@}
 
   
   /** @name Public Constants */
@@ -121,144 +163,312 @@ public:
     return eventGoersTableName;
 	}
   
+  /** 
+   * \brief Gets name of the table storing the active playlist.
+   *
+   * @return The name of the table containing the active playlist.
+   */
   static const QString& getActivePlaylistTableName(){
     static const QString activePlaylistTableName = "active_playlist";
     return activePlaylistTableName;
   }
 
+  /** 
+   * \brief Gets name of the view containing the active playlist joined with
+   * the library table.
+   *
+   * @return The view containing the active playlist joined with the library
+   * table.
+   */
   static const QString& getActivePlaylistViewName(){
     static const QString activePlaylistViewName = "active_playlist_view";
     return activePlaylistViewName;
   }
 
+  /**
+   * \brief Gets the name of the id column in the active playlist table.
+   *
+   * @return The name of the id colum in the active playlist table.
+   */
   static const QString& getActivePlaylistIdColName(){
     static const QString activePlaylistIdColName = "id";
     return activePlaylistIdColName;
   }
 
+  /** 
+   * \brief Gets the name of the library id column (the column that specifies
+   * which library entry this playlist entry corresponds with) in the active
+   * playlist table.
+   *
+   * @return The name of the library id column  in the active playlist table.
+   */
   static const QString& getActivePlaylistLibIdColName(){
     static const QString activePlaylistLibIdColName = "lib_id";
     return activePlaylistLibIdColName;
   }
 
+  /** 
+   * \brief Gets the name of the column in the active playlist view that 
+   * contains the vote count.
+   *
+   * @return The name of the column in the active playlist view that 
+   * contains the vote count.
+   */
   static const QString& getVoteCountColName(){
     static const QString voteCountColName = "vote_count";
     return voteCountColName;
   }
 
+  /** 
+   * \brief Gets the name of the time added column in the active playlist table.
+   *
+   * @return The name of the time added column in the active playlist table.
+   */
   static const QString& getTimeAddedColName(){
     static const QString timeAddedColName = "time_added";
     return timeAddedColName;
   }
 
+  /** 
+   * \brief Gets the name of the priority column in the active playlist table.
+   *
+   * @return The name of the priority column in the active playlist table.
+   */
   static const QString& getPriorityColName(){
     static const QString priorityColName = "priority";
     return priorityColName;
   }
 
+  /** 
+   * \brief Gets the name of the adder id column in the active playlist table.
+   *
+   * @return The name of the adder id column in the active playlist table.
+   */
   static const QString& getAdderIdColName(){
     static const QString adderIdColName = "adderId";
     return adderIdColName;
   }
 
-  static const QString& getLibIdColName(){
-    static const QString libIdColName = "id";
-    return libIdColName;
-  }
-
+  /** 
+   * \brief Gets the name of the upvote column in the active playlist table.
+   *
+   * @return The name of the upvote column in the active playlist table.
+   */
   static const QString& getUpVoteColName(){
     static const QString upVoteColName = "up_votes";
     return upVoteColName;
   }
 
+  /** 
+   * \brief Gets the name of the downvote column in the active playlist table.
+   *
+   * @return The name of the downvote column in the active playlist table.
+   */
   static const QString& getDownVoteColName(){
     static const QString downVoteColName = "down_votes";
     return downVoteColName;
   }
 
+  /** 
+   * \brief Gets the id column in the library table table.
+   *
+   * @return The name of the id column in the library table.
+   */
+  static const QString& getLibIdColName(){
+    static const QString libIdColName = "id";
+    return libIdColName;
+  }
+
+  /** 
+   * \brief Gets the song column in the library table table.
+   *
+   * @return The name of the song column in the library table.
+   */
   static const QString& getLibSongColName(){
     static const QString libSongColName = "song";
     return libSongColName;
   }
 
+  /** 
+   * \brief Gets the artist column in the library table table.
+   *
+   * @return The name of the artist column in the library table.
+   */
   static const QString& getLibArtistColName(){
     static const QString libArtistColName = "artist";
     return libArtistColName;
   }
   
+  /** 
+   * \brief Gets the album column in the library table table.
+   *
+   * @return The name of the album column in the library table.
+   */
   static const QString& getLibAlbumColName(){
     static const QString libAlbumColName = "album";
     return libAlbumColName;
   }
 
+  /** 
+   * \brief Gets the file column in the library table table.
+   *
+   * @return The name of the file column in the library table.
+   */
   static const QString& getLibFileColName(){
     static const QString libFileColName = "file_path";
     return libFileColName;
   }
 
+  /** 
+   * \brief Gets the duration column in the library table table.
+   *
+   * @return The name of the duration column in the library table.
+   */
   static const QString& getLibDurationColName(){
     static const QString libDurationColName = "duration";
     return libDurationColName;
   }
 
+  /** 
+   * \brief Gets the is deleted column in the library table table.
+   *
+   * @return The name of the is deleted column in the library table.
+   */
   static const QString& getLibIsDeletedColName(){
     static const QString libIsDeletedColName = "is_deleted";
     return libIsDeletedColName;
   }
 
+  /** 
+   * \brief Gets the sycn status column in the library table table.
+   *
+   * @return The name of the sycn status column in the library table.
+   */
   static const QString& getLibSyncStatusColName(){
     static const QString libSyncStatusColName = "sync_status";
     return libSyncStatusColName;
   }
 
+  /** 
+   * \brief Gets the value for the "needs add" sync status used in the library
+   * table.
+   *
+   * @return The value for the "needs add" sync status used in the library
+   * table.
+   */
   static const lib_sync_status_t& getLibNeedsAddSyncStatus(){
     static const lib_sync_status_t libNeedsAddSyncStatus = 1;
     return libNeedsAddSyncStatus;
   }
 
+  /** 
+   * \brief Gets the value for the "needs delete" sync status used in the 
+   * library table.
+   *
+   * @return The value for the "needs delete" sync status used in the library
+   * table.
+   */
   static const lib_sync_status_t& getLibNeedsDeleteSyncStatus(){
     static const lib_sync_status_t libNeedsDeleteSyncStatus = 2;
     return libNeedsDeleteSyncStatus;
   }
 
+  /** 
+   * \brief Gets the value for the "is synced" sync status used in the library
+   * table.
+   *
+   * @return The value for the "is synced" sync status used in the library
+   * table.
+   */
   static const lib_sync_status_t& getLibIsSyncedStatus(){
     static const lib_sync_status_t libIsSyncedStatus = 0;
     return libIsSyncedStatus;
   }
   
+  /** 
+   * \brief Gets the name of the playlist table.
+   *
+   * @return The name of the playlist table.
+   */
   static const QString& getPlaylistTableName(){
     static const QString playlistTableName = "playlist";
     return playlistTableName;
   }
 
+  /** 
+   * \brief Gets the name of the id column in the playlist table.
+   *
+   * @return The name of the id column in the playlist table.
+   */
   static const QString& getPlaylistIdColName(){
     static const QString playlistIdColName = "id";
     return playlistIdColName;
   }
 
+  /** 
+   * \brief Gets the name of the name column in the playlist table.
+   *
+   * @return The name of the name column in the playlist table.
+   */
   static const QString& getPlaylistNameColName(){
     static const QString playlistNameColName = "name";
     return playlistNameColName;
   }
 
+  /** 
+   * \brief Gets the name of the playlist entry table.
+   *
+   * @return The name of the playlist entry table.
+   */
+  static const QString& getPlaylistEntryTableName(){
+    static const QString playlistEntryTableName = "playlist_entry";
+    return playlistEntryTableName;
+  }
+
+  /** 
+   * \brief Gets the name of the id column in the playlist entry table.
+   *
+   * @return The name of the id column in the playlist entry table.
+   */
   static const QString& getPlaylistEntryIdColName(){
     static const QString playlistEntryIdColName = "id";
     return playlistEntryIdColName;
   }
 
+  /** 
+   * \brief Gets the name of the song id column (the column which refers to the
+   * library entry this playlist entry corresponds to) in the playlist entry 
+   * table.
+   *
+   * @return The name of the song id column in the playlist entry table.
+   */
   static const QString& getPlaylistEntrySongIdColName(){
     static const QString playlistEntrySongIdColName = "lib_id";
     return playlistEntrySongIdColName;
   }
-  
+
+  /** 
+   * \brief Gets the name of the playlist id column 
+   * (the column which refers to the playlist in which this entry belongs) 
+   * in the playlist entry table.
+   *
+   * @return The name of the playlist id column in the playlist entry table.
+   */
+  static const QString& getPlaylistEntryPlaylistIdColName(){
+    static const playlistEntryPlaylistIdColName = "playlist_id";
+    return playlistEntryPlaylistIdColName;
+  }
+
+  /** 
+   * \brief Gets the name of the entry number column (effectively the column
+   * which determines order in a give playlist) in the playlist entry 
+   * table.
+   *
+   * @return The name of the entry number column in the playlist entry table.
+   */
   static const QString& getPlaylistEntryNumberColName(){
     static const QString playlistEntryNumberColName = "entry_number";
     return playlistEntryNumberColName;
-  }
-
-  static const QString& getPlaylistEntryTableName(){
-    static const QString playlistEntryTableName = "playlist_entry";
-    return playlistEntryTableName;
   }
 
   static const QString& getAvailableMusicTableName(){
@@ -511,6 +721,9 @@ private:
       getPlaylistEntryIdColName() + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
       getPlaylistEntrySongIdColName() + " INTEGER REFERENCES " +
         getLibraryTableName() +"(" + getLibIdColName()+ ") ON DELETE CASCADE, "+
+      getPlaylistEntryPlaylistIdColName() + " INTEGER REFERENCES " +
+        getPlaylistTableName() +"(" + getPlaylistIdColName()+ 
+        ") ON DELETE CASCADE, "+
       getPlaylistEntryNumberColName() + " INTEGER NOT NULL);";
     return createPlaylistEntryTableQuery;
   }
