@@ -29,24 +29,77 @@ namespace UDJ{
 
 class DataStore;
 
+/**
+ * \brief Used to dislay the active playlist.
+ */
 class AvailableMusicView : public QTableView{
 Q_OBJECT
 public:
+  /** @name Constructors */
+  //@{
+
+  /**
+   * \brief Constructs an AvailableMusicView.
+   *
+   * @param dataStore The DataStore backing this instance of UDJ.
+   * @param parent The parent widget.
+   */
   AvailableMusicView(DataStore *dataStore, QWidget *parent=0);
+
+  //@}
+
 private:
+  /** @name Private Memeber */
+  //@{
+
+  /**
+   * \brief The data store containing music that could potentially be added
+   * to the playlist.
+   */
   DataStore *dataStore;
+ 
+  /** \brief The model backing this view. */
   QSqlRelationalTableModel *availableMusicModel;  
+
+  /** \brief Action for removing songs from the available music */
   QAction *removeFromAvailableMusic;
+ 
+  /** \brief Action for adding songs to the active playlist. */
   QAction *addToActivePlaylist;
+
+  //@}
+
+  /** @name Private Functions */
+  //@{
+ 
+  /** 
+   * \brief Retrieves a list of all the currently selected songs.
+   *
+   * @return A vector of id's corresponding to all the currnetly selected 
+   * songs in the available music.
+   */
   std::vector<library_song_id_t> getSelectedSongs() const;
 
+  /** 
+   * \brief Initializes all the actions for this view.
+   */
   void createActions();
 
+  /** 
+   * \brief Gets the text for the remove menu item.
+   *
+   * @return The text for the remove menu item.
+   */
   static const QString& getRemoveMenuItemName(){
     static const QString removeMenuItemName = tr("Remove");
     return removeMenuItemName;
   }
 
+  /** 
+   * \brief Gets the text for the Add To Active Playlist menu item.
+   *
+   * @return The text for the Add To Active Playlist menu item. 
+   */
   static const QString& getAdd2ActivePlaylistMenuItemName(){
     static const QString add2ActivePlaylistMenuItemName = 
       tr("Add To Active Playlist");
@@ -54,11 +107,39 @@ private:
   }
 
 private slots:
+  /** @name Private Slots */
+  //@{
+
+  /** 
+   * \brief Updates the data being displayed in the view.
+   */
   void updateView();
+
+  /**
+   * \brief Displays context menus when requested.
+   *
+   * @param pos The position where the context menu should be displayed.
+   */ 
   void handleContextMenuRequest(const QPoint &pos);
+
+  /**
+   * \brief Adds all the currently selected songs to the active playlist.
+   */
   void addSongsToActivePlaylist();
+
+  /** 
+   * \brief Removes all the currently selected songs from the available music.
+   */
   void removeSongsFromAvailableMusic();
+
+  /** 
+   * \brief Adds the song located at the given index to the active playlist.
+   *
+   * @param index Index of the song to be added to the active playlist.
+   */
   void addSongToActivePlaylist(const QModelIndex& index);
+
+  //@}
 };
 
 
