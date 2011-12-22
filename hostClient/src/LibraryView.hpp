@@ -29,8 +29,9 @@ namespace UDJ{
 
 class DataStore;
 
-/** \brief A class for viewing the current contents of the users music library.
-*/
+/** 
+ *\brief A class for viewing the current contents of the users music library.
+ */
 class LibraryView : public QTableView{
 Q_OBJECT
 public:
@@ -46,34 +47,94 @@ public:
 
   //@}
 private slots:
+  /** @name Private Slots */
+  //@{
+
+  /**
+   * \brief Displays a context menu at the given position.
+   *
+   * @param pos The position where the context menu should be displayed.
+   */
   void handleContextMenuRequest(const QPoint &pos);
 
 private:
 
+  /** @name Private Memeber */
+  //@{
+
+  /**
+   * \brief The data store backing this instance of UDJ.
+   */
   DataStore *dataStore;
+
+  /** \brief The model backing LibraryView.  */
   QSqlQueryModel *libraryModel;
+
+  /** \brief Action used for deleting songs from the library. */
   QAction *deleteSongAction;
+ 
+  /** \brief Actions used for adding songs to the list of available songs. */
   QAction *addToAvailableMusicAction;
 
+  //@}
+
+  /** @name Private Functions */
+  //@{
+
+  /** \brief Initilaizes actions.  */
   void createActions();
 
+  /** 
+   * \brief Gets the list of songs currently selected.
+   *
+   * @return The ids of the currently selected songs.
+   */
   std::vector<library_song_id_t> getSelectedSongs();
 
+  /**
+   * \brief Gets the name used for the delete context menu item.
+   *
+   * @return The name for the deleted context menu item.
+   */
   static const QString& getDeleteContextMenuItemName(){
     static const QString deleteContextMenuItemName = tr("Delete");
     return deleteContextMenuItemName;
   }
 
+  /**
+   * \brief Gets the name used for the add to available music
+   *  context menu item.
+   *
+   * @return The name for the add to available music  context menu item.
+   */
   static const QString& getAddToAvailableContextMenuItemName(){
     static const QString addToAvailableContextMenuItemName = 
       tr("Add to Available Music");
     return addToAvailableContextMenuItemName;
   }
 
+  //@}
+
 private slots:
+  /** @name Private Slots */
+  //@{
+
+  /** 
+   * \brief Adds the currently selected songs to the list of available music.
+   */
   void addSongToAvailableMusic();
+
+  /** 
+   * \brief Deletes the currently selected songs from the library.
+   */
   void deleteSongs();
+
+  /**
+   * \brief Refreshes the display of the library.
+   */
   void refresh();
+
+  //@}
 };
 
 
