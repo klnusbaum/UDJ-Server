@@ -25,12 +25,32 @@ namespace UDJ{
 
 class DataStore;
 
+/** \brief Displays all the music related content for an Event */
 class EventMusicDisplay : public QWidget{
 Q_OBJECT
 public:
+  /** @name Constructors */
+  //@{
+
+  /**
+   * \brief Constructs an Event Music Display.
+   *
+   * @param dataStore The DataStore backing this instance of UDJ.
+   * @param parent The parent widget.
+   */
   EventMusicDisplay(DataStore *dataStore, QWidget *parent=0);
+
+  //@}
 private:
+  /** @name Private Memeber */
+  //@{
+
+  /**
+   * \brief The data store backing this instance of UDJ.
+   */
   DataStore *dataStore;
+  
+  //@}
 };
 
 

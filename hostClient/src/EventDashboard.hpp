@@ -27,25 +27,92 @@ namespace UDJ{
 
 class DataStore;
 
+/**
+ * \brief Widget showing all the relevant data about an event.
+ */
 class EventDashboard : public WidgetWithLoader{
 Q_OBJECT
 public:
+  /** @name Constructors */
+  //@{
+
+  /**
+   * \brief Constructs an EventDashboard
+   *
+   * @param dataStore The DataStore backing this instance of UDJ.
+   * @param parent The parent widget.
+   */
   EventDashboard(DataStore *dataStore, QWidget *parent=0);
+
+  //@}
+
 signals:
+  /** @name Signals */
+  //@{
+
+  /**
+   * \brief Emitted when the event has endede.
+   */
   void eventEnded();
+ 
+  //@}
+
 private:
+ 
+  /** @name Private Functions */
+  //@{
+
+  
+  /**
+   * \brief Does UI initialization.
+   */
   void setupUi();
+
+  //@}
+
+  /** @name Private Memeber */
+  //@{
+
+  /** \brief The data store backing this instance of UDJ*/
   DataStore *dataStore;
+
+  /** \brief Label for displaying the event name */
   QLabel *eventName;
+
+  /** \brief Label for displayling the events id */
   QLabel *eventId;
+
+  /** \brief Widget which contains all of the content. */
   QWidget *mainContent;
+ 
+  /** \brief the actual controlls for the event */
   QTabWidget *eventControls;
 
+  //@}
+
 private slots:
+
+  /** @name Private Slots */
+  //@{
+
+  /** \brief Updates the info for the event */
   void updateEventInfo();
+
+  /** \brief Ends the current event */
   void endEvent();
+  
+  /** 
+   * \brief Handles certain tasks that need to be preformed once an event has 
+   * ended.
+   */
   void handleEventEnded();
+
+  /**
+   * \brief Handles when the ending of an event fails.
+   */
   void handleEventEndingFailed(const QString errMessage);
+
+  //@}
 };
 
 

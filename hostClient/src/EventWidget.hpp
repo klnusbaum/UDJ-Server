@@ -27,19 +27,65 @@ class DataStore;
 class CreateEventWidget;
 class EventDashboard;
 
+/** \brief Widget used for setting up and running an event */
 class EventWidget : public QWidget{
 Q_OBJECT
 public:
+  /** @name Constructors */
+  //@{
+
+  /**
+   * \brief Constructs an EventWidget.
+   *
+   * @param dataStore The DataStore backing this instance of UDJ.
+   * @param parent The parent widget.
+   */
   EventWidget(DataStore *dataStore, QWidget *parent=0);
+
+  //@}
 private:
+  /** @name Private Memeber */
+  //@{
+
+  /**
+   * \brief The data store backing this instance of UDJ.
+   */
   DataStore *dataStore;
-  void setupUi();
+  
+  /**
+   * \brief A stacked widget holding the main conent of the event widget 
+   */
   QStackedWidget *mainContent;
+
+  /** \brief Widget shown during event creation */
   CreateEventWidget *creatorWidget;
+ 
+  /** \brief Widget shown once event has been created */
   EventDashboard *eventDashboard;
+
+  /** @name Private Functions */
+  //@{
+  
+  /**  \brief Initializes UI.  */
+  void setupUi();
+
+  //@}
 private slots:
+  /** @name Private Slots */
+  //@{
+
+  
+  /**
+   * \brief Shows the event dashboard widget.
+   */
   void showEventDashboard();
+  
+  /**
+   * \brief Hides the event dashboard and shows the event creation widget.
+   */
   void eventEnded();
+
+  //@}
 };
 
 
