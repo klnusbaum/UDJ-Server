@@ -30,7 +30,7 @@ namespace UDJ{
 class DataStore;
 
 /**
- * \brief Used to view the items in a PlaylistModel
+ * \brief Used to dislay the active playlist.
  */
 class ActivePlaylistView : public QTableView{
 Q_OBJECT
@@ -40,10 +40,9 @@ public:
   //@{
 
   /**
-   * \brief Constructs a ActivePlaylistView
+   * \brief Constructs an ActivePlaylistView
    *
-   * @param dataStore The music library containing music that might be
-   * added to the playlist.
+   * @param dataStore The DataStore backing this instance of UDJ.
    * @param parent The parent widget.
    */
   ActivePlaylistView(DataStore* dataStore, QWidget* parent=0);
@@ -52,8 +51,19 @@ public:
 
 private:
 
+  /** @name Private Functions */
+  //@{
+ 
+  /**
+   * \brief Retrieves the playlist id's of the currently selected songs.
+   *
+   * @return The playlist id's of the currently selected songs.
+   */
   std::vector<playlist_song_id_t> getSelectedSongs() const;
 
+  /**
+   * \brief Initializes actions used in the ActivePlaylistView
+   */
   void createActions();
 
   /** @name Private Members */
@@ -65,21 +75,47 @@ private:
    */
   DataStore* dataStore;
 
-
+  /**
+   * \brief The model backing the view
+   */
   QSqlRelationalTableModel *model;
 
+  /**
+   * \brief Action used to remove songs from the active playlist.
+   */
   QAction *removeSongAction;
+
   //@}
 
+   /** @name Private Slots */
+   //@{
 private slots:
 
+  /**
+   * \brief Refreshes the data to be displayed.
+   */
   void refreshDisplay(); 
 
+  /**
+   * \brief Takes the given index, identifies the song it corresponds to,
+   * and sets that as the current song being played.
+   *
+   * @param index The model index of the playlist entry that should be set
+   *  as the currenty song.
+   */
   void setCurrentSong(const QModelIndex& index);
 
+  /**
+   * \breif .
+   */
   void handleContextMenuRequest(const QPoint& pos);
 
+  /**
+   * \brief Removes all the currently selected songs from the active playlist.
+   */
   void removeSongs();
+  
+  //@}
 
 };
 
