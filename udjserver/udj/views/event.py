@@ -261,7 +261,8 @@ def moveCurrentSong2PlayedSong(given_event):
   currentSong.delete()
   
 def movePlaylistEntry2CurrentSong(given_event, playlist_entry_id):
-  playlistEntry = get_object_or_404(ActivePlaylistEntry, pk=playlist_entry_id)
+  playlistEntry = get_object_or_404(ActivePlaylistEntry, 
+    entry_id__id = playlist_entry_id)
   CurrentSong( 
     song = playlistEntry.song,
     upvotes = UpVote.objects.filter(playlist_entry=playlistEntry).count(),

@@ -13,6 +13,55 @@
     
     }
   },
+  { 
+    "model": "udj.activeplaylistentryid", 
+    "pk" : 1,
+    "fields" : {
+    
+    }
+  },
+  { 
+    "model": "udj.activeplaylistentryid", 
+    "pk" : 2,
+    "fields" : {
+    
+    }
+  },
+  { 
+    "model": "udj.activeplaylistentryid", 
+    "pk" : 3,
+    "fields" : {
+    
+    }
+  },
+  { 
+    "model": "udj.activeplaylistentryid", 
+    "pk" : 4,
+    "fields" : {
+    
+    }
+  },
+  { 
+    "model": "udj.activeplaylistentryid", 
+    "pk" : 5,
+    "fields" : {
+    
+    }
+  },
+  { 
+    "model": "udj.activeplaylistentryid", 
+    "pk" : 6,
+    "fields" : {
+    
+    }
+  },
+  { 
+    "model": "udj.activeplaylistentryid", 
+    "pk" : 7,
+    "fields" : {
+    
+    }
+  },
   {
     "pk": 1, 
     "model": "udj.event", 
@@ -288,6 +337,7 @@
     "pk": 3, 
     "model": "udj.activeplaylistentry", 
     "fields": {
+      "entry_id" : 3,
       "song": 11, 
       "adder": 2, 
       "time_added": "2011-11-22 23:25:35", 
@@ -299,6 +349,7 @@
     "pk": 4, 
     "model": "udj.activeplaylistentry", 
     "fields": {
+      "entry_id" : 4,
       "song": 8, 
       "adder": 3, 
       "time_added": "2011-11-22 23:26:00", 
@@ -310,6 +361,7 @@
     "pk": 5, 
     "model": "udj.activeplaylistentry", 
     "fields": {
+      "entry_id" : 5,
       "song": 2, 
       "adder": 3, 
       "time_added": "2011-11-22 23:26:13", 
@@ -321,6 +373,7 @@
     "pk": 6, 
     "model": "udj.activeplaylistentry", 
     "fields": {
+      "entry_id" : 6,
       "song": 12, 
       "adder": 2, 
       "time_added": "2011-11-22 23:26:24", 
@@ -360,7 +413,7 @@
     "pk": 1,
     "model" : "udj.deletedplaylistentry",
     "fields": {
-      "original_id" : 7,
+      "entry_id" : 7,
       "event" : 1,
       "adder" : 2,
       "client_request_id" : 4

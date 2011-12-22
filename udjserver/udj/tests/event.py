@@ -8,6 +8,7 @@ from udj.models import Event
 from udj.models import LibraryEntry
 from udj.models import EventGoer
 from udj.models import ActivePlaylistEntry
+from udj.models import ActivePlaylistEntryId
 from udj.models import FinishedEvent
 from udj.models import DeletedPlaylistEntry
 from udj.models import FinishedPlaylistEntry
@@ -263,13 +264,16 @@ class TestSetCurrentSong2(User4TestCase):
   def testSetWithNoCurrentSong(self):
     libentry = LibraryEntry.objects.get(pk=14)
     AvailableSong(library_entry=libentry).save();
+    new_entry_id = ActivePlaylistEntryId()
+    new_entry_id.save()
     activeEntry = ActivePlaylistEntry(
+      entry_id=new_entry_id,
       song=libentry, adder=User.objects.get(pk=5),
       event=Event.objects.get(pk=2), client_request_id=3)
     activeEntry.save()
     response = self.doPost(
       '/udj/events/2/current_song', 
-      {'playlist_entry_id' : str(activeEntry.id)})
+      {'playlist_entry_id' : str(activeEntry.entry_id.id)})
     self.assertEqual(response.status_code, 200)
 
 class TestDuplicateHostEventCreate(User1TestCase):

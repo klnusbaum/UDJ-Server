@@ -11,6 +11,7 @@ from udj.decorators import NeedsJSON
 from udj.decorators import NeedsAuth
 from udj.decorators import InParty
 from udj.models import ActivePlaylistEntry
+from udj.models import ActivePlaylistEntryId
 from udj.models import LibraryEntry
 from udj.models import Event
 from udj.models import CurrentSong
@@ -34,14 +35,14 @@ def getActivePlaylist(request, event_id):
     extra(
       select={
         'upvotes' : 'SELECT COUNT(*) FROM udj_upvote where ' +\
-        'udj_upvote.playlist_entry_id = udj_activeplaylistentry.id',
+        'udj_upvote.playlist_entry_id = udj_activeplaylistentry.entry_id_id',
 
         'downvotes' : 'select count(*) from udj_downvote where ' +\
-        'udj_downvote.playlist_entry_id = udj_activeplaylistentry.id',
+        'udj_downvote.playlist_entry_id = udj_activeplaylistentry.entry_id_id',
         'total_votes' : '(SELECT COUNT(*) FROM udj_upvote where ' +\
-        'udj_upvote.playlist_entry_id = udj_activeplaylistentry.id)-' +\
+        'udj_upvote.playlist_entry_id = udj_activeplaylistentry.entry_id_id)-' +\
         '(select count(*) from udj_downvote where ' +\
-        'udj_downvote.playlist_entry_id = udj_activeplaylistentry.id)'
+        'udj_downvote.playlist_entry_id = udj_activeplaylistentry.entry_id_id)'
       },
       order_by = ['-total_votes', 'time_added'])
     
@@ -78,13 +79,16 @@ def addSong2ActivePlaylist(song_request, event_id, adding_user):
   event = Event.objects.get(event_id__id=event_id)
   songToAdd = LibraryEntry.objects.get(
       host_lib_song_id=song_request['lib_id'], owning_user=event.host)
+  new_entry_id = ActivePlaylistEntryId()
+  new_entry_id.save()
   added = ActivePlaylistEntry(
+    entry_id=new_entry_id,
     song=songToAdd,
     adder=adding_user,
     event=event,
     client_request_id=song_request['client_request_id'])
   added.save()
-  UpVote(playlist_entry=added, user=adding_user).save()
+  UpVote(playlist_entry=new_entry_id, user=adding_user).save()
 
 #TODO Need to add a check to make sure that they aren't trying to add
 #a song  that's not in the available music.
@@ -121,7 +125,7 @@ def hasAlreadyVoted(votingUser, entryToVote, VoteType):
 
 def voteSong(request, event_id, playlist_id, VoteType):
   votingUser = getUserForTicket(request)
-  entryToVote = get_object_or_404(ActivePlaylistEntry, pk=playlist_id)
+  entryToVote = get_object_or_404(ActivePlaylistEntryId, pk=playlist_id)
   if hasAlreadyVoted(votingUser, entryToVote, VoteType):
     return HttpResponseForbidden()
 
@@ -132,13 +136,13 @@ def voteSong(request, event_id, playlist_id, VoteType):
 @IsEventHost
 @AcceptsMethods('DELETE')
 def removeSongFromActivePlaylist(request, event_id, playlist_id):
-  if DeletedPlaylistEntry.objects.filter(original_id=playlist_id, 
-    event__id=event_id).exists():
+  if DeletedPlaylistEntry.objects.filter(entry_id__id=playlist_id).exists():
     return HttpResponse()
 
   toRemove = get_object_or_404(
-    ActivePlaylistEntry, pk=playlist_id, event__id=event_id)
-  DeletedPlaylistEntry(original_id=playlist_id, adder=toRemove.adder,
+    ActivePlaylistEntry, entry_id__id=playlist_id, event__id=event_id)
+  current_entry_id = get_object_or_404(ActivePlaylistEntryId, pk=playlist_id)
+  DeletedPlaylistEntry(entry_id=current_entry_id, adder=toRemove.adder,
     event=toRemove.event, client_request_id=toRemove.client_request_id).save()
   toRemove.delete()
   return HttpResponse()

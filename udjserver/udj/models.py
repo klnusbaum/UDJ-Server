@@ -63,7 +63,13 @@ class AvailableSong(models.Model):
   def __unicode__(self):
     return str(self.library_entry.song) + " for " + Event.objects.get(host__id=self.library_entry.owning_user.id).name
 
+class ActivePlaylistEntryId(models.Model):
+
+  def __unicode__(self):
+    return "Entry Id: " + str(self.id)
+
 class ActivePlaylistEntry(models.Model):
+  entry_id = models.ForeignKey(ActivePlaylistEntryId, unique=True)
   song = models.ForeignKey(LibraryEntry)
   time_added = models.DateTimeField(auto_now_add=True)
   adder = models.ForeignKey(User)
@@ -93,7 +99,7 @@ class PlayedPlaylistEntry(models.Model):
     return self.song.song
 
 class DeletedPlaylistEntry(models.Model):
-  original_id = models.IntegerField(unique=True)
+  entry_id = models.ForeignKey(ActivePlaylistEntryId, unique=True)
   adder = models.ForeignKey(User)
   event = models.ForeignKey(Event)
   client_request_id = models.IntegerField()
@@ -145,15 +151,15 @@ class EventGoer(models.Model):
     return "User " + str(self.user.id) + " is in Party " + str(self.event.id)
 
 class UpVote(models.Model):
-  playlist_entry = models.ForeignKey(ActivePlaylistEntry) 
+  playlist_entry = models.ForeignKey(ActivePlaylistEntryId) 
   user =  models.ForeignKey(User)
 
   def __unicode__(self):
-    return "Upvote for: " +  self.playlist_entry.song.song
+    return "Upvote for: " + str(playlist_entry.id) 
 
 class DownVote(models.Model):
-  playlist_entry = models.ForeignKey(ActivePlaylistEntry) 
+  playlist_entry = models.ForeignKey(ActivePlaylistEntryId) 
   user =  models.ForeignKey(User)
 
   def __unicode__(self):
-    return "Downvote for: " +  self.playlist_entry.song.song
+    return "Downvote for: " + str(playlist_entry.id) 

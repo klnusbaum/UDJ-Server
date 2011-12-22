@@ -30,15 +30,10 @@ class AddSongToPlaylistTests(User1TestCase):
       self.doJSONPut('/udj/events/1/active_playlist/songs', json.dumps(payload))
     self.assertEqual(response.status_code, 201)
 
-    self.assertEqual(UpVote.objects.filter(
-      playlist_entry__adder__id=2, 
-      playlist_entry__event__id=1, 
-      playlist_entry__client_request_id=request_id).count(),
-      1)
-    self.assertFalse(DownVote.objects.filter(
-      playlist_entry__adder__id=2, 
-      playlist_entry__event__id=1, 
-      playlist_entry__client_request_id=request_id).exists())
+    entry = ActivePlaylistEntry.objects.get(adder__id=2, event__id=1, 
+      client_request_id=request_id)
+    self.assertEqual(UpVote.objects.filter(playlist_entry=entry.entry_id.id).count(), 1)
+    self.assertFalse(DownVote.objects.filter(playlist_entry=entry.entry_id.id).exists())
 
     addedEntry = ActivePlaylistEntry.objects.get(
       adder__id=2,  
@@ -128,7 +123,7 @@ class TestRemoveSong(User1TestCase):
     playlist_id=3
     response = self.doDelete('/udj/events/1/active_playlist/3')
     self.assertEqual(response.status_code, 200)
-    DeletedPlaylistEntry.objects.get(original_id=3)
+    DeletedPlaylistEntry.objects.get(entry_id__id=3)
     self.assertFalse(ActivePlaylistEntry.objects.filter(pk=3).exists())
 
   def testDuplicateRemove(self):
