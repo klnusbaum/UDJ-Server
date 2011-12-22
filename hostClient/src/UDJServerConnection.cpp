@@ -302,6 +302,10 @@ void UDJServerConnection::handleAddAvailableSongReply(QNetworkReply *reply){
       JSONHelper::getAddedAvailableSongs(reply);
     emit songsAddedToAvailableMusic(addedIds); 
   }
+  else{
+    DEBUG_MESSAGE("Error adding available music" << std::endl <<
+      QString(reply->readAll()).toStdString())
+  }
 }
 
 void UDJServerConnection::handleDeleteAvailableMusicReply(

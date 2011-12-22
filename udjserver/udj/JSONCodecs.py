@@ -58,7 +58,7 @@ def getJSONForCurrentSong(currentSong):
 
 def getActivePlaylistEntryDictionary(entry, upvotes, downvotes):
    return { 
-      'id' : entry.id,
+      'id' : entry.entry_id.id,
       'lib_song_id' : entry.song.host_lib_song_id,
       'song' : entry.song.song,
       'artist' : entry.song.artist,
