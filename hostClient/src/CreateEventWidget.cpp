@@ -40,7 +40,7 @@ CreateEventWidget::CreateEventWidget(
     createEventButton,
     SIGNAL(clicked(bool)),
     this,
-    SLOT(doLogin()));
+    SLOT(doCreation()));
   connect(
     dataStore,
     SIGNAL(eventCreated()),
@@ -75,7 +75,7 @@ void CreateEventWidget::setupUi(){
   showMainWidget();
 }
 
-void CreateEventWidget::doLogin(){
+void CreateEventWidget::doCreation(){
   showLoadingText();
   dataStore->createNewEvent(
     nameEdit->text(),

@@ -30,28 +30,91 @@ namespace UDJ{
 
 class DataStore;
 
+/** \brief Widget used to create new events. */
 class CreateEventWidget : public WidgetWithLoader{
 Q_OBJECT
 public:
+  /** @name Constructors */
+  //@{
+
+  /**
+   * \brief Constructs a CreateEventWidget.
+   *
+   * @param dataStore The DataStore backing this instance of UDJ.
+   * @param parent The parent widget.
+   */
   CreateEventWidget(DataStore *dataStore, QWidget *parent=0);
 
+  //@}
+
 signals:
+  /** @name Signals */
+  //@{
+
+  /** \brief Emitted when a new event is created */
   void eventCreated();
 
+  //@}
+
 private:
+  /** @name Private Functions */
+  //@{
+ 
+  /** \brief Initilizes the UI */
   void setupUi();
+
+  //@}
+
+  /** @name Private Memeber */
+  //@{
+
+  /** \brief lineedit used to retrieve the name of the event */
   QLineEdit *nameEdit;
+
+  /** \brief lineedit used to the password of the event */
   QLineEdit *passwordEdit;
+
+  /** \brief lineedit used to the location of the event */
   QLineEdit *locationEdit;
+
+  /** \brief Lable to display instructions */
   QLabel *createLabel;
+
+  /** \brief Button used to actually attempt to create the new event */
   QPushButton *createEventButton;
+
+  /** 
+   * \brief Widget containing form elements which need to be filled out in
+   * order to create the new event.
+   */
   QWidget *eventForm;
+
+  /**
+   * \brief The data store containing music that could potentially be added
+   * to the playlist.
+   */
   DataStore *dataStore;
 
+  //@}
+
 private slots:
-  void doLogin();
+  /** @name Private Slots */
+  //@{
+
+  /** \brief Attemps to create a new event */
+  void doCreation();
+
+  /** 
+   * \brief Executes appropriate actions after event has actually been created.
+   */
   void eventCreateSuccess();
+
+  /** 
+   * \brief Executes appropriate actions after event was failed to be created.
+   */
   void eventCreateFail(const QString& errMessage);
+
+  //@}
 
 };
 
