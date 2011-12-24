@@ -18,8 +18,6 @@
  */
 package org.klnusbaum.udj.containers;
 
-import android.database.Cursor;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
@@ -27,59 +25,61 @@ import org.json.JSONException;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.klnusbaum.udj.UDJPartyProvider;
-
 public class PlaylistEntry{
 
-  public static final String PLAYLIST_CLIENT_ID_PARAM = "client_playlist_song_id";
-  private long serverId;
-  private long hostId;
-  private long libId;
-  private int voteCount;
-  private int priority;
+  public static final String PLAYLIST_ID_PARAM = "playlist_song_id";
+
+  public static final String ID_PARAM = "id";
+  public static final String LIB_SONG_ID_PARAM = "lib_song_id";
+  public static final String SONG_PARAM = "song";
+  public static final String ARTIST_PARAM = "artist";
+  public static final String ALBUM_PARAM = "album";
+  public static final String DURATION_PARAM = "duration";
+  public static final String UP_VOTES_PARAM = "up_votes";
+  public static final String DOWN_VOTES_PARAM = "down_votes";
+  public static final String TIME_ADDED_PARAM = "time_added";
+  public static final String ADDER_ID_PARAM = "adder_id";
+
+  private long id;
+  private long libSongId;
   private String song;
   private String artist;
   private String album;
-  private boolean isDeleted;
+  private int duration;
+  private int upVotes;
+  private int downVotes;
   private String timeAdded;
-  private long clientId;
-
-  private static final String IS_DELETED_FLAG = "is_deleted";
+  private long adderId;
 
   public PlaylistEntry(
-    long serverId,
-    int priority,
-    long libId,
+    long id,
+    long libSongId,
     String song,
     String artist,
     String album,
-    int voteCount,
+    int upVotes,
+    int downVotes,
     String timeAdded,
-    boolean isDeleted)
+    long adderId)
   {
-    this.serverId = serverId;
-    this.priority = priority;
-    this.libId = libId;
+    this.id = id;
+    this.libSongId = libSongId;
     this.song = song;
     this.artist = artist;
     this.album = album;
-    this.voteCount = voteCount;
+    this.upVotes = upVotes;
+    this.downVotes = downVotes;
     this.timeAdded = timeAdded;
-    this.isDeleted = isDeleted;
-    this.clientId = Long.valueOf(UDJPartyProvider.INVALID_CLIENT_PLAYLIST_ID);
+    this.adderId = adderId;
   }
 
-  public long getServerId(){
-    return serverId;
-  } 
-
-  public int getPriority(){
-    return priority;
+  public long getId(){
+    return id;
   }
 
-  public long getLibId(){
-    return libId;
-  } 
+  public long getLibSongId(){
+    return libSongId;
+  }
 
   public String getSong(){
     return song;
@@ -93,39 +93,36 @@ public class PlaylistEntry{
     return album;
   }
 
-  public int getVoteCount(){
-    return voteCount;
-  } 
+  public int getUpVotes(){
+    return upVotes;
+  }
+ 
+  public int getDownVotes(){
+    return downVotes;
+  }
 
   public String getTimeAdded(){
     return timeAdded;
   }
 
-  public boolean getIsDeleted(){
-    return isDeleted;
-  }
-
-  public long getClientId(){
-    return clientId;
-  }
-
-  public void setClientId(long clientId){
-    this.clientId = clientId;
+  public long getAdderId(){
+    return adderId;
   }
 
   public static PlaylistEntry valueOf(JSONObject jObj)
     throws JSONException 
   {
     return new PlaylistEntry(
-      jObj.getLong(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN),
-      jObj.getInt(UDJPartyProvider.PRIORITY_COLUMN),
-      jObj.getLong(UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN),
-      jObj.getString(UDJPartyProvider.SONG_COLUMN),
-      jObj.getString(UDJPartyProvider.ARTIST_COLUMN),
-      jObj.getString(UDJPartyProvider.ALBUM_COLUMN),
-      jObj.getInt(UDJPartyProvider.VOTES_COLUMN),
-      jObj.getString(UDJPartyProvider.TIME_ADDED_COLUMN),
-      jObj.getBoolean(IS_DELETED_FLAG));
+      jObj.getLong(ID_PARAM),
+      jObj.getLong(LIB_SONG_ID_PARAM),
+      jObj.getString(SONG_PARAM),
+      jObj.getString(ARTIST_PARAM),
+      jObj.getString(ALBUM_PARAM),
+      jObj.getInt(DURATION_PARAM),
+      jObj.getInt(UP_VOTES_PARAM),
+      jObj.getInt(DOWN_VOTES_PARAM),
+      jObj.getString(TIME_ADDED_PARAM),
+      jObj.getLong(ADDER_ID_PARAM));
   }
 
   public static ArrayList<PlaylistEntry> fromJSONArray(JSONArray array)
@@ -137,48 +134,4 @@ public class PlaylistEntry{
     }
     return toReturn;
   }
-
-  public static PlaylistEntry valueOf(Cursor cur){
-    PlaylistEntry toReturn = new PlaylistEntry(
-      cur.getLong(cur.getColumnIndex(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN)),
-      cur.getInt(cur.getColumnIndex(UDJPartyProvider.PRIORITY_COLUMN)),
-      cur.getLong(cur.getColumnIndex(UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN)),
-      cur.getString(cur.getColumnIndex(UDJPartyProvider.SONG_COLUMN)),
-      cur.getString(cur.getColumnIndex(UDJPartyProvider.ARTIST_COLUMN)),
-      cur.getString(cur.getColumnIndex(UDJPartyProvider.ALBUM_COLUMN)),
-      cur.getInt(cur.getColumnIndex(UDJPartyProvider.VOTES_COLUMN)),
-      cur.getString(cur.getColumnIndex(UDJPartyProvider.TIME_ADDED_COLUMN)),
-      false);
-    toReturn.setClientId(cur.getColumnIndex(UDJPartyProvider.PLAYLIST_ID_COLUMN));
-    return toReturn;
-  }
-
-  public static JSONObject getJSONObject(PlaylistEntry pe)
-    throws JSONException
-  {
-    JSONObject toReturn = new JSONObject();
-    toReturn.put(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN, pe.getServerId());
-    toReturn.put(UDJPartyProvider.PRIORITY_COLUMN, pe.getPriority());
-    toReturn.put(UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN, pe.getLibId());
-    toReturn.put(UDJPartyProvider.SONG_COLUMN, pe.getSong());
-    toReturn.put(UDJPartyProvider.ARTIST_COLUMN, pe.getArtist());
-    toReturn.put(UDJPartyProvider.ALBUM_COLUMN, pe.getAlbum());
-    toReturn.put(UDJPartyProvider.VOTES_COLUMN, pe.getVoteCount());
-    toReturn.put(UDJPartyProvider.TIME_ADDED_COLUMN, pe.getTimeAdded());
-    toReturn.put(PLAYLIST_CLIENT_ID_PARAM, pe.getClientId());
-    return toReturn;
-  }
-  
-
-  public static JSONArray getJSONArray(List<PlaylistEntry> entries)
-    throws JSONException
-  {
-    JSONArray toReturn = new JSONArray();
-    for(PlaylistEntry pe: entries){
-      toReturn.put(getJSONObject(pe));
-    }
-    return toReturn;
-  }
-  
-
 }

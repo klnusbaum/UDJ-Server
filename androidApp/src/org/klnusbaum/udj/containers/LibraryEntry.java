@@ -32,34 +32,34 @@ import java.util.ArrayList;
 import org.klnusbaum.udj.UDJPartyProvider;
 
 public class LibraryEntry{
-  private long serverId; 
-  private String song;
-  private String artist;
-  private String album;
-  private boolean isDeleted;
-  public static final String IS_DELETED_FLAG = "is_deleted";
-  public static final String SERVER_LIB_ID_PARAM = "server_lib_song_id";
+  public static final String ID_PARAM = "id";
   public static final String SONG_PARAM = "song";
   public static final String ARTIST_PARAM = "artist";
   public static final String ALBUM_PARAM = "album";
-  public static final long INVALID_SERVER_LIB_ID = -1;
+  public static final String DURATION_PARAM = "duration";
+
+  private long libId; 
+  private String song;
+  private String artist;
+  private String album;
+  private int duration;
 
   public LibraryEntry(
-    long serverId, 
+    long libId, 
     String song, 
     String artist,
     String album,
-    boolean isDeleted)
+    int duration)
   {
-    this.serverId = serverId;
+    this.libId = libId;
     this.song = song;
     this.artist = artist;
     this.album = album;
-    this.isDeleted = isDeleted;
+    this.duration = duration;
   }
 
-  public long getServerId(){
-    return serverId;
+  public long getLibId(){
+    return libId;
   }
   
   public String getSong(){
@@ -74,19 +74,19 @@ public class LibraryEntry{
     return album;
   }
   
-  public boolean getIsDeleted(){
-    return isDeleted;
+  public int getDuration(){
+    return duration;
   }
 
   public static LibraryEntry valueOf(JSONObject jObj)
     throws JSONException 
   {
     return new LibraryEntry(
-      jObj.getLong(SERVER_LIB_ID_PARAM), 
+      jObj.getLong(ID_PARAM), 
       jObj.getString(SONG_PARAM),
       jObj.getString(ARTIST_PARAM),
       jObj.getString(ALBUM_PARAM),
-      jObj.getBoolean(IS_DELETED_FLAG));
+      jObj.getInt(DURATION_PARAM));
   }
 
   public static ArrayList<LibraryEntry> fromJSONArray(JSONArray array)
@@ -101,22 +101,22 @@ public class LibraryEntry{
   
   public static Bundle toBundle(LibraryEntry le){
     Bundle toReturn = new Bundle();
-    toReturn.putLong(SERVER_LIB_ID_PARAM, le.getServerId());
+    toReturn.putLong(ID_PARAM, le.getServerId());
     toReturn.putString(SONG_PARAM, le.getSong());
     toReturn.putString(ARTIST_PARAM, le.getArtist());
     toReturn.putString(ALBUM_PARAM, le.getAlbum());
-    toReturn.putBoolean(IS_DELETED_FLAG, le.getIsDeleted());
+    toReturn.putInt(DURATION_PARAM, le.getDuration());
     return toReturn;
   }
 
   public static LibraryEntry fromBundle(Bundle bundle){
     //TODO throw error is not all the keys are present.
     return new LibraryEntry(
-      bundle.getLong(SERVER_LIB_ID_PARAM),
+      bundle.getLong(ID_PARAM),
       bundle.getString(SONG_PARAM),
       bundle.getString(ARTIST_PARAM),
       bundle.getString(ALBUM_PARAM),
-      bundle.getBoolean(IS_DELETED_FLAG));
+      bundle.getInt(DURATION_PARAM));
   }
 
   public String toString(){

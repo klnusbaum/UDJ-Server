@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.EditText;
 import android.os.Bundle;
-import android.os.Handler;
 import android.content.DialogInterface;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -41,137 +40,280 @@ import org.klnusbaum.udj.network.ServerConnection;
  * Activity used for setting up and editing UDJ accounts.
  */
 public class AuthActivity extends AccountAuthenticatorActivity{
+    /** The Intent flag to confirm credentials. */
+    public static final String PARAM_CONFIRM_CREDENTIALS = "confirmCredentials";
 
-  /** Public constants used for identifing extras in bundles */
-  public static final String AUTHTOKEN_TYPE_EXTRA = "auth_token_type";
-  public static final String UPDATE_CREDS_EXTRA = "update credentials";
+    /** The Intent extra to store password. */
+    public static final String PARAM_PASSWORD = "password";
 
-  private static final short PROGRESS_DIALOG = 0;
-  private static final short LOGIN_ERROR_DIALOG = 1;
+    /** The Intent extra to store username. */
+    public static final String PARAM_USERNAME = "username";
 
-  /** Stores the current username */
-  private String username;
-  
-  /** Stores the current Authentication Token Type */
-  private String authTokenType;
+    /** The Intent extra to store username. */
+    public static final String PARAM_AUTHTOKEN_TYPE = "authtokenType";
 
-  /** Indicated whether or not this activity is being used to add
-   a new acccount */
-  private boolean addingNewAccount;
+    /** The tag used to log to adb console. */
+    private static final String TAG = "AuthenticatorActivity";
+    private AccountManager mAccountManager;
 
-  /** Indicated whether or not this activity is being 
-   confirm crednetials */
-  private boolean confirmingCreds;
+    /** Keep track of the login task so can cancel it if requested */
+    private UserLoginTask mAuthTask = null;
 
-  /** The EditText used for the username */
-  private EditText usernameEdit;
-  /** The EditText used for the password */
-  private EditText passwordEdit;
-  /** Reference to the Account Manager */
-  private AccountManager am;
+    /** Keep track of the progress dialog so we can dismiss it */
+    private ProgressDialog mProgressDialog = null;
 
-  private final Handler authHandler = new Handler();
+    /**
+     * If set we are just checking that the user knows their credentials; this
+     * doesn't cause the user's password or authToken to be changed on the
+     * device.
+     */
+    private Boolean mConfirmCredentials = false;
 
-  private Thread authThread = null;
+    private TextView mMessage;
 
-  @Override
-  public void onCreate(Bundle savedInstanceState){
-    super.onCreate(savedInstanceState);
-    am = AccountManager.get(this);
-    final Intent intent = getIntent();
-    this.username = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-    this.authTokenType = intent.getStringExtra(AUTHTOKEN_TYPE_EXTRA);
-    addingNewAccount = (username == null); 
-    confirmingCreds = intent.getBooleanExtra(UPDATE_CREDS_EXTRA, false);
-    setContentView(R.layout.login);
+    private String mPassword;
 
-    usernameEdit = (EditText) findViewById(R.id.usernameEdit);
-    passwordEdit = (EditText) findViewById(R.id.passwordEdit);
+    private EditText mPasswordEdit;
 
-    usernameEdit.setText(username);
-   
-  } 
+    /** Was the original caller asking for an entirely new account? */
+    protected boolean mRequestNewAccount = false;
 
-  @Override
-  protected Dialog onCreateDialog(int id){
-    switch(id){
-    case PROGRESS_DIALOG:
-      final ProgressDialog progDialog = new ProgressDialog(this);
-      progDialog.setMessage(getText(R.string.authenticating));
-      progDialog.setIndeterminate(true);
-      progDialog.setCancelable(true);
-      progDialog.setOnCancelListener(new DialogInterface.OnCancelListener(){
-        public void onCancel(DialogInterface dialog){
-          if(authThread != null){
-            authThread.interrupt();
-            finish();
-          }
-        }
-      });
-      return progDialog;
-    case LOGIN_ERROR_DIALOG:
-      AlertDialog.Builder builder = new AlertDialog.Builder(this);
-      builder = builder.setTitle(R.string.login_error)
-        .setMessage(R.string.login_error_message)
-        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener(){
-          public void onClick(DialogInterface dialog, int which){
-            dialog.dismiss();
-          }
+    private String mUsername;
+
+    private EditText mUsernameEdit;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onCreate(Bundle icicle) {
+        super.onCreate(icicle);
+        mAccountManager = AccountManager.get(this);
+        final Intent intent = getIntent();
+        mUsername = intent.getStringExtra(PARAM_USERNAME);
+        mRequestNewAccount = mUsername == null;
+        mConfirmCredentials = 
+          intent.getBooleanExtra(PARAM_CONFIRM_CREDENTIALS, false);
+        Log.i(TAG, "    request new: " + mRequestNewAccount);
+        requestWindowFeature(Window.FEATURE_LEFT_ICON);
+        setContentView(R.layout.login_activity);
+        getWindow().setFeatureDrawableResource(
+                Window.FEATURE_LEFT_ICON, android.R.drawable.ic_dialog_alert);
+        mMessage = (TextView) findViewById(R.id.message);
+        mUsernameEdit = (EditText) findViewById(R.id.username_edit);
+        mPasswordEdit = (EditText) findViewById(R.id.password_edit);
+        if (!TextUtils.isEmpty(mUsername)) mUsernameEdit.setText(mUsername);
+        mMessage.setText(getMessage());
+    }
+
+    /*
+     * {@inheritDoc}
+     */
+    @Override
+    protected Dialog onCreateDialog(int id, Bundle args) {
+        final ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setMessage(getText(R.string.authenticating));
+        dialog.setIndeterminate(true);
+        dialog.setCancelable(true);
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            public void onCancel(DialogInterface dialog) {
+                Log.i(TAG, "user cancelling authentication");
+                if (mAuthTask != null) {
+                    mAuthTask.cancel(true);
+                }
+            }
         });
-      return builder.create();
+        // We save off the progress dialog in a field so that we can dismiss
+        // it later. We can't just call dismissDialog(0) because the system
+        // can lose track of our dialog if there's an orientation change.
+        mProgressDialog = dialog;
+        return dialog;
     }
-    return null;
-  }
-     
-  /**
-   * Activated when the login button is clicked, this method
-   * attempts to authenticate the user with the server
-   *
-   * @param view The button that was clicked in order to activate
-   * this method
-   */
-  public void preformLogin(View view){
-    if(addingNewAccount){
-      username = usernameEdit.getText().toString();
-    }
-    String password = passwordEdit.getText().toString();
-    //TODO throw error is password is blank, or better yet,
-    //don't let them click the login button until it's been filled in
-    showDialog(PROGRESS_DIALOG);
 
-    authThread = 
-      ServerConnection.attemptAuth(username, password, authHandler, this);
-  }
+    /**
+     * Handles onClick event on the Submit button. Sends username/password to
+     * the server for authentication. The button is configured to call
+     * handleLogin() in the layout XML.
+     *
+     * @param view The Submit button for which this method is invoked
+     */
+    public void handleLogin(View view) {
+        if (mRequestNewAccount) {
+            mUsername = mUsernameEdit.getText().toString();
+        }
+        mPassword = mPasswordEdit.getText().toString();
+        if (TextUtils.isEmpty(mUsername) || TextUtils.isEmpty(mPassword)) {
+            mMessage.setText(getMessage());
+        } else {
+            // Show a progress dialog, and kick off a background task to perform
+            // the user login attempt.
+            showProgress();
+            mAuthTask = new UserLoginTask();
+            mAuthTask.execute();
+        }
+    }
 
-  public void onAuthResult(boolean result, String username, String password){
-    dismissDialog(PROGRESS_DIALOG);
-    removeDialog(PROGRESS_DIALOG);
-    if(!result){
-      showDialog(LOGIN_ERROR_DIALOG);
-      return;
+    /**
+     * Called when response is received from the server for confirm credentials
+     * request. See onAuthenticationResult(). Sets the
+     * AccountAuthenticatorResult which is sent back to the caller.
+     *
+     * @param result the confirmCredentials result.
+     */
+    private void finishConfirmCredentials(boolean result) {
+        Log.i(TAG, "finishConfirmCredentials()");
+        final Account account = new Account(mUsername, Constants.ACCOUNT_TYPE);
+        mAccountManager.setPassword(account, mPassword);
+        final Intent intent = new Intent();
+        intent.putExtra(AccountManager.KEY_BOOLEAN_RESULT, result);
+        setAccountAuthenticatorResult(intent.getExtras());
+        setResult(RESULT_OK, intent);
+        finish();
     }
-    final Account account = 
-      new Account(username, getString(R.string.account_type));
-    final Intent resultIntent = new Intent();
-    if(addingNewAccount){
-      am.addAccountExplicitly(account, password, null);
-      resultIntent.putExtra(AccountManager.KEY_ACCOUNT_NAME, username);
-      resultIntent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, 
-        getString(R.string.account_type));
-      if(authTokenType != null &&
-        authTokenType.equals(getString(R.string.authtoken_type)))
-      {
-        resultIntent.putExtra(AccountManager.KEY_AUTHTOKEN, password);
-        resultIntent.putExtra(AccountManager.KEY_ACCOUNT_NAME, username);
-      }
+
+    /**
+     * Called when response is received from the server for authentication
+     * request. See onAuthenticationResult(). Sets the
+     * AccountAuthenticatorResult which is sent back to the caller. We store the
+     * authToken that's returned from the server as the 'password' for this
+     * account - so we're never storing the user's actual password locally.
+     *
+     * @param result the confirmCredentials result.
+     */
+    private void finishLogin(String authToken) {
+
+        Log.i(TAG, "finishLogin()");
+        final Account account = new Account(mUsername, Constants.ACCOUNT_TYPE);
+        if (mRequestNewAccount) {
+            mAccountManager.addAccountExplicitly(account, mPassword, null);
+            // Set contacts sync for this account.
+        } else {
+            mAccountManager.setPassword(account, mPassword);
+        }
+        final Intent intent = new Intent();
+        intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, mUsername);
+        intent.putExtra(
+          AccountManager.KEY_ACCOUNT_TYPE, Constants.ACCOUNT_TYPE);
+        setAccountAuthenticatorResult(intent.getExtras());
+        setResult(RESULT_OK, intent);
+        finish();
     }
-    else{
-      am.setPassword(account, password);
-      resultIntent.putExtra(AccountManager.KEY_BOOLEAN_RESULT, true);
-    } 
-    AccountManager.get(this).setPassword(account, password);
-    setAccountAuthenticatorResult(resultIntent.getExtras());
-    setResult(RESULT_OK, resultIntent);
-    finish();
-  }
+
+    /**
+     * Called when the authentication process completes (see attemptLogin()).
+     *
+     * @param authToken the authentication token returned by the server, or NULL if
+     *            authentication failed.
+     */
+    public void onAuthenticationResult(String authToken) {
+
+        boolean success = ((authToken != null) && (authToken.length() > 0));
+        Log.i(TAG, "onAuthenticationResult(" + success + ")");
+
+        // Our task is complete, so clear it out
+        mAuthTask = null;
+
+        // Hide the progress dialog
+        hideProgress();
+
+        if (success) {
+            if (!mConfirmCredentials) {
+                finishLogin(authToken);
+            } else {
+                finishConfirmCredentials(success);
+            }
+        } else {
+            Log.e(TAG, "onAuthenticationResult: failed to authenticate");
+            if (mRequestNewAccount) {
+                // "Please enter a valid username/password.
+                mMessage.setText(getText(R.string.bad_username_and_password));
+            } else {
+                // "Please enter a valid password." (Used when the
+                // account is already in the database but the password
+                // doesn't work.)
+                mMessage.setText(getText(R.string.bad_password));
+            }
+        }
+    }
+
+    public void onAuthenticationCancel() {
+        Log.i(TAG, "onAuthenticationCancel()");
+
+        // Our task is complete, so clear it out
+        mAuthTask = null;
+
+        // Hide the progress dialog
+        hideProgress();
+    }
+
+    /**
+     * Returns the message to be displayed at the top of the login dialog box.
+     */
+    private CharSequence getMessage() {
+        getString(R.string.label);
+        if (TextUtils.isEmpty(mUsername)) {
+            // If no username, then we ask the user to log in using an
+            // appropriate service.
+            final CharSequence msg = getText(R.string.new_account_text);
+            return msg;
+        }
+        if (TextUtils.isEmpty(mPassword)) {
+            // We have an account but no password
+            return getText(R.string.need_password);
+        }
+        return null;
+    }
+
+    /**
+     * Shows the progress UI for a lengthy operation.
+     */
+    private void showProgress() {
+        showDialog(0);
+    }
+
+    /**
+     * Hides the progress UI for a lengthy operation.
+     */
+    private void hideProgress() {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
+    }
+
+    /**
+     * Represents an asynchronous task used to authenticate a user against the
+     * SampleSync Service
+     */
+    public class UserLoginTask extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected String doInBackground(Void... params) {
+            // We do the actual work of authenticating the user
+            // in the NetworkUtilities class.
+            try {
+                return ServerConnection.authenticate(mUsername, mPassword);
+            } catch (Exception ex) {
+                Log.e(TAG, "UserLoginTask.doInBackground: failed to authenticate");
+                Log.i(TAG, ex.toString());
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(final String authToken) {
+            // On a successful authentication, call back into the Activity to
+            // communicate the authToken (or null for an error).
+            onAuthenticationResult(authToken);
+        }
+
+        @Override
+        protected void onCancelled() {
+            // If the action was canceled (by the user clicking the cancel
+            // button in the progress dialog), then call back into the
+            // activity to let it know.
+            onAuthenticationCancel();
+        }
+    }
+
 }

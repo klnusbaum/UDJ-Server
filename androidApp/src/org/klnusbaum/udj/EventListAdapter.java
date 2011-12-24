@@ -27,9 +27,9 @@ import android.content.Context;
 
 import org.klnusbaum.udj.containers.Party;
 
-public class PartyListAdapter extends ArrayAdapter<Party>{
+public class EventListAdapter extends ArrayAdapter<Event>{
 
-  public PartyListAdapter(Context context){
+  public EventListAdapter(Context context){
     super(context, R.id.party_list_item);
   }
 
@@ -43,7 +43,7 @@ public class PartyListAdapter extends ArrayAdapter<Party>{
     return toReturn;
   }
 
-  public long getPartyId(int position){
-    return getItem(position).getPartyId();
+  public long getEventId(int position){
+    return getItem(position).getEventId();
   }
 }

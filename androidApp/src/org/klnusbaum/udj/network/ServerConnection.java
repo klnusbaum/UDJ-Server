@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 import java.util.ArrayList;
 import java.util.Date;
+import java.net.URI;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -49,7 +50,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
-import org.apache.http.cookie.Cookie;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -67,19 +67,6 @@ import org.klnusbaum.udj.PartySelectorActivity;
  */
 public class ServerConnection{
   
-  public static final String PARAM_PARTYID = "partyId";
-  public static final String PARAM_USERNAME = "username";
-  public static final String PARAM_PASSWORD = "password";
-  public static final String PARAM_LAST_UPDATE = "timestamp";
-  public static final String PARAM_PLAYLIST_SYNC_INFO = "syncinfo";
-  public static final String PARAM_PLAYLIST_ADDED= "added";
-  public static final String PARAM_PLAYLIST_VOTED_UP= "votedUp";
-  public static final String PARAM_PLAYLIST_VOTED_DOWN = "votedDown";
-  public static final String PARAM_GET_PARTIES = "getParties";
-  public static final String PARAM_LOCATION = "location";
-  public static final String PARAM_LIB_QUERY = "search_query";
-  public static final String SERVER_TIMESTAMP_FORMAT = "yyyy-mm-dd hh:mm:ss";
-  public static final String PARAM_PLAYLIST_TO_ADD = "toAdd";
   /** 
    * This port number is a memorial to Keith Nusbaum, my father. I loved him
    * deeply and he was taken from this world far too soon. Never-the-less 
@@ -93,45 +80,22 @@ public class ServerConnection{
    * h = 7  % 10 = 7
    * Port 4897, the Keith Nusbaum Memorial Port
    */
-  public static final String SERVER_PORT_NUMBER = "4897";
-  //public static final String SERVER_URL = "http://www.bazaarsolutions.org/udj";
-  //THIS IS FOR TESTING AT THE MOMENT
-  public static final String SERVER_URL = "http://10.0.2.2:"+SERVER_PORT_NUMBER;
+  private static final int SERVER_PORT = "4897";
 
+  private static final String NETWORK_PROTOCOL = "http";
+ 
+  private static final String SERVER_HOST = "10.0.2.2";
 
-  public static final String PLAYLIST_URI = 
-    SERVER_URL + "/playlist";
-
-  public static final String PLAYLIST_VOTE_UP_URI=
-    PLAYLIST_URI + "/vote_up_songs";
-  public static final String PLAYLIST_VOTE_DOWN_URI=
-    PLAYLIST_URI + "/vote_down_songs";
-
-  public static final String LIBRARY_URI = 
-    SERVER_URL + "/library";
-  public static final String LIBRARY_QUERY_URI =
-    LIBRARY_URI + "/search_library";
-  public static final String LIBRARY_RANDOM_URI =
-    LIBRARY_URI + "/random";
-
-  public static final String PARTIES_URI =
-    SERVER_URL + "/party/parties";
-  public static final String PARTY_LOGIN_URI =
-    SERVER_URL + "/party/party_login";
-
-  public static final String AUTH_URI =
-    SERVER_URL + "/auth";
-
-  public static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
+  private static final URI AUTH_URI = new URI(
+    NETWORK_PROTOCOL,"",  SERVER_HOST, SERVER_PORT, "/udj/auth", "", "");
+ 
+  private static final TICKET_HASH_HEADER = "X-Udj-Ticket-Hash";
+ 
+  private static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
+  
+  private static final String AVAILABLE_QUERY_PARAM = "query";
 
   private static DefaultHttpClient httpClient;
-  private static String mostRecentUsername;
-  private static String mostRecentPassword;
-
-  private static final String LOGIN_COOKIE_NAME = "loggedIn";
-  private static final String PARTY_ID_COOKIE_NAME = "partyId";
-  
-
 
   public static DefaultHttpClient getHttpClient(){
     if(httpClient == null){
@@ -144,162 +108,78 @@ public class ServerConnection{
     return httpClient;
   }
 
-  /**
-   * Attempts to authenticate with ther UDJ server. Should
-   * be used by the AuthActivity.
-   *
-   * @param username The user name to be authenticated.
-   * @param password The password to be authenticated.
-   * @param messageHandler A handler used to send messages back to the
-   * AuthActivity that called attemptAuth.
-   * @param context The context from which the method was called, i.e. the
-   * AuthActivity.
-   * @return A thread that is running the authentication attempt.
-   */
-  public static Thread attemptAuth(final String username, final String password,
-    final Handler messageHandler, final Context context)
+
+  public static String authenticate(String username, String password)
+    throws AuthenticationException, IOException
   {
-    final Thread t = new Thread(){
-      public void run(){
-        authenticate(username, password, messageHandler, context);
-      }
-    };
-    t.start();
-    return t;
-  }
-
-
-  /**
-   * Actually handles authenticating the the user.
-   *
-   * @param username The user name to be authenticated.
-   * @param password The password to be authenticated.
-   * @param messageHandler A handler used to send messages back to the
-   * AuthActivity that called attemptAuth.
-   * @param context The context from which the method was called, i.e. the
-   * AuthActivity.
-   * @return True if the authentication was successful. False otherwise.
-   */
-  public static boolean authenticate(String username, String password,
-    Handler handler, final Context context)
-  {
-
-    if(!needCookieRefresh(username, password)){
-      returnToActivityIfNecessary(true, handler, context);
-      return true;
-    }
-
-    mostRecentUsername = username;
-    mostRecentPassword = password;
     final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
     params.add(new BasicNameValuePair(PARAM_USERNAME, mostRecentUsername));
     params.add(new BasicNameValuePair(PARAM_PASSWORD, mostRecentPassword));
     boolean authWorked = false;
-    try{
-      doSimplePost(params, AUTH_URI);
-      authWorked = hasValidCookie();
-    }
-    catch(AuthenticationException e){
-      Log.e("TAG", "Auth Auth exceptions");
-      //TODO maybe do something?
-    }
-    catch(IOException e){
-      Log.e("TAG", "Auth IOException exceptions");
-      //TODO maybe do something?
-    }
-
-    returnToActivityIfNecessary(authWorked, handler, context);
-    return authWorked;
-  }
-
-  private static void returnToActivityIfNecessary(
-    final boolean authWorked, Handler handler, final Context context)
-  {
-    if(handler != null && context != null){
-      handler.post(new Runnable(){
-        public void run(){
-          ((AuthActivity) context).onAuthResult(authWorked, mostRecentUsername, mostRecentPassword);
-        }
-      });
-    }
-  }
-
-  public static List<LibraryEntry> libraryQuery(String searchQuery)
-    throws JSONException, ParseException, IOException, AuthenticationException
-  {
-    final ArrayList<NameValuePair> params = 
-      getEssentialParameters(null);
-      params.add(new BasicNameValuePair(PARAM_LIB_QUERY, searchQuery));
-    JSONArray libraryEntries = new JSONArray(doGet(params, LIBRARY_QUERY_URI));
-    Log.i("TAG", "Server connection got a json array of length: " + 
-      libraryEntries.length());
-    return LibraryEntry.fromJSONArray(libraryEntries);
-  }
-
-  public static List<PlaylistEntry> addSongToPlaylist(  
-    PlaylistEntry toAdd, 
-    GregorianCalendar lastUpdated) throws
-    JSONException, ParseException, IOException, AuthenticationException
-  {
-    ArrayList<PlaylistEntry> toAddList = new ArrayList<PlaylistEntry>();
-    toAddList.add(toAdd);
-    return addSongsToPlaylist(toAddList, lastUpdated);
-  }
-
-  public static List<PlaylistEntry> addSongsToPlaylist(  
-    List<PlaylistEntry> added, 
-    GregorianCalendar lastUpdated) throws
-    JSONException, ParseException, IOException, AuthenticationException
-  {
-    Log.i("TAG", "Doing playlist add.");
-    final ArrayList<NameValuePair> params = getEssentialParameters(lastUpdated);
-    JSONArray toAddArray = PlaylistEntry.getJSONArray(added);
-    params.add(new BasicNameValuePair(
-      PARAM_PLAYLIST_TO_ADD, toAddArray.toString()));
-    JSONArray returnedEntries = new JSONArray(doPost(params, PLAYLIST_URI));
-    return PlaylistEntry.fromJSONArray(returnedEntries);
-  }
-
-
-  public static List<PlaylistEntry> getPlaylist(GregorianCalendar lastUpdated)
-    throws
-    JSONException, ParseException, IOException, AuthenticationException
-  {
-    Log.i("TAG", "Getting playlist.");
-    JSONArray returnedEntries = new JSONArray(doGet(null, PLAYLIST_URI));
-    return PlaylistEntry.fromJSONArray(returnedEntries);
-  }
-
-  private static ArrayList<NameValuePair> getEssentialParameters(
-    GregorianCalendar lastUpdated)
-  {
-    ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-    //TODO ACTUALLY GET THIS WORKING
-    /*if(lastUpdated != null){
-      final SimpleDateFormat formatter =
-        new SimpleDateFormat(SERVER_TIMESTAMP_FORMAT);
-      formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-      params.add(new BasicNameValuePair(
-        PARAM_LAST_UPDATE, formatter.format(lastUpdated)));
-    }*/
-    return params;
-  }
-
-  public static void doSimplePost(ArrayList<NameValuePair> params, String uri)
-    throws AuthenticationException, IOException
-  {
     HttpEntity entity = null;
     entity = new UrlEncodedFormEntity(params);
-    final HttpPost post = new HttpPost(uri);
+    final HttpPost post = new HttpPost(AUTH_URI);
     post.addHeader(entity.getContentType());
     post.setEntity(entity);
     final HttpResponse resp = getHttpClient().execute(post);
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
       throw new AuthenticationException();
     }
+    else if(!resp.containsHeader(TICKET_HASH_HEADER)){
+      throw new IOException("No ticket hash header was found in resposne");
+    }
+    else{
+      return resp.getHeaders(TICKET_HASH_HEADER)[0].getValue();
+    }
   }
 
-  public static String doPost(ArrayList<NameValuePair> params, String uri)
+  public static List<LibraryEntry> availableMusicQuery(
+    String query,
+    int eventId,
+    String ticketHash)
+    throws JSONException, ParseException, IOException, AuthenticationException
+  {
+    URI queryUri = new URI(
+      NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, 
+      "/udj/events/" + eventId + "/available_music", 
+      AVAILABLE_QUERY_PARAM + "=" +query, "");
+    JSONArray searchResults = new JSONArray(doGet(queryUri, ticketHash));
+    return LibraryEntry.fromJSONArray(libraryEntries);
+  }
+    
+  public static List<PlaylistEntry> addSongToPlaylist(
+    PlaylistEntry toAdd, int eventId, String ticketHash) 
+    throws JSONException, ParseException, IOException, AuthenticationException
+  {
+    ArrayList<PlaylistEntry> toAddList = new ArrayList<PlaylistEntry>();
+    toAddList.add(toAdd);
+    return addSongsToPlaylist(toAddList, eventId, ticketHash);
+  }
+
+  public static List<PlaylistEntry> addSongsToPlaylist(  
+    List<PlaylistEntry> added, int eventId, String ticketHash) throws
+    JSONException, ParseException, IOException, AuthenticationException
+  {
+    //TODO implement
+    return null;
+    /*JSONArray toAddArray = PlaylistEntry.getJSONArray(added);
+    params.add(new BasicNameValuePair(
+      PARAM_PLAYLIST_TO_ADD, toAddArray.toString()));
+    JSONArray returnedEntries = new JSONArray(doPost(params, PLAYLIST_URI));
+    return PlaylistEntry.fromJSONArray(returnedEntries);*/
+  }
+
+
+  public static List<PlaylistEntry> getPlaylist(int eventId, ticketHash) throws
+    JSONException, ParseException, IOException, AuthenticationException
+  {
+    return null;
+    /*Log.i("TAG", "Getting playlist.");
+    JSONArray returnedEntries = new JSONArray(doGet(PLAYLIST_URI));
+    return PlaylistEntry.fromJSONArray(returnedEntries);*/
+  }
+
+  /*public static String doPost(ArrayList<NameValuePair> params, String uri)
     throws AuthenticationException, IOException
   {
     String toReturn = null;
@@ -320,12 +200,13 @@ public class ServerConnection{
       throw new IOException();
     }
     return toReturn;
-  }
+  }*/
 
-  public static String doGet(ArrayList<NameValuePair> params, String uri)
+  public static String doGet(URI uri, String ticketHash)
     throws AuthenticationException, IOException
   {
-    final HttpGet get = new HttpGet(uri + getParamString(params));
+    final HttpGet get = new HttpGet(uri);
+    get.addHeader(TICKET_HASH_HEADER, ticketHash);
     final HttpResponse resp = getHttpClient().execute(get);
     final String response = EntityUtils.toString(resp.getEntity());
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
@@ -339,72 +220,21 @@ public class ServerConnection{
     }
   }
 
-  private static String getParamString(ArrayList<NameValuePair> params){
-    String toReturn = "";
-    if(params != null){
-      toReturn += "?";
-      for(NameValuePair np: params){
-        toReturn += np.getName() + "=" +np.getValue();
-      }
-    }
-    return toReturn;
-  }
-
-  public static List<Party> getNearbyParties(Account account, String authtoken)
+  public static List<Event> getNearbyEvents(String ticketHash)
     throws
     JSONException, ParseException, IOException, AuthenticationException
   {
-    final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-    params.add(new BasicNameValuePair(PARAM_USERNAME, account.name));
-    params.add(new BasicNameValuePair(PARAM_PASSWORD, authtoken));
+    return Event.fromJSONArray(
+      new JSONArray("[{\"id\" : 13, \"name\" : \"Awesome\", \"host_id\" : "
+      "5 , \"latitude\" : 40.8888, \"longitude\" : 80.9949}]"));
     //TODO Actually get location
-    params.add(new BasicNameValuePair(PARAM_LOCATION, "unknown"));
+    /*params.add(new BasicNameValuePair(PARAM_LOCATION, "unknown"));
     JSONArray parties = new JSONArray(doGet(params, PARTIES_URI));
-    return Party.fromJSONArray(parties);
+    return Party.fromJSONArray(parties);*/
   }
 
-  private static boolean needCookieRefresh(String username, String password){
-    if(
-      mostRecentUsername == null ||
-      mostRecentPassword == null ||
-      !mostRecentUsername.equals(username) ||
-      !mostRecentPassword.equals(password)
-    )
-    {
-      return true;
-    }
-    return !hasValidCookie();
-  }
-
-  private static boolean hasValidCookie(){
-    for(Cookie cookie: getHttpClient().getCookieStore().getCookies()){
-      if(cookie.getName().equals(LOGIN_COOKIE_NAME)){
-        return true;
-      }
-    }
-    return false;
-  }
-
-  public static Thread loginToParty(
-    final long partyId,
-    final Handler messageHandler, 
-    final Context context)
-  {
-    final Thread t = new Thread(){
-      public void run(){
-        doPartyLogin(partyId, messageHandler, context);
-      }
-    };
-    t.start();
-    return t;
-  }
-
-  public static void doPartyLogin(
-    final long partyId,
-    final Handler handler, 
-    final Context context)
-  {
-    final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+  public static void doPartyLogin(final long partyId){
+    /*final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
     params.add(new BasicNameValuePair(PARAM_PARTYID, String.valueOf(partyId)));
     params.add(new BasicNameValuePair(PARAM_USERNAME, mostRecentUsername));
     try{
@@ -425,30 +255,7 @@ public class ServerConnection{
         ((PartySelectorActivity)context).onPartySelection(
           isValidParty(), partyId);
       }
-    });
-  }
-
-  private static boolean isValidParty(){
-    for(Cookie cookie: getHttpClient().getCookieStore().getCookies()){
-      if(cookie.getName().equals(PARTY_ID_COOKIE_NAME) &&
-         !cookie.getValue().equals(String.valueOf(Party.INVALID_PARTY_ID)))
-      {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private static boolean nothingToUpdate(
-    List<PlaylistEntry> added,
-    List<PlaylistEntry> votedUp,
-    List<PlaylistEntry> votedDown)
-  {
-    return 
-      (added == null || added.isEmpty()) &&
-      (votedUp == null || votedUp.isEmpty()) &&
-      (votedDown == null || votedDown.isEmpty());
-
+    });*/
   }
 
 }

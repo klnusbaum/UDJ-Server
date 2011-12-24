@@ -42,10 +42,6 @@ public class UDJPartyProvider extends ContentProvider{
   private static final String DATABASE_NAME = "partydb.db";
 	/** Database version number */
   private static final int DATABASE_VERSION = 1;
-	/** Name of the playlist table. */
-  private static final String PLAYLIST_TABLE_NAME = "playlist";
-  /** Name of the partiers table. */
-  private static final String PARTIERS_TABLE_NAME = "partiers";
 
   /** URI for the playlist */
   public static final Uri PLAYLIST_URI = 
@@ -56,53 +52,57 @@ public class UDJPartyProvider extends ContentProvider{
 
   /** PLAYLIST TABLE */
 
-  /** The various states a playlist record can be in */
-  public static final String SYNCED_MARK="synced";
-  public static final String UPDATEING_MARK ="updating"; 
-  public static final String NEEDS_UP_VOTE ="needs_up_vote"; 
-  public static final String NEEDS_DOWN_VOTE ="needs_down_vote"; 
-  public static final String NEEDS_INSERT_MARK ="needs_insert"; 
+	/** Name of the playlist table. */
+  private static final String PLAYLIST_TABLE_NAME = "playlist";
 
-  /** The various states of a playlist record's vote status */
-  public static final String HASNT_VOTED="hasnt_voted";
-  public static final String VOTED_UP="votedup";
-  public static final String VOTED_DOWN="voteddown";
-  
 	/** Constants used for various Playlist column names */
   public static final String PLAYLIST_ID_COLUMN = "_id";
-  public static final String VOTES_COLUMN = "votes";
+  public static final String UP_VOTES_COLUMN = "up_votes";
+  public static final String DOWN_VOTES_COLUMN = "down_votes";
   public static final String PRIORITY_COLUMN = "priority";
-  public static final String SYNC_STATE_COLUMN = "sync_state";
-  public static final String SERVER_PLAYLIST_ID_COLUMN ="server_playlist_song_id";
   public static final String TIME_ADDED_COLUMN ="time_added";
-  public static final String VOTE_STATUS_COLUMN ="vote_status";
   public static final String SONG_COLUMN = "song";
   public static final String ARTIST_COLUMN = "artist";
   public static final String ALBUM_COLUMN = "album";
-  public static final String SERVER_LIBRARY_ID_COLUMN = "server_lib_song_id";
-
-  /** Constants used for representing invalid ids */
-  public static final String INVALID_SERVER_PLAYLIST_ID = "-1";
-  public static final String INVALID_CLIENT_PLAYLIST_ID = "-1";
-  public static final String DEFAULT_PRIORITY = "-1";
+  public static final String DURATION_COLUMN = "duration";
 
 	/** SQL statement for creating the playlist table. */
   private static final String PLAYLIST_TABLE_CREATE = 
     "CREATE TABLE " + PLAYLIST_TABLE_NAME + "("+
-		PLAYLIST_ID_COLUMN + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-    VOTES_COLUMN + " INTEGER NOT NULL DEFAULT 1, " +
-    VOTE_STATUS_COLUMN + " TEXT NOT NULL DEFAULT '" + HASNT_VOTED +"', " +
-    SYNC_STATE_COLUMN + " TEXT NOT NULL DEFAULT '" + NEEDS_INSERT_MARK + "', " +
+		PLAYLIST_ID_COLUMN + " INTEGER PRIMARY KEY , " +
+    UP_VOTES_COLUMN + " INTEGER NOT NULL, " +
+    DOWN_VOTES_COLUMN + " INTEGER NOT NULL, " +
+    PRIORITY_COLUMN + " INTEGER NOT NULL," , " +
+    TIME_ADDED_COLUMN + " TEXT NOT NULL, " +
+    DURATION_COLUMN + " INTEGER NOT NULL, " +
+		SONG_COLUMN + " TEXT NOT NULL, " +
+    ARTIST_COLUMN + " TEXT NOT NULL, " + 
+    ALBUM_COLUMN + " TEXT NOT NULL);";
 
-    SERVER_PLAYLIST_ID_COLUMN + " INTEGER DEFAULT " + INVALID_SERVER_PLAYLIST_ID
-      +" , " +
-    
-    PRIORITY_COLUMN + " INTEGER DEFAULT " + DEFAULT_PRIORITY +" , " +
-    SERVER_LIBRARY_ID_COLUMN + " INTEGER , "+
-    TIME_ADDED_COLUMN + " TEXT DEFAULT CURRENT_TIME_STAMP, " +
-		SONG_COLUMN + " TEXT NOT NULL DEFAULT '', " +
-    ARTIST_COLUMN + " TEXT NOT NULL DEFAULT '', " + 
-    ALBUM_COLUMN + " TEXT NOT NULL DEFAULT ''" + ");";
+  /** SONG ADD REQUESTS TABLE */
+
+  /** Name of add request table. */
+  private static final String ADD_REQUESTS_TABLE_NAME = "add_requests";
+  
+  /** Constants used for various column names in the song add request table. */
+  private static final String ADD_REQUEST_ID_COLUMN = "_id";
+  private static final String ADD_REQUEST_LIB_ID_COLUMN = "lib_id";
+  private static final String ADD_REQUEST_SYNC_STATUS_COLUMN = "sync_status";
+
+  /** Constants used for the sync status of an add request */
+  private static final int ADD_REQUEST_NEEDS_SYNC = "1";
+  private static final int ADD_REQUEST_SYNCED = "0";
+
+  /** SQL statement for creating the song add requests table. */
+  private static final String ADD_REQUEST_TABLE_CREATE = 
+    "CREATE TABLE " + ADD_REQUESTS_TABLE_NAME + "("_
+    ADD_REQUEST_ID_COLUMN + " INTEGER PRIMARY KEY AUTOINCREMENT, " + 
+    ADD_REQUEST_LIB_ID_COLUMN + " INTEGER NOT NULL, " +
+    ADD_REQUEST_SYNC_STATUS_COLUMN + " INTEGER DEFAULT "+ 
+      ADD_REQUEST_NEEDS_SYNC + ", " +
+    "CHECK (" + ADD_REQUEST_SYNC_STATUS_COLUMN + "=" + ADD_REQUEST_NEEDS_SYNC +
+    "OR " + ADD_REQUEST_SYNC_STATUS_COLUMN + "=" + ADD_REQUEST_SYNCED +
+    "));";
 
 
 	/** Helper for opening up the actual database. */
@@ -125,6 +125,7 @@ public class UDJPartyProvider extends ContentProvider{
     @Override
     public void onCreate(SQLiteDatabase db){
       db.execSQL(PLAYLIST_TABLE_CREATE);
+      db.execSQL(ADD_REQUEST_TABLE_CREATE);
     }
 
     @Override
@@ -146,17 +147,15 @@ public class UDJPartyProvider extends ContentProvider{
 
   @Override
   public int delete(Uri uri, String where, String[] whereArgs){
-    SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
-    //TODO actualy implement this method correctly
-    if(uri.equals(PLAYLIST_URI)){
-      return db.delete(PLAYLIST_TABLE_NAME, where, whereArgs);
-    }
+    //TODO implement this.
     return 0;
   }
 
   @Override
   public Uri insert(Uri uri, ContentValues initialValues){
-    SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+     return null;
+    //TODO implement this
+/*    SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
     if(uri.equals(PLAYLIST_URI)){
       long rowId = db.insert(PLAYLIST_TABLE_NAME, null, initialValues);
       if(rowId > 0){
@@ -168,14 +167,15 @@ public class UDJPartyProvider extends ContentProvider{
     }
     else{
       throw new IllegalArgumentException("Unknown URI " + uri);
-    }
+    }*/
   }
   
   @Override
   public Cursor query(Uri uri, String[] projection, 
     String selection, String[] selectionArgs, String sortOrder)
   {
-    SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+    //TODO implement this
+    /*SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
     if(!uri.getAuthority().equals(getContext().getString(R.string.authority))){
       throw new IllegalArgumentException("Unknown URI " + uri);
     }
@@ -190,19 +190,22 @@ public class UDJPartyProvider extends ContentProvider{
     SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
     Cursor toReturn = qb.query(db, projection, selection, selectionArgs, null, null, sortOrder);
     toReturn.setNotificationUri(getContext().getContentResolver(), uri);
-    return toReturn;
+    return toReturn;*/
+    return null;
   }
 
   @Override
   public int update(Uri uri, ContentValues values, String where, 
     String[] whereArgs)
   {
-    SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+     //TODO implement this
+     return 0;
+/*    SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
     if(uri.equals(PLAYLIST_URI)){
       int numRowsChanged = 
         db.update(PLAYLIST_TABLE_NAME, values, where, whereArgs);
       return numRowsChanged;
     }
-    return 0;
+    return 0;*/
   }
 }

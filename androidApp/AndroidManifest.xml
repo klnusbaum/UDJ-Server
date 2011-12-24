@@ -43,7 +43,7 @@
 
         </activity>
 
-        <activity android:name="PartyActivity"
+        <activity android:name="EventActivity"
           android:theme="@android:style/Theme.NoTitleBar"
           android:launchMode="singleTop"
         >
@@ -71,7 +71,6 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
-        <service android:name=".network.PlaylistSyncService"/>
         <provider android:name="org.klnusbaum.udj.UDJPartyProvider"
           android:authorities="org.klnusbaum.udj"
         />
