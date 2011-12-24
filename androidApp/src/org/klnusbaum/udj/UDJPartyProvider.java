@@ -72,7 +72,7 @@ public class UDJPartyProvider extends ContentProvider{
 		PLAYLIST_ID_COLUMN + " INTEGER PRIMARY KEY , " +
     UP_VOTES_COLUMN + " INTEGER NOT NULL, " +
     DOWN_VOTES_COLUMN + " INTEGER NOT NULL, " +
-    PRIORITY_COLUMN + " INTEGER NOT NULL," , " +
+    PRIORITY_COLUMN + " INTEGER NOT NULL, "  +
     TIME_ADDED_COLUMN + " TEXT NOT NULL, " +
     DURATION_COLUMN + " INTEGER NOT NULL, " +
 		SONG_COLUMN + " TEXT NOT NULL, " +
@@ -90,12 +90,12 @@ public class UDJPartyProvider extends ContentProvider{
   private static final String ADD_REQUEST_SYNC_STATUS_COLUMN = "sync_status";
 
   /** Constants used for the sync status of an add request */
-  private static final int ADD_REQUEST_NEEDS_SYNC = "1";
-  private static final int ADD_REQUEST_SYNCED = "0";
+  private static final int ADD_REQUEST_NEEDS_SYNC = 1;
+  private static final int ADD_REQUEST_SYNCED = 0;
 
   /** SQL statement for creating the song add requests table. */
   private static final String ADD_REQUEST_TABLE_CREATE = 
-    "CREATE TABLE " + ADD_REQUESTS_TABLE_NAME + "("_
+    "CREATE TABLE " + ADD_REQUESTS_TABLE_NAME + "(" +
     ADD_REQUEST_ID_COLUMN + " INTEGER PRIMARY KEY AUTOINCREMENT, " + 
     ADD_REQUEST_LIB_ID_COLUMN + " INTEGER NOT NULL, " +
     ADD_REQUEST_SYNC_STATUS_COLUMN + " INTEGER DEFAULT "+ 

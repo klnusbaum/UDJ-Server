@@ -31,8 +31,13 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.Dialog;
 import android.util.Log;
+import android.os.AsyncTask;
+import android.text.TextUtils;
+import android.widget.TextView;
+import android.view.Window;
 
 import org.klnusbaum.udj.R;
+import org.klnusbaum.udj.Constants;
 import org.klnusbaum.udj.network.ServerConnection;
 
 
@@ -110,7 +115,7 @@ public class AuthActivity extends AccountAuthenticatorActivity{
      * {@inheritDoc}
      */
     @Override
-    protected Dialog onCreateDialog(int id, Bundle args) {
+    protected Dialog onCreateDialog(int id) {
         final ProgressDialog dialog = new ProgressDialog(this);
         dialog.setMessage(getText(R.string.authenticating));
         dialog.setIndeterminate(true);
@@ -250,7 +255,6 @@ public class AuthActivity extends AccountAuthenticatorActivity{
      * Returns the message to be displayed at the top of the login dialog box.
      */
     private CharSequence getMessage() {
-        getString(R.string.label);
         if (TextUtils.isEmpty(mUsername)) {
             // If no username, then we ask the user to log in using an
             // appropriate service.

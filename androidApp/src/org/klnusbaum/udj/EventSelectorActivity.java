@@ -57,7 +57,7 @@ import org.apache.http.auth.AuthenticationException;
 
 import org.klnusbaum.udj.auth.AuthActivity;
 import org.klnusbaum.udj.network.ServerConnection;
-import org.klnusbaum.udj.containers.Party;
+import org.klnusbaum.udj.containers.Event;
 
 /**
  * Class used for displaying the contents of the Playlist.
@@ -83,6 +83,7 @@ public class EventSelectorActivity extends FragmentActivity{
   {
     private EventListAdapter eventAdapter;
     private String authToken;
+    private Account account;
 
     public void onActivityCreated(Bundle savedInstanceState){
       super.onActivityCreated(savedInstanceState);
@@ -92,10 +93,11 @@ public class EventSelectorActivity extends FragmentActivity{
       setListAdapter(eventAdapter);
       setListShown(false);
       Account[] udjAccounts = 
-        AccountManager.getAccountsByType(Constants.ACCOUNT_TYPE);
+        AccountManager.get(getActivity()).getAccountsByType(
+          Constants.ACCOUNT_TYPE);
       if(udjAccounts.length < 1){
         //TODO implement if there aren't any account
-        getActivity().setResults(Activity.RESULT_CANCELED);
+        getActivity().setResult(Activity.RESULT_CANCELED);
         getActivity().finish();
         return;
       }
@@ -122,7 +124,8 @@ public class EventSelectorActivity extends FragmentActivity{
     }
 
     public Loader<List<Event> > onCreateLoader(int id, Bundle args){
-      return new PartiesLoader(getActivity(), args.getPacelable(ACCOUNT_EXTRA));
+      return new EventsLoader(getActivity(), 
+        (Account)args.getParcelable(ACCOUNT_EXTRA));
     }
   
     public void onLoadFinished(Loader<List<Event> > loader, List<Event> data){
@@ -131,7 +134,7 @@ public class EventSelectorActivity extends FragmentActivity{
       }
       else{
         for(Event e: data){
-          partyAdpater.add(e);
+          eventAdapter.add(e);
         }
       }
 
@@ -144,17 +147,17 @@ public class EventSelectorActivity extends FragmentActivity{
     }
   
     public void onLoaderReset(Loader<List<Event> > loader){
-      partyAdpater.clear();
+      eventAdapter.clear();
     }
   } 
 
-  public static class PartiesLoader extends AsyncTaskLoader<List<Event> >{
+  public static class EventsLoader extends AsyncTaskLoader<List<Event> >{
      
     Context context;
     Account account;
     List<Event> events;
 
-    public PartiesLoader(Context context, Account account){
+    public EventsLoader(Context context, Account account){
       super(context);
       this.account = account;
       events = null;
@@ -171,7 +174,7 @@ public class EventSelectorActivity extends FragmentActivity{
       try{
         AccountManager am = AccountManager.get(context);
         String authToken = am.blockingGetAuthToken(account, "", true); 
-        return ServerConnection.getNearbyParties(authToken);
+        return ServerConnection.getNearbyEvents(authToken);
       }
       catch(JSONException e){
         //TODO notify the user
@@ -179,8 +182,14 @@ public class EventSelectorActivity extends FragmentActivity{
       catch(IOException e){
         //TODO notify the user
       }
+      catch(AuthenticatorException e){
+        //TODO notify the user
+      }
       catch(AuthenticationException e){
         //TODO notify the user
+      }
+      catch(OperationCanceledException e){
+        //TODO notify user
       }
       return null;
     }

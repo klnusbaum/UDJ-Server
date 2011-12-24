@@ -101,7 +101,7 @@ public class LibraryEntry{
   
   public static Bundle toBundle(LibraryEntry le){
     Bundle toReturn = new Bundle();
-    toReturn.putLong(ID_PARAM, le.getServerId());
+    toReturn.putLong(ID_PARAM, le.getLibId());
     toReturn.putString(SONG_PARAM, le.getSong());
     toReturn.putString(ARTIST_PARAM, le.getArtist());
     toReturn.putString(ALBUM_PARAM, le.getAlbum());

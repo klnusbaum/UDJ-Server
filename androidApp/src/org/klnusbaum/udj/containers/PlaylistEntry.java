@@ -57,6 +57,7 @@ public class PlaylistEntry{
     String song,
     String artist,
     String album,
+    int duration,
     int upVotes,
     int downVotes,
     String timeAdded,
@@ -67,6 +68,7 @@ public class PlaylistEntry{
     this.song = song;
     this.artist = artist;
     this.album = album;
+    this.duration = duration;
     this.upVotes = upVotes;
     this.downVotes = downVotes;
     this.timeAdded = timeAdded;
@@ -91,6 +93,10 @@ public class PlaylistEntry{
 
   public String getAlbum(){
     return album;
+  }
+
+  public int getDuration(){
+    return duration;
   }
 
   public int getUpVotes(){

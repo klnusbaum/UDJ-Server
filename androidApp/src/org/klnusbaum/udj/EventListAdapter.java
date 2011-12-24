@@ -25,7 +25,7 @@ import android.view.LayoutInflater;
 import android.widget.TextView;
 import android.content.Context;
 
-import org.klnusbaum.udj.containers.Party;
+import org.klnusbaum.udj.containers.Event;
 
 public class EventListAdapter extends ArrayAdapter<Event>{
 

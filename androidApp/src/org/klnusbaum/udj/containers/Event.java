@@ -44,14 +44,14 @@ public class Event{
   private double longitude;
 
 
-  public Party(
+  public Event(
     long eventId, 
     String name, 
     long hostId, 
     double latitude, 
     double longitude)
   {
-    this.eventId = eventId
+    this.eventId = eventId;
     this.name = name;
     this.hostId = hostId;
     this.latitude = latitude;
@@ -78,7 +78,7 @@ public class Event{
     return longitude;
   }
 
-  public static Party valueOf(JSONObject jObj)
+  public static Event valueOf(JSONObject jObj)
     throws JSONException 
   {
     return new Event(

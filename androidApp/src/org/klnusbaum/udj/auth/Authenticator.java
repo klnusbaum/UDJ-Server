@@ -18,6 +18,12 @@
  */
 package org.klnusbaum.udj.auth;
 
+import java.util.Calendar;
+import java.io.IOException;
+
+import org.apache.http.auth.AuthenticationException;
+
+import android.content.SharedPreferences;
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
@@ -25,8 +31,10 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import org.klnusbaum.udj.R;
+import org.klnusbaum.udj.Constants;
 import org.klnusbaum.udj.network.ServerConnection;
 
 /**
@@ -80,7 +88,7 @@ public class Authenticator extends AbstractAccountAuthenticator{
   }
 
   @Override
-  public Bundle getAuthToken(AccountAuthenticatorResponse respones,
+  public Bundle getAuthToken(AccountAuthenticatorResponse response,
     Account account, String authTokenType, Bundle loginOptions)
   {
     //First, check if we've already got the shiznit in our persistent storage
@@ -89,7 +97,7 @@ public class Authenticator extends AbstractAccountAuthenticator{
     if(prefs.contains(tokenPrefKey) && prefs.contains(lastModifiedPrefKey)){
       long lastModified = prefs.getLong(lastModifiedPrefKey, 0);
       if(lessThan12HoursAgo(lastModified)){
-        return bundleUpAuthToken(prefs.getString(tokenPrefKey, ""));
+        return bundleUpAuthToken(account, prefs.getString(tokenPrefKey, ""));
       }
     }
 
@@ -98,19 +106,27 @@ public class Authenticator extends AbstractAccountAuthenticator{
     final AccountManager am = AccountManager.get(context);
     final String password = am.getPassword(account);
     if(password != null){
-      final String authToken = ServerConnection.authenticate(account.name, 
-        password);
-      if(!TextUtils.isEmpty(authToken)) {
-        writeTokenToPersistentStorage(authToken);
-        return bundleUpAuthToken(authToken);
+      try{
+        final String authToken = ServerConnection.authenticate(account.name, 
+          password);
+        if(!TextUtils.isEmpty(authToken)) {
+          writeTokenToPersistentStorage(authToken);
+          return bundleUpAuthToken(account, authToken);
+        }
+      }
+      catch(AuthenticationException e){
+        //TODO actually do something with this exception 
+      }
+      catch(IOException e){
+        //TODO actually do something with this exception 
       }
     }
     
     //Oh snap, they're username and password didn't work. O well, better have
     // them sort it out.
-    final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
-    intent.putExtra(AuthenticatorActivity.PARAM_USERNAME, account.name);
-    intent.putExtra(AuthenticatorActivity.PARAM_AUTHTOKEN_TYPE, authTokenType);
+    final Intent intent = new Intent(context, AuthActivity.class);
+    intent.putExtra(AuthActivity.PARAM_USERNAME, account.name);
+    intent.putExtra(AuthActivity.PARAM_AUTHTOKEN_TYPE, authTokenType);
     intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, 
       response);
     final Bundle bundle = new Bundle();
@@ -118,7 +134,7 @@ public class Authenticator extends AbstractAccountAuthenticator{
     return bundle;
   }
 
-  private Bundle bundleUpAuthToken(String authToken){
+  private Bundle bundleUpAuthToken(Account account, String authToken){
     final Bundle result = new Bundle();
     result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
     result.putString(AccountManager.KEY_ACCOUNT_TYPE, Constants.ACCOUNT_TYPE);
@@ -132,10 +148,10 @@ public class Authenticator extends AbstractAccountAuthenticator{
     long now = Calendar.getInstance().getTimeInMillis();
     prefs.putLong(lastModifiedPrefKey, now);
     prefs.putString(tokenPrefKey, token);
-    prefs.apply();
+    prefs.commit();
   }
 
-  private bool lessThan12HoursAgo(long time){
+  private boolean lessThan12HoursAgo(long time){
     long now = Calendar.getInstance().getTimeInMillis();
     return  now-time < 43200;
   }

@@ -40,7 +40,7 @@
     <string name="search_hint">Search for songs...</string>
     <string name="searching_lib">Searching library...</string>
     <string name="bad_password">Password incorrect</string>
-    <string name="bad_username_and_password">Couldn't find account matching the given username and password</string>
+    <string name="bad_username_and_password">Couldn\'t find account matching the given username and password</string>
     <string name="new_account_text">Sign in to UDJ</string>
     <string name="need_password">Password is needed</string>
 </resources>

@@ -31,6 +31,7 @@ import java.util.TimeZone;
 import java.util.ArrayList;
 import java.util.Date;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -56,17 +57,18 @@ import org.json.JSONObject;
 import org.json.JSONException;
 
 
-import org.klnusbaum.udj.auth.AuthActivity;
 import org.klnusbaum.udj.containers.LibraryEntry;
 import org.klnusbaum.udj.containers.PlaylistEntry;
-import org.klnusbaum.udj.containers.Party;
-import org.klnusbaum.udj.PartySelectorActivity;
+import org.klnusbaum.udj.containers.Event;
 
 /**
  * A connection to the UDJ server
  */
 public class ServerConnection{
   
+  private static final String PARAM_USERNAME = "username";
+
+  private static final String PARAM_PASSWORD = "password";
   /** 
    * This port number is a memorial to Keith Nusbaum, my father. I loved him
    * deeply and he was taken from this world far too soon. Never-the-less 
@@ -80,16 +82,14 @@ public class ServerConnection{
    * h = 7  % 10 = 7
    * Port 4897, the Keith Nusbaum Memorial Port
    */
-  private static final int SERVER_PORT = "4897";
+  private static final int SERVER_PORT = 4897;
 
   private static final String NETWORK_PROTOCOL = "http";
  
   private static final String SERVER_HOST = "10.0.2.2";
 
-  private static final URI AUTH_URI = new URI(
-    NETWORK_PROTOCOL,"",  SERVER_HOST, SERVER_PORT, "/udj/auth", "", "");
  
-  private static final TICKET_HASH_HEADER = "X-Udj-Ticket-Hash";
+  private static final String TICKET_HASH_HEADER = "X-Udj-Ticket-Hash";
  
   private static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
   
@@ -112,9 +112,17 @@ public class ServerConnection{
   public static String authenticate(String username, String password)
     throws AuthenticationException, IOException
   {
+    URI AUTH_URI = null;
+    try{
+      AUTH_URI = new URI(
+        NETWORK_PROTOCOL,"",  SERVER_HOST, SERVER_PORT, "/udj/auth", "", "");
+    }
+    catch(URISyntaxException e){
+      //TODO should never get here but I should do something if it does.
+    }
     final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-    params.add(new BasicNameValuePair(PARAM_USERNAME, mostRecentUsername));
-    params.add(new BasicNameValuePair(PARAM_PASSWORD, mostRecentPassword));
+    params.add(new BasicNameValuePair(PARAM_USERNAME, username));
+    params.add(new BasicNameValuePair(PARAM_PASSWORD, password));
     boolean authWorked = false;
     HttpEntity entity = null;
     entity = new UrlEncodedFormEntity(params);
@@ -139,12 +147,18 @@ public class ServerConnection{
     String ticketHash)
     throws JSONException, ParseException, IOException, AuthenticationException
   {
-    URI queryUri = new URI(
-      NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, 
-      "/udj/events/" + eventId + "/available_music", 
-      AVAILABLE_QUERY_PARAM + "=" +query, "");
-    JSONArray searchResults = new JSONArray(doGet(queryUri, ticketHash));
-    return LibraryEntry.fromJSONArray(libraryEntries);
+    try{
+      URI queryUri = new URI(
+        NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, 
+        "/udj/events/" + eventId + "/available_music", 
+        AVAILABLE_QUERY_PARAM + "=" +query, "");
+      JSONArray searchResults = new JSONArray(doGet(queryUri, ticketHash));
+      return LibraryEntry.fromJSONArray(searchResults);
+    }
+    catch(URISyntaxException e){
+      return null;
+      //TDOD inform caller that theire query is bad 
+    }
   }
     
   public static List<PlaylistEntry> addSongToPlaylist(
@@ -170,8 +184,8 @@ public class ServerConnection{
   }
 
 
-  public static List<PlaylistEntry> getPlaylist(int eventId, ticketHash) throws
-    JSONException, ParseException, IOException, AuthenticationException
+  public static List<PlaylistEntry> getPlaylist(int eventId, String ticketHash) /*throws
+    JSONException, ParseException, IOException, AuthenticationException*/
   {
     return null;
     /*Log.i("TAG", "Getting playlist.");
@@ -225,8 +239,7 @@ public class ServerConnection{
     JSONException, ParseException, IOException, AuthenticationException
   {
     return Event.fromJSONArray(
-      new JSONArray("[{\"id\" : 13, \"name\" : \"Awesome\", \"host_id\" : "
-      "5 , \"latitude\" : 40.8888, \"longitude\" : 80.9949}]"));
+      new JSONArray("[{\"id\" : 13, \"name\" : \"Awesome\", \"host_id\" : 5 , \"latitude\" : 40.8888, \"longitude\" : 80.9949}]"));
     //TODO Actually get location
     /*params.add(new BasicNameValuePair(PARAM_LOCATION, "unknown"));
     JSONArray parties = new JSONArray(doGet(params, PARTIES_URI));
