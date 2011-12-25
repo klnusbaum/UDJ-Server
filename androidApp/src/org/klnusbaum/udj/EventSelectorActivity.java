@@ -67,6 +67,8 @@ public class EventSelectorActivity extends FragmentActivity{
   private static final int SELECTING_PARTY_DIALOG = 0;
   private static final String ACCOUNT_EXTRA = "account";
   private static final String LOCATION_EXTRA = "location";
+  private static final int ACCOUNT_CREATION = 0;
+  private Account account;
 
   @Override
   public void onCreate(Bundle savedInstanceState){
@@ -79,13 +81,24 @@ public class EventSelectorActivity extends FragmentActivity{
     }
   }
 
+  protected void onActivityResult(
+    int requestCode, int resultCode, Intent data)
+  {
+    if(resultCode == Activity.RESULT_OK){
+      account = data.getParcelableExtra(AuthActivity.ACCOUNT_EXTRA);
+    }
+    else{
+      setResult(Activity.RESULT_CANCELED);
+      finish();
+    }
+  }
+
   public class EventListFragment extends ListFragment implements 
     LoaderManager.LoaderCallbacks<List<Event> >,
     LocationListener
   {
     private EventListAdapter eventAdapter;
     private String authToken;
-    private Account account;
     private LocationManager lm;
 
     public void onActivityCreated(Bundle savedInstanceState){
@@ -100,9 +113,10 @@ public class EventSelectorActivity extends FragmentActivity{
           Constants.ACCOUNT_TYPE);
       if(udjAccounts.length < 1){
         //TODO implement if there aren't any account
-        getActivity().setResult(Activity.RESULT_CANCELED);
-        getActivity().finish();
-        return;
+        Intent getAccountIntent = 
+          new Intent(getActivity(), AuthActivity.class);
+        getActivity().startActivityForResult(
+          getAccountIntent, ACCOUNT_CREATION);
       }
       else if(udjAccounts.length == 1){
         account=udjAccounts[0];
@@ -125,7 +139,9 @@ public class EventSelectorActivity extends FragmentActivity{
       Bundle loaderArgs = new Bundle(); 
       loaderArgs.putParcelable(ACCOUNT_EXTRA, account);
       loaderArgs.putParcelable(LOCATION_EXTRA, lastKnown);
-      getLoaderManager().initLoader(0, loaderArgs, this);
+      /*EventsLoader ld = (EventsLoader)getLoaderManager().getLoader(0);
+      ld.set*/
+      getLoaderManager().restartLoader(0, loaderArgs, this);
     }
 
     public void onPause(){
@@ -134,10 +150,10 @@ public class EventSelectorActivity extends FragmentActivity{
     }
 
     public void onLocationChanged(Location location){
-      Bundle loaderArgs = new Bundle(); 
+      /*Bundle loaderArgs = new Bundle(); 
       loaderArgs.putParcelable(ACCOUNT_EXTRA, account);
       loaderArgs.putParcelable(LOCATION_EXTRA, location);
-      getLoaderManager().restartLoader(0, loaderArgs, this);
+      getLoaderManager().restartLoader(0, loaderArgs, this);*/
     }
 
     public void onProviderDisabled(String provider){
@@ -188,6 +204,7 @@ public class EventSelectorActivity extends FragmentActivity{
   
     public void onLoaderReset(Loader<List<Event> > loader){
       eventAdapter = new EventListAdapter(getActivity());
+      ((EventsLoader)loader).setAccount(account);
     }
   } 
 
@@ -205,6 +222,10 @@ public class EventSelectorActivity extends FragmentActivity{
       this.location = location;
       events = null;
     }
+
+    public void setAccount(Account account){
+      this.account = account; 
+    }
     
     @Override
     protected void onStartLoading(){
@@ -214,6 +235,10 @@ public class EventSelectorActivity extends FragmentActivity{
     }
  
     public List<Event> loadInBackground(){
+      if(account == null){
+        Log.i("EVENT LOADER", "ACCOUNT IS NULL");
+        return null;
+      }
       try{
         AccountManager am = AccountManager.get(context);
         String authToken = am.blockingGetAuthToken(account, "", true); 
