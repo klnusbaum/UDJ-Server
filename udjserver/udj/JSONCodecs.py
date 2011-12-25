@@ -36,6 +36,7 @@ def getJSONForEvents(events):
       'id' : event.id,
       'name' : event.name, 
       'host_id' : event.host.id,
+      'host_username' : event.host.first_name,
       'latitude' : float(event.latitude),
       'longitude' : float(event.longitude)
     }
@@ -53,7 +54,8 @@ def getJSONForCurrentSong(currentSong):
     'down_votes' : currentSong.downvotes,
     'time_added' : currentSong.time_added.replace(microsecond=0).isoformat(),
     'time_played' : currentSong.time_played.replace(microsecond=0).isoformat(),
-    'adder_id' : currentSong.adder.id
+    'adder_id' : currentSong.adder.id,
+    'adder_username' : currentSong.adder.first_name
   }
   return json.dumps(toReturn)
 
@@ -68,7 +70,8 @@ def getActivePlaylistEntryDictionary(entry, upvotes, downvotes):
       'up_votes' : upvotes,
       'down_votes' : downvotes,
       'time_added' : entry.time_added.replace(microsecond=0).isoformat(),
-      'adder_id' : entry.adder.id
+      'adder_id' : entry.adder.id,
+      'adder_username' : entry.adder.first_name
     }
 
 def getJSONForActivePlaylistEntries(entries):
