@@ -18,16 +18,11 @@
  */
 package org.klnusbaum.udj.network;
 
-import android.content.Context;
-import android.os.Handler;
-import android.accounts.Account;
 import android.util.Log;
+import android.location.Location;
 
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.TimeZone;
 import java.util.ArrayList;
 import java.util.Date;
 import java.net.URI;
@@ -66,9 +61,12 @@ import org.klnusbaum.udj.containers.Event;
  */
 public class ServerConnection{
   
+  private static final String TAG = "ServerConnection";
   private static final String PARAM_USERNAME = "username";
 
   private static final String PARAM_PASSWORD = "password";
+
+  private static final String PARAME_EVENT_NAME = "name";
   /** 
    * This port number is a memorial to Keith Nusbaum, my father. I loved him
    * deeply and he was taken from this world far too soon. Never-the-less 
@@ -234,16 +232,43 @@ public class ServerConnection{
     }
   }
 
-  public static List<Event> getNearbyEvents(String ticketHash)
+  public static List<Event> getNearbyEvents(
+    Location location, String ticketHash)
     throws
     JSONException, ParseException, IOException, AuthenticationException
   {
-    return Event.fromJSONArray(
-      new JSONArray("[{\"id\" : 13, \"name\" : \"Awesome\", \"host_id\" : 5 , \"latitude\" : 40.8888, \"longitude\" : 80.9949}]"));
-    //TODO Actually get location
-    /*params.add(new BasicNameValuePair(PARAM_LOCATION, "unknown"));
-    JSONArray parties = new JSONArray(doGet(params, PARTIES_URI));
-    return Party.fromJSONArray(parties);*/
+    if(location == null) return null;
+    try{
+      URI eventsQuery = new URI(
+        NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, 
+        "/udj/events/" + location.getLatitude() + "/" + location.getLongitude(),
+        "", "");
+      JSONArray events = new JSONArray(doGet(eventsQuery, ticketHash));
+      return Event.fromJSONArray(events);
+    }
+    catch(URISyntaxException e){
+      return null;
+      //TDOD inform caller that theire query is bad 
+    }
+  }
+
+  public static List<Event> searchForEvents(
+    String query, String ticketHash)
+    throws
+    JSONException, ParseException, IOException, AuthenticationException
+  {
+    try{
+      URI eventsQuery = new URI(
+        NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, 
+        "/udj/events/",
+        PARAME_EVENT_NAME+"="+query, "");
+      JSONArray events = new JSONArray(doGet(eventsQuery, ticketHash));
+      return Event.fromJSONArray(events);
+    }
+    catch(URISyntaxException e){
+      return null;
+      //TDOD inform caller that theire query is bad 
+    }
   }
 
   public static void doPartyLogin(final long partyId){

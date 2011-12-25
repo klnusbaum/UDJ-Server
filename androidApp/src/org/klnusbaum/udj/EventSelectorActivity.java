@@ -36,16 +36,16 @@ import android.accounts.OperationCanceledException;
 import android.accounts.AuthenticatorException;
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.accounts.AccountManagerCallback;
-import android.accounts.AccountManagerFuture;
-import android.widget.SimpleAdapter;
 import android.widget.ListView;
 import android.util.Log;
 import android.content.DialogInterface;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.Dialog;
-import android.os.Handler;
+import android.location.LocationManager;
+import android.location.Location;
+import android.location.LocationListener;
+
 
 import java.io.IOException;
 import java.util.List;
@@ -66,6 +66,7 @@ public class EventSelectorActivity extends FragmentActivity{
 
   private static final int SELECTING_PARTY_DIALOG = 0;
   private static final String ACCOUNT_EXTRA = "account";
+  private static final String LOCATION_EXTRA = "location";
 
   @Override
   public void onCreate(Bundle savedInstanceState){
@@ -79,11 +80,13 @@ public class EventSelectorActivity extends FragmentActivity{
   }
 
   public class EventListFragment extends ListFragment implements 
-    LoaderManager.LoaderCallbacks<List<Event> >
+    LoaderManager.LoaderCallbacks<List<Event> >,
+    LocationListener
   {
     private EventListAdapter eventAdapter;
     private String authToken;
     private Account account;
+    private LocationManager lm;
 
     public void onActivityCreated(Bundle savedInstanceState){
       super.onActivityCreated(savedInstanceState);
@@ -108,9 +111,45 @@ public class EventSelectorActivity extends FragmentActivity{
         account=udjAccounts[0];
         //TODO implement if there are more than 1 account
       }
-      Bundle loaderArgs = new Bundle();
+    }
+
+    public void onResume(){
+      super.onResume();
+      lm = (LocationManager)getSystemService(
+        Context.LOCATION_SERVICE);
+      lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,0, 50, this);
+      //lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0, 50, this);
+
+      Location lastKnown = 
+        lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+      Bundle loaderArgs = new Bundle(); 
       loaderArgs.putParcelable(ACCOUNT_EXTRA, account);
+      loaderArgs.putParcelable(LOCATION_EXTRA, lastKnown);
       getLoaderManager().initLoader(0, loaderArgs, this);
+    }
+
+    public void onPause(){
+      super.onPause();
+      lm.removeUpdates(this); 
+    }
+
+    public void onLocationChanged(Location location){
+      Bundle loaderArgs = new Bundle(); 
+      loaderArgs.putParcelable(ACCOUNT_EXTRA, account);
+      loaderArgs.putParcelable(LOCATION_EXTRA, location);
+      getLoaderManager().restartLoader(0, loaderArgs, this);
+    }
+
+    public void onProviderDisabled(String provider){
+
+    }
+
+    public void onProviderEnabled(String provider){
+
+    }
+
+    public void onStatusChanged(String provider, int status, Bundle extras){
+
     }
 
     
@@ -124,8 +163,10 @@ public class EventSelectorActivity extends FragmentActivity{
     }
 
     public Loader<List<Event> > onCreateLoader(int id, Bundle args){
-      return new EventsLoader(getActivity(), 
-        (Account)args.getParcelable(ACCOUNT_EXTRA));
+      return new EventsLoader(
+        getActivity(), 
+        (Account)args.getParcelable(ACCOUNT_EXTRA),
+        (Location)args.getParcelable(LOCATION_EXTRA));
     }
   
     public void onLoadFinished(Loader<List<Event> > loader, List<Event> data){
@@ -155,12 +196,14 @@ public class EventSelectorActivity extends FragmentActivity{
      
     Context context;
     Account account;
+    Location location;
     List<Event> events;
 
-    public EventsLoader(Context context, Account account){
+    public EventsLoader(Context context, Account account, Location location){
       super(context);
       this.context = context;
       this.account = account;
+      this.location = location;
       events = null;
     }
     
@@ -175,7 +218,7 @@ public class EventSelectorActivity extends FragmentActivity{
       try{
         AccountManager am = AccountManager.get(context);
         String authToken = am.blockingGetAuthToken(account, "", true); 
-        return ServerConnection.getNearbyEvents(authToken);
+          return ServerConnection.getNearbyEvents(location, authToken);
       }
       catch(JSONException e){
         //TODO notify the user
