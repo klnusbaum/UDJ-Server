@@ -36,6 +36,7 @@ from udj.models import DeletedPlaylistEntry
 from udj.JSONCodecs import getJSONForEvents
 from udj.JSONCodecs import getJSONForAvailableSongs
 from udj.JSONCodecs import getJSONForCurrentSong
+from udj.JSONCodecs import getJSONForEventGoers
 
 
 def getEventHost(event_id):
@@ -284,3 +285,10 @@ def setCurrentSong(request, event_id):
     event, request.POST.__getitem__('playlist_entry_id'))
   return HttpResponse("Song changed")
   
+@NeedsAuth
+@AcceptsMethods('GET')
+@InParty
+def getEventGoers(request, event_id):
+  eventGoers = EventGoer.objects.filter(event__event_id__id=event_id)
+  return HttpResponse(getJSONForEventGoers(eventGoers))
+

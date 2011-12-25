@@ -1,6 +1,7 @@
 import json
 from udj.models import LibraryEntry
 from udj.models import Event
+from udj.models import EventGoer
 from django.contrib.auth.models import User
 from datetime import datetime
 
@@ -77,3 +78,16 @@ def getJSONForActivePlaylistEntries(entries):
       getActivePlaylistEntryDictionary(entry, entry.upvotes, entry.downvotes))
   return json.dumps(toReturn)
 
+def getEventGoerJSON(eventGoer):
+  return {
+    'id' : eventGoer.user.id,
+    'username' : eventGoer.user.first_name,
+    'first_name' : eventGoer.user.first_name,
+    'last_name' : eventGoer.user.last_name
+  }
+
+def getJSONForEventGoers(eventGoers):
+  toReturn = []
+  for eventGoer in eventGoers:
+    toReturn.append(getEventGoerJSON(eventGoer))
+  return json.dumps(toReturn)
