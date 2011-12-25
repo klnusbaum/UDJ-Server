@@ -191,7 +191,6 @@ public class AuthActivity extends AccountAuthenticatorActivity{
         final Account account = new Account(mUsername, Constants.ACCOUNT_TYPE);
         if (mRequestNewAccount) {
             mAccountManager.addAccountExplicitly(account, mPassword, null);
-            // Set contacts sync for this account.
         } else {
             mAccountManager.setPassword(account, mPassword);
         }

@@ -159,6 +159,7 @@ public class EventSelectorActivity extends FragmentActivity{
 
     public EventsLoader(Context context, Account account){
       super(context);
+      this.context = context;
       this.account = account;
       events = null;
     }

@@ -33,7 +33,7 @@
             android:paddingTop="5dip"
             android:paddingBottom="13dip"
             android:paddingLeft="20dip"
-            android:paddingRight="20dip">
+            android:paddingRight="20dip"> 
             <TextView
                 android:id="@+id/message"
                 android:textAppearance="?android:attr/textAppearanceSmall"
@@ -101,5 +101,5 @@
             android:minWidth="100dip"
             android:text="@string/login_text"
             android:onClick="handleLogin" />
-    </FrameLayout>
+   </FrameLayout>
 </LinearLayout>
