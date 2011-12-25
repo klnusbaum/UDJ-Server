@@ -33,12 +33,14 @@ public class Event{
   public static final String EVENT_ID_EXTRA = "org.klnusbaum.udj.party";
   public static final String ID_PARAM ="id";
   public static final String NAME_PARAM="name";
+  public static final String HOST_NAME_PARAM="host_username";
   public static final String HOST_ID_PARAM="host_id";
   public static final String LATITUDE_PARAM="latitude";
   public static final String LONGITUDE_PARAM="longitude";
 
   private long eventId;
   private String name;
+  private String hostName;
   private long hostId;
   private double latitude;
   private double longitude;
@@ -47,12 +49,14 @@ public class Event{
   public Event(
     long eventId, 
     String name, 
+    String hostName,
     long hostId, 
     double latitude, 
     double longitude)
   {
     this.eventId = eventId;
     this.name = name;
+    this.hostName = hostName;
     this.hostId = hostId;
     this.latitude = latitude;
     this.longitude = longitude;
@@ -64,6 +68,10 @@ public class Event{
 
   public String getName(){
     return name;
+  }
+
+  public String getHostName(){
+    return hostName;
   }
 
   public long getHostId(){
@@ -84,6 +92,7 @@ public class Event{
     return new Event(
       jObj.getLong(ID_PARAM),
       jObj.getString(NAME_PARAM),
+      jObj.getString(HOST_NAME_PARAM),
       jObj.getLong(HOST_ID_PARAM),
       jObj.getDouble(LATITUDE_PARAM),
       jObj.getDouble(LONGITUDE_PARAM));
@@ -95,6 +104,7 @@ public class Event{
     JSONObject toReturn = new JSONObject();
     toReturn.put(ID_PARAM, event.getEventId());
     toReturn.put(NAME_PARAM, event.getName());
+    toReturn.put(HOST_NAME_PARAM, event.getHostName());
     toReturn.put(HOST_ID_PARAM, event.getHostId());
     toReturn.put(LATITUDE_PARAM, event.getLatitude());
     toReturn.put(LONGITUDE_PARAM, event.getLongitude());

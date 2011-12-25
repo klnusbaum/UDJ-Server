@@ -174,9 +174,8 @@ public class EventSelectorActivity extends FragmentActivity{
         setEmptyText(getString(R.string.party_load_error));
       }
       else{
-        for(Event e: data){
-          eventAdapter.add(e);
-        }
+        eventAdapter = new EventListAdapter(getActivity(), data, null);
+        setListAdapter(eventAdapter);
       }
 
       if(isResumed()){
@@ -188,7 +187,7 @@ public class EventSelectorActivity extends FragmentActivity{
     }
   
     public void onLoaderReset(Loader<List<Event> > loader){
-      eventAdapter.clear();
+      eventAdapter = new EventListAdapter(getActivity());
     }
   } 
 
@@ -218,7 +217,7 @@ public class EventSelectorActivity extends FragmentActivity{
       try{
         AccountManager am = AccountManager.get(context);
         String authToken = am.blockingGetAuthToken(account, "", true); 
-          return ServerConnection.getNearbyEvents(location, authToken);
+        return ServerConnection.getNearbyEvents(location, authToken);
       }
       catch(JSONException e){
         //TODO notify the user

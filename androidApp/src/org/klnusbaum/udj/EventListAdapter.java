@@ -18,32 +18,125 @@
  */
 package org.klnusbaum.udj;
 
-import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.LayoutInflater;
-import android.widget.TextView;
 import android.content.Context;
+import android.widget.TextView;
+import android.widget.ImageButton;
+import android.database.DataSetObserver;
+import android.view.LayoutInflater;
+
+import java.util.List;
 
 import org.klnusbaum.udj.containers.Event;
 
-public class EventListAdapter extends ArrayAdapter<Event>{
+public class EventListAdapter implements ListAdapter{
+
+  private List<Event> events;
+  private Context context;
+  private View.OnClickListener addClickListener;
+  public static final int EVENT_ENTRY_VIEW_TYPE = 0;
 
   public EventListAdapter(Context context){
-    super(context, R.id.party_list_item);
+    this.events = null;
+    this.addClickListener = null;
+    this.context = context;
+  }
+
+  public EventListAdapter(
+    Context context, 
+    List<Event> events,
+    View.OnClickListener addClickListener
+  )
+  {
+    this.events = events;
+    this.context = context;
+    this.addClickListener = addClickListener;
+  }
+
+  public boolean areAllItemsEnabled(){
+    return true;
+  }
+
+  public boolean isEnabled(int position){
+    return true;
+  }
+
+  public int getCount(){
+    if(events != null){
+      return events.size();
+    }
+    return 0;
+  }
+
+  public Object getItem(int position){
+    if(events != null){
+      return events.get(position);
+    }
+    return null;
+  }
+
+  public Event getEvent(int position){
+    if(events != null){
+      return events.get(position);
+    }
+    return null;
+  }
+
+  public long getItemId(int position){
+    if(events != null){
+      return events.get(position).getEventId();
+    }
+    return 0; 
+  }
+
+  public int getItemViewType(int position){
+    return EVENT_ENTRY_VIEW_TYPE;
   }
 
   public View getView(int position, View convertView, ViewGroup parent){
-    TextView toReturn = (TextView)convertView;
+    //TODO should probably enforce view type
+    Event event = getEvent(position);
+    View toReturn = convertView;
     if(toReturn == null){
-      LayoutInflater inflater = LayoutInflater.from(getContext());
-      toReturn = (TextView)inflater.inflate(R.layout.party_list_item, null);
+      //toReturn = View.inflate(context, R.layout.library_list_item, null);
+      LayoutInflater inflater = (LayoutInflater)context.getSystemService(
+        Context.LAYOUT_INFLATER_SERVICE);
+      toReturn = inflater.inflate(R.layout.event_list_item, null);
     }
-    toReturn.setText(getItem(position).getName());
+
+    TextView eventName = (TextView)toReturn.findViewById(R.id.event_item_name);
+    TextView hostName = 
+      (TextView)toReturn.findViewById(R.id.event_host_name);
+    eventName.setText(event.getName());
+    hostName.setText(event.getHostName());
     return toReturn;
   }
 
-  public long getEventId(int position){
-    return getItem(position).getEventId();
+  public int getViewTypeCount(){
+    return 1; 
   }
+
+  public boolean hasStableIds(){
+    return true;
+  }
+
+  public boolean isEmpty(){
+    if(events != null){
+      return events.isEmpty();
+    }
+    return true;
+  }
+
+  public void registerDataSetObserver(DataSetObserver observer){
+    //Unimplemented because this data can't change
+    //If new results need to be displayed a new adpater should be created.
+  }
+
+  public void unregisterDataSetObserver(DataSetObserver observer){
+    //Unimplemented because data represented by this adpater shouldn't change.
+    //If new results need to be displayed a new adpater should be created.
+  }
+
 }
