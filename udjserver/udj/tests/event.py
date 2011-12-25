@@ -297,3 +297,14 @@ class TestDoubleEventCreate(User2TestCase):
     eventId = json.loads(response.content)['event_id']
     response = self.doDelete('/udj/events/'+str(eventId))
 
+class TestGetEventGoers(User1TestCase):
+  def testRegularGetEventGoers(self):
+    event_id = 1
+    response = self.doGet('/udj/events/' + str(event_id) + '/users')
+    self.assertEqual(response.status_code, 200)
+    eventGoersJson = json.loads(response.content)
+    eventGoers = EventGoer.objects.filter(event__event_id__id=event_id)
+    self.assertEqual(len(eventGoersJson), len(eventGoers))
+    jsonIds = [eg['id'] for eg in eventGoersJson]
+    for eg in eventGoers:
+      self.assertTrue(eg.user.id in jsonIds)
