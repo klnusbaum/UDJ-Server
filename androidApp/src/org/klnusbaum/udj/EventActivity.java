@@ -28,13 +28,12 @@ import android.accounts.AccountManager;
 import android.accounts.Account;
 import android.content.DialogInterface;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.util.Log;
 import android.app.Dialog;
-import android.os.Handler;
 import android.app.SearchManager;
+import android.net.Uri;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -46,6 +45,7 @@ import java.util.HashMap;
 
 import org.klnusbaum.udj.auth.AuthActivity;
 import org.klnusbaum.udj.network.PlaylistSyncService;
+import org.klnusbaum.udj.network.EventCommService;
 
 /**
  * The main activity display class.
@@ -97,8 +97,15 @@ public class EventActivity extends FragmentActivity{
 
   private void doQuit(){
     dismissQuitDialog();
+    Intent leaveEvent = new Intent(
+      Intent.ACTION_DELETE,
+      new Uri.Builder().authority(Constants.AUTHORITY).appendPath("event").build(),
+      this,
+      EventCommService.class);
+    leaveEvent.putExtra(EventCommService.EVENT_ID_EXTRA, eventId);
+    leaveEvent.putExtra(EventCommService.ACCOUNT_EXTRA, account);
+    startService(leaveEvent);
     setResult(Activity.RESULT_OK);
-    //getContentResolver().delete(UDJPartyProvider.PLAYLIST_URI, null, null);
     finish();
   }
 

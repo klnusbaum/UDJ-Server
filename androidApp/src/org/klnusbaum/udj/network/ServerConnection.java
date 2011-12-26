@@ -37,11 +37,11 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.NameValuePair;
 import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -267,9 +267,25 @@ public class ServerConnection{
       throw new AuthenticationException();
     }
     else{
+      //TODO probably shouldn't be throwing an IOException as that really 
+      //doesn't describe what went wrong.
       throw new IOException();
     }
     return toReturn;
+  }
+
+  public static void doDelete(URI uri, String ticketHash)
+    throws IOException, AuthenticationException
+  {
+    final HttpDelete delete = new HttpDelete(uri);
+    delete.addHeader(TICKET_HASH_HEADER, ticketHash);
+    final HttpResponse resp = getHttpClient().execute(delete);
+    if(resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK){
+      //TODO probably shouldn't be throwing an IOException as that really 
+      //doesn't describe what went wrong.
+      throw new IOException("Failed to execute delete got status code of "+
+        resp.getStatusLine().getStatusCode());
+    }
   }
 
   public static List<Event> getNearbyEvents(
@@ -311,7 +327,9 @@ public class ServerConnection{
     }
   }
 
-  public static boolean joinEvent(final long eventId, String ticketHash){
+  public static boolean joinEvent(final long eventId, String ticketHash)
+    throws IOException
+  {
     try{
       URI uri  = new URI(
         NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, 
@@ -350,5 +368,21 @@ public class ServerConnection{
       return null;
       //TDOD inform caller that theire query is bad 
     }
+  }
+
+  public static void leaveEvent(long eventId, long userId, String authToken)
+    throws IOException, AuthenticationException
+  {
+    try{
+      URI uri = new URI(
+        NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, 
+        "/udj/events/"+eventId+"/users/"+userId,
+        "", "");
+      doDelete(uri, authToken);
+    }
+    catch(URISyntaxException e){
+      //TDOD inform caller that theire query is bad 
+    }
+
   }
 }
