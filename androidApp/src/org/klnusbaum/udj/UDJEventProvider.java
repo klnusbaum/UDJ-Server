@@ -185,7 +185,8 @@ public class UDJEventProvider extends ContentProvider{
       Cursor toReturn = qb.query(
         db, projection, selection, selectionArgs, null,
         null, sortOrder);
-      toReturn.setNotificationUri(getContext().getContentResolver(), uri);
+      toReturn.setNotificationUri(
+        getContext().getContentResolver(), PLAYLIST_URI);
       return toReturn;
     }
     throw new IllegalArgumentException("Unknown URI " + uri);
