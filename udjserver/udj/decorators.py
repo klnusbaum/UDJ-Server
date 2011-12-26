@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404
 from udj.headers import getTicketHeader
 from udj.headers import getDjangoTicketHeader
 
+
 def IsntCurrentlyHosting(function):
   def wrapper(*args, **kwargs):
     request = args[0]
@@ -26,10 +27,11 @@ def InParty(function):
   def wrapper(*args, **kwargs):
     request = args[0]
     user = getUserForTicket(request)
-    event = get_object_or_404(Event, event_id__id__exact=kwargs['event_id'])
-    event_goers = EventGoer.objects.filter(user=user, event=event)
-    if len(event_goers) != 1:
-      return HttpResponseForbidden()
+    event_goers = EventGoer.objects.filter(
+      user=user, event__event_id__id=kwargs['event_id'])
+    if len(event_goers) < 1:
+      return HttpResponseForbidden(
+        "You must be logged into the party to do that")
     else:
       return function(*args, **kwargs)
   return wrapper

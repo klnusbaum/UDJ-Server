@@ -87,29 +87,40 @@ class EndEventTestNoCurrentSong(User4TestCase):
     self.assertEqual(len(finishedSongs),0)
 
 
-class JoinEventTest(User3TestCase):
+class JoinEventTest(User2TestCase):
   def testJoinEvent(self):
     response = self.doPut('/udj/events/1/user')
     self.assertEqual(response.status_code, 201)
     event_goer_entries = EventGoer.objects.filter(event__id=1, user__id=3)
     self.assertEqual(len(event_goer_entries),1) 
-    
-class LeaveEventTest(User2TestCase):
-  def testLeaveEvent(self):
-    response = self.doDelete('/udj/events/1/3')
-    self.assertEqual(response.status_code, 200, response.content)
+
+  def testDoubleJoinEvent(self):
+    response = self.doPut('/udj/events/1/user')
+    self.assertEqual(response.status_code, 201)
     event_goer_entries = EventGoer.objects.filter(event__id=1, user__id=3)
+    self.assertEqual(len(event_goer_entries),1) 
+    response = self.doPut('/udj/events/1/user')
+    self.assertEqual(response.status_code, 201)
+    event_goer_entries = EventGoer.objects.filter(event__id=1, user__id=3)
+    self.assertEqual(len(event_goer_entries),1) 
+    
+class LeaveEventTest(User3TestCase):
+  def testLeaveEvent(self):
+    response = self.doDelete('/udj/events/1/4')
+    self.assertEqual(response.status_code, 200, response.content)
+    event_goer_entries = EventGoer.objects.filter(event__id=1, user__id=4)
     self.assertEqual(len(event_goer_entries), 0)
 
 class KickUserTest(User1TestCase):
   def testKickUser(self):
-    response = self.doDelete('/udj/events/1/3')
+    userId=4
+    response = self.doDelete('/udj/events/1/'+str(userId))
     self.assertEqual(response.status_code, 200, response.content)
-    event_goer_entries = EventGoer.objects.filter(event__id=1, user__id=3)
+    event_goer_entries = EventGoer.objects.filter(event__id=1, user__id=userId)
     self.assertEqual(len(event_goer_entries), 0)
 
 #TODO still need to test the max_results parameter
-class TestGetAvailableMusic(User2TestCase):
+class TestGetAvailableMusic(User3TestCase):
   def verifyExpectedResults(self, results, realSongs):
    realIds = [song.host_lib_song_id for song in realSongs]
    for song in results:
@@ -224,7 +235,7 @@ class TestDeleteAvailableMusic(User1TestCase):
       library_entry__host_lib_song_id=10, library_entry__owning_user__id=2)
     self.assertEqual(len(foundSongs), 0)
    
-class TestGetCurrentSong(User2TestCase):
+class TestGetCurrentSong(User3TestCase):
   def testGetCurrentSong(self):
     response = self.doGet('/udj/events/1/current_song')
     self.assertEqual(response.status_code, 200, response.content)

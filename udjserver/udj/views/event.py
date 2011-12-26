@@ -155,6 +155,9 @@ def endEvent(request, event_id):
 @CanLoginToEvent
 def joinEvent(request, event_id):
   joining_user = getUserForTicket(request)
+  isAlreadyInEvent = EventGoer.objects.filter(user=joining_user)
+  if isAlreadyInEvent.exists():
+    isAlreadyInEvent.delete() 
   event_to_join = Event.objects.get(id=event_id)
   event_goer = EventGoer(user=joining_user, event=event_to_join)
   event_goer.save()
