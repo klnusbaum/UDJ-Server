@@ -64,7 +64,7 @@ public class PlaylistEntry{
     int downVotes,
     String timeAdded,
     long adderId,
-    String adderUsername
+    String adderUsername)
   {
     this.id = id;
     this.libSongId = libSongId;

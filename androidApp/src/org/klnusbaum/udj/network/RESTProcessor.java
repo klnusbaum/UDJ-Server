@@ -32,10 +32,10 @@ import android.util.Log;
 import android.os.Handler;
 
 import org.klnusbaum.udj.R;
-import org.klnusbaum.udj.UDJPartyProvider;
+import org.klnusbaum.udj.Constants;
+import org.klnusbaum.udj.UDJEventProvider;
 import org.klnusbaum.udj.containers.PlaylistEntry;
 import org.klnusbaum.udj.containers.LibraryEntry;
-import org.klnusbaum.udj.PartyActivity;
 import org.klnusbaum.udj.network.ServerConnection;
 
 import org.json.JSONException;
@@ -53,38 +53,38 @@ public class RESTProcessor{
     ArrayList<ContentProviderOperation> batchOps = 
       new ArrayList<ContentProviderOperation>();
     final ContentProviderOperation.Builder deleteOp = 
-      ContentProviderOperation.newDelete(UDJPartyProvider.PLAYLIST_URI);
+      ContentProviderOperation.newDelete(UDJEventProvider.PLAYLIST_URI);
     batchOps.add(deleteOp.build());
     int priority = 0;
-    for(PlaylistEntry pe: newEntries){
-      batchOps.add(getPlaylistInsertOp(pe), priority);
+    for(PlaylistEntry pe: playlistEntries){
+      batchOps.add(getPlaylistInsertOp(pe, priority));
       ++priority;
       if(batchOps.size() >= 50){
         resolver.applyBatch(Constants.AUTHORITY, batchOps);
       }
     }
     if(batchOps.size() > 0){
-      resolver.applyBatch(context.getString(R.string.authority), batchOps);
+      resolver.applyBatch(Constants.AUTHORITY, batchOps);
       batchOps.clear();
     }
-    resolver.notifyChange(UDJPartyProvider.PLAYLIST_URI, null, true);
+    resolver.notifyChange(UDJEventProvider.PLAYLIST_URI, null, true);
   }
 
   private static ContentProviderOperation getPlaylistInsertOp(
     PlaylistEntry pe, int priority)
   {
     final ContentProviderOperation.Builder insertOp = 
-      ContentProviderOperation.newInsert(UDJPartyProvider.PLAYLIST_URI)
-      .withValue(UDJPartyProvider.PLAYLIST_ID_COLUMN, pe.getId())
-      .withValue(UDJPartyProvider.UP_VOTES_COLUMN, pe.getUpVotes())
-      .withValue(UDJPartyProvider.DOWN_VOTES_COLUMN, pe.getDownVotes())
-      .withValue(UDJPartyProvider.TIME_ADDED_COLUMN, pe.getTimeAdded())
-      .withValue(UDJPartyProvider.PRIORITY_COLUMN, priority)
-      .withValue(UDJPartyProvider.SONG_COLUMN, pe.getSong())
-      .withValue(UDJPartyProvider.ARTIST_COLUMN, pe.getArtist())
-      .withValue(UDJPartyProvider.ALBUM_COLUMN, pe.getAlbum())
-      .withValue(UDJPartyProvider.ADDER_ID_COLUMN, pe.getAdderId())
-      .withValue(UDJPartyProvider.ADDER_USERNAME_COLUMN, pe.getAdderUsername());
+      ContentProviderOperation.newInsert(UDJEventProvider.PLAYLIST_URI)
+      .withValue(UDJEventProvider.PLAYLIST_ID_COLUMN, pe.getId())
+      .withValue(UDJEventProvider.UP_VOTES_COLUMN, pe.getUpVotes())
+      .withValue(UDJEventProvider.DOWN_VOTES_COLUMN, pe.getDownVotes())
+      .withValue(UDJEventProvider.TIME_ADDED_COLUMN, pe.getTimeAdded())
+      .withValue(UDJEventProvider.PRIORITY_COLUMN, priority)
+      .withValue(UDJEventProvider.SONG_COLUMN, pe.getSong())
+      .withValue(UDJEventProvider.ARTIST_COLUMN, pe.getArtist())
+      .withValue(UDJEventProvider.ALBUM_COLUMN, pe.getAlbum())
+      .withValue(UDJEventProvider.ADDER_ID_COLUMN, pe.getAdderId())
+      .withValue(UDJEventProvider.ADDER_USERNAME_COLUMN, pe.getAdderUsername());
     return insertOp.build();
   }
 
@@ -117,7 +117,7 @@ public class RESTProcessor{
       resolver.applyBatch(context.getString(R.string.authority), batchOps);
       batchOps.clear();
     }
-    resolver.notifyChange(UDJPartyProvider.PLAYLIST_URI, null, true);
+    resolver.notifyChange(UDJEventProvider.PLAYLIST_URI, null, true);
   }
 
 
@@ -126,16 +126,16 @@ public class RESTProcessor{
     ArrayList<ContentProviderOperation> batchOps)
   {
     final ContentProviderOperation.Builder insertOp = 
-      ContentProviderOperation.newInsert(UDJPartyProvider.PLAYLIST_URI)
-      .withValue(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN, pe.getServerId())
-      .withValue(UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN, pe.getLibId())
-      .withValue(UDJPartyProvider.TIME_ADDED_COLUMN, pe.getTimeAdded())
-      .withValue(UDJPartyProvider.VOTES_COLUMN, pe.getVoteCount())
-      .withValue(UDJPartyProvider.SONG_COLUMN, pe.getSong())
-      .withValue(UDJPartyProvider.ARTIST_COLUMN, pe.getArtist())
-      .withValue(UDJPartyProvider.ALBUM_COLUMN, pe.getAlbum())
-      .withValue(UDJPartyProvider.PRIORITY_COLUMN, pe.getPriority())
-      .withValue(UDJPartyProvider.SYNC_STATE_COLUMN, UDJPartyProvider.SYNCED_MARK);
+      ContentProviderOperation.newInsert(UDJEventProvider.PLAYLIST_URI)
+      .withValue(UDJEventProvider.SERVER_PLAYLIST_ID_COLUMN, pe.getServerId())
+      .withValue(UDJEventProvider.SERVER_LIBRARY_ID_COLUMN, pe.getLibId())
+      .withValue(UDJEventProvider.TIME_ADDED_COLUMN, pe.getTimeAdded())
+      .withValue(UDJEventProvider.VOTES_COLUMN, pe.getVoteCount())
+      .withValue(UDJEventProvider.SONG_COLUMN, pe.getSong())
+      .withValue(UDJEventProvider.ARTIST_COLUMN, pe.getArtist())
+      .withValue(UDJEventProvider.ALBUM_COLUMN, pe.getAlbum())
+      .withValue(UDJEventProvider.PRIORITY_COLUMN, pe.getPriority())
+      .withValue(UDJEventProvider.SYNC_STATE_COLUMN, UDJEventProvider.SYNCED_MARK);
     batchOps.add(insertOp.build());
   }
 
@@ -145,8 +145,8 @@ public class RESTProcessor{
   {
     String[] selectionArgs = new String[] {String.valueOf(pe.getServerId())};
     final ContentProviderOperation.Builder deleteOp = 
-      ContentProviderOperation.newDelete(UDJPartyProvider.PLAYLIST_URI)
-      .withSelection(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN + "=?", selectionArgs);
+      ContentProviderOperation.newDelete(UDJEventProvider.PLAYLIST_URI)
+      .withSelection(UDJEventProvider.SERVER_PLAYLIST_ID_COLUMN + "=?", selectionArgs);
     batchOps.add(deleteOp.build());
   }
     
@@ -156,11 +156,11 @@ public class RESTProcessor{
   {
     String[] selectionArgs = new String[] {String.valueOf(pe.getServerId())};
     final ContentProviderOperation.Builder updateBuilder = 
-      ContentProviderOperation.newUpdate(UDJPartyProvider.PLAYLIST_URI)
-      .withSelection(UDJPartyProvider.SERVER_PLAYLIST_ID_COLUMN + "=?", selectionArgs)
-      .withValue(UDJPartyProvider.VOTES_COLUMN, pe.getVoteCount())
-      .withValue(UDJPartyProvider.PRIORITY_COLUMN, pe.getPriority())
-      .withValue(UDJPartyProvider.SYNC_STATE_COLUMN, UDJPartyProvider.SYNCED_MARK);
+      ContentProviderOperation.newUpdate(UDJEventProvider.PLAYLIST_URI)
+      .withSelection(UDJEventProvider.SERVER_PLAYLIST_ID_COLUMN + "=?", selectionArgs)
+      .withValue(UDJEventProvider.VOTES_COLUMN, pe.getVoteCount())
+      .withValue(UDJEventProvider.PRIORITY_COLUMN, pe.getPriority())
+      .withValue(UDJEventProvider.SYNC_STATE_COLUMN, UDJEventProvider.SYNCED_MARK);
     batchOps.add(updateBuilder.build());
   } 
 
@@ -169,14 +169,14 @@ public class RESTProcessor{
   {
     if(
       pe.getClientId() == 
-      Long.valueOf(UDJPartyProvider.INVALID_CLIENT_PLAYLIST_ID))
+      Long.valueOf(UDJEventProvider.INVALID_CLIENT_PLAYLIST_ID))
     {
       return false;
     }
     Cursor c = resolver.query(
-      UDJPartyProvider.PLAYLIST_URI, 
-      new String[] {"COUNT("+ UDJPartyProvider.PLAYLIST_ID_COLUMN+ ")"},
-      UDJPartyProvider.PLAYLIST_ID_COLUMN+ "=?",
+      UDJEventProvider.PLAYLIST_URI, 
+      new String[] {"COUNT("+ UDJEventProvider.PLAYLIST_ID_COLUMN+ ")"},
+      UDJEventProvider.PLAYLIST_ID_COLUMN+ "=?",
       new String[] {String.valueOf(pe.getClientId())},
       null);
     c.moveToNext();

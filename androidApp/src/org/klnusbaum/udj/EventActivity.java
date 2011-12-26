@@ -45,6 +45,7 @@ import android.support.v4.app.DialogFragment;
 import java.util.HashMap;
 
 import org.klnusbaum.udj.auth.AuthActivity;
+import org.klnusbaum.udj.network.PlaylistSyncService;
 
 /**
  * The main activity display class.
@@ -75,8 +76,8 @@ public class EventActivity extends FragmentActivity{
       UDJPartyProvider.PLAYLIST_URI,
       this,
       PlaylistSyncService.class);
-    getPlaylist.putLongExtra(PlaylistSyncService.EVENT_ID_EXTRA, eventId);
-    getPlaylist.putParcelableExtra(PlaylistSyncService.ACCOUNT_EXTRA, account);
+    getPlaylist.putExtra(PlaylistSyncService.EVENT_ID_EXTRA, eventId);
+    getPlaylist.putExtra(PlaylistSyncService.ACCOUNT_EXTRA, account);
     startService(getPlaylist);
   }
 

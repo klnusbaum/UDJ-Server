@@ -48,6 +48,7 @@ import org.klnusbaum.udj.containers.LibraryEntry;
 import org.klnusbaum.udj.UDJPartyProvider;
 import org.klnusbaum.udj.R;
 */
+import org.klnusbaum.udj.containers.PlaylistEntry;
 
 
 /**
@@ -69,10 +70,12 @@ public class PlaylistSyncService extends IntentService{
   @Override
   public void onHandleIntent(Intent intent){
     final Account account = (Account)intent.getParcelableExtra(ACCOUNT_EXTRA);
-    long eventId = intent.getLongExtra(EVENT_ID_EXTRA);
-    authtoken = am.blockingGetAuthToken(account, "", true);
+    long eventId = intent.getLongExtra(EVENT_ID_EXTRA, -1);
+    //TODO hanle error if eventId or account aren't provided
     try{
-      ArrayList<PlaylistEntry> newPlaylist =
+      String authtoken = 
+        AccountManager.get(this).blockingGetAuthToken(account, "", true);
+      List<PlaylistEntry> newPlaylist =
         ServerConnection.getActivePlaylist(eventId, authtoken);
       RESTProcessor.setActivePlaylist(newPlaylist, this);
     }
@@ -80,14 +83,28 @@ public class PlaylistSyncService extends IntentService{
       Log.e(TAG, "JSON exception when retreiving playist");
     }
     catch(ParseException e){
-      Log.e(TAG, "JSON exception when retreiving playist");
+      Log.e(TAG, "Parse exception when retreiving playist");
     }
     catch(IOException e){
-      Log.e(TAG, "JSON exception when retreiving playist");
+      Log.e(TAG, "IO exception when retreiving playist");
     }
     catch(AuthenticationException e){
-      Log.e(TAG, "JSON exception when retreiving playist");
+      Log.e(TAG, "Authentication exception when retreiving playist");
     }
+    catch(AuthenticatorException e){
+      Log.e(TAG, "Authentication exception when retreiving playist");
+    }
+    catch(OperationCanceledException e){
+      Log.e(TAG, "Op Canceled exception when retreiving playist");
+    }
+    catch(RemoteException e){
+      Log.e(TAG, "Remote exception when retreiving playist");
+    }
+    catch(OperationApplicationException e){
+      Log.e(TAG, "Operation Application exception when retreiving playist");
+    }
+    //TODO This point of the app seems very dangerous as there are so many
+    // exceptions that could occuer. Need to pay special attention to this.
   }
 
 /*  private void updatePlaylist()

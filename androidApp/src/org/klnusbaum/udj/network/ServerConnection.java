@@ -90,7 +90,7 @@ public class ServerConnection{
 
  
   private static final String TICKET_HASH_HEADER = "X-Udj-Ticket-Hash";
-  private static final String TICKET_HASH_HEADER = "X-Udj-User-Id";
+  private static final String USER_ID_HEADER = "X-Udj-User-Id";
  
   private static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
   
@@ -119,7 +119,7 @@ public class ServerConnection{
     }
   }
 
-  public static String authenticate(String username, String password)
+  public static AuthResult authenticate(String username, String password)
     throws AuthenticationException, IOException
   {
     URI AUTH_URI = null;
@@ -149,7 +149,7 @@ public class ServerConnection{
     else{
       return new AuthResult(
         resp.getHeaders(TICKET_HASH_HEADER)[0].getValue(),
-        resp.getHeaders(USER_ID_HEADER)[0].getValue());
+        Long.valueOf(resp.getHeaders(USER_ID_HEADER)[0].getValue()));
     }
   }
 
@@ -342,7 +342,7 @@ public class ServerConnection{
         NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, 
         "/udj/events/"+eventId+"/active_playlist",
         "", "");
-      JSONArray playlistEntries = new JSONArray(doGet(uri, ticketHash));
+      JSONArray playlistEntries = new JSONArray(doGet(uri, authToken));
       return PlaylistEntry.fromJSONArray(playlistEntries);
     }
     catch(URISyntaxException e){

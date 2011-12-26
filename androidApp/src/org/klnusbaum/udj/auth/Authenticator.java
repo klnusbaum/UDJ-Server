@@ -112,7 +112,7 @@ public class Authenticator extends AbstractAccountAuthenticator{
         if(!TextUtils.isEmpty(authResult.ticketHash)) {
           writeTokenToPersistentStorage(authResult.ticketHash);
           am.setUserData(
-            account, Constants.USER_ID_DATA, Long.toString(authResult.userId);
+            account, Constants.USER_ID_DATA, Long.toString(authResult.userId));
           return bundleUpAuthToken(account, authResult.ticketHash);
         }
       }

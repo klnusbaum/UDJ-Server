@@ -34,12 +34,12 @@ import java.util.ArrayList;
 
 /**
  * Content provider used to maintain the content asociated
- * with the current party the user is logged into.
+ * with the current event the user is logged into.
  */
-public class UDJPartyProvider extends ContentProvider{
+public class UDJEventProvider extends ContentProvider{
   
 	/** Name of the database */
-  private static final String DATABASE_NAME = "partydb.db";
+  private static final String DATABASE_NAME = "event.db";
 	/** Database version number */
   private static final int DATABASE_VERSION = 1;
 
@@ -79,7 +79,7 @@ public class UDJPartyProvider extends ContentProvider{
     DURATION_COLUMN + " INTEGER NOT NULL, " +
 		SONG_COLUMN + " TEXT NOT NULL, " +
     ARTIST_COLUMN + " TEXT NOT NULL, " + 
-    ALBUM_COLUMN + " TEXT NOT NULL,
+    ALBUM_COLUMN + " TEXT NOT NULL, " +
     ADDER_ID_COLUMN + " INTEGER NOT NULL, " +
     ADDER_USERNAME_COLUMN + " STRING NOT NULL);";
 
@@ -110,19 +110,19 @@ public class UDJPartyProvider extends ContentProvider{
 
 
 	/** Helper for opening up the actual database. */
-  private PartyDBHelper dbOpenHelper;
+  private EventDBHelper dbOpenHelper;
 
 	/**
 	 * A class for helping open a PartDB.
 	 */
-  private class PartyDBHelper extends SQLiteOpenHelper{
+  private class EventDBHelper extends SQLiteOpenHelper{
 
 		/**
-		 * Constructs a new PartyDBHelper object.
+		 * Constructs a new EventDBHelper object.
 		 *
 	 	 * @param context The context in which the HostsDBOpenHelper is used.
 	 	 */
-    PartyDBHelper(Context context){
+    EventDBHelper(Context context){
       super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -140,7 +140,7 @@ public class UDJPartyProvider extends ContentProvider{
 
   @Override
   public boolean onCreate(){
-    dbOpenHelper = new PartyDBHelper(getContext());
+    dbOpenHelper = new EventDBHelper(getContext());
     return true;
   }
 
@@ -165,7 +165,7 @@ public class UDJPartyProvider extends ContentProvider{
       long rowId = db.insert(PLAYLIST_TABLE_NAME, null, initialValues);    
       if(rowId >=0){
         return Uri.withAppendedPath(
-          PLAYLIST_URI, initialValues.getAsLong(PLAYLIST_ID_COLUMN));
+          PLAYLIST_URI, initialValues.getAsString(PLAYLIST_ID_COLUMN));
       }
       else{
         return null;

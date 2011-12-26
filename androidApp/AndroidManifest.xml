@@ -94,7 +94,7 @@
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
-        <provider android:name="org.klnusbaum.udj.UDJPartyProvider"
+        <provider android:name="org.klnusbaum.udj.UDJEventProvider"
           android:authorities="org.klnusbaum.udj"
         />
     </application>

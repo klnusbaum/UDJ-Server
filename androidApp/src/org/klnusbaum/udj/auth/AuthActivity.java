@@ -297,7 +297,7 @@ public class AuthActivity extends AccountAuthenticatorActivity{
     public class UserLoginTask extends AsyncTask<Void, Void, ServerConnection.AuthResult> {
 
         @Override
-        protected AuthResult doInBackground(Void... params) {
+        protected ServerConnection.AuthResult doInBackground(Void... params) {
             // We do the actual work of authenticating the user
             // in the NetworkUtilities class.
             try {
