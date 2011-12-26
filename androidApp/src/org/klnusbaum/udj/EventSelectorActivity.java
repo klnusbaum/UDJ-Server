@@ -45,6 +45,8 @@ import android.app.Dialog;
 import android.location.LocationManager;
 import android.location.Location;
 import android.location.LocationListener;
+import android.widget.Toast;
+import android.os.AsyncTask;
 
 
 import java.io.IOException;
@@ -85,7 +87,7 @@ public class EventSelectorActivity extends FragmentActivity{
     int requestCode, int resultCode, Intent data)
   {
     if(resultCode == Activity.RESULT_OK){
-      account = data.getParcelableExtra(AuthActivity.ACCOUNT_EXTRA);
+      account = (Account)data.getParcelableExtra(AuthActivity.ACCOUNT_EXTRA);
     }
     else{
       setResult(Activity.RESULT_CANCELED);
@@ -100,9 +102,11 @@ public class EventSelectorActivity extends FragmentActivity{
     private EventListAdapter eventAdapter;
     private String authToken;
     private LocationManager lm;
+    private EventLoginTask loginTask;
 
     public void onActivityCreated(Bundle savedInstanceState){
       super.onActivityCreated(savedInstanceState);
+      loginTask = null;
       account = null;
       setEmptyText(getActivity().getString(R.string.no_party_items));
       eventAdapter = new EventListAdapter(getActivity());
@@ -137,10 +141,7 @@ public class EventSelectorActivity extends FragmentActivity{
       Location lastKnown = 
         lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
       Bundle loaderArgs = new Bundle(); 
-      loaderArgs.putParcelable(ACCOUNT_EXTRA, account);
       loaderArgs.putParcelable(LOCATION_EXTRA, lastKnown);
-      /*EventsLoader ld = (EventsLoader)getLoaderManager().getLoader(0);
-      ld.set*/
       getLoaderManager().restartLoader(0, loaderArgs, this);
     }
 
@@ -151,7 +152,6 @@ public class EventSelectorActivity extends FragmentActivity{
 
     public void onLocationChanged(Location location){
       /*Bundle loaderArgs = new Bundle(); 
-      loaderArgs.putParcelable(ACCOUNT_EXTRA, account);
       loaderArgs.putParcelable(LOCATION_EXTRA, location);
       getLoaderManager().restartLoader(0, loaderArgs, this);*/
     }
@@ -167,21 +167,18 @@ public class EventSelectorActivity extends FragmentActivity{
     public void onStatusChanged(String provider, int status, Bundle extras){
 
     }
-
     
     @Override
     public void onListItemClick(ListView l, View v, int position, long id){
-      /*selectPartyThread = ServerConnection.loginToParty(
-        partyAdpater.getPartyId(position), 
-        selectionHandler, 
-        getActivity());
-      getActivity().showDialog(SELECTING_PARTY_DIALOG);*/
+      Long[] eventId = new Long[]{eventAdapter.getItemId(position)};
+      loginTask = (EventLoginTask) 
+        new EventLoginTask(AccountManager.get(getActivity()), account).execute(eventId);
     }
 
     public Loader<List<Event> > onCreateLoader(int id, Bundle args){
       return new EventsLoader(
         getActivity(), 
-        (Account)args.getParcelable(ACCOUNT_EXTRA),
+        account,
         (Location)args.getParcelable(LOCATION_EXTRA));
     }
   
@@ -204,7 +201,64 @@ public class EventSelectorActivity extends FragmentActivity{
   
     public void onLoaderReset(Loader<List<Event> > loader){
       eventAdapter = new EventListAdapter(getActivity());
-      ((EventsLoader)loader).setAccount(account);
+    }
+
+    public void onEventJoinResponse(final long eventId){
+      loginTask = null;
+      if(eventId > 0){
+        Toast toast = Toast.makeText(
+          getApplicationContext(), 
+          "Logged into event",  
+          Toast.LENGTH_LONG);
+        toast.show();
+      }
+      else{
+        Toast toast = Toast.makeText(getApplicationContext(), "Login failed",  
+          Toast.LENGTH_LONG);
+        toast.show();
+      }
+    }
+
+    public void onEventJoinCancel(){
+      loginTask = null;
+    }
+    public class EventLoginTask extends AsyncTask<Long, Void, Long>{
+   
+      private AccountManager am; 
+      private Account account; 
+      public EventLoginTask(AccountManager am, Account account){
+        super();
+        this.am = am;
+        this.account = account; 
+      }
+  
+      protected Long doInBackground(Long... params){
+        try{
+          String authToken = 
+            am.blockingGetAuthToken(account, "", true);  
+          if(ServerConnection.joinEvent(params[0], authToken)){
+            return params[0]; 
+          }
+        }
+        catch(IOException e){
+          //TODO notify the user
+        }
+        catch(AuthenticatorException e){
+          //TODO notify the user
+        }
+        catch(OperationCanceledException e){
+          //TODO notify user
+        }
+        return new Long(-1);
+      }
+  
+      protected void onPostExecute(final Long eventId){
+        onEventJoinResponse(eventId);
+      }
+  
+      protected void onCancelled(){
+        onEventJoinCancel();
+      }
     }
   } 
 
@@ -221,10 +275,6 @@ public class EventSelectorActivity extends FragmentActivity{
       this.account = account;
       this.location = location;
       events = null;
-    }
-
-    public void setAccount(Account account){
-      this.account = account; 
     }
     
     @Override
@@ -245,62 +295,27 @@ public class EventSelectorActivity extends FragmentActivity{
         return ServerConnection.getNearbyEvents(location, authToken);
       }
       catch(JSONException e){
+        Log.e("EVENT LOADER", "Json exception");
         //TODO notify the user
       }
       catch(IOException e){
+        Log.e("EVENT LOADER", "Io eception");
         //TODO notify the user
       }
       catch(AuthenticatorException e){
+        Log.e("EVENT LOADER", "Authenticator exception");
         //TODO notify the user
       }
       catch(AuthenticationException e){
+        Log.e("EVENT LOADER", "Authentication exception");
         //TODO notify the user
       }
       catch(OperationCanceledException e){
+        Log.e("EVENT LOADER", "Operation cancelced exception");
         //TODO notify user
       }
       return null;
     }
-
   }
-
-  /*
-  @Override
-  protected Dialog onCreateDialog(int id){
-    switch(id){
-    case SELECTING_PARTY_DIALOG:
-      final ProgressDialog progDialog = new ProgressDialog(this);
-      progDialog.setMessage(getText(R.string.logging_into_party));
-      progDialog.setIndeterminate(true);
-      progDialog.setCancelable(true);
-      progDialog.setOnCancelListener(new DialogInterface.OnCancelListener(){
-        public void onCancel(DialogInterface dialog){
-          if(selectPartyThread != null){
-            selectPartyThread.interrupt();
-          }
-        }
-      });
-      return progDialog;
-    default:
-      return null;
-    }
-  }
-  
-  public void onPartySelection(boolean success, long partyId){
-    dismissDialog(SELECTING_PARTY_DIALOG);
-    removeDialog(SELECTING_PARTY_DIALOG);
-    if(!success){
-      //TODO Handle bad login
-      return;
-    }
-    final Intent partyIntent = new Intent(this, PartyActivity.class);
-    partyIntent.putExtra(
-      Party.PARTY_ID_EXTRA, 
-      partyId);
-    partyIntent.putExtra(
-      PartyActivity.ACCOUNT_EXTRA,
-      account);
-    startActivity(partyIntent);
-  }*/
 }
 

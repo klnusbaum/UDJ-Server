@@ -34,12 +34,14 @@ import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthenticationException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.NameValuePair;
 import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -232,6 +234,31 @@ public class ServerConnection{
     }
   }
 
+  public static String doPut(URI uri, String ticketHash, String payload)
+    throws AuthenticationException, IOException
+  {
+    String toReturn = null;
+    final HttpPut put = new HttpPut(uri);
+    put.addHeader(TICKET_HASH_HEADER, ticketHash);
+    if(payload != null){
+      HttpEntity entity = new StringEntity(payload);
+      put.addHeader(entity.getContentType());
+      put.setEntity(entity);
+    }
+    final HttpResponse resp = getHttpClient().execute(put);
+    final String response = EntityUtils.toString(resp.getEntity());
+    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED){
+      toReturn = response;
+    } 
+    else if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
+      throw new AuthenticationException();
+    }
+    else{
+      throw new IOException();
+    }
+    return toReturn;
+  }
+
   public static List<Event> getNearbyEvents(
     Location location, String ticketHash)
     throws
@@ -271,29 +298,27 @@ public class ServerConnection{
     }
   }
 
-  public static void doPartyLogin(final long partyId){
-    /*final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-    params.add(new BasicNameValuePair(PARAM_PARTYID, String.valueOf(partyId)));
-    params.add(new BasicNameValuePair(PARAM_USERNAME, mostRecentUsername));
+  public static boolean joinEvent(final long eventId, String ticketHash){
     try{
-      doSimplePost(params,PARTY_LOGIN_URI);
-      
+      URI uri  = new URI(
+        NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, 
+        "/udj/events/" + eventId + "/user",
+        "", "");
+       doPut(uri, ticketHash, null); 
+    }
+    catch(URISyntaxException e){
+      Log.e("Server conn", "URI syntax error in join event");
+      return false; 
     }
     catch(AuthenticationException e){
-      Log.e("TAG", "Party login Auth exceptions");
-      //TODO maybe do something?
+      Log.e("Server conn", "Auth error in join event");
+      return false;
     }
     catch(IOException e){
-      Log.e("TAG", "Party login IOException exceptions");
-      //TODO maybe do something?
+      Log.e("Server conn", "IO eeror in join event");
+      return false;
     }
-   
-    handler.post(new Runnable(){
-      public void run(){
-        ((PartySelectorActivity)context).onPartySelection(
-          isValidParty(), partyId);
-      }
-    });*/
+    return true;
   }
 
 }

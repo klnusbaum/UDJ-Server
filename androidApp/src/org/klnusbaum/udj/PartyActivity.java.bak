@@ -54,6 +54,7 @@ import org.klnusbaum.udj.network.PlaylistSyncService;
 public class PartyActivity extends FragmentActivity{
 
   public static final String ACCOUNT_EXTRA = "org.klnusbaum.udj.account";
+  public static final String EVENT_ID_EXTRA = "org.klnusbaum.udj.eventid";
   private static final String QUIT_DIALOG_TAG = "quit_dialog";
 
   @Override

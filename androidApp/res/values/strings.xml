@@ -26,6 +26,7 @@
     <string name="password_hint">Password</string>
     <string name="login_text">Login</string>
     <string name="authenticating">Logging In...</string>
+    <string name="joining_event">Joining Event...</string>
     <string name="no_playlist_items">There are currently no items in the playlist</string>
     <string name="no_library_songs">No Results To Display</string>
     <string name="party_name_label">Name of party:</string>
