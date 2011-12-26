@@ -106,7 +106,7 @@ class JoinEventTest(User2TestCase):
     
 class LeaveEventTest(User3TestCase):
   def testLeaveEvent(self):
-    response = self.doDelete('/udj/events/1/4')
+    response = self.doDelete('/udj/events/1/users/4')
     self.assertEqual(response.status_code, 200, response.content)
     event_goer_entries = EventGoer.objects.filter(event__id=1, user__id=4)
     self.assertEqual(len(event_goer_entries), 0)
@@ -114,7 +114,7 @@ class LeaveEventTest(User3TestCase):
 class KickUserTest(User1TestCase):
   def testKickUser(self):
     userId=4
-    response = self.doDelete('/udj/events/1/'+str(userId))
+    response = self.doDelete('/udj/events/1/users/'+str(userId))
     self.assertEqual(response.status_code, 200, response.content)
     event_goer_entries = EventGoer.objects.filter(event__id=1, user__id=userId)
     self.assertEqual(len(event_goer_entries), 0)
