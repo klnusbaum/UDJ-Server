@@ -66,7 +66,7 @@ public class UDJEventProvider extends ContentProvider{
   public static final String ALBUM_COLUMN = "album";
   public static final String DURATION_COLUMN = "duration";
   public static final String ADDER_ID_COLUMN = "adder_id";
-  public static final String ADDER_USERNAME_COLUMN = "adder_id";
+  public static final String ADDER_USERNAME_COLUMN = "adder_username";
 
 	/** SQL statement for creating the playlist table. */
   private static final String PLAYLIST_TABLE_CREATE = 
@@ -105,7 +105,7 @@ public class UDJEventProvider extends ContentProvider{
     ADD_REQUEST_SYNC_STATUS_COLUMN + " INTEGER DEFAULT "+ 
       ADD_REQUEST_NEEDS_SYNC + ", " +
     "CHECK (" + ADD_REQUEST_SYNC_STATUS_COLUMN + "=" + ADD_REQUEST_NEEDS_SYNC +
-    "OR " + ADD_REQUEST_SYNC_STATUS_COLUMN + "=" + ADD_REQUEST_SYNCED +
+    " OR " + ADD_REQUEST_SYNC_STATUS_COLUMN + "=" + ADD_REQUEST_SYNCED +
     "));";
 
 

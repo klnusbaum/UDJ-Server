@@ -55,7 +55,7 @@ public class RESTProcessor{
     final ContentProviderOperation.Builder deleteOp = 
       ContentProviderOperation.newDelete(UDJEventProvider.PLAYLIST_URI);
     batchOps.add(deleteOp.build());
-    int priority = 0;
+    int priority = 1;
     for(PlaylistEntry pe: playlistEntries){
       batchOps.add(getPlaylistInsertOp(pe, priority));
       ++priority;
@@ -83,6 +83,7 @@ public class RESTProcessor{
       .withValue(UDJEventProvider.SONG_COLUMN, pe.getSong())
       .withValue(UDJEventProvider.ARTIST_COLUMN, pe.getArtist())
       .withValue(UDJEventProvider.ALBUM_COLUMN, pe.getAlbum())
+      .withValue(UDJEventProvider.DURATION_COLUMN, pe.getDuration())
       .withValue(UDJEventProvider.ADDER_ID_COLUMN, pe.getAdderId())
       .withValue(UDJEventProvider.ADDER_USERNAME_COLUMN, pe.getAdderUsername());
     return insertOp.build();
