@@ -216,7 +216,8 @@ public class AuthActivity extends AccountAuthenticatorActivity{
      */
     public void onAuthenticationResult(ServerConnection.AuthResult authResult) {
 
-        boolean success = ((authResult.ticketHash != null) 
+        boolean success = ((authResult != null ) 
+          && (authResult.ticketHash != null) 
           && (authResult.ticketHash.length() > 0));
         Log.i(TAG, "onAuthenticationResult(" + success + ")");
 

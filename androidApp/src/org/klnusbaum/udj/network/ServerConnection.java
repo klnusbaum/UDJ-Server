@@ -235,6 +235,7 @@ public class ServerConnection{
     get.addHeader(TICKET_HASH_HEADER, ticketHash);
     final HttpResponse resp = getHttpClient().execute(get);
     final String response = EntityUtils.toString(resp.getEntity());
+    Log.i(TAG, "Response \n" + response);
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
       return response;
     }
@@ -349,6 +350,5 @@ public class ServerConnection{
       return null;
       //TDOD inform caller that theire query is bad 
     }
-
   }
 }

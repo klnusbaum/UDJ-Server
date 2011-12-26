@@ -29,7 +29,6 @@ import org.json.JSONException;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.klnusbaum.udj.UDJPartyProvider;
 
 public class LibraryEntry{
   public static final String ID_PARAM = "id";

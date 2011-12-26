@@ -69,11 +69,13 @@ public class PlaylistSyncService extends IntentService{
 
   @Override
   public void onHandleIntent(Intent intent){
+    Log.i(TAG, "In playlist sync server");
     final Account account = (Account)intent.getParcelableExtra(ACCOUNT_EXTRA);
     long eventId = intent.getLongExtra(EVENT_ID_EXTRA, -1);
     //TODO hanle error if eventId or account aren't provided
+    String authtoken = null;
     try{
-      String authtoken = 
+      authtoken = 
         AccountManager.get(this).blockingGetAuthToken(account, "", true);
       List<PlaylistEntry> newPlaylist =
         ServerConnection.getActivePlaylist(eventId, authtoken);
@@ -86,7 +88,8 @@ public class PlaylistSyncService extends IntentService{
       Log.e(TAG, "Parse exception when retreiving playist");
     }
     catch(IOException e){
-      Log.e(TAG, "IO exception when retreiving playist");
+      Log.e(TAG, "IO exception when retreiving playist with authtoken: " 
+        + authtoken);
     }
     catch(AuthenticationException e){
       Log.e(TAG, "Authentication exception when retreiving playist");

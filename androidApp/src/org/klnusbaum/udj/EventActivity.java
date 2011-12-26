@@ -73,7 +73,7 @@ public class EventActivity extends FragmentActivity{
     }*/
     Intent getPlaylist = new Intent(
       Intent.ACTION_VIEW,
-      UDJPartyProvider.PLAYLIST_URI,
+      UDJEventProvider.PLAYLIST_URI,
       this,
       PlaylistSyncService.class);
     getPlaylist.putExtra(PlaylistSyncService.EVENT_ID_EXTRA, eventId);

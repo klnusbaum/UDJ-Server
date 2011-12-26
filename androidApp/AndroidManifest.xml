@@ -83,6 +83,7 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
+
         <service
             android:name=".network.SyncService"
             android:exported="true">
@@ -94,6 +95,12 @@
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
+
+        <service
+            android:name=".network.PlaylistSyncService"
+            android:exported="true">
+        </service>
+
         <provider android:name="org.klnusbaum.udj.UDJEventProvider"
           android:authorities="org.klnusbaum.udj"
         />
