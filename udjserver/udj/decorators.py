@@ -36,17 +36,6 @@ def InParty(function):
       return function(*args, **kwargs)
   return wrapper
 
-def IsUserOrHost(function):
-  def wrapper(*args, **kwargs):
-    request = args[0]
-    event = get_object_or_404(Event, event_id__id__exact=kwargs['event_id'])
-    user = getUserForTicket(request)
-    if event.host == user or user.id == int(kwargs['user_id']):
-      return function(*args, **kwargs)
-    else:
-      return HttpResponseForbidden()
-  return wrapper
-
 #TODO actually implement this fucntion. i.e. check for password compliance
 def CanLoginToEvent(function):
   def wrapper(*args, **kwargs):
