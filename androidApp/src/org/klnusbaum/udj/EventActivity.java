@@ -45,13 +45,11 @@ import android.support.v4.app.DialogFragment;
 import java.util.HashMap;
 
 import org.klnusbaum.udj.auth.AuthActivity;
-import org.klnusbaum.udj.containers.Party;
-import org.klnusbaum.udj.network.PlaylistSyncService;
 
 /**
  * The main activity display class.
  */
-public class PartyActivity extends FragmentActivity{
+public class EventActivity extends FragmentActivity{
 
   public static final String ACCOUNT_EXTRA = "org.klnusbaum.udj.account";
   public static final String EVENT_ID_EXTRA = "org.klnusbaum.udj.eventid";
@@ -62,24 +60,24 @@ public class PartyActivity extends FragmentActivity{
     super.onCreate(savedInstanceState);
     
     FragmentManager fm = getSupportFragmentManager();
-    if(fm.findFragmentById(android.R.id.content) == null){
+/*    if(fm.findFragmentById(android.R.id.content) == null){
       PlaylistFragment list = new PlaylistFragment();
       fm.beginTransaction().add(android.R.id.content, list).commit();
-    }
-    Intent getPlaylist = new Intent(
+    }*/
+/*    Intent getPlaylist = new Intent(
       Intent.ACTION_VIEW,
       UDJPartyProvider.PLAYLIST_URI,
       this,
       PlaylistSyncService.class);
-    startService(getPlaylist);
+    startService(getPlaylist);*/
   }
 
   @Override
   protected void onNewIntent(Intent intent){
-    if(Intent.ACTION_SEARCH.equals(intent.getAction())){
+    /*if(Intent.ACTION_SEARCH.equals(intent.getAction())){
       intent.setClass(this, LibrarySearchActivity.class);
       startActivity(intent);
-    }
+    }*/
   }
 
   @Override 
@@ -91,7 +89,7 @@ public class PartyActivity extends FragmentActivity{
   private void doQuit(){
     dismissQuitDialog();
     setResult(Activity.RESULT_OK);
-    getContentResolver().delete(UDJPartyProvider.PLAYLIST_URI, null, null);
+    //getContentResolver().delete(UDJPartyProvider.PLAYLIST_URI, null, null);
     finish();
   }
 
@@ -111,13 +109,13 @@ public class PartyActivity extends FragmentActivity{
         .setPositiveButton(android.R.string.ok,
           new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton){
-              ((PartyActivity)getActivity()).doQuit();
+              ((EventActivity)getActivity()).doQuit();
             }
           })
         .setNegativeButton(android.R.string.cancel,
           new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton){
-              ((PartyActivity)getActivity()).dismissQuitDialog();
+              ((EventActivity)getActivity()).dismissQuitDialog();
             }
           })
         .create();

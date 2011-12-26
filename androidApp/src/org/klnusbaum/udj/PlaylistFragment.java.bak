@@ -37,7 +37,7 @@ import android.content.ContentValues;
 
 
 import org.klnusbaum.udj.R;
-import org.klnusbaum.udj.containers.Party;
+import org.klnusbaum.udj.containers.Event;
 
 /**
  * Class used for displaying the contents of the Playlist.

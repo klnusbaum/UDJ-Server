@@ -47,6 +47,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.widget.Toast;
 import android.os.AsyncTask;
+import android.app.ProgressDialog;
 
 
 import java.io.IOException;
@@ -71,6 +72,10 @@ public class EventSelectorActivity extends FragmentActivity{
   private static final String LOCATION_EXTRA = "location";
   private static final int ACCOUNT_CREATION = 0;
   private Account account;
+  /** Keep track of the progress dialog so we can dismiss it */
+  private ProgressDialog mProgressDialog = null;
+  private EventLoginTask loginTask;
+
 
   @Override
   public void onCreate(Bundle savedInstanceState){
@@ -94,15 +99,109 @@ public class EventSelectorActivity extends FragmentActivity{
       finish();
     }
   }
+  public void onEventJoinResponse(final long eventId){
+    loginTask = null;
+    hideProgress();
+    if(eventId > 0){
+      Toast toast = Toast.makeText(
+        getApplicationContext(), 
+        "Logged into event",  
+        Toast.LENGTH_LONG);
+      toast.show();
+    }
+    else{
+      Toast toast = Toast.makeText(getApplicationContext(), "Login failed",  
+        Toast.LENGTH_LONG);
+      toast.show();
+    }
+  }
+
+  public void onEventJoinCancel(){
+    loginTask = null;
+    hideProgress();
+  }
+
+  private void showProgress(){
+      showDialog(0);
+  }
+
+  private void hideProgress(){
+    if(mProgressDialog != null){
+      mProgressDialog.dismiss();
+      mProgressDialog = null;
+    }
+  }
+
+  /*
+   * {@inheritDoc}
+   */
+  @Override
+  protected Dialog onCreateDialog(int id) {
+    final ProgressDialog dialog = new ProgressDialog(this);
+    dialog.setMessage(getText(R.string.joining_event));
+    dialog.setIndeterminate(true);
+    dialog.setCancelable(true);
+    dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+      public void onCancel(DialogInterface dialog) {
+        Log.i("Event Selection", "user cancelling authentication");
+        if(loginTask != null) {
+          loginTask.cancel(true);
+         }
+       }
+    });
+    // We save off the progress dialog in a field so that we can dismiss
+    // it later. We can't just call dismissDialog(0) because the system
+    // can lose track of our dialog if there's an orientation change.
+    mProgressDialog = dialog;
+    return dialog;
+  }
+
+  public class EventLoginTask extends AsyncTask<Long, Void, Long>{
+   
+    private AccountManager am; 
+    private Account account; 
+    public EventLoginTask(AccountManager am, Account account){
+      super();
+      this.am = am;
+      this.account = account; 
+    }
+  
+    protected Long doInBackground(Long... params){
+      try{
+        String authToken = 
+          am.blockingGetAuthToken(account, "", true);  
+        if(ServerConnection.joinEvent(params[0], authToken)){
+          return params[0]; 
+        }
+      }
+      catch(IOException e){
+        //TODO notify the user
+      }
+      catch(AuthenticatorException e){
+        //TODO notify the user
+      }
+      catch(OperationCanceledException e){
+        //TODO notify user
+      }
+      return new Long(-1);
+    }
+  
+    protected void onPostExecute(final Long eventId){
+      onEventJoinResponse(eventId);
+    }
+ 
+    protected void onCancelled(){
+      onEventJoinCancel();
+    }
+  }
+
 
   public class EventListFragment extends ListFragment implements 
     LoaderManager.LoaderCallbacks<EventLoaderResult >,
     LocationListener
   {
     private EventListAdapter eventAdapter;
-    private String authToken;
     private LocationManager lm;
-    private EventLoginTask loginTask;
 
     public void onActivityCreated(Bundle savedInstanceState){
       super.onActivityCreated(savedInstanceState);
@@ -173,6 +272,7 @@ public class EventSelectorActivity extends FragmentActivity{
       Long[] eventId = new Long[]{eventAdapter.getItemId(position)};
       loginTask = (EventLoginTask) 
         new EventLoginTask(AccountManager.get(getActivity()), account).execute(eventId);
+      showProgress();
     }
 
     public Loader<EventLoaderResult> onCreateLoader(int id, Bundle args){
@@ -210,64 +310,6 @@ public class EventSelectorActivity extends FragmentActivity{
   
     public void onLoaderReset(Loader<EventLoaderResult> loader){
       eventAdapter = new EventListAdapter(getActivity());
-    }
-
-    public void onEventJoinResponse(final long eventId){
-      loginTask = null;
-      if(eventId > 0){
-        Toast toast = Toast.makeText(
-          getApplicationContext(), 
-          "Logged into event",  
-          Toast.LENGTH_LONG);
-        toast.show();
-      }
-      else{
-        Toast toast = Toast.makeText(getApplicationContext(), "Login failed",  
-          Toast.LENGTH_LONG);
-        toast.show();
-      }
-    }
-
-    public void onEventJoinCancel(){
-      loginTask = null;
-    }
-    public class EventLoginTask extends AsyncTask<Long, Void, Long>{
-   
-      private AccountManager am; 
-      private Account account; 
-      public EventLoginTask(AccountManager am, Account account){
-        super();
-        this.am = am;
-        this.account = account; 
-      }
-  
-      protected Long doInBackground(Long... params){
-        try{
-          String authToken = 
-            am.blockingGetAuthToken(account, "", true);  
-          if(ServerConnection.joinEvent(params[0], authToken)){
-            return params[0]; 
-          }
-        }
-        catch(IOException e){
-          //TODO notify the user
-        }
-        catch(AuthenticatorException e){
-          //TODO notify the user
-        }
-        catch(OperationCanceledException e){
-          //TODO notify user
-        }
-        return new Long(-1);
-      }
-  
-      protected void onPostExecute(final Long eventId){
-        onEventJoinResponse(eventId);
-      }
-  
-      protected void onCancelled(){
-        onEventJoinCancel();
-      }
     }
   } 
 
