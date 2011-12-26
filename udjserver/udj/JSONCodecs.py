@@ -32,13 +32,15 @@ def getJSONForAvailableSongs(songs):
 def getJSONForEvents(events):
   toReturn = []
   for event in events:
+    hasPassword = event.password_hash != ""
     toAdd = {
       'id' : event.id,
       'name' : event.name, 
       'host_id' : event.host.id,
       'host_username' : event.host.first_name,
       'latitude' : float(event.latitude),
-      'longitude' : float(event.longitude)
+      'longitude' : float(event.longitude),
+      'has_password' : hasPassword
     }
     toReturn.append(toAdd)
   return json.dumps(toReturn)
