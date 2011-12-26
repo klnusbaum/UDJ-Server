@@ -20,6 +20,7 @@ package org.klnusbaum.udj.network;
 
 
 import android.content.Context;
+import android.content.ContentResolver;
 import android.os.Bundle;
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -38,18 +39,17 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+
+
 import org.json.JSONException;
 
 import org.apache.http.auth.AuthenticationException;
 import org.apache.http.ParseException;
 
-/*import org.klnusbaum.udj.containers.PlaylistEntry;
-import org.klnusbaum.udj.containers.LibraryEntry;
-import org.klnusbaum.udj.UDJPartyProvider;
-import org.klnusbaum.udj.R;
-*/
 import org.klnusbaum.udj.containers.PlaylistEntry;
 import org.klnusbaum.udj.Constants;
+import org.klnusbaum.udj.UDJEventProvider;
 
 
 /**
@@ -58,9 +58,13 @@ import org.klnusbaum.udj.Constants;
 public class PlaylistSyncService extends IntentService{
 
   private static final String TAG = "PlyalistSyncService";
-/*  public static final String LIB_ENTRY_EXTRA = "libEntry";
-  public static final String PLAYLIST_ID_EXTRA = "playlistId";
-  public static final String SEARCH_QUERY_EXTRA = "search_query";*/
+  private static final String[] addRequestsProjection = new String[] {
+    UDJEventProvider.ADD_REQUEST_ID_COLUMN,
+    UDJEventProvider.ADD_REQUEST_LIB_ID_COLUMN};
+  private static final String addRequestSeleciton = 
+    UDJEventProvider.ADD_REQUEST_SYNC_STATUS_COLUMN + 
+    "=" +
+    UDJEventProvider.ADD_REQUEST_NEEDS_SYNC;
 
   public PlaylistSyncService(){
     super("PlaylistSyncService");
@@ -73,12 +77,20 @@ public class PlaylistSyncService extends IntentService{
       (Account)intent.getParcelableExtra(Constants.ACCOUNT_EXTRA);
     long eventId = intent.getLongExtra(Constants.EVENT_ID_EXTRA, -1);
     //TODO hanle error if eventId or account aren't provided
-    String authtoken = null;
+    if(intent.getAction().equals(Intent.ACTION_INSERT)){
+      syncAddRequests(account, eventId);
+    }
+    else if(intent.getAction().equals(Intent.ACTION_VIEW)){
+      updateActivePlaylist(account, eventId); 
+    }
+  }
+
+  private void updateActivePlaylist(Account account, long eventId){
     try{
-      authtoken = 
+      String authToken = 
         AccountManager.get(this).blockingGetAuthToken(account, "", true);
       List<PlaylistEntry> newPlaylist =
-        ServerConnection.getActivePlaylist(eventId, authtoken);
+        ServerConnection.getActivePlaylist(eventId, authToken);
       RESTProcessor.setActivePlaylist(newPlaylist, this);
     }
     catch(JSONException e){
@@ -88,8 +100,7 @@ public class PlaylistSyncService extends IntentService{
       Log.e(TAG, "Parse exception when retreiving playist");
     }
     catch(IOException e){
-      Log.e(TAG, "IO exception when retreiving playist with authtoken: " 
-        + authtoken);
+      Log.e(TAG, "IO exception when retreiving playist");
     }
     catch(AuthenticationException e){
       Log.e(TAG, "Authentication exception when retreiving playist");
@@ -110,67 +121,63 @@ public class PlaylistSyncService extends IntentService{
     // exceptions that could occuer. Need to pay special attention to this.
   }
 
-/*  private void updatePlaylist()
-    throws JSONException, ParseException, IOException, AuthenticationException,
-    RemoteException, OperationApplicationException
-  {
-    List<PlaylistEntry> serverResponse = 
-      ServerConnection.getPlaylist(null);
-    RESTProcessor.processPlaylistEntries(serverResponse, this);
-  }
-
-  private void addSongToPlaylist(LibraryEntry songToAdd)
-    throws JSONException, ParseException, IOException, AuthenticationException
-  {
-    ContentValues toInsertValues = getPlaylistInsertionValues(songToAdd);
-    Uri insertedSong = getContentResolver().insert(
-      UDJPartyProvider.PLAYLIST_URI,
-      toInsertValues);
-    Cursor playlistSong = getPlaylistCursor(insertedSong);
-    PlaylistEntry toSendToServer = PlaylistEntry.valueOf(playlistSong);
-    List<PlaylistEntry> serverResponse =
-      ServerConnection.addSongToPlaylist(toSendToServer, null);
+  private void syncAddRequests(Account account, long eventId){
     try{
-      RESTProcessor.processPlaylistEntries(serverResponse, this);
+      String authToken = 
+        AccountManager.get(this).blockingGetAuthToken(account, "", true);
+      ContentResolver cr = getContentResolver();
+      Cursor requestsCursor = cr.query(
+        UDJEventProvider.PLAYLIST_ADD_REQUEST_URI,
+        addRequestsProjection,
+        addRequestSeleciton,
+        null,
+        null);
+      HashMap<Long, Long> addRequests = new HashMap<Long, Long>();
+      if(requestsCursor.moveToFirst()){
+        int requestIdColumn = requestsCursor.getColumnIndex(
+          UDJEventProvider.ADD_REQUEST_ID_COLUMN);
+        int libIdColumn = requestsCursor.getColumnIndex(
+          UDJEventProvider.ADD_REQUEST_LIB_ID_COLUMN);
+        do{
+          addRequests.put(
+            requestsCursor.getLong(requestIdColumn),
+            requestsCursor.getLong(libIdColumn)); 
+        }while(requestsCursor.moveToNext());
+      }
+      requestsCursor.close();
+      if(addRequests.size() >0){
+        ServerConnection.addSongsToActivePlaylist(
+          addRequests, eventId, authToken);
+        RESTProcessor.setPlaylistAddRequestsSynced(addRequests.keySet(), this);
+        updateActivePlaylist(account, eventId);
+      }
+    }
+    catch(JSONException e){
+      Log.e(TAG, "JSON exception when retreiving playist");
+    }
+    catch(ParseException e){
+      Log.e(TAG, "Parse exception when retreiving playist");
+    }
+    catch(IOException e){
+      Log.e(TAG, "IO exception when retreiving playist");
+    }
+    catch(AuthenticationException e){
+      Log.e(TAG, "Authentication exception when retreiving playist");
+    }
+    catch(AuthenticatorException e){
+      Log.e(TAG, "Authentication exception when retreiving playist");
+    }
+    catch(OperationCanceledException e){
+      Log.e(TAG, "Op Canceled exception when retreiving playist");
     }
     catch(RemoteException e){
-
+      Log.e(TAG, "Remote exception when retreiving playist");
     }
     catch(OperationApplicationException e){
-
+      Log.e(TAG, "Operation Application exception when retreiving playist");
     }
-
+    //TODO This point of the app seems very dangerous as there are so many
+    // exceptions that could occuer. Need to pay special attention to this.
   }
 
-  private ContentValues getPlaylistInsertionValues(LibraryEntry songToAdd){
-    ContentValues toInsertValues = new ContentValues();
-    toInsertValues.put(
-      UDJPartyProvider.SERVER_LIBRARY_ID_COLUMN, 
-      songToAdd.getServerId());
-    toInsertValues.put(
-      UDJPartyProvider.SONG_COLUMN,
-      songToAdd.getSong());
-    toInsertValues.put(
-      UDJPartyProvider.ARTIST_COLUMN,
-      songToAdd.getArtist());
-    toInsertValues.put(
-      UDJPartyProvider.ALBUM_COLUMN,
-      songToAdd.getAlbum());
-    return toInsertValues;
-  }
-
-  private Cursor getPlaylistCursor(Uri songUri){
-    String playlistId = songUri.getLastPathSegment();
-    Cursor playlistSong = getContentResolver().query(
-      UDJPartyProvider.PLAYLIST_URI,
-      null,
-      UDJPartyProvider.PLAYLIST_ID_COLUMN + " = ? ",
-      new String[]{playlistId},
-      null);
-    if(playlistSong.getCount() == 0){
-      //TODO throw some kind of error
-    }
-    playlistSong.moveToNext();
-    return playlistSong;
-  }*/
 }

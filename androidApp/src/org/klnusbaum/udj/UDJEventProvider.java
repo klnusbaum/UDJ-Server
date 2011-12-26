@@ -47,6 +47,9 @@ public class UDJEventProvider extends ContentProvider{
   public static final Uri PLAYLIST_URI = 
     Uri.parse("content://org.klnusbaum.udj/playlist");
 
+  public static final Uri PLAYLIST_ADD_REQUEST_URI = 
+    Uri.parse("content://org.klnusbaum.udj/playlist/add_request");
+
   public static final Uri PARTIERS_URI =
     Uri.parse("content://org.klnusbaum.udj/partiers");
 
@@ -86,16 +89,16 @@ public class UDJEventProvider extends ContentProvider{
   /** SONG ADD REQUESTS TABLE */
 
   /** Name of add request table. */
-  private static final String ADD_REQUESTS_TABLE_NAME = "add_requests";
+  public static final String ADD_REQUESTS_TABLE_NAME = "add_requests";
   
   /** Constants used for various column names in the song add request table. */
-  private static final String ADD_REQUEST_ID_COLUMN = "_id";
-  private static final String ADD_REQUEST_LIB_ID_COLUMN = "lib_id";
-  private static final String ADD_REQUEST_SYNC_STATUS_COLUMN = "sync_status";
+  public static final String ADD_REQUEST_ID_COLUMN = "_id";
+  public static final String ADD_REQUEST_LIB_ID_COLUMN = "lib_id";
+  public static final String ADD_REQUEST_SYNC_STATUS_COLUMN = "sync_status";
 
   /** Constants used for the sync status of an add request */
-  private static final int ADD_REQUEST_NEEDS_SYNC = 1;
-  private static final int ADD_REQUEST_SYNCED = 0;
+  public static final int ADD_REQUEST_NEEDS_SYNC = 1;
+  public static final int ADD_REQUEST_SYNCED = 0;
 
   /** SQL statement for creating the song add requests table. */
   private static final String ADD_REQUEST_TABLE_CREATE = 
@@ -165,7 +168,18 @@ public class UDJEventProvider extends ContentProvider{
       long rowId = db.insert(PLAYLIST_TABLE_NAME, null, initialValues);    
       if(rowId >=0){
         return Uri.withAppendedPath(
-          PLAYLIST_URI, initialValues.getAsString(PLAYLIST_ID_COLUMN));
+          PLAYLIST_URI, String.valueOf(rowId));
+      }
+      else{
+        return null;
+      }
+    }
+    else if(uri.equals(PLAYLIST_ADD_REQUEST_URI)){
+      SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+      long rowId = db.insert(ADD_REQUESTS_TABLE_NAME, null, initialValues);    
+      if(rowId >=0){
+        return Uri.withAppendedPath(
+          PLAYLIST_ADD_REQUEST_URI, String.valueOf(rowId));
       }
       else{
         return null;
@@ -178,18 +192,27 @@ public class UDJEventProvider extends ContentProvider{
   public Cursor query(Uri uri, String[] projection, 
     String selection, String[] selectionArgs, String sortOrder)
   {
+    SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
     if(uri.equals(PLAYLIST_URI)){
-      SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
       qb.setTables(PLAYLIST_TABLE_NAME);
-      SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
-      Cursor toReturn = qb.query(
-        db, projection, selection, selectionArgs, null,
-        null, sortOrder);
+    }
+    else if(uri.equals(PLAYLIST_ADD_REQUEST_URI)){
+      qb.setTables(ADD_REQUESTS_TABLE_NAME);
+    }
+    else{
+      throw new IllegalArgumentException("Unknown URI " + uri);
+    }
+
+    SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
+    Cursor toReturn = qb.query(
+      db, projection, selection, selectionArgs, null,
+      null, sortOrder);
+
+    if(uri.equals(PLAYLIST_URI)){
       toReturn.setNotificationUri(
         getContext().getContentResolver(), PLAYLIST_URI);
-      return toReturn;
     }
-    throw new IllegalArgumentException("Unknown URI " + uri);
+    return toReturn;
   }
 
   @Override

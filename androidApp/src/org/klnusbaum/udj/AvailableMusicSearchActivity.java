@@ -46,6 +46,8 @@ import java.util.List;
 
 import org.klnusbaum.udj.containers.LibraryEntry;
 import org.klnusbaum.udj.Constants;
+import org.klnusbaum.udj.network.PlaylistSyncService;
+
 
 
 /**
@@ -104,18 +106,25 @@ public class AvailableMusicSearchActivity extends FragmentActivity{
     private View.OnClickListener addSongToPlaylistListener =
       new View.OnClickListener(){
         public void onClick(View v){
-          /*LibraryEntry songToAdd = 
+          LibraryEntry songToAdd = 
             (LibraryEntry)v.getTag(R.id.LIB_ENTRY_VIEW_TAG);
+          ContentValues toInsert = new ContentValues();
+          toInsert.put(
+            UDJEventProvider.ADD_REQUEST_LIB_ID_COLUMN, songToAdd.getLibId());
+          ContentResolver cr = getActivity().getContentResolver();
+          //TODO move this stuff off to a differnt thread to make things
+          // go faster
+          cr.insert(
+            UDJEventProvider.PLAYLIST_ADD_REQUEST_URI, 
+            toInsert);
           Intent addSongIntent = new Intent(
             Intent.ACTION_INSERT,
-            UDJPartyProvider.PLAYLIST_URI,
+            UDJEventProvider.PLAYLIST_URI,
             getActivity(),
             PlaylistSyncService.class);
-          addSongIntent.putExtra(
-            PlaylistSyncService.LIB_ENTRY_EXTRA,
-            LibraryEntry.toBundle(songToAdd)
-          );
-          getActivity().startService(addSongIntent);*/
+          addSongIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
+          addSongIntent.putExtra(Constants.EVENT_ID_EXTRA, eventId);
+          getActivity().startService(addSongIntent);
         }
       };
 

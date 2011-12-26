@@ -22,6 +22,7 @@ import android.util.Log;
 import android.location.Location;
 
 import java.util.List;
+import java.util.HashMap;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -278,7 +279,7 @@ public class ServerConnection{
       URI eventsQuery = new URI(
         NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, 
         "/udj/events/" + location.getLatitude() + "/" + location.getLongitude(),
-        "", "");
+        null, null);
       JSONArray events = new JSONArray(doGet(eventsQuery, ticketHash));
       return Event.fromJSONArray(events);
     }
@@ -297,7 +298,7 @@ public class ServerConnection{
       URI eventsQuery = new URI(
         NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, 
         "/udj/events/",
-        PARAME_EVENT_NAME+"="+query, "");
+        PARAME_EVENT_NAME+"="+query, null);
       JSONArray events = new JSONArray(doGet(eventsQuery, ticketHash));
       return Event.fromJSONArray(events);
     }
@@ -314,7 +315,7 @@ public class ServerConnection{
       URI uri  = new URI(
         NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, 
         "/udj/events/" + eventId + "/user",
-        "", "");
+        null, null);
        doPut(uri, ticketHash, null); 
     }
     catch(URISyntaxException e){
@@ -340,7 +341,7 @@ public class ServerConnection{
       URI uri = new URI(
         NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, 
         "/udj/events/"+eventId+"/active_playlist",
-        "", "");
+        null, null);
       JSONArray playlistEntries = new JSONArray(doGet(uri, authToken));
       return PlaylistEntry.fromJSONArray(playlistEntries);
     }
@@ -357,7 +358,7 @@ public class ServerConnection{
       URI uri = new URI(
         NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, 
         "/udj/events/"+eventId+"/users/"+userId,
-        "", "");
+        null, null);
       doDelete(uri, authToken);
     }
     catch(URISyntaxException e){
@@ -382,5 +383,36 @@ public class ServerConnection{
       //TDOD inform caller that theire query is bad 
     }
     return null;
+  }
+
+  public static void addSongsToActivePlaylist(
+    HashMap<Long, Long> requests, long eventId, String authToken)
+    throws JSONException, ParseException, IOException, AuthenticationException
+  {
+    try{
+      URI uri = new URI(
+        NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT,
+        "/udj/events/"+eventId+"/active_playlist/songs",
+        null, null);
+      String payload = getAddToActivePlaylistJSON(requests).toString();
+      doPut(uri, authToken, payload); 
+    }
+    catch(URISyntaxException e){
+      //TDOD inform caller that theire query is bad 
+    }
+  }
+
+  private static JSONArray getAddToActivePlaylistJSON(
+    HashMap<Long, Long> requests) throws JSONException
+  
+  {
+    JSONArray toReturn = new JSONArray();
+    for(Long requestId : requests.keySet()){
+      JSONObject requestObject = new JSONObject();
+      requestObject.put("client_request_id", requestId);
+      requestObject.put("lib_id", requests.get(requestId));
+      toReturn.put(requestObject);
+    }
+    return toReturn;
   }
 }

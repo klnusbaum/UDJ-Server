@@ -21,6 +21,7 @@ package org.klnusbaum.udj.network;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.IOException;
+import java.util.Set;
 
 import android.content.Context;
 import android.content.ContentResolver;
@@ -29,7 +30,6 @@ import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.os.RemoteException;
 import android.util.Log;
-import android.os.Handler;
 
 import org.klnusbaum.udj.R;
 import org.klnusbaum.udj.Constants;
@@ -41,6 +41,7 @@ import org.klnusbaum.udj.network.ServerConnection;
 import org.json.JSONException;
 
 import org.apache.http.auth.AuthenticationException;
+
 
 public class RESTProcessor{
 
@@ -61,6 +62,7 @@ public class RESTProcessor{
       ++priority;
       if(batchOps.size() >= 50){
         resolver.applyBatch(Constants.AUTHORITY, batchOps);
+        batchOps.clear();
       }
     }
     if(batchOps.size() > 0){
@@ -87,6 +89,40 @@ public class RESTProcessor{
       .withValue(UDJEventProvider.ADDER_ID_COLUMN, pe.getAdderId())
       .withValue(UDJEventProvider.ADDER_USERNAME_COLUMN, pe.getAdderUsername());
     return insertOp.build();
+  }
+
+  public static void setPlaylistAddRequestsSynced(
+    Set<Long> requestIds,
+    Context context)
+    throws RemoteException, OperationApplicationException
+  {
+    final ContentResolver resolver = context.getContentResolver();
+    ArrayList<ContentProviderOperation> batchOps = 
+      new ArrayList<ContentProviderOperation>();
+    for(Long requestId : requestIds){
+      batchOps.add(getAddRequestSyncedOp(requestId));
+      if(batchOps.size() >= 50){
+        resolver.applyBatch(Constants.AUTHORITY, batchOps);
+        batchOps.clear();
+      }
+    }
+    if(batchOps.size() > 0){
+      resolver.applyBatch(Constants.AUTHORITY, batchOps);
+      batchOps.clear();
+    }
+  }
+  
+  private static ContentProviderOperation getAddRequestSyncedOp(long requestId){
+    String[] selectionArgs = new String[] {String.valueOf(requestId)};
+    final ContentProviderOperation.Builder updateBuilder = 
+      ContentProviderOperation.newUpdate(
+        UDJEventProvider.PLAYLIST_ADD_REQUEST_URI)
+      .withSelection(
+        UDJEventProvider.ADD_REQUEST_ID_COLUMN + "=" +String.valueOf(requestId),
+        null)
+      .withValue(UDJEventProvider.ADD_REQUEST_SYNC_STATUS_COLUMN,
+         UDJEventProvider.ADD_REQUEST_SYNCED);
+    return updateBuilder.build();
   }
 
   /*public static void processPlaylistEntries(

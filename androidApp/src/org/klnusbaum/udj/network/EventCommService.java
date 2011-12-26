@@ -73,16 +73,16 @@ public class EventCommService extends IntentService{
 
   private void leaveEvent(Account account, Intent intent){
     Log.d(TAG, "In leave event"); 
-    String authtoken = null;
+    String authToken = null;
     try{
-      authtoken = 
+      authToken = 
         AccountManager.get(this).blockingGetAuthToken(account, "", true);
       long eventId = intent.getLongExtra(Constants.EVENT_ID_EXTRA, -1);
       //TODO handle if event id isn't provided
       String userId = AccountManager.get(this).getUserData(
         account, Constants.USER_ID_DATA);
       //TODO handle if userId is null shouldn't ever be, but hey...
-      ServerConnection.leaveEvent(eventId, Long.valueOf(userId), authtoken);
+      ServerConnection.leaveEvent(eventId, Long.valueOf(userId), authToken);
     }
     catch(IOException e){
       Log.e(TAG, "IO exception in EventCommService: " + e.getMessage());
