@@ -22,4 +22,6 @@ public class Constants{
   public static final String ACCOUNT_TYPE = "org.klnusbaum.udj";
   public static final String AUTHORITY = "org.klnusbaum.udj";
   public static final String USER_ID_DATA = "org.klnusbaum.udj.userid";
+  public static final String ACCOUNT_EXTRA = "org.klnusbaum.udj.account";
+  public static final String EVENT_ID_EXTRA = "org.klnusbaum.udj.eventId";
 }

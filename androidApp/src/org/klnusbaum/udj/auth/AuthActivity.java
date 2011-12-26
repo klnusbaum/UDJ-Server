@@ -45,7 +45,6 @@ import org.klnusbaum.udj.network.ServerConnection;
  * Activity used for setting up and editing UDJ accounts.
  */
 public class AuthActivity extends AccountAuthenticatorActivity{
-    public static final String ACCOUNT_EXTRA = "account";
 
     /** The Intent flag to confirm credentials. */
     public static final String PARAM_CONFIRM_CREDENTIALS = "confirmCredentials";
@@ -202,7 +201,7 @@ public class AuthActivity extends AccountAuthenticatorActivity{
         intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, mUsername);
         intent.putExtra(
           AccountManager.KEY_ACCOUNT_TYPE, Constants.ACCOUNT_TYPE);
-        intent.putExtra(ACCOUNT_EXTRA, account);
+        intent.putExtra(Constants.ACCOUNT_EXTRA, account);
         setAccountAuthenticatorResult(intent.getExtras());
         setResult(RESULT_OK, intent);
         finish();

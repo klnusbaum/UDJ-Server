@@ -22,6 +22,10 @@ import android.support.v4.content.AsyncTaskLoader;
 
 import android.content.Context;
 import android.util.Log;
+import android.accounts.OperationCanceledException;
+import android.accounts.AuthenticatorException;
+import android.accounts.AccountManager;
+import android.accounts.Account;
 
 import java.util.List;
 import java.io.IOException;
@@ -34,20 +38,28 @@ import org.apache.http.ParseException;
 import org.klnusbaum.udj.network.ServerConnection;
 import org.klnusbaum.udj.containers.LibraryEntry;
 
-public class LibrarySearchLoader 
+public class AvailableMusicSearchLoader 
   extends AsyncTaskLoader<List<LibraryEntry>>
 {
   private String query;
+  private long eventId;
+  private Account account;
 
-  public LibrarySearchLoader(Context context, String query){
+  public AvailableMusicSearchLoader(
+    Context context, String query, long eventId,  Account account)
+  {
     super(context);
     this.query = query;
+    this.eventId = eventId;
+    this.account = account;
   }
 
   public List<LibraryEntry> loadInBackground(){
     if(query != null){
       try{
-        return ServerConnection.libraryQuery(query);
+        String authToken = AccountManager.get(getContext()).
+          blockingGetAuthToken(account, "", true);
+        return ServerConnection.availableMusicQuery(query, eventId, authToken);
         //TODO do something to the potential errors
       }
       catch(JSONException e){
@@ -61,6 +73,12 @@ public class LibrarySearchLoader
       }
       catch(AuthenticationException e){
 
+      }
+      catch(AuthenticatorException e){
+        //TODO notify the user
+      }
+      catch(OperationCanceledException e){
+        //TODO notify user
       }
       return null;
     }

@@ -49,6 +49,7 @@ import org.klnusbaum.udj.UDJPartyProvider;
 import org.klnusbaum.udj.R;
 */
 import org.klnusbaum.udj.containers.PlaylistEntry;
+import org.klnusbaum.udj.Constants;
 
 
 /**
@@ -56,8 +57,6 @@ import org.klnusbaum.udj.containers.PlaylistEntry;
  */
 public class PlaylistSyncService extends IntentService{
 
-  public static final String ACCOUNT_EXTRA = "org.klnusbaum.udj.account";
-  public static final String EVENT_ID_EXTRA = "org.klnusbaum.udj.eventId";
   private static final String TAG = "PlyalistSyncService";
 /*  public static final String LIB_ENTRY_EXTRA = "libEntry";
   public static final String PLAYLIST_ID_EXTRA = "playlistId";
@@ -70,8 +69,9 @@ public class PlaylistSyncService extends IntentService{
   @Override
   public void onHandleIntent(Intent intent){
     Log.i(TAG, "In playlist sync server");
-    final Account account = (Account)intent.getParcelableExtra(ACCOUNT_EXTRA);
-    long eventId = intent.getLongExtra(EVENT_ID_EXTRA, -1);
+    final Account account = 
+      (Account)intent.getParcelableExtra(Constants.ACCOUNT_EXTRA);
+    long eventId = intent.getLongExtra(Constants.EVENT_ID_EXTRA, -1);
     //TODO hanle error if eventId or account aren't provided
     String authtoken = null;
     try{

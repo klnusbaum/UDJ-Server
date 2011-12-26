@@ -68,7 +68,6 @@ import org.klnusbaum.udj.containers.Event;
 public class EventSelectorActivity extends FragmentActivity{
 
   private static final int SELECTING_PARTY_DIALOG = 0;
-  private static final String ACCOUNT_EXTRA = "account";
   private static final String LOCATION_EXTRA = "location";
   private static final int ACCOUNT_CREATION = 0;
   private Account account;
@@ -92,7 +91,7 @@ public class EventSelectorActivity extends FragmentActivity{
     int requestCode, int resultCode, Intent data)
   {
     if(resultCode == Activity.RESULT_OK){
-      account = (Account)data.getParcelableExtra(AuthActivity.ACCOUNT_EXTRA);
+      account = (Account)data.getParcelableExtra(Constants.ACCOUNT_EXTRA);
     }
     else{
       setResult(Activity.RESULT_CANCELED);
@@ -105,8 +104,8 @@ public class EventSelectorActivity extends FragmentActivity{
     if(eventId > 0){
       Intent viewEventIntent = new Intent(getApplicationContext(),
         EventActivity.class);
-      viewEventIntent.putExtra(EventActivity.EVENT_ID_EXTRA, eventId);
-      viewEventIntent.putExtra(EventActivity.ACCOUNT_EXTRA, account);
+      viewEventIntent.putExtra(Constants.EVENT_ID_EXTRA, eventId);
+      viewEventIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
       startActivity(viewEventIntent);
     }
     else{

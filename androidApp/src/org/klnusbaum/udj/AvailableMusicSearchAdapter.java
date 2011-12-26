@@ -31,20 +31,20 @@ import java.util.List;
 
 import org.klnusbaum.udj.containers.LibraryEntry;
 
-public class LibrarySearchAdapter implements ListAdapter{
+public class AvailableMusicSearchAdapter implements ListAdapter{
 
   private List<LibraryEntry> entries;
   private Context context;
   private View.OnClickListener addClickListener;
   public static final int LIB_ENTRY_VIEW_TYPE = 0;
 
-  public LibrarySearchAdapter(Context context){
+  public AvailableMusicSearchAdapter(Context context){
     this.entries = null;
     this.addClickListener = null;
     this.context = context;
   }
 
-  public LibrarySearchAdapter(
+  public AvailableMusicSearchAdapter(
     Context context, 
     List<LibraryEntry> entries,
     View.OnClickListener addClickListener
@@ -86,9 +86,9 @@ public class LibrarySearchAdapter implements ListAdapter{
 
   public long getItemId(int position){
     if(entries != null){
-      return entries.get(position).getServerId();
+      return entries.get(position).getLibId();
     }
-    return LibraryEntry.INVALID_SERVER_LIB_ID; 
+    return -1; 
   }
 
   public int getItemViewType(int position){

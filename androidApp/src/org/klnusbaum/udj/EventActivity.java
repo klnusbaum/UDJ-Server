@@ -44,6 +44,7 @@ import android.support.v4.app.DialogFragment;
 import java.util.HashMap;
 
 import org.klnusbaum.udj.auth.AuthActivity;
+import org.klnusbaum.udj.Constants;
 import org.klnusbaum.udj.network.PlaylistSyncService;
 import org.klnusbaum.udj.network.EventCommService;
 
@@ -52,8 +53,6 @@ import org.klnusbaum.udj.network.EventCommService;
  */
 public class EventActivity extends FragmentActivity{
 
-  public static final String ACCOUNT_EXTRA = "org.klnusbaum.udj.account";
-  public static final String EVENT_ID_EXTRA = "org.klnusbaum.udj.eventid";
   private static final String QUIT_DIALOG_TAG = "quit_dialog";
 
   private Account account;
@@ -62,8 +61,8 @@ public class EventActivity extends FragmentActivity{
   @Override
   protected void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
-    eventId = getIntent().getLongExtra(EVENT_ID_EXTRA, -1);
-    account = (Account)getIntent().getParcelableExtra(ACCOUNT_EXTRA);
+    eventId = getIntent().getLongExtra(Constants.EVENT_ID_EXTRA, -1);
+    account = (Account)getIntent().getParcelableExtra(Constants.ACCOUNT_EXTRA);
     //TODO handle if no event id or account was given 
     
     FragmentManager fm = getSupportFragmentManager();
@@ -76,17 +75,19 @@ public class EventActivity extends FragmentActivity{
       UDJEventProvider.PLAYLIST_URI,
       this,
       PlaylistSyncService.class);
-    getPlaylist.putExtra(PlaylistSyncService.EVENT_ID_EXTRA, eventId);
-    getPlaylist.putExtra(PlaylistSyncService.ACCOUNT_EXTRA, account);
+    getPlaylist.putExtra(Constants.EVENT_ID_EXTRA, eventId);
+    getPlaylist.putExtra(Constants.ACCOUNT_EXTRA, account);
     startService(getPlaylist);
   }
 
   @Override
   protected void onNewIntent(Intent intent){
-    /*if(Intent.ACTION_SEARCH.equals(intent.getAction())){
-      intent.setClass(this, LibrarySearchActivity.class);
+    if(Intent.ACTION_SEARCH.equals(intent.getAction())){
+      intent.setClass(this, AvailableMusicSearchActivity.class);
+      intent.putExtra(Constants.ACCOUNT_EXTRA, account);
+      intent.putExtra(Constants.EVENT_ID_EXTRA, eventId);
       startActivity(intent);
-    }*/
+    }
   }
 
   @Override 
@@ -102,8 +103,8 @@ public class EventActivity extends FragmentActivity{
       new Uri.Builder().authority(Constants.AUTHORITY).appendPath("event").build(),
       this,
       EventCommService.class);
-    leaveEvent.putExtra(EventCommService.EVENT_ID_EXTRA, eventId);
-    leaveEvent.putExtra(EventCommService.ACCOUNT_EXTRA, account);
+    leaveEvent.putExtra(Constants.EVENT_ID_EXTRA, eventId);
+    leaveEvent.putExtra(Constants.ACCOUNT_EXTRA, account);
     startService(leaveEvent);
     setResult(Activity.RESULT_OK);
     finish();

@@ -184,38 +184,6 @@ public class ServerConnection{
       //TDOD inform caller that theire query is bad 
     }
   }
-    
-  public static List<PlaylistEntry> addSongToPlaylist(
-    PlaylistEntry toAdd, int eventId, String ticketHash) 
-    throws JSONException, ParseException, IOException, AuthenticationException
-  {
-    ArrayList<PlaylistEntry> toAddList = new ArrayList<PlaylistEntry>();
-    toAddList.add(toAdd);
-    return addSongsToPlaylist(toAddList, eventId, ticketHash);
-  }
-
-  public static List<PlaylistEntry> addSongsToPlaylist(  
-    List<PlaylistEntry> added, int eventId, String ticketHash) throws
-    JSONException, ParseException, IOException, AuthenticationException
-  {
-    //TODO implement
-    return null;
-    /*JSONArray toAddArray = PlaylistEntry.getJSONArray(added);
-    params.add(new BasicNameValuePair(
-      PARAM_PLAYLIST_TO_ADD, toAddArray.toString()));
-    JSONArray returnedEntries = new JSONArray(doPost(params, PLAYLIST_URI));
-    return PlaylistEntry.fromJSONArray(returnedEntries);*/
-  }
-
-
-  public static List<PlaylistEntry> getPlaylist(int eventId, String ticketHash) /*throws
-    JSONException, ParseException, IOException, AuthenticationException*/
-  {
-    return null;
-    /*Log.i("TAG", "Getting playlist.");
-    JSONArray returnedEntries = new JSONArray(doGet(PLAYLIST_URI));
-    return PlaylistEntry.fromJSONArray(returnedEntries);*/
-  }
 
   /*public static String doPost(ArrayList<NameValuePair> params, String uri)
     throws AuthenticationException, IOException
@@ -396,5 +364,23 @@ public class ServerConnection{
       //TDOD inform caller that theire query is bad 
     }
 
+  }
+
+  public static List<LibraryEntry> availableMusicQuery(
+    String query, long eventId, String authToken)
+    throws JSONException, ParseException, IOException, AuthenticationException
+  {
+    try{
+      URI uri = new URI(
+        NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT,
+        "/udj/events/"+eventId+"/available_music",
+        "query="+query, null);
+      JSONArray libEntries = new JSONArray(doGet(uri, authToken));
+      return LibraryEntry.fromJSONArray(libEntries);
+    }
+    catch(URISyntaxException e){
+      //TDOD inform caller that theire query is bad 
+    }
+    return null;
   }
 }

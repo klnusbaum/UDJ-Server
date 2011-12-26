@@ -51,12 +51,7 @@ import org.klnusbaum.udj.Constants;
  */
 public class EventCommService extends IntentService{
 
-  public static final String ACCOUNT_EXTRA = "org.klnusbaum.udj.account";
-  public static final String EVENT_ID_EXTRA = "org.klnusbaum.udj.eventId";
   private static final String TAG = "EventCommService";
-/*  public static final String LIB_ENTRY_EXTRA = "libEntry";
-  public static final String PLAYLIST_ID_EXTRA = "playlistId";
-  public static final String SEARCH_QUERY_EXTRA = "search_query";*/
 
   public EventCommService(){
     super("EventCommService");
@@ -65,7 +60,8 @@ public class EventCommService extends IntentService{
   @Override
   public void onHandleIntent(Intent intent){
     Log.d(TAG, "In Event Comm Service");
-    final Account account = (Account)intent.getParcelableExtra(ACCOUNT_EXTRA);
+    final Account account = 
+      (Account)intent.getParcelableExtra(Constants.ACCOUNT_EXTRA);
     //TODO hanle error if account isn't provided
     if(intent.getAction().equals(Intent.ACTION_DELETE)){
       leaveEvent(account, intent);
@@ -81,7 +77,7 @@ public class EventCommService extends IntentService{
     try{
       authtoken = 
         AccountManager.get(this).blockingGetAuthToken(account, "", true);
-      long eventId = intent.getLongExtra(EVENT_ID_EXTRA, -1);
+      long eventId = intent.getLongExtra(Constants.EVENT_ID_EXTRA, -1);
       //TODO handle if event id isn't provided
       String userId = AccountManager.get(this).getUserData(
         account, Constants.USER_ID_DATA);
@@ -101,5 +97,4 @@ public class EventCommService extends IntentService{
       Log.e(TAG, "Operation canceled exception in EventCommService" );
     }
   }
-
 }

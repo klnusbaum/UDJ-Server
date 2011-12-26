@@ -45,17 +45,19 @@ import android.app.SearchManager;
 import java.util.List;
 
 import org.klnusbaum.udj.containers.LibraryEntry;
-import org.klnusbaum.udj.network.PlaylistSyncService;
+import org.klnusbaum.udj.Constants;
 
 
 /**
  * An Activity which displays the results of a library search.
  */
-public class LibrarySearchActivity extends FragmentActivity{
+public class AvailableMusicSearchActivity extends FragmentActivity{
 
   public static final String SEARCH_QUERY_EXTRA = "search_query";
   private static final int LIB_SEARCH_LOADER_TAG = 0;
   private String searchQuery;
+  private Account account;
+  private long eventId;
 
   
   @Override
@@ -69,6 +71,10 @@ public class LibrarySearchActivity extends FragmentActivity{
       searchQuery = getIntent().getStringExtra(SearchManager.QUERY);
     }
 
+    account = getIntent().getParcelableExtra(Constants.ACCOUNT_EXTRA);
+    eventId = getIntent().getLongExtra(Constants.EVENT_ID_EXTRA, -1);
+    //TODO Hanle null account or bad event id.
+
     if(searchQuery == null){
       //TODO throw some sort of error.
     }
@@ -78,23 +84,27 @@ public class LibrarySearchActivity extends FragmentActivity{
     if(fm.findFragmentById(android.R.id.content) == null){
       Bundle queryBundle = new Bundle();
       queryBundle.putString(SEARCH_QUERY_EXTRA, searchQuery);
-      LibrarySearchFragment list = new LibrarySearchFragment();
+      queryBundle.putParcelable(Constants.ACCOUNT_EXTRA, account);
+      queryBundle.putLong(Constants.EVENT_ID_EXTRA, eventId);
+      AvailableMusicSearchFragment list = new AvailableMusicSearchFragment();
       list.setArguments(queryBundle);
       fm.beginTransaction().add(android.R.id.content, list).commit();
     }
   }
 
-  public static class LibrarySearchFragment extends ListFragment
+  public static class AvailableMusicSearchFragment extends ListFragment
     implements LoaderManager.LoaderCallbacks<List<LibraryEntry>>
   {
     /** Adapter used to help display the contents of the library. */
-    LibrarySearchAdapter searchAdapter;
+    AvailableMusicSearchAdapter searchAdapter;
     private String searchQuery;
+    private Account account;
+    private long eventId;
   
     private View.OnClickListener addSongToPlaylistListener =
       new View.OnClickListener(){
         public void onClick(View v){
-          LibraryEntry songToAdd = 
+          /*LibraryEntry songToAdd = 
             (LibraryEntry)v.getTag(R.id.LIB_ENTRY_VIEW_TAG);
           Intent addSongIntent = new Intent(
             Intent.ACTION_INSERT,
@@ -105,7 +115,7 @@ public class LibrarySearchActivity extends FragmentActivity{
             PlaylistSyncService.LIB_ENTRY_EXTRA,
             LibraryEntry.toBundle(songToAdd)
           );
-          getActivity().startService(addSongIntent);
+          getActivity().startService(addSongIntent);*/
         }
       };
 
@@ -113,32 +123,25 @@ public class LibrarySearchActivity extends FragmentActivity{
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
       super.onActivityCreated(savedInstanceState);
-      searchQuery = null; 
-      if(savedInstanceState != null){
-        searchQuery = savedInstanceState.getString(SEARCH_QUERY_EXTRA);
-      }
-      else{
-        Bundle args = getArguments();
-        if(args != null){
-          searchQuery = args.getString(SEARCH_QUERY_EXTRA);
-        }
-      }
 
       setEmptyText(getActivity().getString(R.string.no_library_songs));
       //setHasOptionsMenu(true);
+      Bundle args = getArguments();
+      searchQuery = args.getString(SEARCH_QUERY_EXTRA);
+      account = args.getParcelable(Constants.ACCOUNT_EXTRA);
+      eventId = args.getLong(Constants.EVENT_ID_EXTRA, -1);
+    //TODO Hanle null account or bad event id.
 
-      searchAdapter = new LibrarySearchAdapter(getActivity());
+      searchAdapter = new AvailableMusicSearchAdapter(getActivity());
       setListAdapter(searchAdapter);
       setListShown(false);
-      Bundle loaderArgs = new Bundle();
-      loaderArgs.putString(SEARCH_QUERY_EXTRA, searchQuery);
-      getLoaderManager().initLoader(LIB_SEARCH_LOADER_TAG, loaderArgs, this);
+      getLoaderManager().initLoader(LIB_SEARCH_LOADER_TAG, null, this);
     }
 
     public Loader<List<LibraryEntry>> onCreateLoader(int id, Bundle args){
       if(id == LIB_SEARCH_LOADER_TAG){
-        String query = args.getString(SEARCH_QUERY_EXTRA);
-        return new LibrarySearchLoader(getActivity(), query);
+        return new AvailableMusicSearchLoader(
+          getActivity(), searchQuery, eventId, account);
       }
       return null;
     }
@@ -153,7 +156,7 @@ public class LibrarySearchActivity extends FragmentActivity{
       else{
         Log.i("TAG", "Data returned was null");
       }
-      searchAdapter = new LibrarySearchAdapter(
+      searchAdapter = new AvailableMusicSearchAdapter(
         getActivity(), 
         data,
         addSongToPlaylistListener);
@@ -167,7 +170,7 @@ public class LibrarySearchActivity extends FragmentActivity{
     }
 
     public void onLoaderReset(Loader<List<LibraryEntry>> loader){
-      searchAdapter = new LibrarySearchAdapter(getActivity());
+      searchAdapter = new AvailableMusicSearchAdapter(getActivity());
     }
   }
 }

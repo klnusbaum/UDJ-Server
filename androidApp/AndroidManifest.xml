@@ -64,9 +64,9 @@
             android:resource="@xml/searchable"
           />
         </activity>
-<!--
-        <activity android:name="LibrarySearchActivity"/>
--->
+
+        <activity android:name="AvailableMusicSearchActivity"/>
+
         <activity 
             android:name=".auth.AuthActivity"
             android:excludeFromRecents="true"

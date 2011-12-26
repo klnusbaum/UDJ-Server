@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import android.util.Log;
 
 public class Event{
-  public static final String EVENT_ID_EXTRA = "org.klnusbaum.udj.party";
   public static final String ID_PARAM ="id";
   public static final String NAME_PARAM="name";
   public static final String HOST_NAME_PARAM="host_username";
