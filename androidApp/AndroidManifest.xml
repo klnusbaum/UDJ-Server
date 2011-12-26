@@ -52,7 +52,6 @@
             </intent-filter>
 
         </activity>
-<!--
         <activity android:name="EventActivity"
           android:theme="@android:style/Theme.NoTitleBar"
           android:launchMode="singleTop"
@@ -65,7 +64,7 @@
             android:resource="@xml/searchable"
           />
         </activity>
-
+<!--
         <activity android:name="LibrarySearchActivity"/>
 -->
         <activity 

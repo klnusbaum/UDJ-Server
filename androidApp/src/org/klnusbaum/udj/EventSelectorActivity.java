@@ -103,11 +103,10 @@ public class EventSelectorActivity extends FragmentActivity{
     loginTask = null;
     hideProgress();
     if(eventId > 0){
-      Toast toast = Toast.makeText(
-        getApplicationContext(), 
-        "Logged into event",  
-        Toast.LENGTH_LONG);
-      toast.show();
+      Intent viewEventIntent = new Intent(getApplicationContext(),
+        EventActivity.class);
+      viewEventIntent.putExtra(EventActivity.EVENT_ID_EXTRA, eventId);
+      startActivity(viewEventIntent);
     }
     else{
       Toast toast = Toast.makeText(getApplicationContext(), "Login failed",  
