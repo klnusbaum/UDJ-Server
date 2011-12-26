@@ -28,6 +28,13 @@ import java.util.Date;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.HttpVersion;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -100,11 +107,16 @@ public class ServerConnection{
 
   public static DefaultHttpClient getHttpClient(){
     if(httpClient == null){
-      httpClient = new DefaultHttpClient();
-      final HttpParams params = httpClient.getParams();
-      HttpConnectionParams.setConnectionTimeout(params, REGISTRATION_TIMEOUT);
-      HttpConnectionParams.setSoTimeout(params, REGISTRATION_TIMEOUT);
-      ConnManagerParams.setTimeout(params, REGISTRATION_TIMEOUT);
+      SchemeRegistry schemeReg = new SchemeRegistry();
+      schemeReg.register(
+        new Scheme("http", PlainSocketFactory.getSocketFactory(), SERVER_PORT));
+      BasicHttpParams params = new BasicHttpParams();
+      ConnManagerParams.setMaxTotalConnections(params, 100);
+      HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+      HttpProtocolParams.setUseExpectContinue(params, true);
+      ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(
+        params, schemeReg);
+      httpClient = new DefaultHttpClient(cm, params);
     }
     return httpClient;
   }

@@ -67,10 +67,10 @@ public class EventActivity extends FragmentActivity{
     //TODO handle if no event id or account was given 
     
     FragmentManager fm = getSupportFragmentManager();
-/*    if(fm.findFragmentById(android.R.id.content) == null){
+    if(fm.findFragmentById(android.R.id.content) == null){
       PlaylistFragment list = new PlaylistFragment();
       fm.beginTransaction().add(android.R.id.content, list).commit();
-    }*/
+    }
     Intent getPlaylist = new Intent(
       Intent.ACTION_VIEW,
       UDJEventProvider.PLAYLIST_URI,

@@ -67,11 +67,11 @@ public class PlaylistFragment extends ListFragment
   public Loader<Cursor> onCreateLoader(int id, Bundle args){
     return new CursorLoader(
       getActivity(), 
-      UDJPartyProvider.PLAYLIST_URI, 
+      UDJEventProvider.PLAYLIST_URI, 
       null,
       null,
       null,
-      null);
+      UDJEventProvider.PRIORITY_COLUMN);
 
   }
 
@@ -98,17 +98,17 @@ public class PlaylistFragment extends ListFragment
     @Override
     public void bindView(View view, Context context, Cursor cursor){
       int playlistId = cursor.getInt(cursor.getColumnIndex(
-        UDJPartyProvider.PLAYLIST_ID_COLUMN));
+        UDJEventProvider.PLAYLIST_ID_COLUMN));
 
       TextView songName = 
         (TextView)view.findViewById(R.id.playlistSongName);
       songName.setText(cursor.getString(cursor.getColumnIndex(
-        UDJPartyProvider.SONG_COLUMN)));
+        UDJEventProvider.SONG_COLUMN)));
 
       TextView artist = 
         (TextView)view.findViewById(R.id.playlistArtistName);
       artist.setText(cursor.getString(cursor.getColumnIndex(
-        UDJPartyProvider.ARTIST_COLUMN)));
+        UDJEventProvider.ARTIST_COLUMN)));
 
       ImageButton upVote = 
         (ImageButton)view.findViewById(R.id.up_vote_button);
@@ -128,7 +128,7 @@ public class PlaylistFragment extends ListFragment
         }
       });
   
-      String voteStatus = cursor.getString(cursor.getColumnIndex(
+     /* String voteStatus = cursor.getString(cursor.getColumnIndex(
         UDJPartyProvider.VOTE_STATUS_COLUMN));
       if(voteStatus.equals(UDJPartyProvider.VOTED_UP)){
         upVote.setEnabled(false); 
@@ -142,12 +142,15 @@ public class PlaylistFragment extends ListFragment
       }
       else{
         downVote.setEnabled(true);
-      }
+      }*/
 
       TextView votes = 
         (TextView)view.findViewById(R.id.playlistVotes);
-      votes.setText(String.valueOf(
-      cursor.getInt(cursor.getColumnIndex(UDJPartyProvider.VOTES_COLUMN))));
+      int totalVotes = 
+        cursor.getInt(cursor.getColumnIndex(UDJEventProvider.UP_VOTES_COLUMN))
+        -
+        cursor.getInt(cursor.getColumnIndex(UDJEventProvider.DOWN_VOTES_COLUMN));
+      votes.setText(String.valueOf(totalVotes));
       
     }
 
@@ -160,7 +163,7 @@ public class PlaylistFragment extends ListFragment
     }
   
     private void upVoteClick(View view){
-      String playlistId = view.getTag().toString();
+/*      String playlistId = view.getTag().toString();
       ContentValues toUpdate = new ContentValues();
       toUpdate.put(
         UDJPartyProvider.VOTE_STATUS_COLUMN, UDJPartyProvider.VOTED_UP);
@@ -170,11 +173,11 @@ public class PlaylistFragment extends ListFragment
         UDJPartyProvider.PLAYLIST_URI,
         toUpdate,
         UDJPartyProvider.PLAYLIST_ID_COLUMN + "= ?",
-        new String[]{playlistId});
+        new String[]{playlistId});*/
     }
     
     private void downVoteClick(View view){
-      String playlistId = view.getTag().toString();
+      /*String playlistId = view.getTag().toString();
       ContentValues toUpdate = new ContentValues();
       toUpdate.put(
         UDJPartyProvider.VOTE_STATUS_COLUMN, UDJPartyProvider.VOTED_DOWN);
@@ -184,7 +187,7 @@ public class PlaylistFragment extends ListFragment
         UDJPartyProvider.PLAYLIST_URI,
       toUpdate,
         UDJPartyProvider.PLAYLIST_ID_COLUMN + "= ?",
-      new String[]{playlistId});
+      new String[]{playlistId});*/
     }
   }
 }
