@@ -86,6 +86,7 @@ public class PlaylistSyncService extends IntentService{
   }
 
   private void updateActivePlaylist(Account account, long eventId){
+    Log.d(TAG, "updating active playlist");
     try{
       String authToken = 
         AccountManager.get(this).blockingGetAuthToken(account, "", true);
@@ -122,6 +123,7 @@ public class PlaylistSyncService extends IntentService{
   }
 
   private void syncAddRequests(Account account, long eventId){
+    Log.d(TAG, "Sycning add requests");
     try{
       String authToken = 
         AccountManager.get(this).blockingGetAuthToken(account, "", true);

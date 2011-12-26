@@ -62,7 +62,6 @@ public class PlaylistFragment extends ListFragment
     setListShown(false);
     getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
   }
-    
 
   public Loader<Cursor> onCreateLoader(int id, Bundle args){
     return new CursorLoader(
@@ -72,7 +71,6 @@ public class PlaylistFragment extends ListFragment
       null,
       null,
       UDJEventProvider.PRIORITY_COLUMN);
-
   }
 
   public void onLoadFinished(Loader<Cursor> loader, Cursor data){

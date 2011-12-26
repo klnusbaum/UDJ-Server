@@ -138,7 +138,7 @@ public class ServerConnection{
     URI AUTH_URI = null;
     try{
       AUTH_URI = new URI(
-        NETWORK_PROTOCOL,"",  SERVER_HOST, SERVER_PORT, "/udj/auth", "", "");
+        NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, "/udj/auth", null, null);
     }
     catch(URISyntaxException e){
       //TODO should never get here but I should do something if it does.
@@ -235,7 +235,8 @@ public class ServerConnection{
     final HttpPut put = new HttpPut(uri);
     put.addHeader(TICKET_HASH_HEADER, ticketHash);
     if(payload != null){
-      HttpEntity entity = new StringEntity(payload);
+      StringEntity entity = new StringEntity(payload);
+      entity.setContentType("text/json");
       put.addHeader(entity.getContentType());
       put.setEntity(entity);
     }
@@ -250,6 +251,7 @@ public class ServerConnection{
     else{
       //TODO probably shouldn't be throwing an IOException as that really 
       //doesn't describe what went wrong.
+      Log.e(TAG, "Error doing put: " + response);
       throw new IOException();
     }
     return toReturn;
@@ -395,6 +397,8 @@ public class ServerConnection{
         "/udj/events/"+eventId+"/active_playlist/songs",
         null, null);
       String payload = getAddToActivePlaylistJSON(requests).toString();
+      Log.d(TAG, "Add songs to active playlist payload");
+      Log.d(TAG, payload);
       doPut(uri, authToken, payload); 
     }
     catch(URISyntaxException e){
