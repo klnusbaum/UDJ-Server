@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404
 from udj.headers import getTicketHeader
 from udj.headers import getDjangoTicketHeader
 
+
 def IsntCurrentlyHosting(function):
   def wrapper(*args, **kwargs):
     request = args[0]
@@ -26,24 +27,16 @@ def InParty(function):
   def wrapper(*args, **kwargs):
     request = args[0]
     user = getUserForTicket(request)
-    event_goers = EventGoer.get.filter(
+    event_goers = EventGoer.objects.filter(
       user=user, event__event_id__id=kwargs['event_id'])
-    if len(event_goers) != 1:
-      return HttpResponseForbidden(
-        "You must be logged into the party to do that")
+    if len(event_goers) < 1:
+      if FinishedEvent.objects.filter(event_id__id=kwargs['event_id']).exists():
+        return HttpResponse(status=410) 
+      else:
+        return HttpResponseForbidden(
+          "You must be logged into the party to do that")
     else:
       return function(*args, **kwargs)
-  return wrapper
-
-def IsUserOrHost(function):
-  def wrapper(*args, **kwargs):
-    request = args[0]
-    event = get_object_or_404(Event, event_id__id__exact=kwargs['event_id'])
-    user = getUserForTicket(request)
-    if event.host == user or user.id == int(kwargs['user_id']):
-      return function(*args, **kwargs)
-    else:
-      return HttpResponseForbidden()
   return wrapper
 
 #TODO actually implement this fucntion. i.e. check for password compliance

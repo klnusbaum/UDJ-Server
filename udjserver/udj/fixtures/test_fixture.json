@@ -420,15 +420,6 @@
     }
   },
   {
-    "pk": 1, 
-    "model": "udj.eventgoer", 
-    "fields": {
-      "user": 3, 
-      "time_joined": "2011-11-21 00:07:24", 
-      "event": 1
-    }
-  }, 
-  {
     "pk": 2, 
     "model": "udj.eventgoer", 
     "fields": {

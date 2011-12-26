@@ -143,7 +143,7 @@ class Ticket(models.Model):
     return "Ticket " + self.ticket_hash +  " : User id " + str(self.user.id)
 
 class EventGoer(models.Model):
-  user = models.ForeignKey(User)
+  user = models.ForeignKey(User, unique=True)
   event = models.ForeignKey(Event)
   time_joined = models.DateTimeField(auto_now_add=True)
 

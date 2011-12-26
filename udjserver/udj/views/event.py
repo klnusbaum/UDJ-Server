@@ -17,7 +17,6 @@ from udj.decorators import NeedsJSON
 from udj.decorators import NeedsAuth
 from udj.decorators import IsEventHost
 from udj.decorators import CanLoginToEvent
-from udj.decorators import IsUserOrHost
 from udj.decorators import InParty
 from udj.decorators import IsntCurrentlyHosting
 from udj.models import Event
@@ -33,6 +32,7 @@ from udj.models import ActivePlaylistEntry
 from udj.models import UpVote
 from udj.models import DownVote
 from udj.models import DeletedPlaylistEntry
+from udj.JSONCodecs import getEventDictionary
 from udj.JSONCodecs import getJSONForEvents
 from udj.JSONCodecs import getJSONForAvailableSongs
 from udj.JSONCodecs import getJSONForCurrentSong
@@ -155,6 +155,13 @@ def endEvent(request, event_id):
 @CanLoginToEvent
 def joinEvent(request, event_id):
   joining_user = getUserForTicket(request)
+  isAlreadyInEvent = EventGoer.objects.filter(user=joining_user)
+  if isAlreadyInEvent.exists():
+    if isAlreadyInEvent[0].event.event_id.id == int(event_id):
+      return HttpResponse("joined event", status=201)
+    else:
+      return HttpResponse(
+        json.dumps(getEventDictionary(isAlreadyInEvent[0].event)), status=409)
   event_to_join = Event.objects.get(id=event_id)
   event_goer = EventGoer(user=joining_user, event=event_to_join)
   event_goer.save()
@@ -162,7 +169,7 @@ def joinEvent(request, event_id):
 
 @AcceptsMethods('DELETE')
 @NeedsAuth
-@IsUserOrHost
+@InParty
 def leaveEvent(request, event_id, user_id):
   event_goer = EventGoer.objects.get(event__id=event_id, user__id=user_id)
   event_goer.delete()

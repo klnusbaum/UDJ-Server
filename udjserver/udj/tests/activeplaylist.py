@@ -10,7 +10,7 @@ from udj.models import DeletedPlaylistEntry
 from udj.models import PlayedPlaylistEntry
 from udj.models import CurrentSong
 
-class GetActivePlaylistTest(User2TestCase):
+class GetActivePlaylistTest(User3TestCase):
   def testGetPlaylist(self):
     response = self.doGet('/udj/events/1/active_playlist')
     self.assertEqual(response.status_code, 200)
@@ -79,6 +79,8 @@ class AddSongToPlaylistTests(User1TestCase):
 
 class AddSongToPlaylist2Tests(User2TestCase):
   def testAlreadyPlayed2(self):
+    response = self.doPut('/udj/events/1/user')
+    self.assertEqual(response.status_code, 201)
     request_id = 1
     payload = [{ 'lib_id' : 21, 'client_request_id' : request_id}]
     response = \
