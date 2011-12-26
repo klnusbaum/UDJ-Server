@@ -18,30 +18,31 @@
   along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <resources>
-    <string name="app_name">UDJ</string>
-    <string name="udj_name">UDJ</string>
-    <string name="username_text">Username:</string>
-    <string name="username_hint">Username</string>
-    <string name="password_text">Password:</string>
-    <string name="password_hint">Password</string>
-    <string name="login_text">Login</string>
-    <string name="authenticating">Logging In...</string>
-    <string name="joining_event">Joining Event...</string>
-    <string name="no_playlist_items">There are currently no items in the playlist</string>
-    <string name="no_library_songs">No Results To Display</string>
-    <string name="party_name_label">Name of party:</string>
-    <string name="party_name_hint">Party Name</string>
-    <string name="quit_title">Quit?</string>
-    <string name="quit_message">Are you sure you want to leave the party?</string>
-    <string name="no_party_items">No parties nearby.</string>
-    <string name="party_load_error">Error loading parties. Please try again.</string>
-    <string name="login_error">Login Error</string>
-    <string name="login_error_message">Looks like there was a problem logging in. Can you try retyping your name and password please?</string>
-    <string name="logging_into_party">Logging into party...</string>
-    <string name="search_hint">Search for songs...</string>
-    <string name="searching_lib">Searching library...</string>
-    <string name="bad_password">Password incorrect</string>
-    <string name="bad_username_and_password">Couldn\'t find account matching the given username and password</string>
-    <string name="new_account_text">Sign in to UDJ</string>
-    <string name="need_password">Password is needed</string>
+  <string name="app_name">UDJ</string>
+  <string name="udj_name">UDJ</string>
+  <string name="username_text">Username:</string>
+  <string name="username_hint">Username</string>
+  <string name="password_text">Password:</string>
+  <string name="password_hint">Password</string>
+  <string name="login_text">Login</string>
+  <string name="authenticating">Logging In...</string>
+  <string name="joining_event">Joining Event...</string>
+  <string name="no_playlist_items">There are currently no items in the playlist</string>
+  <string name="no_library_songs">No Results To Display</string>
+  <string name="party_name_label">Name of party:</string>
+  <string name="party_name_hint">Party Name</string>
+  <string name="quit_title">Quit?</string>
+  <string name="quit_message">Are you sure you want to leave the party?</string>
+  <string name="no_party_items">No parties nearby.</string>
+  <string name="party_load_error">Error loading parties. Please try again.</string>
+  <string name="login_error">Login Error</string>
+  <string name="login_error_message">Looks like there was a problem logging in. Can you try retyping your name and password please?</string>
+  <string name="logging_into_party">Logging into party...</string>
+  <string name="search_hint">Search for songs...</string>
+  <string name="searching_lib">Searching library...</string>
+  <string name="bad_password">Password incorrect</string>
+  <string name="bad_username_and_password">Couldn\'t find account matching the given username and password</string>
+  <string name="new_account_text">Sign in to UDJ</string>
+  <string name="need_password">Password is needed</string>
+  <string name="no_location_error">Could not retrieve location</string>
 </resources>

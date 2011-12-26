@@ -96,7 +96,7 @@ public class EventSelectorActivity extends FragmentActivity{
   }
 
   public class EventListFragment extends ListFragment implements 
-    LoaderManager.LoaderCallbacks<List<Event> >,
+    LoaderManager.LoaderCallbacks<EventLoaderResult >,
     LocationListener
   {
     private EventListAdapter eventAdapter;
@@ -175,20 +175,29 @@ public class EventSelectorActivity extends FragmentActivity{
         new EventLoginTask(AccountManager.get(getActivity()), account).execute(eventId);
     }
 
-    public Loader<List<Event> > onCreateLoader(int id, Bundle args){
+    public Loader<EventLoaderResult> onCreateLoader(int id, Bundle args){
       return new EventsLoader(
         getActivity(), 
         account,
         (Location)args.getParcelable(LOCATION_EXTRA));
     }
   
-    public void onLoadFinished(Loader<List<Event> > loader, List<Event> data){
+    public void onLoadFinished(Loader<EventLoaderResult> loader, 
+      EventLoaderResult data)
+    {
       if(data == null){
         setEmptyText(getString(R.string.party_load_error));
       }
-      else{
-        eventAdapter = new EventListAdapter(getActivity(), data, null);
+      else if(data.getError() == EventLoaderResult.NO_ERROR){
+        eventAdapter = 
+          new EventListAdapter(getActivity(), data.getEvents(), null);
         setListAdapter(eventAdapter);
+      }
+      else if(data.getError() == EventLoaderResult.NO_LOCATION){
+        setEmptyText(getString(R.string.no_location_error));
+      }
+      else{
+        setEmptyText(getString(R.string.party_load_error));
       }
 
       if(isResumed()){
@@ -199,7 +208,7 @@ public class EventSelectorActivity extends FragmentActivity{
       }
     }
   
-    public void onLoaderReset(Loader<List<Event> > loader){
+    public void onLoaderReset(Loader<EventLoaderResult> loader){
       eventAdapter = new EventListAdapter(getActivity());
     }
 
@@ -262,7 +271,26 @@ public class EventSelectorActivity extends FragmentActivity{
     }
   } 
 
-  public static class EventsLoader extends AsyncTaskLoader<List<Event> >{
+  public static class EventLoaderResult{
+    public static final String NO_ERROR ="no_error";
+    public static final String NO_LOCATION ="location_error";
+    private List<Event> events;
+    private String error; 
+    public EventLoaderResult(List<Event> events, String error){
+      this.events = events;
+      this.error = error;
+    }
+
+    public String getError(){ 
+      return error;
+    }
+
+    public List<Event> getEvents(){
+      return events;
+    }
+  }
+
+  public static class EventsLoader extends AsyncTaskLoader<EventLoaderResult>{
      
     Context context;
     Account account;
@@ -284,15 +312,20 @@ public class EventSelectorActivity extends FragmentActivity{
       }
     }
  
-    public List<Event> loadInBackground(){
+    public EventLoaderResult loadInBackground(){
       if(account == null){
         Log.i("EVENT LOADER", "ACCOUNT IS NULL");
         return null;
       }
+      if(location == null){
+        return new EventLoaderResult(null, EventLoaderResult.NO_LOCATION);
+      }
       try{
         AccountManager am = AccountManager.get(context);
         String authToken = am.blockingGetAuthToken(account, "", true); 
-        return ServerConnection.getNearbyEvents(location, authToken);
+        List<Event> events = 
+          ServerConnection.getNearbyEvents(location, authToken);
+        return new EventLoaderResult(events, EventLoaderResult.NO_ERROR);
       }
       catch(JSONException e){
         Log.e("EVENT LOADER", "Json exception");
