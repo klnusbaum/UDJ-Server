@@ -90,6 +90,7 @@ public class ServerConnection{
 
  
   private static final String TICKET_HASH_HEADER = "X-Udj-Ticket-Hash";
+  private static final String TICKET_HASH_HEADER = "X-Udj-User-Id";
  
   private static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
   
@@ -108,6 +109,15 @@ public class ServerConnection{
     return httpClient;
   }
 
+  public static class AuthResult{
+    public String ticketHash;
+    public long userId;
+    
+    public AuthResult(String ticketHash, long userId){
+      this.ticketHash = ticketHash;
+      this.userId = userId;
+    }
+  }
 
   public static String authenticate(String username, String password)
     throws AuthenticationException, IOException
@@ -137,7 +147,9 @@ public class ServerConnection{
       throw new IOException("No ticket hash header was found in resposne");
     }
     else{
-      return resp.getHeaders(TICKET_HASH_HEADER)[0].getValue();
+      return new AuthResult(
+        resp.getHeaders(TICKET_HASH_HEADER)[0].getValue(),
+        resp.getHeaders(USER_ID_HEADER)[0].getValue());
     }
   }
 
@@ -321,4 +333,22 @@ public class ServerConnection{
     return true;
   }
 
+  public static List<PlaylistEntry> getActivePlaylist(long eventId, 
+    String authToken)
+    throws JSONException, ParseException, IOException, AuthenticationException
+  {
+    try{
+      URI uri = new URI(
+        NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, 
+        "/udj/events/"+eventId+"/active_playlist",
+        "", "");
+      JSONArray playlistEntries = new JSONArray(doGet(uri, ticketHash));
+      return PlaylistEntry.fromJSONArray(playlistEntries);
+    }
+    catch(URISyntaxException e){
+      return null;
+      //TDOD inform caller that theire query is bad 
+    }
+
+  }
 }

@@ -65,6 +65,8 @@ public class UDJPartyProvider extends ContentProvider{
   public static final String ARTIST_COLUMN = "artist";
   public static final String ALBUM_COLUMN = "album";
   public static final String DURATION_COLUMN = "duration";
+  public static final String ADDER_ID_COLUMN = "adder_id";
+  public static final String ADDER_USERNAME_COLUMN = "adder_id";
 
 	/** SQL statement for creating the playlist table. */
   private static final String PLAYLIST_TABLE_CREATE = 
@@ -77,7 +79,9 @@ public class UDJPartyProvider extends ContentProvider{
     DURATION_COLUMN + " INTEGER NOT NULL, " +
 		SONG_COLUMN + " TEXT NOT NULL, " +
     ARTIST_COLUMN + " TEXT NOT NULL, " + 
-    ALBUM_COLUMN + " TEXT NOT NULL);";
+    ALBUM_COLUMN + " TEXT NOT NULL,
+    ADDER_ID_COLUMN + " INTEGER NOT NULL, " +
+    ADDER_USERNAME_COLUMN + " STRING NOT NULL);";
 
   /** SONG ADD REQUESTS TABLE */
 
@@ -147,51 +151,44 @@ public class UDJPartyProvider extends ContentProvider{
 
   @Override
   public int delete(Uri uri, String where, String[] whereArgs){
-    //TODO implement this.
-    return 0;
+    if(uri.equals(PLAYLIST_URI)){
+      SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+      return db.delete(PLAYLIST_TABLE_NAME, where, whereArgs);
+    }
+    throw new IllegalArgumentException("Unknown URI " + uri);
   }
 
   @Override
   public Uri insert(Uri uri, ContentValues initialValues){
-     return null;
-    //TODO implement this
-/*    SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
     if(uri.equals(PLAYLIST_URI)){
-      long rowId = db.insert(PLAYLIST_TABLE_NAME, null, initialValues);
-      if(rowId > 0){
-        return ContentUris.withAppendedId(PLAYLIST_URI, rowId); 
+      SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+      long rowId = db.insert(PLAYLIST_TABLE_NAME, null, initialValues);    
+      if(rowId >=0){
+        return Uri.withAppendedPath(
+          PLAYLIST_URI, initialValues.getAsLong(PLAYLIST_ID_COLUMN));
       }
       else{
-        throw new SQLException("Failed to insert " + uri);
+        return null;
       }
     }
-    else{
-      throw new IllegalArgumentException("Unknown URI " + uri);
-    }*/
+    throw new IllegalArgumentException("Unknown URI " + uri);
   }
   
   @Override
   public Cursor query(Uri uri, String[] projection, 
     String selection, String[] selectionArgs, String sortOrder)
   {
-    //TODO implement this
-    /*SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-    if(!uri.getAuthority().equals(getContext().getString(R.string.authority))){
-      throw new IllegalArgumentException("Unknown URI " + uri);
+    if(uri.equals(PLAYLIST_URI)){
+      SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+      qb.setTables(PLAYLIST_TABLE_NAME);
+      SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
+      Cursor toReturn = qb.query(
+        db, projection, selection, selectionArgs, null,
+        null, sortOrder);
+      toReturn.setNotificationUri(getContext().getContentResolver(), uri);
+      return toReturn;
     }
-
-    if(uri.getPath().equals(PLAYLIST_URI.getPath())){
-      qb.setTables(PLAYLIST_TABLE_NAME); 
-    }
-    else{
-      throw new IllegalArgumentException("Unknown URI " + uri);
-    }
-
-    SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
-    Cursor toReturn = qb.query(db, projection, selection, selectionArgs, null, null, sortOrder);
-    toReturn.setNotificationUri(getContext().getContentResolver(), uri);
-    return toReturn;*/
-    return null;
+    throw new IllegalArgumentException("Unknown URI " + uri);
   }
 
   @Override

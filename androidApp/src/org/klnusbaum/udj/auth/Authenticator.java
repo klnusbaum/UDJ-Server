@@ -107,11 +107,13 @@ public class Authenticator extends AbstractAccountAuthenticator{
     final String password = am.getPassword(account);
     if(password != null){
       try{
-        final String authToken = ServerConnection.authenticate(account.name, 
-          password);
-        if(!TextUtils.isEmpty(authToken)) {
-          writeTokenToPersistentStorage(authToken);
-          return bundleUpAuthToken(account, authToken);
+        final ServerConnection.AuthResult authResult= 
+          ServerConnection.authenticate(account.name, password);
+        if(!TextUtils.isEmpty(authResult.ticketHash)) {
+          writeTokenToPersistentStorage(authResult.ticketHash);
+          am.setUserData(
+            account, Constants.USER_ID_DATA, Long.toString(authResult.userId);
+          return bundleUpAuthToken(account, authResult.ticketHash);
         }
       }
       catch(AuthenticationException e){

@@ -44,7 +44,51 @@ import org.apache.http.auth.AuthenticationException;
 
 public class RESTProcessor{
 
-  public static void processPlaylistEntries(
+  public static void setActivePlaylist(
+    List<PlaylistEntry> playlistEntries,
+    Context context)
+    throws RemoteException, OperationApplicationException
+  {
+    final ContentResolver resolver = context.getContentResolver();
+    ArrayList<ContentProviderOperation> batchOps = 
+      new ArrayList<ContentProviderOperation>();
+    final ContentProviderOperation.Builder deleteOp = 
+      ContentProviderOperation.newDelete(UDJPartyProvider.PLAYLIST_URI);
+    batchOps.add(deleteOp.build());
+    int priority = 0;
+    for(PlaylistEntry pe: newEntries){
+      batchOps.add(getPlaylistInsertOp(pe), priority);
+      ++priority;
+      if(batchOps.size() >= 50){
+        resolver.applyBatch(Constants.AUTHORITY, batchOps);
+      }
+    }
+    if(batchOps.size() > 0){
+      resolver.applyBatch(context.getString(R.string.authority), batchOps);
+      batchOps.clear();
+    }
+    resolver.notifyChange(UDJPartyProvider.PLAYLIST_URI, null, true);
+  }
+
+  private static ContentProviderOperation getPlaylistInsertOp(
+    PlaylistEntry pe, int priority)
+  {
+    final ContentProviderOperation.Builder insertOp = 
+      ContentProviderOperation.newInsert(UDJPartyProvider.PLAYLIST_URI)
+      .withValue(UDJPartyProvider.PLAYLIST_ID_COLUMN, pe.getId())
+      .withValue(UDJPartyProvider.UP_VOTES_COLUMN, pe.getUpVotes())
+      .withValue(UDJPartyProvider.DOWN_VOTES_COLUMN, pe.getDownVotes())
+      .withValue(UDJPartyProvider.TIME_ADDED_COLUMN, pe.getTimeAdded())
+      .withValue(UDJPartyProvider.PRIORITY_COLUMN, priority)
+      .withValue(UDJPartyProvider.SONG_COLUMN, pe.getSong())
+      .withValue(UDJPartyProvider.ARTIST_COLUMN, pe.getArtist())
+      .withValue(UDJPartyProvider.ALBUM_COLUMN, pe.getAlbum())
+      .withValue(UDJPartyProvider.ADDER_ID_COLUMN, pe.getAdderId())
+      .withValue(UDJPartyProvider.ADDER_USERNAME_COLUMN, pe.getAdderUsername());
+    return insertOp.build();
+  }
+
+  /*public static void processPlaylistEntries(
     List<PlaylistEntry> newEntries, Context context)
     throws RemoteException, OperationApplicationException
   {
@@ -140,5 +184,5 @@ public class RESTProcessor{
     c.close();
     return toReturn;
   }
-
+*/
 }

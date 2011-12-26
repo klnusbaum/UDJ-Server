@@ -187,7 +187,7 @@ public class AuthActivity extends AccountAuthenticatorActivity{
      *
      * @param result the confirmCredentials result.
      */
-    private void finishLogin(String authToken) {
+    private void finishLogin(ServerConnection.AuthResult authResult) {
 
         Log.i(TAG, "finishLogin()");
         final Account account = new Account(mUsername, Constants.ACCOUNT_TYPE);
@@ -196,6 +196,8 @@ public class AuthActivity extends AccountAuthenticatorActivity{
         } else {
             mAccountManager.setPassword(account, mPassword);
         }
+        mAccountManager.setUserData(account, Constants.USER_ID_DATA, 
+          Long.toString(authResult.userId));
         final Intent intent = new Intent();
         intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, mUsername);
         intent.putExtra(
@@ -212,9 +214,10 @@ public class AuthActivity extends AccountAuthenticatorActivity{
      * @param authToken the authentication token returned by the server, or NULL if
      *            authentication failed.
      */
-    public void onAuthenticationResult(String authToken) {
+    public void onAuthenticationResult(ServerConnection.AuthResult authResult) {
 
-        boolean success = ((authToken != null) && (authToken.length() > 0));
+        boolean success = ((authResult.ticketHash != null) 
+          && (authResult.ticketHash.length() > 0));
         Log.i(TAG, "onAuthenticationResult(" + success + ")");
 
         // Our task is complete, so clear it out
@@ -225,7 +228,7 @@ public class AuthActivity extends AccountAuthenticatorActivity{
 
         if (success) {
             if (!mConfirmCredentials) {
-                finishLogin(authToken);
+                finishLogin(authResult);
             } else {
                 finishConfirmCredentials(success);
             }
@@ -291,10 +294,10 @@ public class AuthActivity extends AccountAuthenticatorActivity{
      * Represents an asynchronous task used to authenticate a user against the
      * SampleSync Service
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, String> {
+    public class UserLoginTask extends AsyncTask<Void, Void, ServerConnection.AuthResult> {
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected AuthResult doInBackground(Void... params) {
             // We do the actual work of authenticating the user
             // in the NetworkUtilities class.
             try {
@@ -307,10 +310,12 @@ public class AuthActivity extends AccountAuthenticatorActivity{
         }
 
         @Override
-        protected void onPostExecute(final String authToken) {
+        protected void onPostExecute(
+          final ServerConnection.AuthResult authResult)
+        {
             // On a successful authentication, call back into the Activity to
             // communicate the authToken (or null for an error).
-            onAuthenticationResult(authToken);
+            onAuthenticationResult(authResult);
         }
 
         @Override

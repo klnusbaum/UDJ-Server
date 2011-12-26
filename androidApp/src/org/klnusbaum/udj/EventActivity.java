@@ -55,21 +55,29 @@ public class EventActivity extends FragmentActivity{
   public static final String EVENT_ID_EXTRA = "org.klnusbaum.udj.eventid";
   private static final String QUIT_DIALOG_TAG = "quit_dialog";
 
+  private Account account;
+  private long eventId;
+
   @Override
   protected void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
+    eventId = getIntent().getLongExtra(EVENT_ID_EXTRA, -1);
+    account = (Account)getIntent().getParcelableExtra(ACCOUNT_EXTRA);
+    //TODO handle if no event id or account was given 
     
     FragmentManager fm = getSupportFragmentManager();
 /*    if(fm.findFragmentById(android.R.id.content) == null){
       PlaylistFragment list = new PlaylistFragment();
       fm.beginTransaction().add(android.R.id.content, list).commit();
     }*/
-/*    Intent getPlaylist = new Intent(
+    Intent getPlaylist = new Intent(
       Intent.ACTION_VIEW,
       UDJPartyProvider.PLAYLIST_URI,
       this,
       PlaylistSyncService.class);
-    startService(getPlaylist);*/
+    getPlaylist.putLongExtra(PlaylistSyncService.EVENT_ID_EXTRA, eventId);
+    getPlaylist.putParcelableExtra(PlaylistSyncService.ACCOUNT_EXTRA, account);
+    startService(getPlaylist);
   }
 
   @Override

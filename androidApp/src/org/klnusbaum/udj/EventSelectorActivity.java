@@ -106,6 +106,7 @@ public class EventSelectorActivity extends FragmentActivity{
       Intent viewEventIntent = new Intent(getApplicationContext(),
         EventActivity.class);
       viewEventIntent.putExtra(EventActivity.EVENT_ID_EXTRA, eventId);
+      viewEventIntent.putExtra(EventActivity.ACCOUNT_EXTRA, account);
       startActivity(viewEventIntent);
     }
     else{

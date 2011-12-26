@@ -39,6 +39,7 @@ public class PlaylistEntry{
   public static final String DOWN_VOTES_PARAM = "down_votes";
   public static final String TIME_ADDED_PARAM = "time_added";
   public static final String ADDER_ID_PARAM = "adder_id";
+  public static final String ADDER_USERNAME_PARAM = "adder_username";
 
   private long id;
   private long libSongId;
@@ -50,6 +51,7 @@ public class PlaylistEntry{
   private int downVotes;
   private String timeAdded;
   private long adderId;
+  private String adderUsername;
 
   public PlaylistEntry(
     long id,
@@ -61,7 +63,8 @@ public class PlaylistEntry{
     int upVotes,
     int downVotes,
     String timeAdded,
-    long adderId)
+    long adderId,
+    String adderUsername
   {
     this.id = id;
     this.libSongId = libSongId;
@@ -73,6 +76,7 @@ public class PlaylistEntry{
     this.downVotes = downVotes;
     this.timeAdded = timeAdded;
     this.adderId = adderId;
+    this.adderUsername = adderUsername;
   }
 
   public long getId(){
@@ -115,6 +119,10 @@ public class PlaylistEntry{
     return adderId;
   }
 
+  public String getAdderUsername(){
+    return adderUsername;
+  }
+
   public static PlaylistEntry valueOf(JSONObject jObj)
     throws JSONException 
   {
@@ -128,10 +136,11 @@ public class PlaylistEntry{
       jObj.getInt(UP_VOTES_PARAM),
       jObj.getInt(DOWN_VOTES_PARAM),
       jObj.getString(TIME_ADDED_PARAM),
-      jObj.getLong(ADDER_ID_PARAM));
+      jObj.getLong(ADDER_ID_PARAM),
+      jObj.getString(ADDER_USERNAME_PARAM));
   }
 
-  public static ArrayList<PlaylistEntry> fromJSONArray(JSONArray array)
+  public static List<PlaylistEntry> fromJSONArray(JSONArray array)
     throws JSONException
   {
     ArrayList<PlaylistEntry> toReturn = new ArrayList<PlaylistEntry>();
