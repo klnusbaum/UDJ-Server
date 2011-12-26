@@ -29,6 +29,7 @@ import android.content.Context;
 import android.util.Log;
 import android.database.SQLException;
 import android.content.ContentUris;
+import android.content.ContentResolver;
 
 import java.util.ArrayList;
 
@@ -89,7 +90,7 @@ public class UDJEventProvider extends ContentProvider{
   /** SONG ADD REQUESTS TABLE */
 
   /** Name of add request table. */
-  public static final String ADD_REQUESTS_TABLE_NAME = "add_requests";
+  private static final String ADD_REQUESTS_TABLE_NAME = "add_requests";
   
   /** Constants used for various column names in the song add request table. */
   public static final String ADD_REQUEST_ID_COLUMN = "_id";
@@ -158,6 +159,10 @@ public class UDJEventProvider extends ContentProvider{
       SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
       return db.delete(PLAYLIST_TABLE_NAME, where, whereArgs);
     }
+    if(uri.equals(PLAYLIST_ADD_REQUEST_URI)){
+      SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+      return db.delete(ADD_REQUESTS_TABLE_NAME, where, whereArgs);
+    } 
     throw new IllegalArgumentException("Unknown URI " + uri);
   }
 
@@ -219,14 +224,17 @@ public class UDJEventProvider extends ContentProvider{
   public int update(Uri uri, ContentValues values, String where, 
     String[] whereArgs)
   {
-     //TODO implement this
-     return 0;
-/*    SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
-    if(uri.equals(PLAYLIST_URI)){
+    if(uri.equals(PLAYLIST_ADD_REQUEST_URI)){
+      SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
       int numRowsChanged = 
-        db.update(PLAYLIST_TABLE_NAME, values, where, whereArgs);
+        db.update(ADD_REQUESTS_TABLE_NAME, values, where, whereArgs);
       return numRowsChanged;
-    }
-    return 0;*/
+    } 
+    throw new IllegalArgumentException("Unknown URI " + uri);
+     //TODO implement this
+  }
+
+  public static void eventCleanup(ContentResolver cr){
+    cr.delete(PLAYLIST_ADD_REQUEST_URI, null, null);
   }
 }

@@ -113,7 +113,6 @@ public class RESTProcessor{
   }
   
   private static ContentProviderOperation getAddRequestSyncedOp(long requestId){
-    String[] selectionArgs = new String[] {String.valueOf(requestId)};
     final ContentProviderOperation.Builder updateBuilder = 
       ContentProviderOperation.newUpdate(
         UDJEventProvider.PLAYLIST_ADD_REQUEST_URI)

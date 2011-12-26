@@ -25,6 +25,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.content.AsyncTaskLoader;
 
+import android.content.ContentResolver;
 import android.app.Activity;
 import android.os.Bundle;
 import android.accounts.AccountManager;
@@ -159,10 +160,14 @@ public class EventSelectorActivity extends FragmentActivity{
    
     private AccountManager am; 
     private Account account; 
-    public EventLoginTask(AccountManager am, Account account){
+    private ContentResolver cr;
+    public EventLoginTask(
+      AccountManager am, Account account, ContentResolver cr)
+    {
       super();
       this.am = am;
       this.account = account; 
+      this.cr = cr;
     }
   
     protected Long doInBackground(Long... params){
@@ -170,6 +175,7 @@ public class EventSelectorActivity extends FragmentActivity{
         String authToken = 
           am.blockingGetAuthToken(account, "", true);  
         if(ServerConnection.joinEvent(params[0], authToken)){
+          UDJEventProvider.eventCleanup(cr);          
           return params[0]; 
         }
       }
@@ -269,8 +275,11 @@ public class EventSelectorActivity extends FragmentActivity{
     @Override
     public void onListItemClick(ListView l, View v, int position, long id){
       Long[] eventId = new Long[]{eventAdapter.getItemId(position)};
-      loginTask = (EventLoginTask) 
-        new EventLoginTask(AccountManager.get(getActivity()), account).execute(eventId);
+      loginTask = (EventLoginTask)new EventLoginTask(
+        AccountManager.get(getActivity()), 
+        account, 
+        getContentResolver());
+      loginTask.execute(eventId); 
       showProgress();
     }
 
