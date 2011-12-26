@@ -30,8 +30,11 @@ def InParty(function):
     event_goers = EventGoer.objects.filter(
       user=user, event__event_id__id=kwargs['event_id'])
     if len(event_goers) < 1:
-      return HttpResponseForbidden(
-        "You must be logged into the party to do that")
+      if FinishedEvent.objects.filter(event_id__id=kwargs['event_id']).exists():
+        return HttpResponse(status=410) 
+      else:
+        return HttpResponseForbidden(
+          "You must be logged into the party to do that")
     else:
       return function(*args, **kwargs)
   return wrapper
