@@ -67,9 +67,12 @@ public class EventCommService extends IntentService{
     Log.d(TAG, "In Event Comm Service");
     final Account account = (Account)intent.getParcelableExtra(ACCOUNT_EXTRA);
     //TODO hanle error if account isn't provided
-    if(intent.getAction() == Intent.ACTION_DELETE){
+    if(intent.getAction().equals(Intent.ACTION_DELETE)){
       leaveEvent(account, intent);
     }
+    else{
+      Log.d(TAG, "ACTION wasn't delete, it was " + intent.getAction());
+    } 
   }
 
   private void leaveEvent(Account account, Intent intent){
@@ -86,7 +89,7 @@ public class EventCommService extends IntentService{
       ServerConnection.leaveEvent(eventId, Long.valueOf(userId), authtoken);
     }
     catch(IOException e){
-      Log.e(TAG, "IO exception in EventCommService" );
+      Log.e(TAG, "IO exception in EventCommService: " + e.getMessage());
     }
     catch(AuthenticationException e){
       Log.e(TAG, "Authentication exception in EventCommService" );

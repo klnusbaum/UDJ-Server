@@ -101,6 +101,11 @@
             android:exported="true">
         </service>
 
+        <service
+            android:name=".network.EventCommService"
+            android:exported="true">
+        </service>
+
         <provider android:name="org.klnusbaum.udj.UDJEventProvider"
           android:authorities="org.klnusbaum.udj"
         />
