@@ -55,8 +55,11 @@ public class UDJEventProvider extends ContentProvider{
   public static final Uri PLAYLIST_ADD_REQUEST_URI = 
     Uri.parse("content://org.klnusbaum.udj/playlist/add_request");
 
-  public static final Uri PARTIERS_URI =
-    Uri.parse("content://org.klnusbaum.udj/partiers");
+  public static final Uri UP_VOTES_URI = 
+    Uri.parse("content://org.klnusbaum.udj/playlist/up_votes");
+
+  public static final Uri DOWN_VOTES_URI = 
+    Uri.parse("content://org.klnusbaum.udj/playlist/down_votes");
 
   /** PLAYLIST TABLE */
 
@@ -115,6 +118,41 @@ public class UDJEventProvider extends ContentProvider{
     "CHECK (" + ADD_REQUEST_SYNC_STATUS_COLUMN + "=" + ADD_REQUEST_NEEDS_SYNC +
     " OR " + ADD_REQUEST_SYNC_STATUS_COLUMN + "=" + ADD_REQUEST_SYNCED +
     "));";
+
+
+   /** VOTES TABLE */
+   
+   /** Name of votes table */
+   private static final String VOTES_TABLE_NAME = "votes";
+
+   /** Constants used for various column names in the votes table */
+   public static final String VOTE_ID_COLUMN = "_id";
+   public static final String VOTE_PLAYLIST_ENTRY_ID_COLUMN = "playlist_id";
+   public static final String VOTE_TYPE_COLUMN = "vote_type";
+   public static final String VOTE_SYNC_STATUS_COLUMN = "sync_status";
+
+   /** Constants used for the sync status of an up vote */
+   public static final int VOTE_NEEDS_SYNC = 1;
+   public static final int VOTE_SYNCED = 0;
+
+   /** Constants use for vote types */
+   public static final int UP_VOTE_TYPE = 1;
+   public static final int DOWN_VOTE_TYPE = 2;
+
+   /** SQL statement for creating the up votes table */
+  private static final String VOTES_TABLE_CREATE = 
+    "CREATE TABLE " + VOTES_TABLE_NAME + " (" +
+    VOTE_ID_COLUMN + " INTEGER PRIMARY KEY AUTOINCREMENT, " + 
+    VOTE_PLAYLIST_ENTRY_ID_COLUMN + " INTEGER NOT NULL, " +
+    VOTE_TYPE_COLUMN + " INTEGER NOT NULL CHECK("
+      VOTE_TYPE_COLUMN +"=" + UP_VOTE_TYPE + " OR " + VOTE_TYPE_COLUMN + "=" + 
+      DOWN_VOTE_TYPE + "), " + 
+    VOTE_SYNC_STATUS_COLUMN + " INTEGER DEFAULT "+ VOTE_NEEDS_SYNC + " " +
+    
+    "CHECK (" + VOTE_SYNC_STATUS + "=" + VOTE_NEEDS_SYNC +
+    " OR " + VOTE_SYNC_STATUS + "=" + VOTE_SYNCED +
+    "));";
+
 
 
 	/** Helper for opening up the actual database. */
