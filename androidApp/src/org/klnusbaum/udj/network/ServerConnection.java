@@ -138,7 +138,8 @@ public class ServerConnection{
     URI AUTH_URI = null;
     try{
       AUTH_URI = new URI(
-        NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, "/udj/auth", null, null);
+        NETWORK_PROTOCOL, null,
+        SERVER_HOST, SERVER_PORT, "/udj/auth", null, null);
     }
     catch(URISyntaxException e){
       //TODO should never get here but I should do something if it does.
@@ -146,7 +147,6 @@ public class ServerConnection{
     final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
     params.add(new BasicNameValuePair(PARAM_USERNAME, username));
     params.add(new BasicNameValuePair(PARAM_PASSWORD, password));
-    boolean authWorked = false;
     HttpEntity entity = null;
     entity = new UrlEncodedFormEntity(params);
     final HttpPost post = new HttpPost(AUTH_URI);
@@ -174,7 +174,7 @@ public class ServerConnection{
   {
     try{
       URI queryUri = new URI(
-        NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, 
+        NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT, 
         "/udj/events/" + eventId + "/available_music", 
         AVAILABLE_QUERY_PARAM + "=" +query, "");
       JSONArray searchResults = new JSONArray(doGet(queryUri, ticketHash));
@@ -279,7 +279,7 @@ public class ServerConnection{
     if(location == null) return null;
     try{
       URI eventsQuery = new URI(
-        NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, 
+        NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT, 
         "/udj/events/" + location.getLatitude() + "/" + location.getLongitude(),
         null, null);
       JSONArray events = new JSONArray(doGet(eventsQuery, ticketHash));
@@ -298,7 +298,7 @@ public class ServerConnection{
   {
     try{
       URI eventsQuery = new URI(
-        NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, 
+        NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT, 
         "/udj/events/",
         PARAME_EVENT_NAME+"="+query, null);
       JSONArray events = new JSONArray(doGet(eventsQuery, ticketHash));
@@ -315,7 +315,7 @@ public class ServerConnection{
   {
     try{
       URI uri  = new URI(
-        NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, 
+        NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT, 
         "/udj/events/" + eventId + "/user",
         null, null);
        doPut(uri, ticketHash, null); 
@@ -341,7 +341,7 @@ public class ServerConnection{
   {
     try{
       URI uri = new URI(
-        NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, 
+        NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT, 
         "/udj/events/"+eventId+"/active_playlist",
         null, null);
       JSONArray playlistEntries = new JSONArray(doGet(uri, authToken));
@@ -358,7 +358,7 @@ public class ServerConnection{
   {
     try{
       URI uri = new URI(
-        NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT, 
+        NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT, 
         "/udj/events/"+eventId+"/users/"+userId,
         null, null);
       doDelete(uri, authToken);
@@ -375,7 +375,7 @@ public class ServerConnection{
   {
     try{
       URI uri = new URI(
-        NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT,
+        NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT,
         "/udj/events/"+eventId+"/available_music",
         "query="+query, null);
       JSONArray libEntries = new JSONArray(doGet(uri, authToken));
@@ -393,7 +393,7 @@ public class ServerConnection{
   {
     try{
       URI uri = new URI(
-        NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT,
+        NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT,
         "/udj/events/"+eventId+"/active_playlist/songs",
         null, null);
       String payload = getAddToActivePlaylistJSON(requests).toString();
@@ -426,8 +426,9 @@ public class ServerConnection{
   {
     try{
       URI uri = new URI(
-        NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT,
-        "/udj/events/"+eventId+"/active_playlist/"+userId + "/add_requests",
+        NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT,
+        "/udj/events/"+eventId+"/active_playlist/users/"+
+          userId + "/add_requests",
         null, null);
       return getRequestsHashMap(new JSONArray(doGet(uri, authToken)));
     }
