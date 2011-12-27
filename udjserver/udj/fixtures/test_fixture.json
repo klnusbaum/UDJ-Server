@@ -416,6 +416,7 @@
       "entry_id" : 7,
       "event" : 1,
       "adder" : 2,
+      "song" : 4,
       "client_request_id" : 4
     }
   },

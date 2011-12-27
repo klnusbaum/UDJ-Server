@@ -5,11 +5,13 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseForbidden
+from django.core.exceptions import ObjectDoesNotExist
 from udj.decorators import IsEventHost
 from udj.decorators import AcceptsMethods
 from udj.decorators import NeedsJSON
 from udj.decorators import NeedsAuth
 from udj.decorators import InParty
+from udj.decorators import TicketUserMatch
 from udj.models import ActivePlaylistEntry
 from udj.models import ActivePlaylistEntryId
 from udj.models import LibraryEntry
@@ -21,6 +23,7 @@ from udj.models import PlayedPlaylistEntry
 from udj.models import DeletedPlaylistEntry
 from udj.JSONCodecs import getJSONForActivePlaylistEntries
 from udj.JSONCodecs import getActivePlaylistEntryDictionary
+from udj.JSONCodecs import getJSONForPreviousAddRequests
 from udj.auth import getUserForTicket
 
 @NeedsAuth
@@ -143,6 +146,27 @@ def removeSongFromActivePlaylist(request, event_id, playlist_id):
     ActivePlaylistEntry, entry_id__id=playlist_id, event__id=event_id)
   current_entry_id = get_object_or_404(ActivePlaylistEntryId, pk=playlist_id)
   DeletedPlaylistEntry(entry_id=current_entry_id, adder=toRemove.adder,
-    event=toRemove.event, client_request_id=toRemove.client_request_id).save()
+    song=toRemove.song, event=toRemove.event, 
+    client_request_id=toRemove.client_request_id).save()
   toRemove.delete()
   return HttpResponse()
+
+@NeedsAuth
+@InParty
+@TicketUserMatch
+@AcceptsMethods('GET')
+def getAddRequests(request, event_id, user_id):
+  inQueue = ActivePlaylistEntry.objects.filter(
+    event__event_id__id=event_id, adder__id=user_id);
+  deletedEntries = DeletedPlaylistEntry.objects.filter(
+    event__event_id__id=event_id, adder__id=user_id)
+  playedEntries = PlayedPlaylistEntry.objects.filter(
+    event__event_id__id=event_id, adder__id=user_id)
+  currentSong = None
+  try:
+    currentSong = CurrentSong.objects.get(event__event_id__id=event_id)
+  except ObjectDoesNotExist:
+    pass 
+  return HttpResponse(getJSONForPreviousAddRequests(inQueue, deletedEntries,
+    playedEntries, currentSong, user_id)) 
+

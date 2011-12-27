@@ -6,6 +6,7 @@ from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
 from udj.models import Event
 from udj.models import EventGoer
+from udj.models import FinishedEvent
 from udj.auth import getUserForTicket
 from django.shortcuts import get_object_or_404
 from udj.headers import getTicketHeader

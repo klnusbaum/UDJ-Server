@@ -98,3 +98,22 @@ def getJSONForEventGoers(eventGoers):
   for eventGoer in eventGoers:
     toReturn.append(getEventGoerJSON(eventGoer))
   return json.dumps(toReturn)
+
+def getAddRequestDictionary(addRequest):
+  return {
+    'lib_id' : addRequest.song.id,
+    'client_request_id' : addRequest.adder.id
+  }
+
+def getJSONForPreviousAddRequests(
+  inQueue, deletedEntries, playlistEntries, currentSong, adderId):
+  toReturn = []
+  for song in inQueue:
+    toReturn.append(getAddRequestDictionary(song))  
+  for song in deletedEntries:
+    toReturn.append(getAddRequestDictionary(song))  
+  for song in playlistEntries:
+    toReturn.append(getAddRequestDictionary(song))  
+  if currentSong != None and currentSong.adder.id == adderId:
+    toReturn.append(getAddRequestDictionary(currentSong))
+  return json.dumps(toReturn)

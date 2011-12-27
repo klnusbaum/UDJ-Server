@@ -131,3 +131,11 @@ class TestRemoveSong(User1TestCase):
   def testDuplicateRemove(self):
     response = self.doDelete('/udj/events/1/active_playlist/7')
     self.assertEqual(response.status_code, 200)
+
+class TestGetAddRequests(User1TestCase):
+  def testGetAddRequests(self):
+    response = self.doGet('/udj/events/1/active_playlist/2/add_requests')
+    self.assertEqual(response.status_code, 200)
+    #TODO make this test more rigerous
+    returnedRequests = json.loads(response.content)
+    self.assertEqual(len(returnedRequests),4) 

@@ -100,6 +100,7 @@ class PlayedPlaylistEntry(models.Model):
 
 class DeletedPlaylistEntry(models.Model):
   entry_id = models.ForeignKey(ActivePlaylistEntryId, unique=True)
+  song = models.ForeignKey(LibraryEntry)
   adder = models.ForeignKey(User)
   event = models.ForeignKey(Event)
   client_request_id = models.IntegerField()
