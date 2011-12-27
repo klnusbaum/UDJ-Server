@@ -83,6 +83,7 @@ class ActivePlaylistEntry(models.Model):
     return self.song.song
 
 class PlayedPlaylistEntry(models.Model):
+  entry_id = models.ForeignKey(ActivePlaylistEntryId, unique=True)
   song = models.ForeignKey(LibraryEntry)
   upvotes = models.IntegerField()
   downvotes = models.IntegerField()
@@ -110,6 +111,7 @@ class DeletedPlaylistEntry(models.Model):
   
 
 class FinishedPlaylistEntry(models.Model):
+  entry_id = models.ForeignKey(ActivePlaylistEntryId, unique=True)
   song = models.ForeignKey(LibraryEntry)
   upvotes = models.IntegerField()
   downvotes = models.IntegerField()
@@ -123,6 +125,7 @@ class FinishedPlaylistEntry(models.Model):
 
 
 class CurrentSong(models.Model):
+  entry_id = models.ForeignKey(ActivePlaylistEntryId, unique=True)
   event = models.ForeignKey(Event, unique=True)
   song = models.ForeignKey(LibraryEntry)
   upvotes = models.IntegerField()

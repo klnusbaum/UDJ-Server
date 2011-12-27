@@ -97,6 +97,7 @@ def createEvent(request):
 def savePlayedSongs(endingEvent, finishedEvent):
   for playedSong in PlayedPlaylistEntry.objects.filter(event=endingEvent):
     FinishedPlaylistEntry(
+      entry_id = playedSong.entry_id,
       song = playedSong.song,
       upvotes = playedSong.upvotes,
       downvotes = playedSong.downvotes,
@@ -109,6 +110,7 @@ def saveCurrentSong(endEvent, finishedEvent):
   currentSong = CurrentSong.objects.filter(event=endEvent)
   if currentSong.exists(): 
     FinishedPlaylistEntry(
+      entry_id = currentSong[0].entry_id,
       song = currentSong[0].song,
       upvotes = currentSong[0].upvotes,
       downvotes = currentSong[0].downvotes,
@@ -265,6 +267,7 @@ def moveCurrentSong2PlayedSong(given_event):
   except ObjectDoesNotExist:
    return
   PlayedPlaylistEntry(
+    entry_id = currentSong.entry_id,
     song = currentSong.song,
     upvotes = currentSong.upvotes,
     downvotes = currentSong.downvotes,
@@ -279,6 +282,7 @@ def movePlaylistEntry2CurrentSong(given_event, playlist_entry_id):
   playlistEntry = get_object_or_404(ActivePlaylistEntry, 
     entry_id__id = playlist_entry_id)
   CurrentSong( 
+    entry_id = playlistEntry.entry_id,
     song = playlistEntry.song,
     upvotes = UpVote.objects.filter(playlist_entry=playlistEntry).count(),
     downvotes = DownVote.objects.filter(playlist_entry=playlistEntry).count(),

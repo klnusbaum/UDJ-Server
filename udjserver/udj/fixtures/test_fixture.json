@@ -385,6 +385,7 @@
     "pk": 1, 
     "model": "udj.currentsong", 
     "fields": {
+      "entry_id" : 2,
       "song": 12, 
       "downvotes": 1, 
       "adder": 3, 
@@ -399,6 +400,7 @@
     "pk": 1, 
     "model": "udj.playedplaylistentry", 
     "fields": {
+      "entry_id" : 1,
       "song": 10,
       "downvotes": 0, 
       "adder": 2, 
