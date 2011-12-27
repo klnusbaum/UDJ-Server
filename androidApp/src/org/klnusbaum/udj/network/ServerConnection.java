@@ -216,7 +216,7 @@ public class ServerConnection{
     get.addHeader(TICKET_HASH_HEADER, ticketHash);
     final HttpResponse resp = getHttpClient().execute(get);
     final String response = EntityUtils.toString(resp.getEntity());
-    Log.i(TAG, "Response \n" + response);
+    Log.v(TAG, "Response \n" + response.substring(response.length()/10));
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
       return response;
     }
@@ -224,7 +224,7 @@ public class ServerConnection{
       throw new AuthenticationException();
     }
     else{
-      throw new IOException();
+      throw new IOException(response);
     }
   }
 
@@ -416,6 +416,34 @@ public class ServerConnection{
       requestObject.put("client_request_id", requestId);
       requestObject.put("lib_id", requests.get(requestId));
       toReturn.put(requestObject);
+    }
+    return toReturn;
+  }
+
+  public static HashMap<Long,Long> getAddRequests(
+    long userId, long eventId, String authToken)
+    throws JSONException, ParseException, IOException, AuthenticationException
+  {
+    try{
+      URI uri = new URI(
+        NETWORK_PROTOCOL, "", SERVER_HOST, SERVER_PORT,
+        "/udj/events/"+eventId+"/active_playlist/"+userId + "/add_requests",
+        null, null);
+      return getRequestsHashMap(new JSONArray(doGet(uri, authToken)));
+    }
+    catch(URISyntaxException e){
+      //TDOD inform caller that theire query is bad 
+    }
+    return null;
+  }
+
+  private static HashMap<Long, Long> getRequestsHashMap(JSONArray requests)
+    throws JSONException
+  {
+    HashMap<Long, Long> toReturn = new HashMap<Long, Long>();
+    for(int i=0; i<requests.length(); ++i){
+      JSONObject jObj = requests.getJSONObject(i);
+      toReturn.put(jObj.getLong("client_request_id"), jObj.getLong("lib_id"));
     }
     return toReturn;
   }

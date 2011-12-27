@@ -49,11 +49,17 @@ import android.location.LocationListener;
 import android.widget.Toast;
 import android.os.AsyncTask;
 import android.app.ProgressDialog;
+import android.net.Uri;
+import java.io.FileOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.FileNotFoundException;
 
 
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.json.JSONException;
 
@@ -176,16 +182,43 @@ public class EventSelectorActivity extends FragmentActivity{
           am.blockingGetAuthToken(account, "", true);  
         if(ServerConnection.joinEvent(params[0], authToken)){
           UDJEventProvider.eventCleanup(cr);          
+          HashMap<Long,Long> previousRequests = ServerConnection.getAddRequests(
+            Long.valueOf(am.getUserData(account,Constants.USER_ID_DATA)),
+            params[0], 
+            authToken);
+          UDJEventProvider.setPreviousAddRequests(cr, previousRequests);
           return params[0]; 
         }
       }
       catch(IOException e){
+        try{
+        String errorFilename = "errfile.html";
+        FileOutputStream fos = 
+          openFileOutput(errorFilename, Context.MODE_WORLD_READABLE);
+        fos.write(e.getMessage().getBytes());
+        fos.close();
+        /*Intent viewerrorIntent = new Intent(Intent.ACTION_VIEW, Uri.fromFile(
+          new File(getFilesDir() + "/" + errorFilename)));
+        startActivity(viewerrorIntent);*/
+        }
+        catch(FileNotFoundException f){
+
+        }
+        catch(IOException f){
+      
+        }
         //TODO notify the user
       }
       catch(AuthenticatorException e){
         //TODO notify the user
       }
       catch(OperationCanceledException e){
+        //TODO notify user
+      }
+      catch(JSONException e){
+        //TODO notify user
+      }
+      catch(AuthenticationException e){
         //TODO notify user
       }
       return new Long(-1);

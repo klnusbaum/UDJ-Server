@@ -30,8 +30,12 @@ import android.util.Log;
 import android.database.SQLException;
 import android.content.ContentUris;
 import android.content.ContentResolver;
+import android.content.ContentProviderOperation;
+import android.content.OperationApplicationException;
+import android.os.RemoteException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Content provider used to maintain the content asociated
@@ -236,5 +240,47 @@ public class UDJEventProvider extends ContentProvider{
 
   public static void eventCleanup(ContentResolver cr){
     cr.delete(PLAYLIST_ADD_REQUEST_URI, null, null);
+  }
+
+  public static void setPreviousAddRequests(
+    ContentResolver cr, 
+    HashMap<Long, Long> previousRequests)
+  {
+    try{
+      ArrayList<ContentProviderOperation> batchOps = 
+        new ArrayList<ContentProviderOperation>();
+      for(Long requestId: previousRequests.keySet()){
+        batchOps.add(
+          getAddRequestInsertOp(requestId, previousRequests.get(requestId)));
+        if(batchOps.size() >= 50){
+          cr.applyBatch(Constants.AUTHORITY, batchOps);
+          batchOps.clear();
+        }
+      }
+      if(batchOps.size() > 0){
+        cr.applyBatch(Constants.AUTHORITY, batchOps);
+        batchOps.clear();
+      }
+    }
+    catch(RemoteException e){
+
+    }
+    catch(OperationApplicationException e){
+    
+    }
+  }
+
+  private static ContentProviderOperation getAddRequestInsertOp(
+    long requestId, long libId)
+  {
+    final ContentProviderOperation.Builder insertOp = 
+      ContentProviderOperation.newInsert(
+        UDJEventProvider.PLAYLIST_ADD_REQUEST_URI)
+      .withValue(UDJEventProvider.ADD_REQUEST_ID_COLUMN, requestId)
+      .withValue(UDJEventProvider.ADD_REQUEST_LIB_ID_COLUMN, libId)
+      .withValue(UDJEventProvider.ADD_REQUEST_SYNC_STATUS_COLUMN, 
+        UDJEventProvider.ADD_REQUEST_SYNCED);
+    return insertOp.build();
+
   }
 }
