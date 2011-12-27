@@ -216,7 +216,7 @@ public class ServerConnection{
     get.addHeader(TICKET_HASH_HEADER, ticketHash);
     final HttpResponse resp = getHttpClient().execute(get);
     final String response = EntityUtils.toString(resp.getEntity());
-    Log.v(TAG, "Response \n" + response.substring(response.length()/10));
+    Log.v(TAG, "Get Response \n" + response);
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
       return response;
     }

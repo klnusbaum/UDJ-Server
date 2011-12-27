@@ -191,22 +191,6 @@ public class EventSelectorActivity extends FragmentActivity{
         }
       }
       catch(IOException e){
-        try{
-        String errorFilename = "errfile.html";
-        FileOutputStream fos = 
-          openFileOutput(errorFilename, Context.MODE_WORLD_READABLE);
-        fos.write(e.getMessage().getBytes());
-        fos.close();
-        /*Intent viewerrorIntent = new Intent(Intent.ACTION_VIEW, Uri.fromFile(
-          new File(getFilesDir() + "/" + errorFilename)));
-        startActivity(viewerrorIntent);*/
-        }
-        catch(FileNotFoundException f){
-
-        }
-        catch(IOException f){
-      
-        }
         //TODO notify the user
       }
       catch(AuthenticatorException e){

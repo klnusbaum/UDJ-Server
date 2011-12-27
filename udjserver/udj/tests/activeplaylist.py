@@ -139,3 +139,13 @@ class TestGetAddRequests(User1TestCase):
     #TODO make this test more rigerous
     returnedRequests = json.loads(response.content)
     self.assertEqual(len(returnedRequests),4) 
+
+class TestGetAddRequests2(User2TestCase):
+  def testGetAddRequests(self):
+    response = self.doPut('/udj/events/1/user')
+    self.assertEqual(response.status_code, 201)
+    response = self.doGet('/udj/events/1/active_playlist/3/add_requests')
+    self.assertEqual(response.status_code, 200)
+    #TODO make this test more rigerous
+    returnedRequests = json.loads(response.content)
+    self.assertEqual(len(returnedRequests),3) 
