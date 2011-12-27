@@ -19,6 +19,7 @@ from udj.decorators import IsEventHost
 from udj.decorators import CanLoginToEvent
 from udj.decorators import InParty
 from udj.decorators import IsntCurrentlyHosting
+from udj.decorators import IsUserOrHost
 from udj.models import Event
 from udj.models import EventId
 from udj.models import LibraryEntry
@@ -149,12 +150,20 @@ def endEvent(request, event_id):
   
   return HttpResponse("Party ended")
 
-
-@AcceptsMethods('PUT')
 @NeedsAuth
+@TicketUserMatch
+@AcceptsMethods(['PUT', 'DELETE'])
+def joinOrLeaveEvent(request, event_id, user_id):
+  if request.method == 'PUT':
+    return joinEvent(request, event_id, user_id)
+  elif request.method == 'DELETE':
+    return leaveEvent(request, event_id, user_id)
+
+
+
 @CanLoginToEvent
-def joinEvent(request, event_id):
-  joining_user = getUserForTicket(request)
+def joinEvent(request, event_id, user_id):
+  joining_user = User.objects.get(pk=user_id)
   isAlreadyInEvent = EventGoer.objects.filter(user=joining_user)
   if isAlreadyInEvent.exists():
     if isAlreadyInEvent[0].event.event_id.id == int(event_id):
@@ -167,8 +176,6 @@ def joinEvent(request, event_id):
   event_goer.save()
   return HttpResponse("joined event", status=201)
 
-@AcceptsMethods('DELETE')
-@NeedsAuth
 @InParty
 def leaveEvent(request, event_id, user_id):
   event_goer = EventGoer.objects.get(event__id=event_id, user__id=user_id)

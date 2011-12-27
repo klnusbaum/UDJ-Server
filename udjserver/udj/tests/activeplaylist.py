@@ -79,7 +79,7 @@ class AddSongToPlaylistTests(User1TestCase):
 
 class AddSongToPlaylist2Tests(User2TestCase):
   def testAlreadyPlayed2(self):
-    response = self.doPut('/udj/events/1/user')
+    response = self.doPut('/udj/events/1/users/3')
     self.assertEqual(response.status_code, 201)
     request_id = 1
     payload = [{ 'lib_id' : 21, 'client_request_id' : request_id}]
@@ -142,7 +142,7 @@ class TestGetAddRequests(User1TestCase):
 
 class TestGetAddRequests2(User2TestCase):
   def testGetAddRequests(self):
-    response = self.doPut('/udj/events/1/user')
+    response = self.doPut('/udj/events/1/users/3')
     self.assertEqual(response.status_code, 201)
     response = self.doGet('/udj/events/1/active_playlist/3/add_requests')
     self.assertEqual(response.status_code, 200)

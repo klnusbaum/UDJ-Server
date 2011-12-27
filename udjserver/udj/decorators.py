@@ -12,6 +12,19 @@ from django.shortcuts import get_object_or_404
 from udj.headers import getTicketHeader
 from udj.headers import getDjangoTicketHeader
 
+def IsUserOrHost(function):
+  def wrapper(*args, **kwargs):
+    request = args[0]
+    user_id = kwargs['user_id'] if 'user_id' in kwargs else args[2]
+    event_id = kwargs['event_id'] if 'event_id' in kwargs else args[1]
+    event = Event.objects.get(event_id__id=event_id)
+    if ticketMatchesUser(args[0], user_id):
+      return function(*args, **kwargs)
+    elif event.host.id == user_id:
+        return function(*args, **kwargs)
+    else:
+      return HttpResponseForbidden("only the host or user may do that")
+
 
 def IsntCurrentlyHosting(function):
   def wrapper(*args, **kwargs):
@@ -26,12 +39,13 @@ def IsntCurrentlyHosting(function):
    
 def InParty(function):
   def wrapper(*args, **kwargs):
+    event_id = kwargs['event_id'] if 'event_id' in kwargs else args[1]
     request = args[0]
     user = getUserForTicket(request)
     event_goers = EventGoer.objects.filter(
-      user=user, event__event_id__id=kwargs['event_id'])
+      user=user, event__event_id__id=event_id)
     if len(event_goers) < 1:
-      if FinishedEvent.objects.filter(event_id__id=kwargs['event_id']).exists():
+      if FinishedEvent.objects.filter(event_id__id=event_id).exists():
         return HttpResponse(status=410) 
       else:
         return HttpResponseForbidden(
