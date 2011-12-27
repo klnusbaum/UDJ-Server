@@ -156,11 +156,11 @@ class UpVote(models.Model):
   user =  models.ForeignKey(User)
 
   def __unicode__(self):
-    return "Upvote for: " + str(playlist_entry.id) 
+    return "Upvote for: " + str(self.playlist_entry.id) 
 
 class DownVote(models.Model):
   playlist_entry = models.ForeignKey(ActivePlaylistEntryId) 
   user =  models.ForeignKey(User)
 
   def __unicode__(self):
-    return "Downvote for: " + str(playlist_entry.id) 
+    return "Downvote for: " + str(self.playlist_entry.id) 

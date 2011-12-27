@@ -134,7 +134,7 @@ class TestRemoveSong(User1TestCase):
 
 class TestGetAddRequests(User1TestCase):
   def testGetAddRequests(self):
-    response = self.doGet('/udj/events/1/active_playlist/2/add_requests')
+    response = self.doGet('/udj/events/1/active_playlist/users/2/add_requests')
     self.assertEqual(response.status_code, 200)
     #TODO make this test more rigerous
     returnedRequests = json.loads(response.content)
@@ -144,8 +144,37 @@ class TestGetAddRequests2(User2TestCase):
   def testGetAddRequests(self):
     response = self.doPut('/udj/events/1/users/3')
     self.assertEqual(response.status_code, 201)
-    response = self.doGet('/udj/events/1/active_playlist/3/add_requests')
+    response = self.doGet('/udj/events/1/active_playlist/users/3/add_requests')
     self.assertEqual(response.status_code, 200)
     #TODO make this test more rigerous
     returnedRequests = json.loads(response.content)
     self.assertEqual(len(returnedRequests),3) 
+
+class TestGetVotes(User1TestCase):
+  def testGetVotes(self):
+    response = self.doGet('/udj/events/1/active_playlist/users/2/votes')
+    self.assertEqual(response.status_code, 200)
+    jsonResponse = json.loads(response.content)
+    upvotes = jsonResponse['up_vote_ids']
+    downvotes = jsonResponse['down_vote_ids']
+    self.assertEqual(len(upvotes), 3)
+    self.assertEqual(len(downvotes), 0)
+    requiredUpvotes = [6,5,3]
+    for upvote in requiredUpvotes:
+      self.assertTrue(upvote in upvotes)
+
+class TestGetVotes2(User2TestCase):
+  def testGetVotes2(self):
+    response = self.doPut('/udj/events/1/users/3')
+    self.assertEqual(response.status_code, 201)
+    response = self.doGet('/udj/events/1/active_playlist/users/3/votes')
+    self.assertEqual(response.status_code, 200)
+    jsonResponse = json.loads(response.content)
+    upvotes = jsonResponse['up_vote_ids']
+    downvotes = jsonResponse['down_vote_ids']
+    self.assertEqual(len(upvotes), 3)
+    self.assertEqual(len(downvotes), 1)
+    requiredUpvotes = [5,4,3]
+    for upvote in requiredUpvotes:
+      self.assertTrue(upvote in upvotes)
+    self.assertTrue(6 in downvotes)

@@ -170,3 +170,20 @@ def getAddRequests(request, event_id, user_id):
   return HttpResponse(getJSONForPreviousAddRequests(inQueue, deletedEntries,
     playedEntries, currentSong, user_id)) 
 
+@NeedsAuth
+@InParty
+@TicketUserMatch
+@AcceptsMethods('GET')
+def getVotes(request, event_id, user_id):
+  activePlaylist = ActivePlaylistEntry.objects.filter(
+    event__event_id__id=event_id).only("entry_id")
+  activeIds = [entry.entry_id.id for entry in activePlaylist]
+  downVotes = DownVote.objects.filter(
+    user__id=user_id, playlist_entry__in=activeIds).only('playlist_entry')
+  downvoteIds = [vote.playlist_entry.id for vote in downVotes]
+  upVotes = UpVote.objects.filter(
+    user__id=user_id, playlist_entry__in=activeIds).only('playlist_entry')
+  upvoteIds = [vote.playlist_entry.id for vote in upVotes]
+  return HttpResponse(json.dumps(
+    {'up_vote_ids' : upvoteIds, 'down_vote_ids' : downvoteIds}))
+  
