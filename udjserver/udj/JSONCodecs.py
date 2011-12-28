@@ -17,13 +17,13 @@ def getLibraryEntryFromJSON(songJson, user_id):
 
 def getJSONForAvailableSongs(songs):
   toReturn = []
-  for song in songs:
+  for available_song in songs:
     toAdd = { 
-      'id' : song.library_entry.host_lib_song_id, 
-      'title' : song.library_entry.title, 
-      'artist' : song.library_entry.artist, 
-      'album' : song.library_entry.album,
-      'duration' : song.library_entry.duration
+      'id' : available_song.song.host_lib_song_id, 
+      'title' : available_song.song.title, 
+      'artist' : available_song.song.artist, 
+      'album' : available_song.song.album,
+      'duration' : available_song.song.duration
     }
     toReturn.append(toAdd)
   return json.dumps(toReturn)

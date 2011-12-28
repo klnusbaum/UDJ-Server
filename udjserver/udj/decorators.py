@@ -41,9 +41,9 @@ def InParty(function):
   def wrapper(*args, **kwargs):
     request = args[0]
     event_id = kwargs['event_id'] 
-    user_id = kwargs['user_id'] 
+    requestingUser = getUserForTicket(request)
     event_goers = EventGoer.objects.filter(
-      user__id=user_id, event__id=event_id)
+      user=requestingUser, event__id=event_id)
     if not event_goers.exists():
       return HttpResponseForbidden(
         "You must be logged into the party to do that")

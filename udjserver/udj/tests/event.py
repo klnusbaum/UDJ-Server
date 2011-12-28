@@ -75,19 +75,17 @@ class JoinEventTest(User5TestCase):
     self.assertEqual(response.status_code, 201)
     event_goer_entries = EventGoer.objects.get(event__id=2, user__id=5)
     
-"""
 class LeaveEventTest(User3TestCase):
   def testLeaveEvent(self):
-    response = self.doDelete('/udj/events/1/users/4')
+    response = self.doDelete('/udj/events/2/users/3')
     self.assertEqual(response.status_code, 200, response.content)
-    event_goer_entries = EventGoer.objects.filter(event__id=1, user__id=4)
-    self.assertEqual(len(event_goer_entries), 0)
+    event_goer_entries = EventGoer.objects.filter(event__id=2, user__id=3)
+    self.assertFalse(event_goer_entries.exists())
 
-"""
 
 #Disabling this for now. We'll come back to it later.
 """
-class KickUserTest(User1TestCase):
+class KickUserTest(User2TestCase):
   def testKickUser(self):
     userId=4
     response = self.doDelete('/udj/events/1/users/'+str(userId))
@@ -96,60 +94,66 @@ class KickUserTest(User1TestCase):
     self.assertEqual(len(event_goer_entries), 0)
 """
 
-#TODO still need to test the max_results parameter
-"""
 class TestGetAvailableMusic(User3TestCase):
   def verifyExpectedResults(self, results, realSongs):
-   realIds = [song.host_lib_song_id for song in realSongs]
-   for song in results:
-     self.assertTrue(song['id'] in realIds)
+    realIds = [song.song.host_lib_song_id for song in realSongs]
+    for song in results:
+      self.assertTrue(song['id'] in realIds)
  
   def testGetAlbum(self): 
-   response = self.doGet('/udj/events/1/available_music?query=blue')
+   response = self.doGet('/udj/events/2/available_music?query=blue')
    self.assertEqual(response.status_code, 200, response.content)
    results = json.loads(response.content)
    self.assertEqual(len(results), 2)
-   realSongs = LibraryEntry.objects.filter(album="Blue")
+   realSongs = AvailableSong.objects.filter(song__album="Blue")
    self.verifyExpectedResults(results, realSongs)
 
   def testMaxResults(self): 
    response = self.doGet(
-    '/udj/events/1/available_music?query=blue&max_results=1')
+    '/udj/events/2/available_music?query=blue&max_results=1')
    self.assertEqual(response.status_code, 200, response.content)
    results = json.loads(response.content)
    self.assertEqual(len(results), 1)
 
   def testGetArtist(self): 
    response = self.doGet(
-    '/udj/events/1/available_music?query=smashing+pumpkins')
+    '/udj/events/2/available_music?query=third+eye+blind')
    self.assertEqual(response.status_code, 200, response.content)
    results = json.loads(response.content)
-   self.assertEqual(len(results), 2)
-   realSongs = LibraryEntry.objects.filter(artist="The Smashing Pumpkins")
+   self.assertEqual(len(results), 3)
+   realSongs = AvailableSong.objects.filter(song__artist="Third Eye Blind")
    self.verifyExpectedResults(results, realSongs)
 
-  def testGetSong(self):
+  def testGetTitle(self):
    response = self.doGet(
-    '/udj/events/1/available_music?query=Never+Let+You+Go')
+    '/udj/events/2/available_music?query=Never+Let+You+Go')
    self.assertEqual(response.status_code, 200, response.content)
    results = json.loads(response.content)
    self.assertEqual(len(results), 1)
-   realSongs = LibraryEntry.objects.filter(song="Never Let You Go")
+   realSongs = AvailableSong.objects.filter(song__title="Never Let You Go")
    self.verifyExpectedResults(results, realSongs)
 
   def testSongNotAvailable(self): 
    response = self.doGet(
-    '/udj/events/1/available_music?query=rage+against+the+machine')
+    '/udj/events/2/available_music?query=water+landing')
+   self.assertEqual(response.status_code, 200, response.content)
+   results = json.loads(response.content)
+   self.assertEqual(len(results), 0)
+
+  def testSongsDontExist(self): 
+   response = self.doGet(
+    '/udj/events/2/available_music?query=smashing+pumpkins')
    self.assertEqual(response.status_code, 200, response.content)
    results = json.loads(response.content)
    self.assertEqual(len(results), 0)
 
   def testGetRandoms(self):
    response = self.doGet(
-    '/udj/events/1/available_music/random_songs')
+    '/udj/events/2/available_music/random_songs')
    self.assertEqual(response.status_code, 200, response.content)
    results = json.loads(response.content)
 
+"""
 class TestPutAvailableMusic(User1TestCase):
   def testSimplePut(self): 
     toAdd=[13]

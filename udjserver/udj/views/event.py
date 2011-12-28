@@ -116,8 +116,6 @@ def joinOrLeaveEvent(request, event_id, user_id):
   elif request.method == 'DELETE':
     return leaveEvent(request, event_id=event_id, user_id=user_id)
 
-
-
 @IsntInOtherEvent
 def joinEvent(request, event_id, user_id):
   joining_user = User.objects.get(pk=user_id)
@@ -162,7 +160,7 @@ def getAvailableMusic(request, event_id):
 @AcceptsMethods('GET')
 def getRandomMusic(request, event_id):
   rand_limit = request.GET.get('max_randoms',20)
-  randomSongs = AvailableSong.objects.filter(event__id=id)
+  randomSongs = AvailableSong.objects.filter(event__id=event_id)
   randomSongs = randomSongs.order_by('?')[:rand_limit]
   return HttpResponse(getJSONForAvailableSongs(randomSongs))
 
