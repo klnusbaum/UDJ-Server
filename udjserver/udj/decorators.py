@@ -6,7 +6,6 @@ from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
 from udj.models import Event
 from udj.models import EventGoer
-from udj.models import FinishedEvent
 from udj.auth import getUserForTicket
 from django.shortcuts import get_object_or_404
 from udj.headers import getTicketHeader
@@ -15,8 +14,8 @@ from udj.headers import getDjangoTicketHeader
 def IsUserOrHost(function):
   def wrapper(*args, **kwargs):
     request = args[0]
-    user_id = kwargs['user_id'] if 'user_id' in kwargs else args[2]
-    event_id = kwargs['event_id'] if 'event_id' in kwargs else args[1]
+    user_id = kwargs['user_id']
+    event_id = kwargs['event_id']
     event = Event.objects.get(event_id__id=event_id)
     if ticketMatchesUser(args[0], user_id):
       return function(*args, **kwargs)
@@ -30,7 +29,7 @@ def IsntCurrentlyHosting(function):
   def wrapper(*args, **kwargs):
     request = args[0]
     user = getUserForTicket(request)
-    hosts = Event.objects.filter(host=user)
+    hosts = Event.objects.filter(host=user).exclude(state__exact=u'FN')
     if hosts.exists():
       return HttpResponse(status=409)
     else:
@@ -39,17 +38,16 @@ def IsntCurrentlyHosting(function):
    
 def InParty(function):
   def wrapper(*args, **kwargs):
-    event_id = kwargs['event_id'] if 'event_id' in kwargs else args[1]
     request = args[0]
-    user = getUserForTicket(request)
+    event_id = kwargs['event_id'] 
+    user_id = kwargs['user_id'] 
     event_goers = EventGoer.objects.filter(
-      user=user, event__event_id__id=event_id)
-    if len(event_goers) < 1:
-      if FinishedEvent.objects.filter(event_id__id=event_id).exists():
-        return HttpResponse(status=410) 
-      else:
-        return HttpResponseForbidden(
-          "You must be logged into the party to do that")
+      user__id=user_id, event__id=event_id)
+    if not event_goers.exists():
+      return HttpResponseForbidden(
+        "You must be logged into the party to do that")
+    elif event_goers[0].event.state == u'FN':
+      return HttpResponse(status=410)
     else:
       return function(*args, **kwargs)
   return wrapper
@@ -64,9 +62,10 @@ def CanLoginToEvent(function):
 def IsEventHost(function):
   def wrapper(*args, **kwargs):
     request = args[0]
-    event = get_object_or_404(Event, event_id__id__exact=kwargs['event_id'])
-    user = getUserForTicket(request)
-    if event.host != user:
+    event_id = kwargs['event_id']
+    user_id = kwargs['user_id']
+    event = get_object_or_404(Event, event__id=event_id)
+    if event.host.id != user_id:
       return HttpResponseForbidden("Only the host may do that")
     else:
       return function(*args, **kwargs)
@@ -89,7 +88,6 @@ def TicketUserMatch(function):
   def wrapper(*args, **kwargs):
     request = args[0]
     user_id = kwargs['user_id']
-    
     if getDjangoTicketHeader() not in request.META:
       responseString = "Must provide the " + getTicketHeader() + " header. "
       return HttpResponseBadRequest(responseString)
