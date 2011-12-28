@@ -402,6 +402,15 @@
     }
   }, 
   {
+    "pk": 3, 
+    "model": "udj.eventgoer", 
+    "fields": {
+      "user": 4, 
+      "time_joined": "2011-12-28 01:35:40", 
+      "event": 3
+    }
+  }, 
+  {
     "pk": 1, 
     "model": "udj.upvote", 
     "fields": {

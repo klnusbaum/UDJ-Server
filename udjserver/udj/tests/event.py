@@ -247,45 +247,33 @@ class TestGetCurrentSong(User3TestCase):
     self.assertEqual(actualCurrentSong.adder.id, result['adder_id'])
     self.assertEqual(actualCurrentSong.adder.username, result['adder_username'])
 
-"""
-class TestSetCurentSong(User1TestCase):
+class TestSetCurrentSong(User2TestCase):
   def testSetCurrentSong(self):
     response = self.doPost(
-      '/udj/events/1/current_song', 
-      {'playlist_entry_id' : '5'})
+      '/udj/events/2/current_song', 
+      {'playlist_entry_id' : '4'})
     self.assertEqual(response.status_code, 200, response.content)
-    movedActivePlaylistEntry = ActivePlaylistEntry.objects.filter(pk=5)  
-    self.assertFalse(movedActivePlaylistEntry.exists())
-    newCurrent = CurrentSong.objects.get(client_request_id=2, adder=3, event=1)
-    self.assertEqual(newCurrent.upvotes, 3)
-    self.assertEqual(newCurrent.downvotes, 0)
-    oldCurrent = PlayedPlaylistEntry.objects.get(
-      client_request_id=1, adder=3, event=1)
+    self.assertEqual(ActivePlaylistEntry.objects.get(pk=4).state, u'PL')
+    self.assertEqual(ActivePlaylistEntry.objects.get(pk=5).state, u'FN')
 
-class TestSetCurrentSong2(User4TestCase):
   def testSetWithNoCurrentSong(self):
-    libentry = LibraryEntry.objects.get(pk=14)
-    AvailableSong(library_entry=libentry).save();
-    new_entry_id = ActivePlaylistEntryId()
-    new_entry_id.save()
-    activeEntry = ActivePlaylistEntry(
-      entry_id=new_entry_id,
-      song=libentry, adder=User.objects.get(pk=5),
-      event=Event.objects.get(pk=2), client_request_id=3)
-    activeEntry.save()
+    currentSong = ActivePlaylistEntry.objects.get(pk=5)
+    currentSong.state = u'FN'
+    currentSong.save()
     response = self.doPost(
       '/udj/events/2/current_song', 
-      {'playlist_entry_id' : str(activeEntry.entry_id.id)})
-    self.assertEqual(response.status_code, 200)
+      {'playlist_entry_id' : '4'})
+    self.assertEqual(response.status_code, 200, response.content)
+    self.assertEqual(ActivePlaylistEntry.objects.get(pk=4).state, u'PL')
 
-class TestDuplicateHostEventCreate(User1TestCase):
+class TestDuplicateHostEventCreate(User2TestCase):
   def testDuplicatHostEventCreate(self):
     partyName = "A Bitchn' Party"
     event = {'name' : partyName } 
     response = self.doJSONPut('/udj/events/event', json.dumps(event))
     self.assertEqual(response.status_code, 409)
 
-class TestDoubleEventCreate(User2TestCase):
+class TestDoubleEventCreate(User5TestCase):
   def testDoubleEventCreate(self):
     partyName = "A Bitchn' Party"
     event = {'name' : partyName } 
@@ -299,15 +287,14 @@ class TestDoubleEventCreate(User2TestCase):
     eventId = json.loads(response.content)['event_id']
     response = self.doDelete('/udj/events/'+str(eventId))
 
-class TestGetEventGoers(User1TestCase):
+class TestGetEventGoers(User3TestCase):
   def testRegularGetEventGoers(self):
-    event_id = 1
+    event_id = 2
     response = self.doGet('/udj/events/' + str(event_id) + '/users')
     self.assertEqual(response.status_code, 200)
     eventGoersJson = json.loads(response.content)
-    eventGoers = EventGoer.objects.filter(event__event_id__id=event_id)
+    eventGoers = EventGoer.objects.filter(event__id=event_id)
     self.assertEqual(len(eventGoersJson), len(eventGoers))
     jsonIds = [eg['id'] for eg in eventGoersJson]
     for eg in eventGoers:
       self.assertTrue(eg.user.id in jsonIds)
-"""

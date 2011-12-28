@@ -22,6 +22,7 @@ from udj.decorators import InParty
 from udj.decorators import IsntCurrentlyHosting
 from udj.decorators import IsntInOtherEvent
 from udj.decorators import IsUserOrHost
+from udj.models import EventGoer
 from udj.models import Event
 from udj.models import LibraryEntry
 from udj.models import AvailableSong
@@ -106,6 +107,8 @@ def endEvent(request, event_id):
   toEnd.state = u'FN'
   toEnd.time_ended = datetime.now()
   toEnd.save()
+  user = getUserForTicket(request) 
+  EventGoer.objects.get(user=user, event__id=event_id).delete()
   return HttpResponse("Party ended")
 
 @NeedsAuth
@@ -219,10 +222,12 @@ def setCurrentSong(request, event_id):
     return HttpResponseBadRequest(
       'Please specifiy the playlist entry to set as the current song')
 
-  event = Event.objects.get(event__id=event_id) 
+  newId = request.POST['playlist_entry_id']
   newCurrentSong = get_object_or_404(
-    ActivePlaylistEntry, pk=request.POST.__get__('playlist_entry_id'))
-  newCurrentSong.state=u'PL'
+    ActivePlaylistEntry, 
+    pk=request.POST['playlist_entry_id'],
+    event__id=event_id)
+  newCurrentSong.state = u'PL'
 
   currentSong = None
   try:

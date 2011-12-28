@@ -1,3 +1,4 @@
+import json
 from udj.auth import isValidTicket
 from udj.auth import ticketMatchesUser
 from django.http import HttpResponse
@@ -88,9 +89,12 @@ def IsntInOtherEvent(function):
   def wrapper(*args, **kwargs):
     request = args[0]
     event_id = kwargs['event_id']
-    events = EventGoer.objects.exclude(event__id=event_id)
+    user_id = kwargs['user_id']
+    events = \
+      EventGoer.objects.exclude(event__id=event_id).filter(user__id=user_id)
     if events.exists():
-      return HttpResponse(json.dumps(getEventDictionary(events[0])), status=409)
+      return HttpResponse(
+        json.dumps(getEventDictionary(events[0].event)), status=409)
     else:
       return function(*args, **kwargs)
   return wrapper
