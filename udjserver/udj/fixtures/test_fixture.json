@@ -478,7 +478,7 @@
     "pk": 1, 
     "model": "udj.downvote", 
     "fields": {
-      "playlist_entry": 1, 
+      "playlist_entry": 3, 
       "user": 3
     }
   }, 

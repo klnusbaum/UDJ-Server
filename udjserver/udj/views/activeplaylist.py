@@ -28,18 +28,19 @@ def getActivePlaylist(request, event_id):
   My guess is that if you help write the software for DMBSes, this query is
   going to make your cry. My sincerest apologies.
   """
-  playlistEntries = ActivePlaylistEntry.objects.filter(event__id=event_id).\
+  playlistEntries = ActivePlaylistEntry.objects.filter(
+    event__id=event_id, state=u'QE').\
     extra(
       select={
         'upvotes' : 'SELECT COUNT(*) FROM udj_upvote where ' +\
-        'udj_upvote.playlist_entry.id = udj_activeplaylistentry.id',
+        'udj_upvote.playlist_entry_id = id',
 
         'downvotes' : 'select count(*) from udj_downvote where ' +\
-        'udj_downvote.playlist_entry.id = udj_activeplaylistentry.entry.id',
+        'udj_downvote.playlist_entry_id = id',
         'total_votes' : '(SELECT COUNT(*) FROM udj_upvote where ' +\
-        'udj_upvote.playlist_entry.id = udj_activeplaylistentry.entry.id)-' +\
+        'udj_upvote.playlist_entry_id = id)-' +\
         '(select count(*) from udj_downvote where ' +\
-        'udj_downvote.playlist_entry.id = udj_activeplaylistentry.entry.id)'
+        'udj_downvote.playlist_entry_id = id)'
       },
       order_by = ['-total_votes', 'time_added'])
     
@@ -49,12 +50,12 @@ def hasBeenAdded(song_request, event_id, user):
   return ActivePlaylistEntry.objects.filter(
       adder=user, 
       client_request_id=song_request['client_request_id'],
-      event__event_id__id=event_id
+      event__id=event_id
     ).exists() 
 
   
 def addSong2ActivePlaylist(song_request, event_id, adding_user):
-  event = Event.objects.get(event_id__id=event_id)
+  event = Event.objects.get(pk=event_id)
   songToAdd = LibraryEntry.objects.get(
       host_lib_song_id=song_request['lib_id'], owning_user=event.host)
   added = ActivePlaylistEntry(
@@ -84,22 +85,22 @@ def addToPlaylist(request, event_id):
 @NeedsAuth
 @InParty
 @AcceptsMethods('POST')
-def voteSongDown(request, event_id, playlist_id):
-  return voteSong(request, event_id, playlist_id, DownVote)
+def voteSongDown(request, event_id, playlist_id, user_id):
+  return voteSong(event_id, playlist_id, user_id, DownVote)
 
 @csrf_exempt
 @NeedsAuth
 @InParty
 @AcceptsMethods('POST')
-def voteSongUp(request, event_id, playlist_id):
-  return voteSong(request, event_id, playlist_id, UpVote)
+def voteSongUp(request, event_id, playlist_id, user_id):
+  return voteSong(event_id, playlist_id, user_id, UpVote)
 
 def hasAlreadyVoted(votingUser, entryToVote, VoteType):
   return VoteType.objects.filter(
     user=votingUser, playlist_entry=entryToVote).exists()
 
-def voteSong(request, event_id, playlist_id, VoteType):
-  votingUser = getUserForTicket(request)
+def voteSong(event_id, playlist_id, user_id, VoteType):
+  votingUser = User.objects.get(pk=user_id)
   entryToVote = get_object_or_404(ActivePlaylistEntry, pk=playlist_id)
   if hasAlreadyVoted(votingUser, entryToVote, VoteType):
     return HttpResponseForbidden()

@@ -64,6 +64,7 @@ class ActivePlaylistEntry(models.Model):
   client_request_id = models.IntegerField()
   state = models.CharField(max_length=2, choices=STATE_CHOICES, default=u'QE')
 
+
   class Meta:
     unique_together = ("adder", "client_request_id", "event")
 
