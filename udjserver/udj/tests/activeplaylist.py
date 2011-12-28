@@ -8,15 +8,28 @@ from udj.models import DownVote
 from udj.models import ActivePlaylistEntry
 
 class GetActivePlaylistTest(User3TestCase):
+
   def testGetPlaylist(self):
     response = self.doGet('/udj/events/2/active_playlist')
     self.assertEqual(response.status_code, 200)
     playlist = json.loads(response.content)
     self.assertEqual(len(playlist), 4)
+
     self.assertEqual(playlist[0]['id'], 1)
+    self.assertEqual(playlist[0]['up_votes'], 2) 
+    self.assertEqual(playlist[0]['down_votes'], 0) 
+
     self.assertEqual(playlist[1]['id'], 2)
-    self.assertEqual(playlist[2]['id'], 3)
-    self.assertEqual(playlist[3]['id'], 4)
+    self.assertEqual(playlist[1]['up_votes'], 1) 
+    self.assertEqual(playlist[1]['down_votes'], 0) 
+
+    self.assertEqual(playlist[2]['id'], 4)
+    self.assertEqual(playlist[2]['up_votes'], 1)
+    self.assertEqual(playlist[2]['down_votes'], 0)
+
+    self.assertEqual(playlist[3]['id'], 3)
+    self.assertEqual(playlist[3]['up_votes'], 1)
+    self.assertEqual(playlist[3]['down_votes'], 1)
 
 class AddSongToPlaylistTests(User2TestCase):
 

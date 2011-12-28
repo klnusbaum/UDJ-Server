@@ -12,6 +12,8 @@ from udj.decorators import NeedsJSON
 from udj.decorators import NeedsAuth
 from udj.decorators import InParty
 from udj.decorators import TicketUserMatch
+from django.db.models import Count
+from django.db.models import Sum
 from udj.models import ActivePlaylistEntry
 from udj.models import LibraryEntry
 from udj.models import Event
@@ -24,26 +26,14 @@ from udj.auth import getUserForTicket
 @InParty
 @AcceptsMethods('GET')
 def getActivePlaylist(request, event_id):
-  """
-  My guess is that if you help write the software for DMBSes, this query is
-  going to make your cry. My sincerest apologies.
-  """
   playlistEntries = ActivePlaylistEntry.objects.filter(
     event__id=event_id, state=u'QE').\
-    extra(
-      select={
-        'upvotes' : 'SELECT COUNT(*) FROM udj_upvote where ' +\
-        'udj_upvote.playlist_entry_id = id',
+    annotate(upvotes=Count('upvote'), downvotes=Count('downvote')).\
+    order_by('time_added')
+  
+  playlistEntries = sorted(
+    playlistEntries, key=lambda entry: -(entry.upvotes-entry.downvotes))
 
-        'downvotes' : 'select count(*) from udj_downvote where ' +\
-        'udj_downvote.playlist_entry_id = id',
-        'total_votes' : '(SELECT COUNT(*) FROM udj_upvote where ' +\
-        'udj_upvote.playlist_entry_id = id)-' +\
-        '(select count(*) from udj_downvote where ' +\
-        'udj_downvote.playlist_entry_id = id)'
-      },
-      order_by = ['-total_votes', 'time_added'])
-    
   return HttpResponse(getJSONForActivePlaylistEntries(playlistEntries))
 
 def hasBeenAdded(song_request, event_id, user):
