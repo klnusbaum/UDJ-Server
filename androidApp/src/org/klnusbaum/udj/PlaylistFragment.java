@@ -101,7 +101,7 @@ public class PlaylistFragment extends ListFragment
       TextView songName = 
         (TextView)view.findViewById(R.id.playlistSongName);
       songName.setText(cursor.getString(cursor.getColumnIndex(
-        UDJEventProvider.SONG_COLUMN)));
+        UDJEventProvider.TITLE_COLUMN)));
 
       TextView artist = 
         (TextView)view.findViewById(R.id.playlistArtistName);

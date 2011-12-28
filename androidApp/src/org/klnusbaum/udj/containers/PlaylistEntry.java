@@ -31,7 +31,7 @@ public class PlaylistEntry{
 
   public static final String ID_PARAM = "id";
   public static final String LIB_SONG_ID_PARAM = "lib_song_id";
-  public static final String SONG_PARAM = "song";
+  public static final String TITLE_PARAM = "title";
   public static final String ARTIST_PARAM = "artist";
   public static final String ALBUM_PARAM = "album";
   public static final String DURATION_PARAM = "duration";
@@ -43,7 +43,7 @@ public class PlaylistEntry{
 
   private long id;
   private long libSongId;
-  private String song;
+  private String title;
   private String artist;
   private String album;
   private int duration;
@@ -56,7 +56,7 @@ public class PlaylistEntry{
   public PlaylistEntry(
     long id,
     long libSongId,
-    String song,
+    String title,
     String artist,
     String album,
     int duration,
@@ -68,7 +68,7 @@ public class PlaylistEntry{
   {
     this.id = id;
     this.libSongId = libSongId;
-    this.song = song;
+    this.title = title;
     this.artist = artist;
     this.album = album;
     this.duration = duration;
@@ -87,8 +87,8 @@ public class PlaylistEntry{
     return libSongId;
   }
 
-  public String getSong(){
-    return song;
+  public String getTitle(){
+    return title;
   }
 
   public String getArtist(){
@@ -129,7 +129,7 @@ public class PlaylistEntry{
     return new PlaylistEntry(
       jObj.getLong(ID_PARAM),
       jObj.getLong(LIB_SONG_ID_PARAM),
-      jObj.getString(SONG_PARAM),
+      jObj.getString(TITLE_PARAM),
       jObj.getString(ARTIST_PARAM),
       jObj.getString(ALBUM_PARAM),
       jObj.getInt(DURATION_PARAM),

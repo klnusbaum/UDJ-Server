@@ -111,7 +111,7 @@ public class AvailableMusicSearchAdapter implements ListAdapter{
       (TextView)toReturn.findViewById(R.id.libraryArtistName);
     ImageButton addButton = 
       (ImageButton)toReturn.findViewById(R.id.lib_add_button);
-    songView.setText(libEntry.getSong());
+    songView.setText(libEntry.getTitle());
     artistView.setText(libEntry.getArtist());
     addButton.setOnClickListener(addClickListener);
     addButton.setTag(R.id.LIB_ENTRY_VIEW_TAG, libEntry);

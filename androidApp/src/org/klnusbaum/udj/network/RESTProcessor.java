@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.io.IOException;
 import java.util.Set;
+import java.util.HashSet;
 
 import android.content.Context;
 import android.content.ContentResolver;
@@ -43,6 +44,7 @@ import org.json.JSONException;
 import org.apache.http.auth.AuthenticationException;
 
 
+
 public class RESTProcessor{
 
   public static void setActivePlaylist(
@@ -51,25 +53,68 @@ public class RESTProcessor{
     throws RemoteException, OperationApplicationException
   {
     final ContentResolver resolver = context.getContentResolver();
+    deleteRemovedPlaylistEntries(playlistEntries, resolver);
+    
     ArrayList<ContentProviderOperation> batchOps = 
       new ArrayList<ContentProviderOperation>();
-    final ContentProviderOperation.Builder deleteOp = 
-      ContentProviderOperation.newDelete(UDJEventProvider.PLAYLIST_URI);
-    batchOps.add(deleteOp.build());
+    Set<Long> needUpdate = 
+      getNeedUpdatePlaylistEntries(playlistEntries, resolver);
+
     int priority = 1;
     for(PlaylistEntry pe: playlistEntries){
-      batchOps.add(getPlaylistInsertOp(pe, priority));
-      ++priority;
+      if(needUpdate.contains(pe.getId())){
+        batchOps.add(getPlaylistPriorityUpdate(pe.getId(), priority));
+      }
+      else{
+        batchOps.add(getPlaylistInsertOp(pe, priority)); 
+      }
       if(batchOps.size() >= 50){
         resolver.applyBatch(Constants.AUTHORITY, batchOps);
         batchOps.clear();
       }
+      priority++;
     }
     if(batchOps.size() > 0){
       resolver.applyBatch(Constants.AUTHORITY, batchOps);
       batchOps.clear();
     }
     resolver.notifyChange(UDJEventProvider.PLAYLIST_URI, null, true);
+  }
+
+  private static Set<Long> getNeedUpdatePlaylistEntries(
+    List<PlaylistEntry> playlistEntries, ContentResolver cr)
+  {
+    HashSet<Long> toReturn = new HashSet<Long>();
+    Cursor currentPlaylist = cr.query(
+      UDJEventProvider.PLAYLIST_URI, 
+      new String[]{UDJEventProvider.PLAYLIST_ID_COLUMN},
+      null, null, null);
+    if(currentPlaylist.moveToFirst()){
+      int playlistIdColumn = 
+        currentPlaylist.getColumnIndex(UDJEventProvider.PLAYLIST_ID_COLUMN);
+      do{
+        toReturn.add(currentPlaylist.getLong(playlistIdColumn));
+      }while(currentPlaylist.moveToNext());
+    }
+    return toReturn;
+  }
+
+
+  private static void deleteRemovedPlaylistEntries(
+    List<PlaylistEntry> playlistEntries, ContentResolver cr)
+  {
+    if(playlistEntries.size() ==0){
+      return;
+    }
+    String where=UDJEventProvider.PLAYLIST_ID_COLUMN + "!=?";
+    String[] selectionArgs = new String[playlistEntries.size()];
+    selectionArgs[0] = String.valueOf(playlistEntries.get(0).getId());
+    for(int i=1; i<playlistEntries.size()-1; ++i){
+      where = where + " AND " + UDJEventProvider.PLAYLIST_ID_COLUMN +
+        "!=?";
+      selectionArgs[i] = String.valueOf(playlistEntries.get(i).getId());
+    }
+    cr.delete(UDJEventProvider.PLAYLIST_URI, where, selectionArgs); 
   }
 
   private static ContentProviderOperation getPlaylistInsertOp(
@@ -82,13 +127,24 @@ public class RESTProcessor{
       .withValue(UDJEventProvider.DOWN_VOTES_COLUMN, pe.getDownVotes())
       .withValue(UDJEventProvider.TIME_ADDED_COLUMN, pe.getTimeAdded())
       .withValue(UDJEventProvider.PRIORITY_COLUMN, priority)
-      .withValue(UDJEventProvider.SONG_COLUMN, pe.getSong())
+      .withValue(UDJEventProvider.TITLE_COLUMN, pe.getTitle())
       .withValue(UDJEventProvider.ARTIST_COLUMN, pe.getArtist())
       .withValue(UDJEventProvider.ALBUM_COLUMN, pe.getAlbum())
       .withValue(UDJEventProvider.DURATION_COLUMN, pe.getDuration())
       .withValue(UDJEventProvider.ADDER_ID_COLUMN, pe.getAdderId())
       .withValue(UDJEventProvider.ADDER_USERNAME_COLUMN, pe.getAdderUsername());
     return insertOp.build();
+  }
+
+  private static ContentProviderOperation getPlaylistPriorityUpdate(
+    long id, int priority)
+  {
+    final ContentProviderOperation.Builder updateOp = 
+      ContentProviderOperation.newUpdate(UDJEventProvider.PLAYLIST_URI)
+      .withSelection(
+        UDJEventProvider.PLAYLIST_ID_COLUMN + "=" + String.valueOf(id), null)
+      .withValue(UDJEventProvider.PRIORITY_COLUMN, String.valueOf(priority));
+    return updateOp.build();
   }
 
   public static void setPlaylistAddRequestsSynced(
@@ -124,101 +180,4 @@ public class RESTProcessor{
     return updateBuilder.build();
   }
 
-  /*public static void processPlaylistEntries(
-    List<PlaylistEntry> newEntries, Context context)
-    throws RemoteException, OperationApplicationException
-  {
-    Log.i("TAG", "Processing " + String.valueOf(newEntries.size()) 
-    + " entries");
-    final ContentResolver resolver = context.getContentResolver();
-    ArrayList<ContentProviderOperation> batchOps = 
-      new ArrayList<ContentProviderOperation>();
-    for(PlaylistEntry pe: newEntries){
-      if(pe.getIsDeleted()){
-        deletePlaylistEntry(pe, batchOps);
-      }
-      else if(hasPlaylistEntry(pe, resolver)){
-        updatePlaylistEntry(pe, batchOps);
-      }
-      else{
-        insertPlaylistEntry(pe, batchOps);
-      }
-
-      if(batchOps.size() >= 50){
-        resolver.applyBatch(context.getString(R.string.authority), batchOps);
-        batchOps.clear();
-      }
-    }  
-    if(batchOps.size() > 0){
-      resolver.applyBatch(context.getString(R.string.authority), batchOps);
-      batchOps.clear();
-    }
-    resolver.notifyChange(UDJEventProvider.PLAYLIST_URI, null, true);
-  }
-
-
-  private static void insertPlaylistEntry(
-    PlaylistEntry pe,
-    ArrayList<ContentProviderOperation> batchOps)
-  {
-    final ContentProviderOperation.Builder insertOp = 
-      ContentProviderOperation.newInsert(UDJEventProvider.PLAYLIST_URI)
-      .withValue(UDJEventProvider.SERVER_PLAYLIST_ID_COLUMN, pe.getServerId())
-      .withValue(UDJEventProvider.SERVER_LIBRARY_ID_COLUMN, pe.getLibId())
-      .withValue(UDJEventProvider.TIME_ADDED_COLUMN, pe.getTimeAdded())
-      .withValue(UDJEventProvider.VOTES_COLUMN, pe.getVoteCount())
-      .withValue(UDJEventProvider.SONG_COLUMN, pe.getSong())
-      .withValue(UDJEventProvider.ARTIST_COLUMN, pe.getArtist())
-      .withValue(UDJEventProvider.ALBUM_COLUMN, pe.getAlbum())
-      .withValue(UDJEventProvider.PRIORITY_COLUMN, pe.getPriority())
-      .withValue(UDJEventProvider.SYNC_STATE_COLUMN, UDJEventProvider.SYNCED_MARK);
-    batchOps.add(insertOp.build());
-  }
-
-  private static void deletePlaylistEntry(
-    PlaylistEntry pe,
-    ArrayList<ContentProviderOperation> batchOps)
-  {
-    String[] selectionArgs = new String[] {String.valueOf(pe.getServerId())};
-    final ContentProviderOperation.Builder deleteOp = 
-      ContentProviderOperation.newDelete(UDJEventProvider.PLAYLIST_URI)
-      .withSelection(UDJEventProvider.SERVER_PLAYLIST_ID_COLUMN + "=?", selectionArgs);
-    batchOps.add(deleteOp.build());
-  }
-    
-  private static void updatePlaylistEntry(
-    PlaylistEntry pe, 
-    ArrayList<ContentProviderOperation> batchOps)
-  {
-    String[] selectionArgs = new String[] {String.valueOf(pe.getServerId())};
-    final ContentProviderOperation.Builder updateBuilder = 
-      ContentProviderOperation.newUpdate(UDJEventProvider.PLAYLIST_URI)
-      .withSelection(UDJEventProvider.SERVER_PLAYLIST_ID_COLUMN + "=?", selectionArgs)
-      .withValue(UDJEventProvider.VOTES_COLUMN, pe.getVoteCount())
-      .withValue(UDJEventProvider.PRIORITY_COLUMN, pe.getPriority())
-      .withValue(UDJEventProvider.SYNC_STATE_COLUMN, UDJEventProvider.SYNCED_MARK);
-    batchOps.add(updateBuilder.build());
-  } 
-
-  private static boolean 
-    hasPlaylistEntry(PlaylistEntry pe, ContentResolver resolver)
-  {
-    if(
-      pe.getClientId() == 
-      Long.valueOf(UDJEventProvider.INVALID_CLIENT_PLAYLIST_ID))
-    {
-      return false;
-    }
-    Cursor c = resolver.query(
-      UDJEventProvider.PLAYLIST_URI, 
-      new String[] {"COUNT("+ UDJEventProvider.PLAYLIST_ID_COLUMN+ ")"},
-      UDJEventProvider.PLAYLIST_ID_COLUMN+ "=?",
-      new String[] {String.valueOf(pe.getClientId())},
-      null);
-    c.moveToNext();
-    boolean toReturn = c.getInt(0) > 0;
-    c.close();
-    return toReturn;
-  }
-*/
 }

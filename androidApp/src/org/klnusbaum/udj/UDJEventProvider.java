@@ -72,7 +72,7 @@ public class UDJEventProvider extends ContentProvider{
   public static final String DOWN_VOTES_COLUMN = "down_votes";
   public static final String PRIORITY_COLUMN = "priority";
   public static final String TIME_ADDED_COLUMN ="time_added";
-  public static final String SONG_COLUMN = "song";
+  public static final String TITLE_COLUMN = "title";
   public static final String ARTIST_COLUMN = "artist";
   public static final String ALBUM_COLUMN = "album";
   public static final String DURATION_COLUMN = "duration";
@@ -88,7 +88,7 @@ public class UDJEventProvider extends ContentProvider{
     PRIORITY_COLUMN + " INTEGER NOT NULL, "  +
     TIME_ADDED_COLUMN + " TEXT NOT NULL, " +
     DURATION_COLUMN + " INTEGER NOT NULL, " +
-		SONG_COLUMN + " TEXT NOT NULL, " +
+		TITLE_COLUMN + " TEXT NOT NULL, " +
     ARTIST_COLUMN + " TEXT NOT NULL, " + 
     ALBUM_COLUMN + " TEXT NOT NULL, " +
     ADDER_ID_COLUMN + " INTEGER NOT NULL, " +
@@ -145,14 +145,12 @@ public class UDJEventProvider extends ContentProvider{
     VOTE_ID_COLUMN + " INTEGER PRIMARY KEY AUTOINCREMENT, " + 
     VOTE_PLAYLIST_ENTRY_ID_COLUMN + " INTEGER REFERENCES " +
       PLAYLIST_TABLE_NAME + "." + PLAYLIST_ID_COLUMN + " ON DELETE CASCADE, " +
-    VOTE_TYPE_COLUMN + " INTEGER NOT NULL CHECK("
+    VOTE_TYPE_COLUMN + " INTEGER NOT NULL CHECK(" +
       VOTE_TYPE_COLUMN +"=" + UP_VOTE_TYPE + " OR " + VOTE_TYPE_COLUMN + "=" + 
       DOWN_VOTE_TYPE + "), " + 
     VOTE_SYNC_STATUS_COLUMN + " INTEGER DEFAULT "+ VOTE_NEEDS_SYNC + " " +
-    
-    "CHECK (" + VOTE_SYNC_STATUS + "=" + VOTE_NEEDS_SYNC +
-    " OR " + VOTE_SYNC_STATUS + "=" + VOTE_SYNCED +
-    "));";
+    "CHECK (" + VOTE_SYNC_STATUS_COLUMN + "=" + VOTE_NEEDS_SYNC +
+    " OR " + VOTE_SYNC_STATUS_COLUMN + "=" + VOTE_SYNCED + "));";
 
 
 

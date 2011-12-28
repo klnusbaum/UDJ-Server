@@ -32,26 +32,26 @@ import java.util.ArrayList;
 
 public class LibraryEntry{
   public static final String ID_PARAM = "id";
-  public static final String SONG_PARAM = "song";
+  public static final String TITLE_PARAM = "title";
   public static final String ARTIST_PARAM = "artist";
   public static final String ALBUM_PARAM = "album";
   public static final String DURATION_PARAM = "duration";
 
   private long libId; 
-  private String song;
+  private String title;
   private String artist;
   private String album;
   private int duration;
 
   public LibraryEntry(
     long libId, 
-    String song, 
+    String title, 
     String artist,
     String album,
     int duration)
   {
     this.libId = libId;
-    this.song = song;
+    this.title = title;
     this.artist = artist;
     this.album = album;
     this.duration = duration;
@@ -61,8 +61,8 @@ public class LibraryEntry{
     return libId;
   }
   
-  public String getSong(){
-    return song;
+  public String getTitle(){
+    return title;
   }
   
   public String getArtist(){
@@ -82,7 +82,7 @@ public class LibraryEntry{
   {
     return new LibraryEntry(
       jObj.getLong(ID_PARAM), 
-      jObj.getString(SONG_PARAM),
+      jObj.getString(TITLE_PARAM),
       jObj.getString(ARTIST_PARAM),
       jObj.getString(ALBUM_PARAM),
       jObj.getInt(DURATION_PARAM));
@@ -97,29 +97,9 @@ public class LibraryEntry{
     }
     return toReturn;
   }
-  
-  public static Bundle toBundle(LibraryEntry le){
-    Bundle toReturn = new Bundle();
-    toReturn.putLong(ID_PARAM, le.getLibId());
-    toReturn.putString(SONG_PARAM, le.getSong());
-    toReturn.putString(ARTIST_PARAM, le.getArtist());
-    toReturn.putString(ALBUM_PARAM, le.getAlbum());
-    toReturn.putInt(DURATION_PARAM, le.getDuration());
-    return toReturn;
-  }
-
-  public static LibraryEntry fromBundle(Bundle bundle){
-    //TODO throw error is not all the keys are present.
-    return new LibraryEntry(
-      bundle.getLong(ID_PARAM),
-      bundle.getString(SONG_PARAM),
-      bundle.getString(ARTIST_PARAM),
-      bundle.getString(ALBUM_PARAM),
-      bundle.getInt(DURATION_PARAM));
-  }
 
   public String toString(){
-    return "Song name: " + getSong();
+    return "Song name: " + getTitle();
   }
   
 }
