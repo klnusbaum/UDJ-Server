@@ -34,6 +34,9 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.util.Log;
 import android.content.ContentValues;
+import android.accounts.AccountManager;
+import android.accounts.Account;
+
 
 
 import org.klnusbaum.udj.R;
@@ -47,6 +50,7 @@ public class PlaylistFragment extends ListFragment
 {
 
   private static final int CURSOR_LOADER_ID = 0;
+  private Account account;
 
   /**
    * Adapter used to help display the contents of the playlist.
@@ -56,6 +60,8 @@ public class PlaylistFragment extends ListFragment
   @Override
   public void onActivityCreated(Bundle savedInstanceState){
     super.onActivityCreated(savedInstanceState);
+    account = 
+      getActivity().getIntent().getParcelableExtra(Constants.ACCOUNT_EXTRA);
     setEmptyText(getActivity().getString(R.string.no_playlist_items));
     playlistAdapter = new PlaylistAdapter(getActivity(), null);
     setListAdapter(playlistAdapter);
@@ -88,9 +94,11 @@ public class PlaylistFragment extends ListFragment
   }
 
   private class PlaylistAdapter extends CursorAdapter{
+    AccountManager am;
 
     public PlaylistAdapter(Context context, Cursor c){
       super(context, c);
+      am = AccountManager.get(context);
     }
 
     @Override
@@ -125,6 +133,16 @@ public class PlaylistFragment extends ListFragment
           downVoteClick(v);
         }
       });
+
+      if(
+        cursor.getLong(cursor.getColumnIndex(UDJEventProvider.ADDER_ID_COLUMN))
+        ==
+        Long.valueOf(am.getUserData(account, Constants.USER_ID_DATA))
+      )
+      {
+        upVote.setEnabled(false); 
+        downVote.setEnabled(false); 
+      }
   
      /* String voteStatus = cursor.getString(cursor.getColumnIndex(
         UDJPartyProvider.VOTE_STATUS_COLUMN));

@@ -114,8 +114,14 @@ def removeSongFromActivePlaylist(request, event_id, playlist_id):
 @AcceptsMethods('GET')
 def getAddRequests(request, event_id, user_id):
   addRequests = ActivePlaylistEntry.objects.filter(
-    event__id=event_id, adder__id=user_id).only('client_request_id')
-  requestIds = [add_request.client_request_id for add_request in addRequests]
+    event__id=event_id, adder__id=user_id).only(
+    'client_request_id', 
+    'song__host_lib_song_id')
+      
+  requestIds = [
+   {'client_request_id' : add_request.client_request_id,
+   'lib_id' : add_request.song.host_lib_song_id}
+   for add_request in addRequests]
   return HttpResponse(json.dumps(requestIds))
 
 @NeedsAuth

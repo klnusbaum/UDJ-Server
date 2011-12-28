@@ -163,6 +163,7 @@ public class EventSelectorActivity extends FragmentActivity{
   }
 
   public class EventLoginTask extends AsyncTask<Long, Void, Long>{
+    private static final String EVENT_LOGIN_TAG = "EventLoginTask";
    
     private AccountManager am; 
     private Account account; 
@@ -193,18 +194,27 @@ public class EventSelectorActivity extends FragmentActivity{
         }
       }
       catch(IOException e){
+        Log.e(EVENT_LOGIN_TAG, "IO exception when logging in" + e.getMessage());
         //TODO notify the user
       }
       catch(AuthenticatorException e){
+        Log.e(EVENT_LOGIN_TAG, 
+          "Authentiator exception when logging in" + e.getMessage());
         //TODO notify the user
       }
       catch(OperationCanceledException e){
+        Log.e(EVENT_LOGIN_TAG, 
+          "Op cancled exception when logging in" + e.getMessage());
         //TODO notify user
       }
       catch(JSONException e){
+        Log.e(EVENT_LOGIN_TAG, 
+          "JSON exception when logging in" + e.getMessage());
         //TODO notify user
       }
       catch(AuthenticationException e){
+        Log.e(EVENT_LOGIN_TAG, 
+          "Authentication exception when logging in" + e.getMessage());
         //TODO notify user
       }
       return new Long(-1);
