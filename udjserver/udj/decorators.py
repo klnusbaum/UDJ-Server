@@ -10,6 +10,7 @@ from udj.auth import getUserForTicket
 from django.shortcuts import get_object_or_404
 from udj.headers import getTicketHeader
 from udj.headers import getDjangoTicketHeader
+from udj.JSONCodecs import getEventDictionary
 
 def IsUserOrHost(function):
   def wrapper(*args, **kwargs):
@@ -83,6 +84,16 @@ def NeedsAuth(function):
       return function(*args, **kwargs)
   return wrapper
       
+def IsntInOtherEvent(function):
+  def wrapper(*args, **kwargs):
+    request = args[0]
+    event_id = kwargs['event_id']
+    events = EventGoer.objects.exclude(event__id=event_id)
+    if events.exists():
+      return HttpResponse(json.dumps(getEventDictionary(events[0])), status=409)
+    else:
+      return function(*args, **kwargs)
+  return wrapper
 
 def TicketUserMatch(function):
   def wrapper(*args, **kwargs):
@@ -94,7 +105,9 @@ def TicketUserMatch(function):
     elif not isValidTicket(request.META[getDjangoTicketHeader()]):
       return HttpResponseForbidden("Invalid ticket")
     elif not ticketMatchesUser(request, user_id):
-      return HttpResponseForbidden()
+      return HttpResponseForbidden("The ticket doesn't match the given user\n" +
+        "Give Ticket: " + request.META[getDjangoTicketHeader()] + "\n" +
+        "Given User id: " + user_id)
     else:
       return function(*args, **kwargs)
   return wrapper

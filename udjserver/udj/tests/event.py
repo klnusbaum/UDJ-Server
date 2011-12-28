@@ -6,6 +6,7 @@ from udj.tests.testcases import User4TestCase
 from udj.tests.testcases import User5TestCase
 from udj.models import Event
 from udj.models import LibraryEntry
+from udj.models import Ticket
 from udj.models import EventGoer
 from udj.models import ActivePlaylistEntry
 from udj.models import AvailableSong
@@ -53,43 +54,28 @@ class EndEventTest(User2TestCase):
     response = self.doDelete('/udj/events/2')
     self.assertEqual(Event.objects.get(pk=2).state,u'FN')
 
+class EndEmptyEventTest(User4TestCase):
+  def testEndEmptyEvent(self):
+    response = self.doDelete('/udj/events/3')
+    self.assertEqual(Event.objects.get(pk=3).state,u'FN')
 
 
-"""
-class EndEventTestNoCurrentSong(User4TestCase):
-  def testEndEventNoCurrentSong(self):
-    response = self.doDelete('/udj/events/2')
-    self.assertEqual(len(Event.objects.filter(id=2)), 0)
-
-    finishedEvent = FinishedEvent.objects.get(event_id=2)
-    self.assertEqual(finishedEvent.name, 'Second Party') 
-    self.assertEqual(finishedEvent.latitude, Decimal('40.113523'))
-    self.assertEqual(finishedEvent.longitude, Decimal('-88.224006'))
-    self.assertEqual(finishedEvent.host.id,5)
-    self.assertEqual(
-      len(AvailableSong.objects.filter(library_entry__owning_user__id=5)),0)
-
-    finishedSongs = FinishedPlaylistEntry.objects.filter(event=finishedEvent)
-    self.assertEqual(len(finishedSongs),0)
-
-
-class JoinEventTest(User2TestCase):
+class JoinEventTest(User5TestCase):
   def testJoinEvent(self):
-    response = self.doPut('/udj/events/1/users/3')
-    self.assertEqual(response.status_code, 201)
-    event_goer_entries = EventGoer.objects.filter(event__id=1, user__id=3)
+    response = self.doPut('/udj/events/2/users/5')
+    self.assertEqual(response.status_code, 201, "Error: " + response.content)
+    event_goer_entries = EventGoer.objects.filter(event__id=2, user__id=5)
     self.assertEqual(len(event_goer_entries),1) 
 
   def testDoubleJoinEvent(self):
-    response = self.doPut('/udj/events/1/users/3')
+    response = self.doPut('/udj/events/2/users/5')
     self.assertEqual(response.status_code, 201)
-    event_goer_entries = EventGoer.objects.filter(event__id=1, user__id=3)
-    self.assertEqual(len(event_goer_entries),1) 
-    response = self.doPut('/udj/events/1/users/3')
+    event_goer_entries = EventGoer.objects.get(event__id=2, user__id=5)
+    response = self.doPut('/udj/events/2/users/5')
     self.assertEqual(response.status_code, 201)
-    event_goer_entries = EventGoer.objects.filter(event__id=1, user__id=3)
-    self.assertEqual(len(event_goer_entries),1) 
+    event_goer_entries = EventGoer.objects.get(event__id=2, user__id=5)
     
+"""
 class LeaveEventTest(User3TestCase):
   def testLeaveEvent(self):
     response = self.doDelete('/udj/events/1/users/4')

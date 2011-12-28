@@ -20,6 +20,7 @@ from udj.decorators import IsEventHost
 from udj.decorators import CanLoginToEvent
 from udj.decorators import InParty
 from udj.decorators import IsntCurrentlyHosting
+from udj.decorators import IsntInOtherEvent
 from udj.decorators import IsUserOrHost
 from udj.models import Event
 from udj.models import LibraryEntry
@@ -31,7 +32,6 @@ from udj.models import DownVote
 from udj.JSONCodecs import getEventDictionary
 from udj.JSONCodecs import getJSONForEvents
 from udj.JSONCodecs import getJSONForAvailableSongs
-from udj.JSONCodecs import getJSONForCurrentSong
 from udj.JSONCodecs import getJSONForEventGoers
 
 
@@ -112,25 +112,18 @@ def endEvent(request, event_id):
 @AcceptsMethods(['PUT', 'DELETE'])
 def joinOrLeaveEvent(request, event_id, user_id):
   if request.method == 'PUT':
-    return joinEvent(request, event_id, user_id)
+    return joinEvent(request, event_id=event_id, user_id=user_id)
   elif request.method == 'DELETE':
-    return leaveEvent(request, event_id, user_id)
+    return leaveEvent(request, event_id=event_id, user_id=user_id)
 
 
 
-@CanLoginToEvent
+@IsntInOtherEvent
 def joinEvent(request, event_id, user_id):
   joining_user = User.objects.get(pk=user_id)
-  isAlreadyInEvent = EventGoer.objects.filter(user=joining_user)
-  if isAlreadyInEvent.exists():
-    if isAlreadyInEvent[0].event.id == int(event_id):
-      return HttpResponse("joined event", status=201)
-    else:
-      return HttpResponse(
-        json.dumps(getEventDictionary(isAlreadyInEvent[0].event)), status=409)
   event_to_join = Event.objects.get(pk=event_id)
-  event_goer = EventGoer(user=joining_user, event=event_to_join)
-  event_goer.save()
+  event_goer = EventGoer.objects.get_or_create(
+    user=joining_user, event=event_to_join)
   return HttpResponse("joined event", status=201)
 
 @InParty
@@ -213,7 +206,8 @@ def currentSong(request, event_id):
 def getCurrentSong(request, event_id):
   currentSong = get_object_or_404(
     ActivePlaylistEntry, event__id=event_id, state=u'PL')
-  return HttpResponse(getJSONForCurrentSong(currentSong))
+  currentSongJson = json.dumps(getActivePlaylistEntryDictionary(currentSong))
+  return HttpResponse(currentSongJson)
 
 @IsEventHost
 def setCurrentSong(request, event_id):

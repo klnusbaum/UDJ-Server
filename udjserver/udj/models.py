@@ -89,6 +89,8 @@ class EventGoer(models.Model):
   event = models.ForeignKey(Event)
   time_joined = models.DateTimeField(auto_now_add=True)
   
+  class Meta: 
+    unique_together = ("user", "event")
 
   def __unicode__(self):
     return "User " + str(self.user.id) + " is in Event " + str(self.event.name)

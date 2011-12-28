@@ -47,22 +47,6 @@ def getJSONForEvents(events):
     toReturn.append(getEventDictionary(event))
   return json.dumps(toReturn)
 
-def getJSONForCurrentSong(currentSong):
-  toReturn = {
-    'lib_song_id' : currentSong.song.host_lib_song_id,
-    'song' : currentSong.song.song,
-    'artist' : currentSong.song.artist,
-    'album' : currentSong.song.album,
-    'duration' : currentSong.song.duration,
-    'up_votes' : currentSong.upvotes,
-    'down_votes' : currentSong.downvotes,
-    'time_added' : currentSong.time_added.replace(microsecond=0).isoformat(),
-    'time_played' : currentSong.time_played.replace(microsecond=0).isoformat(),
-    'adder_id' : currentSong.adder.id,
-    'adder_username' : currentSong.adder.username
-  }
-  return json.dumps(toReturn)
-
 def getActivePlaylistEntryDictionary(entry, upvotes, downvotes):
    return { 
       'id' : entry.entry_id.id,
@@ -99,26 +83,3 @@ def getJSONForEventGoers(eventGoers):
     toReturn.append(getEventGoerJSON(eventGoer))
   return json.dumps(toReturn)
 
-def getAddRequestDictionary(addRequest):
-  return {
-    'lib_id' : addRequest.song.id,
-    'client_request_id' : addRequest.client_request_id
-  }
-
-def getJSONForPreviousAddRequests(
-  inQueue, deletedEntries, playlistEntries, currentSong, adderId):
-  toReturn = []
-  for inQueueEntry in inQueue:
-    toReturn.append(getAddRequestDictionary(inQueueEntry))  
-
-  for deletedEntry in deletedEntries:
-    toReturn.append(getAddRequestDictionary(deletedEntry))  
-
-  for playedEntry in playlistEntries:
-    toReturn.append(getAddRequestDictionary(playedEntry))  
-
-
-  if currentSong != None and currentSong.adder.id == int(adderId):
-    toReturn.append(getAddRequestDictionary(currentSong))
-
-  return json.dumps(toReturn)
