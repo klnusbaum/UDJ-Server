@@ -144,7 +144,7 @@ public class UDJEventProvider extends ContentProvider{
     "CREATE TABLE " + VOTES_TABLE_NAME + " (" +
     VOTE_ID_COLUMN + " INTEGER PRIMARY KEY AUTOINCREMENT, " + 
     VOTE_PLAYLIST_ENTRY_ID_COLUMN + " INTEGER REFERENCES " +
-      PLAYLIST_TABLE_NAME + "." + PLAYLIST_ID_COLUMN + " ON DELETE CASCADE, " +
+      PLAYLIST_TABLE_NAME + "(" + PLAYLIST_ID_COLUMN + ") ON DELETE CASCADE, " +
     VOTE_TYPE_COLUMN + " INTEGER NOT NULL CHECK(" +
       VOTE_TYPE_COLUMN +"=" + UP_VOTE_TYPE + " OR " + VOTE_TYPE_COLUMN + "=" + 
       DOWN_VOTE_TYPE + "), " + 
@@ -175,6 +175,7 @@ public class UDJEventProvider extends ContentProvider{
     public void onCreate(SQLiteDatabase db){
       db.execSQL(PLAYLIST_TABLE_CREATE);
       db.execSQL(ADD_REQUEST_TABLE_CREATE);
+      db.execSQL(VOTES_TABLE_CREATE);
     }
 
     @Override
@@ -265,6 +266,12 @@ public class UDJEventProvider extends ContentProvider{
   public int update(Uri uri, ContentValues values, String where, 
     String[] whereArgs)
   {
+    if(uri.equals(PLAYLIST_URI)){
+      SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+      int numRowsChanged = 
+        db.update(PLAYLIST_TABLE_NAME, values, where, whereArgs);
+      return numRowsChanged;
+    }
     if(uri.equals(PLAYLIST_ADD_REQUEST_URI)){
       SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
       int numRowsChanged = 

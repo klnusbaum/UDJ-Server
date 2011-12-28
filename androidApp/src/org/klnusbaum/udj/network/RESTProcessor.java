@@ -47,6 +47,7 @@ import org.apache.http.auth.AuthenticationException;
 
 public class RESTProcessor{
 
+  public static final String TAG = "RESTProcessor";
   public static void setActivePlaylist(
     List<PlaylistEntry> playlistEntries,
     Context context)
@@ -106,14 +107,17 @@ public class RESTProcessor{
     if(playlistEntries.size() ==0){
       return;
     }
-    String where=UDJEventProvider.PLAYLIST_ID_COLUMN + "!=?";
+
+    String where = "";
     String[] selectionArgs = new String[playlistEntries.size()];
-    selectionArgs[0] = String.valueOf(playlistEntries.get(0).getId());
-    for(int i=1; i<playlistEntries.size()-1; ++i){
-      where = where + " AND " + UDJEventProvider.PLAYLIST_ID_COLUMN +
-        "!=?";
+    int i;
+    for(i=0; i<playlistEntries.size()-1; i++){
+      where += UDJEventProvider.PLAYLIST_ID_COLUMN + "!=? AND ";
       selectionArgs[i] = String.valueOf(playlistEntries.get(i).getId());
     }
+    selectionArgs[i] = String.valueOf(playlistEntries.get(i).getId());
+    where += UDJEventProvider.PLAYLIST_ID_COLUMN + "!=?";  
+
     cr.delete(UDJEventProvider.PLAYLIST_URI, where, selectionArgs); 
   }
 

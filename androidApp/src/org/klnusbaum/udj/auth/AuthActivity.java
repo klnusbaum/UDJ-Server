@@ -192,6 +192,7 @@ public class AuthActivity extends AccountAuthenticatorActivity{
         final Account account = new Account(mUsername, Constants.ACCOUNT_TYPE);
         if (mRequestNewAccount) {
             mAccountManager.addAccountExplicitly(account, mPassword, null);
+            ContentResolver.setIsSyncable(account, Constants.AUTHORITY, 0);
         } else {
             mAccountManager.setPassword(account, mPassword);
         }

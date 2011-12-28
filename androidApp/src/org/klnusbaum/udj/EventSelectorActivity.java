@@ -180,7 +180,9 @@ public class EventSelectorActivity extends FragmentActivity{
       try{
         String authToken = 
           am.blockingGetAuthToken(account, "", true);  
-        if(ServerConnection.joinEvent(params[0], authToken)){
+        long userId = Long.valueOf(
+          am.getUserData(account, Constants.USER_ID_DATA));
+        if(ServerConnection.joinEvent(params[0], userId, authToken)){
           UDJEventProvider.eventCleanup(cr);          
           HashMap<Long,Long> previousRequests = ServerConnection.getAddRequests(
             Long.valueOf(am.getUserData(account,Constants.USER_ID_DATA)),

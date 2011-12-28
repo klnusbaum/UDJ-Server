@@ -310,13 +310,13 @@ public class ServerConnection{
     }
   }
 
-  public static boolean joinEvent(final long eventId, String ticketHash)
+  public static boolean joinEvent(long eventId, long userId, String ticketHash)
     throws IOException
   {
     try{
       URI uri  = new URI(
         NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT, 
-        "/udj/events/" + eventId + "/user",
+        "/udj/events/" + eventId + "/users/"+userId,
         null, null);
        doPut(uri, ticketHash, null); 
     }
