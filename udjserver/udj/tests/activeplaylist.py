@@ -133,64 +133,50 @@ class TestVoting(User5TestCase):
     response = self.doPost(
       '/udj/events/2/active_playlist/3/users/5/downvote', {})
     self.assertEqual(response.status_code, 403)
-"""
 
-class TestRemoveSong(User1TestCase):
+class TestRemoveSong(User2TestCase):
   def testBasicRemove(self):
     playlist_id=3
-    response = self.doDelete('/udj/events/1/active_playlist/3')
+    response = self.doDelete('/udj/events/2/active_playlist/songs/3')
     self.assertEqual(response.status_code, 200)
-    DeletedPlaylistEntry.objects.get(entry_id__id=3)
-    self.assertFalse(ActivePlaylistEntry.objects.filter(pk=3).exists())
+    self.assertEqual(
+      ActivePlaylistEntry.objects.get(id=3).state, u'RM')
 
   def testDuplicateRemove(self):
-    response = self.doDelete('/udj/events/1/active_playlist/7')
+    response = self.doDelete('/udj/events/2/active_playlist/songs/7')
     self.assertEqual(response.status_code, 200)
 
-class TestGetAddRequests(User1TestCase):
+class TestGetAddRequests(User2TestCase):
   def testGetAddRequests(self):
-    response = self.doGet('/udj/events/1/active_playlist/users/2/add_requests')
+    response = self.doGet('/udj/events/2/active_playlist/users/2/add_requests')
     self.assertEqual(response.status_code, 200)
     #TODO make this test more rigerous
     returnedRequests = json.loads(response.content)
-    self.assertEqual(len(returnedRequests),4) 
+    self.assertEqual(len(returnedRequests),5) 
 
-class TestGetAddRequests2(User2TestCase):
-  def testGetAddRequests(self):
-    response = self.doPut('/udj/events/1/users/3')
-    self.assertEqual(response.status_code, 201)
-    response = self.doGet('/udj/events/1/active_playlist/users/3/add_requests')
-    self.assertEqual(response.status_code, 200)
-    #TODO make this test more rigerous
-    returnedRequests = json.loads(response.content)
-    self.assertEqual(len(returnedRequests),3) 
-
-class TestGetVotes(User1TestCase):
+class TestGetVotes(User2TestCase):
   def testGetVotes(self):
-    response = self.doGet('/udj/events/1/active_playlist/users/2/votes')
+    response = self.doGet('/udj/events/2/active_playlist/users/2/votes')
     self.assertEqual(response.status_code, 200)
     jsonResponse = json.loads(response.content)
     upvotes = jsonResponse['up_vote_ids']
     downvotes = jsonResponse['down_vote_ids']
-    self.assertEqual(len(upvotes), 3)
+    self.assertEqual(len(upvotes), 2)
     self.assertEqual(len(downvotes), 0)
-    requiredUpvotes = [6,5,3]
+    requiredUpvotes = [1,3]
     for upvote in requiredUpvotes:
       self.assertTrue(upvote in upvotes)
 
-class TestGetVotes2(User2TestCase):
+class TestGetVotes2(User3TestCase):
   def testGetVotes2(self):
-    response = self.doPut('/udj/events/1/users/3')
-    self.assertEqual(response.status_code, 201)
-    response = self.doGet('/udj/events/1/active_playlist/users/3/votes')
+    response = self.doGet('/udj/events/2/active_playlist/users/3/votes')
     self.assertEqual(response.status_code, 200)
     jsonResponse = json.loads(response.content)
     upvotes = jsonResponse['up_vote_ids']
     downvotes = jsonResponse['down_vote_ids']
     self.assertEqual(len(upvotes), 3)
     self.assertEqual(len(downvotes), 1)
-    requiredUpvotes = [5,4,3]
+    requiredUpvotes = [2,4,1]
     for upvote in requiredUpvotes:
       self.assertTrue(upvote in upvotes)
-    self.assertTrue(6 in downvotes)
-"""
+    self.assertTrue(3 in downvotes)
