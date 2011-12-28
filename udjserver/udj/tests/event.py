@@ -10,6 +10,8 @@ from udj.models import Ticket
 from udj.models import EventGoer
 from udj.models import ActivePlaylistEntry
 from udj.models import AvailableSong
+from udj.models import UpVote
+from udj.models import DownVote
 from decimal import Decimal
 from datetime import datetime
 
@@ -153,84 +155,89 @@ class TestGetAvailableMusic(User3TestCase):
    self.assertEqual(response.status_code, 200, response.content)
    results = json.loads(response.content)
 
-"""
-class TestPutAvailableMusic(User1TestCase):
+class TestPutAvailableMusic(User2TestCase):
   def testSimplePut(self): 
-    toAdd=[13]
+    toAdd=[6]
     response = self.doJSONPut(
-      '/udj/events/1/available_music', json.dumps(toAdd))
+      '/udj/events/2/available_music', json.dumps(toAdd))
     self.assertEqual(response.status_code, 201, response.content)
     results = json.loads(response.content)
     self.assertEqual(len(results), 1)
-    self.assertEqual(results[0], 13)
+    self.assertEqual(results[0], 6)
     AvailableSong.objects.get(
-      library_entry__host_lib_song_id=13, library_entry__owning_user__id=2)
+      song__host_lib_song_id=6, song__owning_user__id=2)
 
   def testMultiPut(self):
-    toAdd = [13,12]
+    toAdd = [6,7]
     response = self.doJSONPut(
-      '/udj/events/1/available_music', json.dumps(toAdd))
+      '/udj/events/2/available_music', json.dumps(toAdd))
     self.assertEqual(response.status_code, 201, response.content)
     results = json.loads(response.content)
     self.assertEqual(len(results), 2)
-    self.assertTrue(13 in results)
-    self.assertTrue(12 in results)
+    self.assertTrue(6 in results)
+    self.assertTrue(7 in results)
     AvailableSong.objects.get(
-      library_entry__host_lib_song_id=13, library_entry__owning_user__id=2)
+      song__host_lib_song_id=6, song__owning_user__id=2)
     AvailableSong.objects.get(
-      library_entry__host_lib_song_id=12, library_entry__owning_user__id=2)
+      song__host_lib_song_id=7, song__owning_user__id=2)
 
   def testDoublePut(self):
-    toAdd = [13]
+    toAdd = [8]
     response = self.doJSONPut(
-      '/udj/events/1/available_music', json.dumps(toAdd))
+      '/udj/events/2/available_music', json.dumps(toAdd))
     self.assertEqual(response.status_code, 201, response.content)
     results = json.loads(response.content)
     self.assertEqual(len(results), 1)
-    self.assertTrue(13 in results)
+    self.assertTrue(8 in results)
     AvailableSong.objects.get(
-      library_entry__host_lib_song_id=13, library_entry__owning_user__id=2)
-    toAdd = [13, 12]
+      song__host_lib_song_id=8, song__owning_user__id=2)
+
+    toAdd = [7, 8]
     response = self.doJSONPut(
-      '/udj/events/1/available_music', json.dumps(toAdd))
+      '/udj/events/2/available_music', json.dumps(toAdd))
     self.assertEqual(response.status_code, 201, response.content)
     results = json.loads(response.content)
     self.assertEqual(len(results), 2)
-    self.assertTrue(13 in results)
-    self.assertTrue(12 in results)
+    self.assertTrue(7 in results)
+    self.assertTrue(8 in results)
     AvailableSong.objects.get(
-      library_entry__host_lib_song_id=13, library_entry__owning_user__id=2)
+      song__host_lib_song_id=7, song__owning_user__id=2)
     AvailableSong.objects.get(
-      library_entry__host_lib_song_id=12, library_entry__owning_user__id=2)
+      song__host_lib_song_id=8, song__owning_user__id=2)
 
-class TestCantPutAvailableMusic(User2TestCase):
+class TestCantPutAvailableMusic(User3TestCase):
   def testPut(self): 
-   toAdd=[13]
-   response = self.doJSONPut('/udj/events/1/available_music', json.dumps(toAdd))
+   toAdd=[7]
+   response = self.doJSONPut('/udj/events/2/available_music', json.dumps(toAdd))
    self.assertEqual(response.status_code, 403, response.content)
 
-class TestDeleteAvailableMusic(User1TestCase):
+class TestDeleteAvailableMusic(User2TestCase):
   def testRemove(self):
-    response = self.doDelete('/udj/events/1/available_music/10')
+    response = self.doDelete('/udj/events/2/available_music/3')
     self.assertEqual(response.status_code, 200, response.content)
     foundSongs = AvailableSong.objects.filter(
-      library_entry__host_lib_song_id=10, library_entry__owning_user__id=2)
-    self.assertEqual(len(foundSongs), 0)
+      song__host_lib_song_id=3, song__owning_user__id=2)
+    self.assertFalse(foundSongs.exists())
    
 class TestGetCurrentSong(User3TestCase):
   def testGetCurrentSong(self):
-    response = self.doGet('/udj/events/1/current_song')
+    response = self.doGet('/udj/events/2/current_song')
     self.assertEqual(response.status_code, 200, response.content)
     result = json.loads(response.content) 
-    actualCurrentSong = CurrentSong.objects.get(event__id=1)
+    actualCurrentSong = ActivePlaylistEntry.objects.filter(
+      event__id=2, state=u'PL')[0]
     self.assertEqual(
       actualCurrentSong.song.host_lib_song_id, result['lib_song_id'])
-    self.assertEqual(actualCurrentSong.song.song, result['song'])
+    self.assertEqual(actualCurrentSong.song.title, result['song'])
     self.assertEqual(actualCurrentSong.song.artist, result['artist'])
     self.assertEqual(actualCurrentSong.song.album, result['album'])
     self.assertEqual(actualCurrentSong.song.duration, result['duration'])
-    self.assertEqual(actualCurrentSong.upvotes, result['up_votes'])
-    self.assertEqual(actualCurrentSong.downvotes, result['down_votes'])
+    self.assertEqual(
+      UpVote.objects.filter(playlist_entry=actualCurrentSong).count(),
+      result['up_votes'])
+    self.assertEqual(
+      DownVote.objects.filter(playlist_entry=actualCurrentSong).count(),
+      result['down_votes'])
     self.assertEqual(
       actualCurrentSong.time_added, 
       datetime.strptime(result['time_added'], "%Y-%m-%dT%H:%M:%S"))
@@ -238,7 +245,9 @@ class TestGetCurrentSong(User3TestCase):
       actualCurrentSong.time_played, 
       datetime.strptime(result['time_played'], "%Y-%m-%dT%H:%M:%S"))
     self.assertEqual(actualCurrentSong.adder.id, result['adder_id'])
+    self.assertEqual(actualCurrentSong.adder.username, result['adder_username'])
 
+"""
 class TestSetCurentSong(User1TestCase):
   def testSetCurrentSong(self):
     response = self.doPost(

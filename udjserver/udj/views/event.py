@@ -33,6 +33,7 @@ from udj.JSONCodecs import getEventDictionary
 from udj.JSONCodecs import getJSONForEvents
 from udj.JSONCodecs import getJSONForAvailableSongs
 from udj.JSONCodecs import getJSONForEventGoers
+from udj.JSONCodecs import getActivePlaylistEntryDictionary
 
 
 def getEventHost(event_id):
@@ -167,13 +168,13 @@ def getRandomMusic(request, event_id):
 @IsEventHost
 @NeedsJSON
 def addToAvailableMusic(request, event_id):
-  host = getUserForTicket(request)
+  event = get_object_or_404(Event, pk=event_id)
   toAdd = json.loads(request.raw_post_data)
   added = []
   for song_id in toAdd:
-    addSong = AvailableSong(song=LibraryEntry.objects.get(
-      host_lib_song_id=song_id, owning_user=host))
-    addSong.save()
+    songToAdd = LibraryEntry.objects.get(
+      host_lib_song_id=song_id, owning_user=event.host)
+    addedSong = AvailableSong.objects.get_or_create(event=event, song=songToAdd)
     added.append(song_id)
 
   return HttpResponse(json.dumps(added), status=201)
@@ -204,8 +205,13 @@ def currentSong(request, event_id):
 def getCurrentSong(request, event_id):
   currentSong = get_object_or_404(
     ActivePlaylistEntry, event__id=event_id, state=u'PL')
-  currentSongJson = json.dumps(getActivePlaylistEntryDictionary(currentSong))
-  return HttpResponse(currentSongJson)
+  currentSongDict = getActivePlaylistEntryDictionary(
+    currentSong,
+    UpVote.objects.filter(playlist_entry=currentSong).count(),
+    DownVote.objects.filter(playlist_entry=currentSong).count())
+  currentSongDict['time_played'] = \
+    currentSong.time_played.replace(microsecond=0).isoformat()
+  return HttpResponse(json.dumps(currentSongDict))
 
 @IsEventHost
 def setCurrentSong(request, event_id):

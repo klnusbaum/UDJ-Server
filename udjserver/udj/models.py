@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 class Event(models.Model):
   STATE_CHOICES = ((u'AC', u'Active'), (u'FN', 'Finished'),)
   name = models.CharField(max_length=200)
-  host = models.ForeignKey(User, unique=True)
+  host = models.ForeignKey(User)
   latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
   longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
   password_hash = models.CharField(max_length=32, null=True)
@@ -43,12 +43,6 @@ class LibraryEntry(models.Model):
 class AvailableSong(models.Model):
   song = models.ForeignKey(LibraryEntry, unique=True)
   event = models.ForeignKey(Event)
-
-  def save(self, *args, **kwargs):
-    if(self.event.host.id == self.song.owning_user.id):
-      super(AvailableSong, self).save(*args, **kwargs)
-    else:
-      raise Exception, "song owner and event host must be the same"
 
   class Meta: 
     unique_together = ("song", "event")

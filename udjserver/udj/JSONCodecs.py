@@ -49,9 +49,9 @@ def getJSONForEvents(events):
 
 def getActivePlaylistEntryDictionary(entry, upvotes, downvotes):
    return { 
-      'id' : entry.entry_id.id,
+      'id' : entry.id,
       'lib_song_id' : entry.song.host_lib_song_id,
-      'song' : entry.song.song,
+      'song' : entry.song.title,
       'artist' : entry.song.artist,
       'album' : entry.song.album,
       'duration' : entry.song.duration,
