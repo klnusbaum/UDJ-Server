@@ -8,7 +8,7 @@ from datetime import datetime
 def getLibraryEntryFromJSON(songJson, user_id):
   return LibraryEntry( 
     host_lib_song_id = songJson['id'], 
-    song = songJson['song'], 
+    title = songJson['title'], 
     artist  = songJson['artist'], 
     album = songJson['album'], 
     duration = songJson['duration'],
@@ -20,7 +20,7 @@ def getJSONForAvailableSongs(songs):
   for song in songs:
     toAdd = { 
       'id' : song.library_entry.host_lib_song_id, 
-      'song' : song.library_entry.song, 
+      'title' : song.library_entry.title, 
       'artist' : song.library_entry.artist, 
       'album' : song.library_entry.album,
       'duration' : song.library_entry.duration
