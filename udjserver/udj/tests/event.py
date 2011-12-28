@@ -232,7 +232,7 @@ class TestGetCurrentSong(User3TestCase):
       event__id=2, state=u'PL')[0]
     self.assertEqual(
       actualCurrentSong.song.host_lib_song_id, result['lib_song_id'])
-    self.assertEqual(actualCurrentSong.song.title, result['song'])
+    self.assertEqual(actualCurrentSong.song.title, result['title'])
     self.assertEqual(actualCurrentSong.song.artist, result['artist'])
     self.assertEqual(actualCurrentSong.song.album, result['album'])
     self.assertEqual(actualCurrentSong.song.duration, result['duration'])

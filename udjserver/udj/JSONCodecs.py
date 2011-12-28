@@ -51,7 +51,7 @@ def getActivePlaylistEntryDictionary(entry, upvotes, downvotes):
    return { 
       'id' : entry.id,
       'lib_song_id' : entry.song.host_lib_song_id,
-      'song' : entry.song.title,
+      'title' : entry.song.title,
       'artist' : entry.song.artist,
       'album' : entry.song.album,
       'duration' : entry.song.duration,
