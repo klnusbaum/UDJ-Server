@@ -55,34 +55,38 @@ class EndEventTest(User2TestCase):
   def testEndEvent(self):
     response = self.doDelete('/udj/events/2')
     self.assertEqual(Event.objects.get(pk=2).state,u'FN')
+    EventGoer.objects.get(user__id=2, event__id=2, state=u'LE')
 
 class EndEmptyEventTest(User4TestCase):
   def testEndEmptyEvent(self):
     response = self.doDelete('/udj/events/3')
     self.assertEqual(Event.objects.get(pk=3).state,u'FN')
+    EventGoer.objects.get(user__id=4, event__id=3, state=u'LE')
 
 
 class JoinEventTest(User5TestCase):
   def testJoinEvent(self):
     response = self.doPut('/udj/events/2/users/5')
     self.assertEqual(response.status_code, 201, "Error: " + response.content)
-    event_goer_entries = EventGoer.objects.filter(event__id=2, user__id=5)
-    self.assertEqual(len(event_goer_entries),1) 
+    inevent_goer = EventGoer.objects.get(
+      event__id=2, user__id=5, state=u'IE')
 
   def testDoubleJoinEvent(self):
     response = self.doPut('/udj/events/2/users/5')
     self.assertEqual(response.status_code, 201)
-    event_goer_entries = EventGoer.objects.get(event__id=2, user__id=5)
+    inevent_goer = EventGoer.objects.get(
+      event__id=2, user__id=5, state=u'IE')
     response = self.doPut('/udj/events/2/users/5')
     self.assertEqual(response.status_code, 201)
-    event_goer_entries = EventGoer.objects.get(event__id=2, user__id=5)
+    inevent_goer = EventGoer.objects.get(
+      event__id=2, user__id=5, state=u'IE')
     
 class LeaveEventTest(User3TestCase):
   def testLeaveEvent(self):
     response = self.doDelete('/udj/events/2/users/3')
     self.assertEqual(response.status_code, 200, response.content)
-    event_goer_entries = EventGoer.objects.filter(event__id=2, user__id=3)
-    self.assertFalse(event_goer_entries.exists())
+    event_goer_entries = EventGoer.objects.get(
+      event__id=2, user__id=3, state=u'LE')
 
 
 #Disabling this for now. We'll come back to it later.

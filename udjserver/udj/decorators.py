@@ -13,6 +13,18 @@ from udj.headers import getTicketHeader
 from udj.headers import getDjangoTicketHeader
 from udj.JSONCodecs import getEventDictionary
 
+def IsntHost(function):
+  def wrapper(*args, **kwargs):
+    request = args[0]
+    user_id = kwargs['user_id']
+    event_id = kwargs['event_id']
+    event = Event.objects.get(pk=event_id)
+    if event.host.id == user_id:
+      return HttpResponseBadRequest("Hosts can't do that on their own event")
+    else:
+      return function(*args, **kwargs)
+  return wrapper
+
 def IsUserOrHost(function):
   def wrapper(*args, **kwargs):
     request = args[0]
@@ -44,7 +56,8 @@ def InParty(function):
     event_id = kwargs['event_id'] 
     requestingUser = getUserForTicket(request)
     event_goers = EventGoer.objects.filter(
-      user=requestingUser, event__id=event_id)
+      user=requestingUser, event__id=event_id,
+      state=u'IE')
     if not event_goers.exists():
       return HttpResponseForbidden(
         "You must be logged into the party to do that")
@@ -90,11 +103,12 @@ def IsntInOtherEvent(function):
     request = args[0]
     event_id = kwargs['event_id']
     user_id = kwargs['user_id']
-    events = \
-      EventGoer.objects.exclude(event__id=event_id).filter(user__id=user_id)
-    if events.exists():
+    eventLogins = \
+      EventGoer.objects.exclude(event__id=event_id).filter(
+      user__id=user_id, state=u'IE')
+    if eventLogins.exists():
       return HttpResponse(
-        json.dumps(getEventDictionary(events[0].event)), status=409)
+        json.dumps(getEventDictionary(eventLogins[0].event)), status=409)
     else:
       return function(*args, **kwargs)
   return wrapper

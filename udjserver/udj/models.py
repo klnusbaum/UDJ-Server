@@ -80,9 +80,13 @@ class Ticket(models.Model):
     return "Ticket " + self.ticket_hash +  " : User id " + str(self.user.id)
 
 class EventGoer(models.Model):
-  user = models.ForeignKey(User, unique=True)
+  STATE_CHOICES = (
+    (u'IE', u'In Event'), 
+    (u'LE', u'Left Event'),)
+  user = models.ForeignKey(User)
   event = models.ForeignKey(Event)
   time_joined = models.DateTimeField(auto_now_add=True)
+  state = models.CharField(max_length=2, choices=STATE_CHOICES, default=u'IE')
   
   class Meta: 
     unique_together = ("user", "event")

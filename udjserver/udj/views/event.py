@@ -22,6 +22,7 @@ from udj.decorators import InParty
 from udj.decorators import IsntCurrentlyHosting
 from udj.decorators import IsntInOtherEvent
 from udj.decorators import IsUserOrHost
+from udj.decorators import IsntHost
 from udj.models import EventGoer
 from udj.models import Event
 from udj.models import LibraryEntry
@@ -108,12 +109,15 @@ def endEvent(request, event_id):
   toEnd.time_ended = datetime.now()
   toEnd.save()
   user = getUserForTicket(request) 
-  EventGoer.objects.get(user=user, event__id=event_id).delete()
+  host = EventGoer.objects.get(user=user, event__id=event_id)
+  host.state=u'LE'
+  host.save()
   return HttpResponse("Party ended")
 
 @NeedsAuth
 @TicketUserMatch
 @AcceptsMethods(['PUT', 'DELETE'])
+@IsntHost
 def joinOrLeaveEvent(request, event_id, user_id):
   if request.method == 'PUT':
     return joinEvent(request, event_id=event_id, user_id=user_id)
@@ -124,14 +128,21 @@ def joinOrLeaveEvent(request, event_id, user_id):
 def joinEvent(request, event_id, user_id):
   joining_user = User.objects.get(pk=user_id)
   event_to_join = Event.objects.get(pk=event_id)
-  event_goer = EventGoer.objects.get_or_create(
+  event_goer , created = EventGoer.objects.get_or_create(
     user=joining_user, event=event_to_join)
+  
+  #needed in case the user has logged out and is now logging back in
+  if not created:
+    event_goer.state=u'IE'
+    event_goer.save()
+
   return HttpResponse("joined event", status=201)
 
 @InParty
 def leaveEvent(request, event_id, user_id):
   event_goer = EventGoer.objects.get(event__id=event_id, user__id=user_id)
-  event_goer.delete()
+  event_goer.state=u'LE';
+  event_goer.save()
   return HttpResponse("left event")
 
 @NeedsAuth
@@ -245,6 +256,6 @@ def setCurrentSong(request, event_id):
 @AcceptsMethods('GET')
 @InParty
 def getEventGoers(request, event_id):
-  eventGoers = EventGoer.objects.filter(event__id=event_id)
+  eventGoers = EventGoer.objects.filter(event__id=event_id, state=u'IE')
   return HttpResponse(getJSONForEventGoers(eventGoers))
 
