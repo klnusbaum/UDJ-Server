@@ -6,9 +6,6 @@ from udj.tests import User3TestCase
 from udj.models import UpVote
 from udj.models import DownVote
 from udj.models import ActivePlaylistEntry
-from udj.models import DeletedPlaylistEntry
-from udj.models import PlayedPlaylistEntry
-from udj.models import CurrentSong
 
 class GetActivePlaylistTest(User3TestCase):
   def testGetPlaylist(self):

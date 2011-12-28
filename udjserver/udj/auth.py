@@ -7,7 +7,7 @@ from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 import random
-from models import Ticket
+from udj.models import Ticket
 from datetime import datetime
 from datetime import timedelta
 from udj.headers import getTicketHeader
@@ -36,12 +36,9 @@ def isValidTicket(provided_hash):
     return False
 
 def validAuthRequest(request):
-  if not request.method == "POST":
-    return False
-  elif not request.POST.__contains__("username") \
-    or not request.POST.__contains__("password"):
-    return False
-  return True
+  return request.method == 'POST' and \
+    request.POST.__contains__("username") and \
+    request.POST.__contains__("password")
   
 
 def generateRandomHash():
@@ -71,8 +68,7 @@ def authenticate(request):
   if not validAuthRequest(request):
     return HttpResponseBadRequest()
 
-  userToAuth = get_object_or_404( \
-    User, username__exact=request.POST['username'])
+  userToAuth = get_object_or_404(User, username=request.POST['username'])
   if userToAuth.check_password(request.POST['password']):
     ticket = getTicketForUser(userToAuth)
     response = HttpResponse()

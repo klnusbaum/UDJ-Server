@@ -19,16 +19,15 @@ class AuthTestCase(TestCase):
 
   def testAuth(self):
     client = Client()
-    response = client.post('/udj/auth/', {'username': 'test1', 'password' : 'onetest'})
+    response = client.post('/udj/auth', {'username': 'test2', 'password' : 'twotest'})
     self.assertEqual(response.status_code, 200)
     self.assertTrue(response.has_header(getTicketHeader()))
     self.assertTrue(response.has_header(getUserIdHeader()))
-    testUser = User.objects.filter(username='test1')
+    testUser = User.objects.filter(username='test2')
     self.assertEqual(
       int(response.__getitem__(getUserIdHeader())), testUser[0].id)
     ticket = Ticket.objects.filter(user=testUser)
     self.assertEqual(response.__getitem__(getTicketHeader()), ticket[0].ticket_hash)
-
 
 class DoesServerOpsTestCase(TestCase):
   fixtures = ['test_fixture.json']
@@ -58,10 +57,6 @@ class DoesServerOpsTestCase(TestCase):
   def doPost(self, url, args):
     return self.client.post(url, args, **{getDjangoTicketHeader() : self.ticket_hash})
 
-class User1TestCase(DoesServerOpsTestCase):
-  username = "test1"
-  userpass = "onetest"
-
 class User2TestCase(DoesServerOpsTestCase):
   username = "test2"
   userpass = "twotest"
@@ -73,3 +68,7 @@ class User3TestCase(DoesServerOpsTestCase):
 class User4TestCase(DoesServerOpsTestCase):
   username = "test4"
   userpass = "fourtest"
+
+class User5TestCase(DoesServerOpsTestCase):
+  username = "test5"
+  userpass = "fiveurtest"

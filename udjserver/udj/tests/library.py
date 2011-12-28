@@ -1,7 +1,7 @@
 import json
-from udj.tests.testcases import User1TestCase
 from udj.tests.testcases import User2TestCase
 from udj.tests.testcases import User3TestCase
+from udj.tests.testcases import User4TestCase
 from udj.models import LibraryEntry
 
 def verifySongAdded(testObject, lib_id, ids, song, artist, album):
@@ -17,7 +17,7 @@ def verifySongAdded(testObject, lib_id, ids, song, artist, album):
   testObject.assertTrue(lib_id in ids)
 
 
-class LibSingleAddTestCase(User1TestCase):
+class LibSingleAddTestCase(User2TestCase):
   def testLibAdd(self):
 
     lib_id = 1
@@ -42,7 +42,7 @@ class LibSingleAddTestCase(User1TestCase):
     verifySongAdded(self, lib_id, ids, song, artist, album)
 
 
-class LibMultiAddTestCase(User1TestCase):
+class LibMultiAddTestCase(User2TestCase):
   def testLibAdds(self):
 
     lib_id1 = 1
@@ -82,7 +82,7 @@ class LibMultiAddTestCase(User1TestCase):
     verifySongAdded(self, lib_id1, ids, song1, artist1, album1)
     verifySongAdded(self, lib_id2, ids, song2, artist2, album2)
 
-class LibTestDuplicateAdd(User1TestCase):
+class LibTestDuplicateAdd(User2TestCase):
   def testDupAdd(self):
 
     payload = [{
@@ -101,7 +101,7 @@ class LibTestDuplicateAdd(User1TestCase):
     onlyOneSong = LibraryEntry.objects.get(
       owning_user__id=2, host_lib_song_id=10)
     
-class LibRemoveTestCase(User1TestCase):
+class LibRemoveTestCase(User2TestCase):
   def testLibSongDelete(self):
     response = self.doDelete('/udj/users/' + self.user_id + '/library/10')
     self.assertEqual(response.status_code, 200)
@@ -110,7 +110,7 @@ class LibRemoveTestCase(User1TestCase):
     self.assertEqual(len(deletedEntries), 1)
 
 
-class LibFullDeleteTest(User1TestCase):
+class LibFullDeleteTest(User2TestCase):
   def testFullDelete(self):
     response = self.doDelete('/udj/users/'+self.user_id+'/library')
     self.assertEqual(response.status_code, 200)

@@ -8,13 +8,7 @@ from udj.models import Event
 from udj.models import LibraryEntry
 from udj.models import EventGoer
 from udj.models import ActivePlaylistEntry
-from udj.models import ActivePlaylistEntryId
-from udj.models import FinishedEvent
-from udj.models import DeletedPlaylistEntry
-from udj.models import FinishedPlaylistEntry
 from udj.models import AvailableSong
-from udj.models import PlayedPlaylistEntry
-from udj.models import CurrentSong
 from decimal import Decimal
 from datetime import datetime
 
