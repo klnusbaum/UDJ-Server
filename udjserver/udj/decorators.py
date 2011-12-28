@@ -63,10 +63,10 @@ def IsEventHost(function):
   def wrapper(*args, **kwargs):
     request = args[0]
     event_id = kwargs['event_id']
-    user_id = kwargs['user_id']
-    event = get_object_or_404(Event, event__id=event_id)
-    if event.host.id != user_id:
-      return HttpResponseForbidden("Only the host may do that")
+    user = getUserForTicket(request)
+    event = get_object_or_404(Event, pk=event_id)
+    if event.host != user:
+      return HttpResponseForbidden("Only the host of that event may do that")
     else:
       return function(*args, **kwargs)
   return wrapper

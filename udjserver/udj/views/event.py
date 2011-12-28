@@ -1,5 +1,6 @@
 import json
 import hashlib
+from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
@@ -42,7 +43,9 @@ def getEventHost(event_id):
 def getEvents(request):
   if not request.GET.__contains__('name'):
     return HttpResponseBadRequest("Must include name parameter")
-  events = Event.objects.filter(name__icontains=request.GET['name'])
+  events = Event.objects.filter(
+    name__icontains=request.GET['name'],
+    state=u'AC')
   events_json = getJSONForEvents(events)
   return HttpResponse(events_json)
   
@@ -51,7 +54,7 @@ def getEvents(request):
 @AcceptsMethods('GET')
 def getNearbyEvents(request, latitude, longitude):
   #TODO actually have this only return nearby events
-  events = Event.objects.all()
+  events = Event.objects.filter(state=u'AC')
   events_json = getJSONForEvents(events)
   return HttpResponse(events_json)  
 
@@ -84,7 +87,7 @@ def createEvent(request):
   
   hostInsert = EventGoer(user=user, event=toInsert)
   hostInsert.save()
-  return HttpResponse('{"event_id" : ' + str(event.id) + '}', status=201)
+  return HttpResponse('{"event_id" : ' + str(toInsert.id) + '}', status=201)
 
 #Should be able to make only one call to the events table to ensure it:
 # 1. Exsits
@@ -100,7 +103,7 @@ def endEvent(request, event_id):
   #in the future
   toEnd = Event.objects.get(pk=event_id)
   toEnd.state = u'FN'
-  toEnd.time_ended = datetime.datetime.now()
+  toEnd.time_ended = datetime.now()
   toEnd.save()
   return HttpResponse("Party ended")
 

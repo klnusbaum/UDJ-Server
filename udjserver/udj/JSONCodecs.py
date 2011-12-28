@@ -29,7 +29,7 @@ def getJSONForAvailableSongs(songs):
   return json.dumps(toReturn)
     
 def getEventDictionary(event):
-  hasPassword = event.password_hash != ""
+  hasPassword = event.password_hash != None
   return {
     'id' : event.id,
     'name' : event.name, 
