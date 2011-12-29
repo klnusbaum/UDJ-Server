@@ -388,6 +388,23 @@ public class ServerConnection{
     return null;
   }
 
+  public static JSONObject getCurrentSong(
+    long eventId, String authToken)
+    throws JSONException, ParseException, IOException, AuthenticationException
+  {
+    try{
+      URI uri = new URI(
+        NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT,
+        "/udj/events/"+eventId+"/current_song",
+        null, null);
+      return new JSONObject(doGet(uri, authToken));
+    }
+    catch(URISyntaxException e){
+      //TDOD inform caller that theire query is bad 
+    }
+    return null;
+  }
+
   public static void addSongsToActivePlaylist(
     HashMap<Long, Long> requests, long eventId, String authToken)
     throws JSONException, ParseException, IOException, AuthenticationException
@@ -482,5 +499,4 @@ public class ServerConnection{
     }
     return toReturn;
   }
-
 }

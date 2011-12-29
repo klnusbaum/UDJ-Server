@@ -37,8 +37,6 @@ import android.content.ContentValues;
 import android.accounts.AccountManager;
 import android.accounts.Account;
 
-
-
 import org.klnusbaum.udj.R;
 import org.klnusbaum.udj.containers.Event;
 
@@ -49,7 +47,8 @@ public class PlaylistFragment extends ListFragment
   implements LoaderManager.LoaderCallbacks<Cursor>
 {
 
-  private static final int CURSOR_LOADER_ID = 0;
+  private static final int PLAYLIST_LOADER_ID = 0;
+  private static final int CURRENT_SONG_LOADER_ID = 1;
   private Account account;
 
   /**
@@ -64,19 +63,28 @@ public class PlaylistFragment extends ListFragment
       getActivity().getIntent().getParcelableExtra(Constants.ACCOUNT_EXTRA);
     setEmptyText(getActivity().getString(R.string.no_playlist_items));
     playlistAdapter = new PlaylistAdapter(getActivity(), null);
+    LayoutInflater inflater = (LayoutInflater)getActivity().getSystemService(
+      Context.LAYOUT_INFLATER_SERVICE);
+    View currentSong = inflater.inflate(R.layout.current_song, null);
+    getListView().addHeaderView(currentSong);
     setListAdapter(playlistAdapter);
     setListShown(false);
-    getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+    getLoaderManager().initLoader(PLAYLIST_LOADER_ID, null, this);
   }
 
   public Loader<Cursor> onCreateLoader(int id, Bundle args){
-    return new CursorLoader(
-      getActivity(), 
-      UDJEventProvider.PLAYLIST_URI, 
-      null,
-      null,
-      null,
-      UDJEventProvider.PRIORITY_COLUMN);
+    switch(id){
+    case PLAYLIST_LOADER_ID:
+      return new CursorLoader(
+        getActivity(), 
+        UDJEventProvider.PLAYLIST_URI, 
+        null,
+        null,
+        null,
+        UDJEventProvider.PRIORITY_COLUMN);
+    default:
+      return null;
+    }
   }
 
   public void onLoadFinished(Loader<Cursor> loader, Cursor data){

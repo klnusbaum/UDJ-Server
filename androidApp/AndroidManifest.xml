@@ -17,7 +17,8 @@
   You should have received a copy of the GNU General Public License
   along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest 
+      xmlns:android="http://schemas.android.com/apk/res/android"
       package="org.klnusbaum.udj"
       android:versionCode="1"
       android:versionName="1.0">
