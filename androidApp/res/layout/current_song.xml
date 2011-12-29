@@ -17,13 +17,30 @@
   You should have received a copy of the GNU General Public License
   along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<TextView 
+<LinearLayout 
   xmlns:android="http://schemas.android.com/apk/res/android"
-  android:id="@+id/current_song"
-  android:layout_marginTop="-4dip"
-  android:layout_gravity="right"
-  android:layout_width="wrap_content"
-  android:layout_height="wrap_content"
-  android:textAppearance="?android:attr/textAppearanceMedium"
-  android:text="Current Song"
-/>
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:orientation="horizontal"
+>
+  <TextView 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/current_song_label"
+    android:layout_marginTop="-4dip"
+    android:layout_gravity="right"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceLarge"
+    android:text="Current Song:"
+  />
+  <TextView 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/current_song_title"
+    android:layout_marginTop="-4dip"
+    android:layout_gravity="right"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceLarge"
+    android:text="None"
+  />
+</LinearLayout>

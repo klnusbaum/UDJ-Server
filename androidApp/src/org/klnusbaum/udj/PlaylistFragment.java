@@ -56,6 +56,8 @@ public class PlaylistFragment extends ListFragment
    */
   PlaylistAdapter playlistAdapter;
 
+  View currentSongHeaderView;
+
   @Override
   public void onActivityCreated(Bundle savedInstanceState){
     super.onActivityCreated(savedInstanceState);
@@ -65,11 +67,12 @@ public class PlaylistFragment extends ListFragment
     playlistAdapter = new PlaylistAdapter(getActivity(), null);
     LayoutInflater inflater = (LayoutInflater)getActivity().getSystemService(
       Context.LAYOUT_INFLATER_SERVICE);
-    View currentSong = inflater.inflate(R.layout.current_song, null);
-    getListView().addHeaderView(currentSong);
+    currentSongHeaderView = inflater.inflate(R.layout.current_song, null);
+    getListView().addHeaderView(currentSongHeaderView);
     setListAdapter(playlistAdapter);
     setListShown(false);
     getLoaderManager().initLoader(PLAYLIST_LOADER_ID, null, this);
+    getLoaderManager().initLoader(CURRENT_SONG_LOADER_ID, null, this);
   }
 
   public Loader<Cursor> onCreateLoader(int id, Bundle args){
@@ -82,23 +85,50 @@ public class PlaylistFragment extends ListFragment
         null,
         null,
         UDJEventProvider.PRIORITY_COLUMN);
+    case CURRENT_SONG_LOADER_ID:
+      return new CursorLoader(
+        getActivity(),
+        UDJEventProvider.CURRENT_SONG_URI,
+        null,
+        null,
+        null,
+        null);
     default:
       return null;
     }
   }
 
   public void onLoadFinished(Loader<Cursor> loader, Cursor data){
-    playlistAdapter.swapCursor(data);
-    if(isResumed()){
-      setListShown(true);
+    if(loader.getId()==PLAYLIST_LOADER_ID){
+      playlistAdapter.swapCursor(data);
+      if(isResumed()){
+        setListShown(true);
+      }
+      else if(isVisible()){
+        setListShownNoAnimation(true);
+      }
     }
-    else if(isVisible()){
-      setListShownNoAnimation(true);
+    else if(loader.getId()==CURRENT_SONG_LOADER_ID){
+      setCurrentSongDisplay(data);   
     }
   }
 
   public void onLoaderReset(Loader<Cursor> loader){
-    playlistAdapter.swapCursor(null);
+    if(loader.getId()==PLAYLIST_LOADER_ID){
+      playlistAdapter.swapCursor(null);
+    }
+  }
+
+  private void setCurrentSongDisplay(Cursor data){
+    TextView songTitleView = 
+      (TextView)currentSongHeaderView.findViewById(R.id.current_song_title);
+    if(data.moveToFirst()){
+      songTitleView.setText(data.getString(data.getColumnIndex(
+        UDJEventProvider.TITLE_COLUMN)));
+    }
+    else{
+      songTitleView.setText(R.string.no_current_song);
+    }
   }
 
   private class PlaylistAdapter extends CursorAdapter{

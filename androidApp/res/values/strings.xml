@@ -45,4 +45,5 @@
   <string name="new_account_text">Sign in to UDJ</string>
   <string name="need_password">Password is needed</string>
   <string name="no_location_error">Could not retrieve location</string>
+  <string name="no_current_song">No Current Song</string>
 </resources>
