@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 import android.content.Context;
+import android.content.ContentValues;
 import android.content.ContentResolver;
 import android.content.ContentProviderOperation;
 import android.content.OperationApplicationException;
@@ -38,6 +39,8 @@ import org.klnusbaum.udj.UDJEventProvider;
 import org.klnusbaum.udj.containers.LibraryEntry;
 import org.klnusbaum.udj.network.ServerConnection;
 
+import org.json.JSONObject;
+import org.json.JSONArray;
 import org.json.JSONException;
 
 import org.apache.http.auth.AuthenticationException;
@@ -49,6 +52,7 @@ public class RESTProcessor{
   public static final String TAG = "RESTProcessor";
 
   private static void setCurrentSong(JSONObject currentSong, ContentResolver cr)
+    throws JSONException
   {
     cr.delete(UDJEventProvider.CURRENT_SONG_URI, null, null); 
     ContentValues toInsert = new ContentValues();
@@ -82,7 +86,7 @@ public class RESTProcessor{
   public static void setActivePlaylist(
     JSONObject activePlaylist,
     Context context)
-    throws RemoteException, OperationApplicationException
+    throws RemoteException, OperationApplicationException, JSONException
   {
     JSONArray playlistEntries = activePlaylist.getJSONArray("active_playlist");
     JSONObject currentSong = activePlaylist.getJSONObject("current_song");
@@ -99,9 +103,9 @@ public class RESTProcessor{
     JSONObject currentEntry;
     for(int i=0; i<playlistEntries.length(); i++){
       currentEntry = playlistEntries.getJSONObject(i);
-      if(needUpdate.contains(pe.getId())){
-        batchOps.add(getPlaylistPriorityUpdate(
-          currentEntry.getLong("id"), priority));
+      long id = currentEntry.getLong("id");
+      if(needUpdate.contains(id)){
+        batchOps.add(getPlaylistPriorityUpdate(id, priority));
       }
       else{
         batchOps.add(getPlaylistInsertOp(currentEntry, priority)); 
@@ -138,13 +142,14 @@ public class RESTProcessor{
 
   private static void deleteRemovedPlaylistEntries(
     JSONArray playlistEntries, ContentResolver cr)
+    throws JSONException
   {
     if(playlistEntries.length() ==0){
       return;
     }
 
     String where = "";
-    String[] selectionArgs = new String[playlistEntries.size()];
+    String[] selectionArgs = new String[playlistEntries.length()];
     int i;
     for(i=0; i<playlistEntries.length()-1; i++){
       where += UDJEventProvider.PLAYLIST_ID_COLUMN + "!=? AND ";
@@ -158,6 +163,7 @@ public class RESTProcessor{
 
   private static ContentProviderOperation getPlaylistInsertOp(
     JSONObject entry, int priority)
+    throws JSONException
   {
     final ContentProviderOperation.Builder insertOp = 
       ContentProviderOperation.newInsert(UDJEventProvider.PLAYLIST_URI)
