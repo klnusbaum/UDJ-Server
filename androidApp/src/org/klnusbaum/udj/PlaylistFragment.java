@@ -25,8 +25,10 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 
 import android.os.Bundle;
+import android.content.Intent;
 import android.database.Cursor;
 import android.content.Context;
+import android.content.ContentResolver;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.ImageButton;
@@ -38,7 +40,7 @@ import android.accounts.AccountManager;
 import android.accounts.Account;
 
 import org.klnusbaum.udj.R;
-import org.klnusbaum.udj.containers.Event;
+import org.klnusbaum.udj.network.PlaylistSyncService;
 
 /**
  * Class used for displaying the contents of the Playlist.
@@ -50,6 +52,7 @@ public class PlaylistFragment extends ListFragment
   private static final int PLAYLIST_LOADER_ID = 0;
   private static final int CURRENT_SONG_LOADER_ID = 1;
   private Account account;
+  private long eventId;
 
   /**
    * Adapter used to help display the contents of the playlist.
@@ -63,6 +66,8 @@ public class PlaylistFragment extends ListFragment
     super.onActivityCreated(savedInstanceState);
     account = 
       getActivity().getIntent().getParcelableExtra(Constants.ACCOUNT_EXTRA);
+    eventId = 
+      getActivity().getIntent().getLongExtra(Constants.EVENT_ID_EXTRA, -1);
     setEmptyText(getActivity().getString(R.string.no_playlist_items));
     playlistAdapter = new PlaylistAdapter(getActivity(), null);
     LayoutInflater inflater = (LayoutInflater)getActivity().getSystemService(
@@ -244,15 +249,15 @@ public class PlaylistFragment extends ListFragment
       toInsert.put(UDJEventProvider.VOTE_TYPE_COLUMN, voteType);
       toInsert.put(UDJEventProvider.VOTE_PLAYLIST_ENTRY_ID_COLUMN, playlistId);
       ContentResolver cr = getActivity().getContentResolver();
-      cr.insert(VOTES_URI, toInsert);
+      cr.insert(UDJEventProvider.VOTES_URI, toInsert);
       Intent getPlaylist = new Intent(
         Intent.ACTION_VIEW,
         UDJEventProvider.VOTES_URI,
-        this,
+        getActivity(),
         PlaylistSyncService.class);
       getPlaylist.putExtra(Constants.EVENT_ID_EXTRA, eventId);
       getPlaylist.putExtra(Constants.ACCOUNT_EXTRA, account);
-      startService(getPlaylist);
+      getActivity().startService(getPlaylist);
     }
   }
 }

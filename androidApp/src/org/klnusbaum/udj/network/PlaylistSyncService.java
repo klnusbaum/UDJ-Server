@@ -34,6 +34,7 @@ import android.app.IntentService;
 import android.content.ContentValues;
 import android.net.Uri;
 import android.content.Intent;
+import android.database.Cursor;
 
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -189,25 +190,24 @@ public class PlaylistSyncService extends IntentService{
 
   private void syncVoteRequests(Account account, long eventId){
     Log.d(TAG, "Sycning vote requests");
+    ContentResolver cr = getContentResolver();
+    Cursor requestsCursor = cr.query(
+      UDJEventProvider.VOTES_URI,
+      null,
+      UDJEventProvider.VOTE_SYNC_STATUS_COLUMN + "=" +
+        UDJEventProvider.VOTE_NEEDS_SYNC,
+      null,
+      null);
     try{
-      ContentResolver cr = getContentResolver();
-      Cursor requestsCursor = cr.query(
-        UDJEventProvider.VOTES_URI,
-        voteRequestProjection,
-        voteRequestSelection,
-        null,
-        null);
       if(requestsCursor.getCount() >0){
         AccountManager am = AccountManager.get(this);
         String authToken = am.blockingGetAuthToken(account, "", true);
-        Long userId = am.getUserData(account, Constants.USER_ID_DATA);
+        Long userId = 
+          Long.valueOf(am.getUserData(account, Constants.USER_ID_DATA));
         ServerConnection.doSongVotes(
           requestsCursor, eventId, userId, authToken);
         RESTProcessor.setVoteRequestsSynced(requestsCursor, this);
       }
-    }
-    catch(JSONException e){
-      Log.e(TAG, "JSON exception when retreiving playist");
     }
     catch(ParseException e){
       Log.e(TAG, "Parse exception when retreiving playist");
@@ -223,12 +223,6 @@ public class PlaylistSyncService extends IntentService{
     }
     catch(OperationCanceledException e){
       Log.e(TAG, "Op Canceled exception when retreiving playist");
-    }
-    catch(RemoteException e){
-      Log.e(TAG, "Remote exception when retreiving playist");
-    }
-    catch(OperationApplicationException e){
-      Log.e(TAG, "Operation Application exception when retreiving playist");
     }
     finally{
       requestsCursor.close();

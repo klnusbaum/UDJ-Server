@@ -233,7 +233,7 @@ public class RESTProcessor{
     ContentResolver cr = context.getContentResolver();
     if(voteRequests.moveToFirst()){
       int idColIndex = 
-        voteRequests.getColumnIndex(UDJEventProvider.VOTES_TABLE_NAME);
+        voteRequests.getColumnIndex(UDJEventProvider.VOTE_ID_COLUMN);
       do{
         //TODO these should be batch operations
         long requestId = voteRequests.getLong(idColIndex);

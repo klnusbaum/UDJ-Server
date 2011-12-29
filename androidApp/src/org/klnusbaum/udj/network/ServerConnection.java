@@ -20,6 +20,7 @@ package org.klnusbaum.udj.network;
 
 import android.util.Log;
 import android.location.Location;
+import android.database.Cursor;
 
 import java.util.List;
 import java.util.HashMap;
@@ -65,7 +66,7 @@ import org.json.JSONException;
 import org.klnusbaum.udj.containers.LibraryEntry;
 import org.klnusbaum.udj.containers.Event;
 import org.klnusbaum.udj.containers.VoteRequests;
-
+import org.klnusbaum.udj.UDJEventProvider;
 /**
  * A connection to the UDJ server
  */
@@ -186,17 +187,17 @@ public class ServerConnection{
     }
   }
 
-  public static String doPost(String uri, String authToken, String payload)
+  public static String doPost(URI uri, String authToken, String payload)
     throws AuthenticationException, IOException
   {
     String toReturn = null;
     final HttpPost post = new HttpPost(uri);
     if(payload != null){
-      HttpEntity entity = new StringEntity(payload);
-      post.addHeader("text/json");
+      StringEntity entity = new StringEntity(payload);
+      entity.setContentType("text/json");
       post.setEntity(entity);
     }
-    get.addHeader(TICKET_HASH_HEADER, ticketHash);
+    post.addHeader(TICKET_HASH_HEADER, authToken);
     final HttpResponse resp = getHttpClient().execute(post);
     final String response = EntityUtils.toString(resp.getEntity());
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
@@ -510,8 +511,8 @@ public class ServerConnection{
       int voteTypeIndex = voteRequests.getColumnIndex(
         UDJEventProvider.VOTE_TYPE_COLUMN);
       do{
-        long playlistId = cursor.getLong(idColumnIndex);
-        int voteType = cursor.getInt(voteTypeIndex);
+        long playlistId = voteRequests.getLong(idColumnIndex);
+        int voteType = voteRequests.getInt(voteTypeIndex);
         voteOnSong(eventId, playlistId, userId, voteType, authToken);
       }while(voteRequests.moveToNext());
     }
@@ -519,6 +520,7 @@ public class ServerConnection{
 
   private static void voteOnSong(
     long eventId, long playlistId, long userId, int voteType, String authToken)
+    throws IOException, AuthenticationException
   {
     String voteString = null;
     if(voteType == UDJEventProvider.UP_VOTE_TYPE){
