@@ -35,7 +35,6 @@ import android.util.Log;
 import org.klnusbaum.udj.R;
 import org.klnusbaum.udj.Constants;
 import org.klnusbaum.udj.UDJEventProvider;
-import org.klnusbaum.udj.containers.PlaylistEntry;
 import org.klnusbaum.udj.containers.LibraryEntry;
 import org.klnusbaum.udj.network.ServerConnection;
 
@@ -48,26 +47,64 @@ import org.apache.http.auth.AuthenticationException;
 public class RESTProcessor{
 
   public static final String TAG = "RESTProcessor";
+
+  private static void setCurrentSong(JSONObject currentSong, ContentResolver cr)
+  {
+    cr.delete(UDJEventProvider.CURRENT_SONG_URI, null, null); 
+    ContentValues toInsert = new ContentValues();
+    toInsert.put(
+      UDJEventProvider.PLAYLIST_ID_COLUMN, currentSong.getLong("id"));
+    toInsert.put(
+      UDJEventProvider.UP_VOTES_COLUMN, currentSong.getInt("up_votes"));
+    toInsert.put(
+      UDJEventProvider.DOWN_VOTES_COLUMN, currentSong.getInt("down_votes"));
+    toInsert.put(
+      UDJEventProvider.TIME_ADDED_COLUMN, currentSong.getString("time_added"));
+    toInsert.put(
+      UDJEventProvider.TIME_PLAYED_COLUMN, 
+      currentSong.getString("time_played"));
+    toInsert.put(
+      UDJEventProvider.DURATION_COLUMN, currentSong.getInt("duration"));
+    toInsert.put(
+      UDJEventProvider.TITLE_COLUMN, currentSong.getString("title"));
+    toInsert.put(
+      UDJEventProvider.ARTIST_COLUMN, currentSong.getString("artist"));
+    toInsert.put(
+      UDJEventProvider.ALBUM_COLUMN, currentSong.getString("album"));
+    toInsert.put(
+      UDJEventProvider.ADDER_ID_COLUMN, currentSong.getLong("adder_id"));
+    toInsert.put(
+      UDJEventProvider.ADDER_USERNAME_COLUMN, 
+      currentSong.getString("adder_username"));
+    cr.insert(UDJEventProvider.CURRENT_SONG_URI, toInsert);
+  }
+
   public static void setActivePlaylist(
-    List<PlaylistEntry> playlistEntries,
+    JSONObject activePlaylist,
     Context context)
     throws RemoteException, OperationApplicationException
   {
+    JSONArray playlistEntries = activePlaylist.getJSONArray("active_playlist");
+    JSONObject currentSong = activePlaylist.getJSONObject("current_song");
     final ContentResolver resolver = context.getContentResolver();
+
+    setCurrentSong(currentSong, resolver);
     deleteRemovedPlaylistEntries(playlistEntries, resolver);
     
     ArrayList<ContentProviderOperation> batchOps = 
       new ArrayList<ContentProviderOperation>();
-    Set<Long> needUpdate = 
-      getNeedUpdatePlaylistEntries(playlistEntries, resolver);
+    Set<Long> needUpdate = getNeedUpdatePlaylistEntries(resolver);
 
     int priority = 1;
-    for(PlaylistEntry pe: playlistEntries){
+    JSONObject currentEntry;
+    for(int i=0; i<playlistEntries.length(); i++){
+      currentEntry = playlistEntries.getJSONObject(i);
       if(needUpdate.contains(pe.getId())){
-        batchOps.add(getPlaylistPriorityUpdate(pe.getId(), priority));
+        batchOps.add(getPlaylistPriorityUpdate(
+          currentEntry.getLong("id"), priority));
       }
       else{
-        batchOps.add(getPlaylistInsertOp(pe, priority)); 
+        batchOps.add(getPlaylistInsertOp(currentEntry, priority)); 
       }
       if(batchOps.size() >= 50){
         resolver.applyBatch(Constants.AUTHORITY, batchOps);
@@ -82,9 +119,7 @@ public class RESTProcessor{
     resolver.notifyChange(UDJEventProvider.PLAYLIST_URI, null, true);
   }
 
-  private static Set<Long> getNeedUpdatePlaylistEntries(
-    List<PlaylistEntry> playlistEntries, ContentResolver cr)
-  {
+  private static Set<Long> getNeedUpdatePlaylistEntries(ContentResolver cr){
     HashSet<Long> toReturn = new HashSet<Long>();
     Cursor currentPlaylist = cr.query(
       UDJEventProvider.PLAYLIST_URI, 
@@ -102,41 +137,43 @@ public class RESTProcessor{
 
 
   private static void deleteRemovedPlaylistEntries(
-    List<PlaylistEntry> playlistEntries, ContentResolver cr)
+    JSONArray playlistEntries, ContentResolver cr)
   {
-    if(playlistEntries.size() ==0){
+    if(playlistEntries.length() ==0){
       return;
     }
 
     String where = "";
     String[] selectionArgs = new String[playlistEntries.size()];
     int i;
-    for(i=0; i<playlistEntries.size()-1; i++){
+    for(i=0; i<playlistEntries.length()-1; i++){
       where += UDJEventProvider.PLAYLIST_ID_COLUMN + "!=? AND ";
-      selectionArgs[i] = String.valueOf(playlistEntries.get(i).getId());
+      selectionArgs[i] = playlistEntries.getJSONObject(i).getString("id");
     }
-    selectionArgs[i] = String.valueOf(playlistEntries.get(i).getId());
+    selectionArgs[i] = playlistEntries.getJSONObject(i).getString("id");
     where += UDJEventProvider.PLAYLIST_ID_COLUMN + "!=?";  
 
     cr.delete(UDJEventProvider.PLAYLIST_URI, where, selectionArgs); 
   }
 
   private static ContentProviderOperation getPlaylistInsertOp(
-    PlaylistEntry pe, int priority)
+    JSONObject entry, int priority)
   {
     final ContentProviderOperation.Builder insertOp = 
       ContentProviderOperation.newInsert(UDJEventProvider.PLAYLIST_URI)
-      .withValue(UDJEventProvider.PLAYLIST_ID_COLUMN, pe.getId())
-      .withValue(UDJEventProvider.UP_VOTES_COLUMN, pe.getUpVotes())
-      .withValue(UDJEventProvider.DOWN_VOTES_COLUMN, pe.getDownVotes())
-      .withValue(UDJEventProvider.TIME_ADDED_COLUMN, pe.getTimeAdded())
+      .withValue(UDJEventProvider.PLAYLIST_ID_COLUMN, entry.getLong("id"))
+      .withValue(UDJEventProvider.UP_VOTES_COLUMN, entry.getInt("up_votes"))
+      .withValue(UDJEventProvider.DOWN_VOTES_COLUMN, entry.getInt("down_votes"))
+      .withValue(UDJEventProvider.TIME_ADDED_COLUMN, 
+        entry.getString("time_added"))
       .withValue(UDJEventProvider.PRIORITY_COLUMN, priority)
-      .withValue(UDJEventProvider.TITLE_COLUMN, pe.getTitle())
-      .withValue(UDJEventProvider.ARTIST_COLUMN, pe.getArtist())
-      .withValue(UDJEventProvider.ALBUM_COLUMN, pe.getAlbum())
-      .withValue(UDJEventProvider.DURATION_COLUMN, pe.getDuration())
-      .withValue(UDJEventProvider.ADDER_ID_COLUMN, pe.getAdderId())
-      .withValue(UDJEventProvider.ADDER_USERNAME_COLUMN, pe.getAdderUsername());
+      .withValue(UDJEventProvider.TITLE_COLUMN, entry.getString("title"))
+      .withValue(UDJEventProvider.ARTIST_COLUMN, entry.getString("artist"))
+      .withValue(UDJEventProvider.ALBUM_COLUMN, entry.getString("album"))
+      .withValue(UDJEventProvider.DURATION_COLUMN, entry.getInt("duration"))
+      .withValue(UDJEventProvider.ADDER_ID_COLUMN, entry.getLong("adder_id"))
+      .withValue(UDJEventProvider.ADDER_USERNAME_COLUMN, 
+        entry.getString("adder_username"));
     return insertOp.build();
   }
 

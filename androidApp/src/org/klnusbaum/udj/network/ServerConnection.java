@@ -63,7 +63,6 @@ import org.json.JSONException;
 
 
 import org.klnusbaum.udj.containers.LibraryEntry;
-import org.klnusbaum.udj.containers.PlaylistEntry;
 import org.klnusbaum.udj.containers.Event;
 import org.klnusbaum.udj.containers.VoteRequests;
 
@@ -336,7 +335,7 @@ public class ServerConnection{
     return true;
   }
 
-  public static List<PlaylistEntry> getActivePlaylist(long eventId, 
+  public static JSONObject getActivePlaylist(long eventId, 
     String authToken)
     throws JSONException, ParseException, IOException, AuthenticationException
   {
@@ -345,8 +344,7 @@ public class ServerConnection{
         NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT, 
         "/udj/events/"+eventId+"/active_playlist",
         null, null);
-      JSONArray playlistEntries = new JSONArray(doGet(uri, authToken));
-      return PlaylistEntry.fromJSONArray(playlistEntries);
+      return new JSONObject(doGet(uri, authToken));
     }
     catch(URISyntaxException e){
       return null;

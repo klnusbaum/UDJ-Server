@@ -60,6 +60,9 @@ public class UDJEventProvider extends ContentProvider{
   public static final Uri VOTES_URI = 
     Uri.parse("content://org.klnusbaum.udj/playlist/votes");
 
+  public static final Uri CURRENT_SONG_URI =
+    Uri.parse("content://org.klnusbaum.udj/current_song");
+
 
   /** PLAYLIST TABLE */
 
@@ -152,7 +155,6 @@ public class UDJEventProvider extends ContentProvider{
     "CHECK (" + VOTE_SYNC_STATUS_COLUMN + "=" + VOTE_NEEDS_SYNC +
     " OR " + VOTE_SYNC_STATUS_COLUMN + "=" + VOTE_SYNCED + "));";
 
-
   /** Playlist View */
 
   /** Name of view */
@@ -164,6 +166,32 @@ public class UDJEventProvider extends ContentProvider{
     PLAYLIST_TABLE_NAME + " LEFT JOIN " + VOTES_TABLE_NAME + " ON " +
     PLAYLIST_TABLE_NAME + "." + PLAYLIST_ID_COLUMN + "=" +
     VOTES_TABLE_NAME + "." + VOTE_PLAYLIST_ENTRY_ID_COLUMN + ";";
+
+  /** Current Song Table */
+
+  /** Name of table */
+  private static final String CURRENT_SONG_TABLE_NAME = "current_song";
+
+  /** Constants for the column names in the current song table.
+      Note that we're going to reuse all of the other constants for column
+      names that were used in the playlist table as well.  */
+  public static final String TIME_PLAYED_COLUMN = "time_played";
+
+  /** SQL statement for creating the current song table */
+  private static final String CURRENT_SONG_TABLE_CREATE = 
+    "CREATE TABLE " + CURRENT_SONG_TABLE_NAME + "("+
+		PLAYLIST_ID_COLUMN + " INTEGER PRIMARY KEY , " +
+    UP_VOTES_COLUMN + " INTEGER NOT NULL, " +
+    DOWN_VOTES_COLUMN + " INTEGER NOT NULL, " +
+    TIME_ADDED_COLUMN + " TEXT NOT NULL, " +
+    TIME_PLAYED_COLUMN + " TEXT NOT NULL, " +
+    DURATION_COLUMN + " INTEGER NOT NULL, " +
+		TITLE_COLUMN + " TEXT NOT NULL, " +
+    ARTIST_COLUMN + " TEXT NOT NULL, " + 
+    ALBUM_COLUMN + " TEXT NOT NULL, " +
+    ADDER_ID_COLUMN + " INTEGER NOT NULL, " +
+    ADDER_USERNAME_COLUMN + " STRING NOT NULL);";
+
 
 
 	/** Helper for opening up the actual database. */
@@ -189,6 +217,7 @@ public class UDJEventProvider extends ContentProvider{
       db.execSQL(ADD_REQUEST_TABLE_CREATE);
       db.execSQL(VOTES_TABLE_CREATE);
       db.execSQL(PLAYLIST_VIEW_CREATE);
+      db.execSQL(CURRENT_SONG_TABLE_CREATE);
     }
 
     @Override
@@ -221,6 +250,10 @@ public class UDJEventProvider extends ContentProvider{
     else if(uri.equals(VOTES_URI)){
       SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
       return db.delete(VOTES_TABLE_NAME, where, whereArgs);
+    }
+    else if(uri.equals(CURRENT_SONG_URI)){
+      SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+      return db.delete(CURRENT_SONG_TABLE_NAME, where, whereArgs);
     }
     throw new IllegalArgumentException("Unknown URI " + uri);
   }
@@ -260,6 +293,17 @@ public class UDJEventProvider extends ContentProvider{
         return null;
       }
     }
+    else if(uri.equals(CURRENT_SONG_URI)){
+      SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+      long rowId = db.insert(CURRENT_SONG_TABLE_NAME, null, initialValues);    
+      if(rowId >=0){
+        return Uri.withAppendedPath(
+          CURRENT_SONG_URI, String.valueOf(rowId));
+      }
+      else{
+        return null;
+      }
+    }
     throw new IllegalArgumentException("Unknown URI " + uri);
   }
   
@@ -273,6 +317,9 @@ public class UDJEventProvider extends ContentProvider{
     }
     else if(uri.equals(PLAYLIST_ADD_REQUEST_URI)){
       qb.setTables(ADD_REQUESTS_TABLE_NAME);
+    }
+    else if(uri.equals(CURRENT_SONG_URI)){
+      qb.setTables(CURRENT_SONG_TABLE_NAME);
     }
     else{
       throw new IllegalArgumentException("Unknown URI " + uri);
@@ -311,6 +358,7 @@ public class UDJEventProvider extends ContentProvider{
     cr.delete(PLAYLIST_ADD_REQUEST_URI, null, null);
     cr.delete(PLAYLIST_URI, null, null);
     cr.delete(VOTES_URI, null, null);
+    cr.delete(CURRENT_SONG_URI, null, null);
   }
 
   public static void setPreviousAddRequests(

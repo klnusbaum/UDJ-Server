@@ -47,7 +47,6 @@ import org.json.JSONException;
 import org.apache.http.auth.AuthenticationException;
 import org.apache.http.ParseException;
 
-import org.klnusbaum.udj.containers.PlaylistEntry;
 import org.klnusbaum.udj.Constants;
 import org.klnusbaum.udj.UDJEventProvider;
 
@@ -90,9 +89,9 @@ public class PlaylistSyncService extends IntentService{
     try{
       String authToken = 
         AccountManager.get(this).blockingGetAuthToken(account, "", true);
-      List<PlaylistEntry> newPlaylist =
+      JSONObject activePlaylist =
         ServerConnection.getActivePlaylist(eventId, authToken);
-      RESTProcessor.setActivePlaylist(newPlaylist, this);
+      RESTProcessor.setActivePlaylist(activePlaylist, this);
     }
     catch(JSONException e){
       Log.e(TAG, "JSON exception when retreiving playist");
