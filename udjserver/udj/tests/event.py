@@ -223,40 +223,6 @@ class TestDeleteAvailableMusic(User2TestCase):
       song__host_lib_song_id=3, song__owning_user__id=2)
     self.assertFalse(foundSongs.exists())
    
-class TestGetCurrentSong(User3TestCase):
-  def testGetCurrentSong(self):
-    response = self.doGet('/udj/events/2/current_song')
-    self.assertEqual(response.status_code, 200, response.content)
-    result = json.loads(response.content) 
-    actualCurrentSong = ActivePlaylistEntry.objects.filter(
-      event__id=2, state=u'PL')[0]
-    self.assertEqual(
-      actualCurrentSong.song.host_lib_song_id, result['lib_song_id'])
-    self.assertEqual(actualCurrentSong.song.title, result['title'])
-    self.assertEqual(actualCurrentSong.song.artist, result['artist'])
-    self.assertEqual(actualCurrentSong.song.album, result['album'])
-    self.assertEqual(actualCurrentSong.song.duration, result['duration'])
-    self.assertEqual(
-      UpVote.objects.filter(playlist_entry=actualCurrentSong).count(),
-      result['up_votes'])
-    self.assertEqual(
-      DownVote.objects.filter(playlist_entry=actualCurrentSong).count(),
-      result['down_votes'])
-    self.assertEqual(
-      actualCurrentSong.time_added, 
-      datetime.strptime(result['time_added'], "%Y-%m-%dT%H:%M:%S"))
-    self.assertEqual(
-      actualCurrentSong.time_played, 
-      datetime.strptime(result['time_played'], "%Y-%m-%dT%H:%M:%S"))
-    self.assertEqual(actualCurrentSong.adder.id, result['adder_id'])
-    self.assertEqual(actualCurrentSong.adder.username, result['adder_username'])
-
-class TestGetCurrentSong2(User4TestCase):
-  def testGetEmptyCurrentSong(self):
-    response = self.doGet('/udj/events/3/current_song')
-    self.assertEqual(response.status_code, 200, response.content)
-    self.assertEqual(response.content, '{}')
-    
 
 class TestSetCurrentSong(User2TestCase):
   def testSetCurrentSong(self):

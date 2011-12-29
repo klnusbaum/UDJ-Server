@@ -206,30 +206,10 @@ def removeFromAvailableMusic(request, event_id, song_id):
     return HttpResponseNotFound("id " + str(song_id) + " doesn't exist")
   return HttpResponse()
 
+
 @csrf_exempt
 @NeedsAuth
-@AcceptsMethods(['GET', 'POST'])
-def currentSong(request, event_id):
-  if request.method == 'GET':
-    return getCurrentSong(request, event_id=event_id)
-  else: 
-    return setCurrentSong(request, event_id=event_id)
-
-@InParty
-def getCurrentSong(request, event_id):
-  try:
-    currentSong = ActivePlaylistEntry.objects.get(
-      event__id=event_id, state=u'PL')
-    currentSongDict = getActivePlaylistEntryDictionary(
-      currentSong,
-      UpVote.objects.filter(playlist_entry=currentSong).count(),
-      DownVote.objects.filter(playlist_entry=currentSong).count())
-    currentSongDict['time_played'] = \
-      currentSong.time_played.replace(microsecond=0).isoformat()
-    return HttpResponse(json.dumps(currentSongDict))
-  except ObjectDoesNotExist:
-    return HttpResponse('{}')
-
+@AcceptsMethods('POST')
 @IsEventHost
 def setCurrentSong(request, event_id):
   if(not request.POST.__contains__('playlist_entry_id')):

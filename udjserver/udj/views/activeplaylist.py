@@ -19,7 +19,8 @@ from udj.models import LibraryEntry
 from udj.models import Event
 from udj.models import UpVote
 from udj.models import DownVote
-from udj.JSONCodecs import getJSONForActivePlaylistEntries
+from udj.JSONCodecs import getActivePlaylistArray
+from udj.JSONCodecs import getActivePlaylistEntryDictionary
 from udj.auth import getUserForTicket
 
 @NeedsAuth
@@ -34,7 +35,28 @@ def getActivePlaylist(request, event_id):
   playlistEntries = sorted(
     playlistEntries, key=lambda entry: -(entry.upvotes-entry.downvotes))
 
-  return HttpResponse(getJSONForActivePlaylistEntries(playlistEntries))
+  activePlaylist = getActivePlaylistArray(playlistEntries)
+
+  currentSongDict = {}
+  try:
+    currentSong = ActivePlaylistEntry.objects.get(
+      event__id=event_id, state=u'PL')
+    currentSongDict = getActivePlaylistEntryDictionary(
+      currentSong,
+      UpVote.objects.filter(playlist_entry=currentSong).count(),
+      DownVote.objects.filter(playlist_entry=currentSong).count())
+    currentSongDict['time_played'] = \
+      currentSong.time_played.replace(microsecond=0).isoformat()
+  except ObjectDoesNotExist:
+    pass
+
+  return HttpResponse(json.dumps(
+    {
+      "current_song" : currentSongDict,
+      "active_playlist" : activePlaylist
+    }
+  ))
+
 
 def hasBeenAdded(song_request, event_id, user):
   return ActivePlaylistEntry.objects.filter(

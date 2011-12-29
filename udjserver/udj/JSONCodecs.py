@@ -62,12 +62,12 @@ def getActivePlaylistEntryDictionary(entry, upvotes, downvotes):
       'adder_username' : entry.adder.username
     }
 
-def getJSONForActivePlaylistEntries(entries):
+def getActivePlaylistArray(entries):
   toReturn = []
   for entry in entries:
     toReturn.append(
       getActivePlaylistEntryDictionary(entry, entry.upvotes, entry.downvotes))
-  return json.dumps(toReturn)
+  return toReturn
 
 def getEventGoerJSON(eventGoer):
   return {

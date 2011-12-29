@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 from udj.tests import User2TestCase
 from udj.tests import User3TestCase
+from udj.tests import User4TestCase
 from udj.tests import User5TestCase
 from udj.models import UpVote
 from udj.models import DownVote
@@ -12,7 +13,10 @@ class GetActivePlaylistTest(User3TestCase):
   def testGetPlaylist(self):
     response = self.doGet('/udj/events/2/active_playlist')
     self.assertEqual(response.status_code, 200)
-    playlist = json.loads(response.content)
+
+    responseContent = json.loads(response.content)
+
+    playlist = responseContent['active_playlist']
     self.assertEqual(len(playlist), 4)
 
     self.assertEqual(playlist[0]['id'], 1)
@@ -30,6 +34,40 @@ class GetActivePlaylistTest(User3TestCase):
     self.assertEqual(playlist[3]['id'], 3)
     self.assertEqual(playlist[3]['up_votes'], 1)
     self.assertEqual(playlist[3]['down_votes'], 1)
+
+    result = responseContent['current_song']
+    actualCurrentSong = ActivePlaylistEntry.objects.filter(
+      event__id=2, state=u'PL')[0]
+    self.assertEqual(
+      actualCurrentSong.song.host_lib_song_id, result['lib_song_id'])
+    self.assertEqual(actualCurrentSong.song.title, result['title'])
+    self.assertEqual(actualCurrentSong.song.artist, result['artist'])
+    self.assertEqual(actualCurrentSong.song.album, result['album'])
+    self.assertEqual(actualCurrentSong.song.duration, result['duration'])
+    self.assertEqual(
+      UpVote.objects.filter(playlist_entry=actualCurrentSong).count(),
+      result['up_votes'])
+    self.assertEqual(
+      DownVote.objects.filter(playlist_entry=actualCurrentSong).count(),
+      result['down_votes'])
+    self.assertEqual(
+      actualCurrentSong.time_added, 
+      datetime.strptime(result['time_added'], "%Y-%m-%dT%H:%M:%S"))
+    self.assertEqual(
+      actualCurrentSong.time_played, 
+      datetime.strptime(result['time_played'], "%Y-%m-%dT%H:%M:%S"))
+    self.assertEqual(actualCurrentSong.adder.id, result['adder_id'])
+    self.assertEqual(actualCurrentSong.adder.username, result['adder_username'])
+
+class TestGetEmptyPlaylist(User4TestCase):
+  def testGetEmptyPlaylist(self):
+    response = self.doGet('/udj/events/3/active_playlist')
+    self.assertEqual(response.status_code, 200, response.content)
+    responseContent = json.loads(response.content)
+    currentSong = responseContent['current_song']
+    activePlaylist = responseContent['active_playlist']
+    self.assertEqual(currentSong, {})
+    self.assertEqual(activePlaylist, [])
 
 class AddSongToPlaylistTests(User2TestCase):
 
