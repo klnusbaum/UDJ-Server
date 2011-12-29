@@ -90,7 +90,7 @@ public class PlaylistFragment extends ListFragment
   }
 
   public void onLoaderReset(Loader<Cursor> loader){
-    //playlistAdapter.swapCursor(null);
+    playlistAdapter.swapCursor(null);
   }
 
   private class PlaylistAdapter extends CursorAdapter{
@@ -135,32 +135,8 @@ public class PlaylistFragment extends ListFragment
         }
       });
 
-      if(
-        cursor.getLong(cursor.getColumnIndex(UDJEventProvider.ADDER_ID_COLUMN))
-        ==
-        userId 
-      )
-      {
-        upVote.setEnabled(false); 
-        downVote.setEnabled(false); 
-      }
-      else{
-        /* String voteStatus = cursor.getString(cursor.getColumnIndex(
-          UDJPartyProvider.VOTE_STATUS_COLUMN));
-        if(voteStatus.equals(UDJPartyProvider.VOTED_UP)){
-          upVote.setEnabled(false); 
-        }
-        else{
-          upVote.setEnabled(true);
-        } 
-  
-        if(voteStatus.equals(UDJPartyProvider.VOTED_DOWN)){
-          downVote.setEnabled(false); 
-        }
-        else{
-          downVote.setEnabled(true);
-        }*/
-      }
+      setVoteButtonStates(upVote, downVote, cursor);
+
 
       TextView votes = 
         (TextView)view.findViewById(R.id.playlistVotes);
@@ -170,6 +146,38 @@ public class PlaylistFragment extends ListFragment
         cursor.getInt(cursor.getColumnIndex(UDJEventProvider.DOWN_VOTES_COLUMN));
       votes.setText(String.valueOf(totalVotes));
       
+    }
+
+    private void setVoteButtonStates(
+      ImageButton upVote, ImageButton downVote, Cursor cursor)
+    {
+      if(
+        cursor.getLong(cursor.getColumnIndex(UDJEventProvider.ADDER_ID_COLUMN))
+        ==
+        userId 
+      )
+      {
+        upVote.setEnabled(false); 
+        downVote.setEnabled(false); 
+      }
+      else if(!cursor.isNull(
+        cursor.getColumnIndex(UDJEventProvider.VOTE_TYPE_COLUMN)))
+      {
+        int voteType = cursor.getInt(
+            cursor.getColumnIndex(UDJEventProvider.VOTE_TYPE_COLUMN));
+        if(voteType == UDJEventProvider.UP_VOTE_TYPE){
+          upVote.setEnabled(false); 
+          downVote.setEnabled(true); 
+        }
+        else{
+          upVote.setEnabled(true); 
+          downVote.setEnabled(false); 
+        }
+      }
+      else{
+        upVote.setEnabled(true); 
+        downVote.setEnabled(true); 
+      }
     }
 
     @Override
