@@ -201,7 +201,11 @@ public class PlaylistFragment extends ListFragment
       else if(!cursor.isNull(
         cursor.getColumnIndex(UDJEventProvider.VOTE_TYPE_COLUMN)))
       {
-        int voteType = cursor.getInt(
+        upVote.setEnabled(false); 
+        downVote.setEnabled(false); 
+        //For now I'm just going to make it that if you already voted
+        // you don't get to change your vote
+        /*int voteType = cursor.getInt(
             cursor.getColumnIndex(UDJEventProvider.VOTE_TYPE_COLUMN));
         if(voteType == UDJEventProvider.UP_VOTE_TYPE){
           upVote.setEnabled(false); 
@@ -210,7 +214,7 @@ public class PlaylistFragment extends ListFragment
         else{
           upVote.setEnabled(true); 
           downVote.setEnabled(false); 
-        }
+        }*/
       }
       else{
         upVote.setEnabled(true); 
@@ -227,31 +231,28 @@ public class PlaylistFragment extends ListFragment
     }
   
     private void upVoteClick(View view){
-/*      String playlistId = view.getTag().toString();
-      ContentValues toUpdate = new ContentValues();
-      toUpdate.put(
-        UDJPartyProvider.VOTE_STATUS_COLUMN, UDJPartyProvider.VOTED_UP);
-      toUpdate.put(
-        UDJPartyProvider.SYNC_STATE_COLUMN, UDJPartyProvider.NEEDS_UP_VOTE);
-      getActivity().getContentResolver().update(
-        UDJPartyProvider.PLAYLIST_URI,
-        toUpdate,
-        UDJPartyProvider.PLAYLIST_ID_COLUMN + "= ?",
-        new String[]{playlistId});*/
+      voteOnSong(view, UDJEventProvider.UP_VOTE_TYPE);
     }
     
     private void downVoteClick(View view){
-      /*String playlistId = view.getTag().toString();
-      ContentValues toUpdate = new ContentValues();
-      toUpdate.put(
-        UDJPartyProvider.VOTE_STATUS_COLUMN, UDJPartyProvider.VOTED_DOWN);
-      toUpdate.put(
-        UDJPartyProvider.SYNC_STATE_COLUMN, UDJPartyProvider.NEEDS_DOWN_VOTE);
-      getActivity().getContentResolver().update(
-        UDJPartyProvider.PLAYLIST_URI,
-      toUpdate,
-        UDJPartyProvider.PLAYLIST_ID_COLUMN + "= ?",
-      new String[]{playlistId});*/
+      voteOnSong(view, UDJEventProvider.DOWN_VOTE_TYPE);
+    }
+
+    private void voteOnSong(View view, int voteType){
+      long playlistId = Long.valueOf(view.getTag().toString());
+      ContentValues toInsert = new ContentValues();
+      toInsert.put(UDJEventProvider.VOTE_TYPE_COLUMN, voteType);
+      toInsert.put(UDJEventProvider.VOTE_PLAYLIST_ENTRY_ID_COLUMN, playlistId);
+      ContentResolver cr = getActivity().getContentResolver();
+      cr.insert(VOTES_URI, toInsert);
+      Intent getPlaylist = new Intent(
+        Intent.ACTION_VIEW,
+        UDJEventProvider.VOTES_URI,
+        this,
+        PlaylistSyncService.class);
+      getPlaylist.putExtra(Constants.EVENT_ID_EXTRA, eventId);
+      getPlaylist.putExtra(Constants.ACCOUNT_EXTRA, account);
+      startService(getPlaylist);
     }
   }
 }

@@ -119,7 +119,7 @@ public class AvailableMusicSearchActivity extends FragmentActivity{
             toInsert);
           Intent addSongIntent = new Intent(
             Intent.ACTION_INSERT,
-            UDJEventProvider.PLAYLIST_URI,
+            UDJEventProvider.PLAYLIST_ADD_REQUEST_URI,
             getActivity(),
             PlaylistSyncService.class);
           addSongIntent.putExtra(Constants.ACCOUNT_EXTRA, account);

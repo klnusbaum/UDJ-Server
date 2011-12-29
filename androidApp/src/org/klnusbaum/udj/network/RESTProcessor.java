@@ -136,6 +136,7 @@ public class RESTProcessor{
         toReturn.add(currentPlaylist.getLong(playlistIdColumn));
       }while(currentPlaylist.moveToNext());
     }
+    currentPlaylist.close();
     return toReturn;
   }
 
@@ -225,6 +226,28 @@ public class RESTProcessor{
       .withValue(UDJEventProvider.ADD_REQUEST_SYNC_STATUS_COLUMN,
          UDJEventProvider.ADD_REQUEST_SYNCED);
     return updateBuilder.build();
+  }
+
+  public static void setVoteRequestsSynced(Cursor voteRequests, Context context)
+  {
+    ContentResolver cr = context.getContentResolver();
+    if(voteRequests.moveToFirst()){
+      int idColIndex = 
+        voteRequests.getColumnIndex(UDJEventProvider.VOTES_TABLE_NAME);
+      do{
+        //TODO these should be batch operations
+        long requestId = voteRequests.getLong(idColIndex);
+        ContentValues updatedValue = new ContentValues();
+        updatedValue.put(
+          UDJEventProvider.VOTE_SYNC_STATUS_COLUMN, 
+          UDJEventProvider.VOTE_SYNCED);
+        cr.update(
+          UDJEventProvider.VOTES_URI,
+          updatedValue,
+          UDJEventProvider.VOTE_ID_COLUMN + "=" + requestId,
+          null);
+      }while(voteRequests.moveToNext());
+    }
   }
 
 }

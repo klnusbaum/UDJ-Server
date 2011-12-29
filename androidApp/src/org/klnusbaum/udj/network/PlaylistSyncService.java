@@ -78,7 +78,13 @@ public class PlaylistSyncService extends IntentService{
     long eventId = intent.getLongExtra(Constants.EVENT_ID_EXTRA, -1);
     //TODO hanle error if eventId or account aren't provided
     if(intent.getAction().equals(Intent.ACTION_INSERT)){
-      syncAddRequests(account, eventId);
+      if(intent.getData().equals(UDJEventProvider.PLAYLIST_ADD_REQUEST_URI)){
+        syncAddRequests(account, eventId);
+      }
+      else if(intent.getData().equals(UDJEventProvider.VOTES_URI)){
+        syncVoteRequests(account, eventId); 
+      }
+      updateActivePlaylist(account, eventId); 
     }
     else if(intent.getAction().equals(Intent.ACTION_VIEW)){
       updateActivePlaylist(account, eventId); 
@@ -125,8 +131,6 @@ public class PlaylistSyncService extends IntentService{
   private void syncAddRequests(Account account, long eventId){
     Log.d(TAG, "Sycning add requests");
     try{
-      String authToken = 
-        AccountManager.get(this).blockingGetAuthToken(account, "", true);
       ContentResolver cr = getContentResolver();
       Cursor requestsCursor = cr.query(
         UDJEventProvider.PLAYLIST_ADD_REQUEST_URI,
@@ -148,10 +152,11 @@ public class PlaylistSyncService extends IntentService{
       }
       requestsCursor.close();
       if(addRequests.size() >0){
+        String authToken = 
+          AccountManager.get(this).blockingGetAuthToken(account, "", true);
         ServerConnection.addSongsToActivePlaylist(
           addRequests, eventId, authToken);
         RESTProcessor.setPlaylistAddRequestsSynced(addRequests.keySet(), this);
-        updateActivePlaylist(account, eventId);
       }
     }
     catch(JSONException e){
@@ -181,5 +186,56 @@ public class PlaylistSyncService extends IntentService{
     //TODO This point of the app seems very dangerous as there are so many
     // exceptions that could occuer. Need to pay special attention to this.
   }
+
+  private void syncVoteRequests(Account account, long eventId){
+    Log.d(TAG, "Sycning vote requests");
+    try{
+      ContentResolver cr = getContentResolver();
+      Cursor requestsCursor = cr.query(
+        UDJEventProvider.VOTES_URI,
+        voteRequestProjection,
+        voteRequestSelection,
+        null,
+        null);
+      if(requestsCursor.getCount() >0){
+        AccountManager am = AccountManager.get(this);
+        String authToken = am.blockingGetAuthToken(account, "", true);
+        Long userId = am.getUserData(account, Constants.USER_ID_DATA);
+        ServerConnection.doSongVotes(
+          requestsCursor, eventId, userId, authToken);
+        RESTProcessor.setVoteRequestsSynced(requestsCursor, this);
+      }
+    }
+    catch(JSONException e){
+      Log.e(TAG, "JSON exception when retreiving playist");
+    }
+    catch(ParseException e){
+      Log.e(TAG, "Parse exception when retreiving playist");
+    }
+    catch(IOException e){
+      Log.e(TAG, "IO exception when retreiving playist");
+    }
+    catch(AuthenticationException e){
+      Log.e(TAG, "Authentication exception when retreiving playist");
+    }
+    catch(AuthenticatorException e){
+      Log.e(TAG, "Authentication exception when retreiving playist");
+    }
+    catch(OperationCanceledException e){
+      Log.e(TAG, "Op Canceled exception when retreiving playist");
+    }
+    catch(RemoteException e){
+      Log.e(TAG, "Remote exception when retreiving playist");
+    }
+    catch(OperationApplicationException e){
+      Log.e(TAG, "Operation Application exception when retreiving playist");
+    }
+    finally{
+      requestsCursor.close();
+    }
+    //TODO This point of the app seems very dangerous as there are so many
+    // exceptions that could occuer. Need to pay special attention to this.
+  }
+  
 
 }

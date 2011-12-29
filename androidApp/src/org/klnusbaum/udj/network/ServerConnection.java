@@ -186,15 +186,17 @@ public class ServerConnection{
     }
   }
 
-  /*public static String doPost(ArrayList<NameValuePair> params, String uri)
+  public static String doPost(String uri, String authToken, String payload)
     throws AuthenticationException, IOException
   {
     String toReturn = null;
-    HttpEntity entity = null;
-    entity = new UrlEncodedFormEntity(params);
     final HttpPost post = new HttpPost(uri);
-    post.addHeader(entity.getContentType());
-    post.setEntity(entity);
+    if(payload != null){
+      HttpEntity entity = new StringEntity(payload);
+      post.addHeader("text/json");
+      post.setEntity(entity);
+    }
+    get.addHeader(TICKET_HASH_HEADER, ticketHash);
     final HttpResponse resp = getHttpClient().execute(post);
     final String response = EntityUtils.toString(resp.getEntity());
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
@@ -207,7 +209,7 @@ public class ServerConnection{
       throw new IOException();
     }
     return toReturn;
-  }*/
+  }
 
   public static String doGet(URI uri, String ticketHash)
     throws AuthenticationException, IOException
@@ -496,5 +498,45 @@ public class ServerConnection{
       toReturn.downvotes.add(downvotesArray.getLong(i));
     }
     return toReturn;
+  }
+
+  public static void doSongVotes(Cursor voteRequests, 
+    long eventId, long userId, String authToken)
+    throws IOException, AuthenticationException
+  {
+    if(voteRequests.moveToFirst()){
+      int idColumnIndex = voteRequests.getColumnIndex(
+        UDJEventProvider.VOTE_PLAYLIST_ENTRY_ID_COLUMN);
+      int voteTypeIndex = voteRequests.getColumnIndex(
+        UDJEventProvider.VOTE_TYPE_COLUMN);
+      do{
+        long playlistId = cursor.getLong(idColumnIndex);
+        int voteType = cursor.getInt(voteTypeIndex);
+        voteOnSong(eventId, playlistId, userId, voteType, authToken);
+      }while(voteRequests.moveToNext());
+    }
+  }
+
+  private static void voteOnSong(
+    long eventId, long playlistId, long userId, int voteType, String authToken)
+  {
+    String voteString = null;
+    if(voteType == UDJEventProvider.UP_VOTE_TYPE){
+      voteString = "upvote";
+    }
+    else if(voteType == UDJEventProvider.DOWN_VOTE_TYPE){
+      voteString = "downvote";
+    }
+    try{
+      URI uri = new URI(
+        NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT,
+        "/udj/events/"+eventId+"/active_playlist/" + playlistId + "/users/"+
+          userId + "/" + voteString,
+        null, null);
+      doPost(uri, authToken, null);
+    }
+    catch(URISyntaxException e){
+      //TDOD inform caller that theire query is bad 
+    }
   }
 }
