@@ -251,6 +251,13 @@ class TestGetCurrentSong(User3TestCase):
     self.assertEqual(actualCurrentSong.adder.id, result['adder_id'])
     self.assertEqual(actualCurrentSong.adder.username, result['adder_username'])
 
+class TestGetCurrentSong2(User4TestCase):
+  def testGetEmptyCurrentSong(self):
+    response = self.doGet('/udj/events/3/current_song')
+    self.assertEqual(response.status_code, 200, response.content)
+    self.assertEqual(response.content, '{}')
+    
+
 class TestSetCurrentSong(User2TestCase):
   def testSetCurrentSong(self):
     response = self.doPost(
