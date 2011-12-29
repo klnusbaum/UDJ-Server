@@ -50,12 +50,11 @@ import android.widget.Toast;
 import android.os.AsyncTask;
 import android.app.ProgressDialog;
 import android.net.Uri;
+
 import java.io.FileOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
-
-
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
@@ -68,6 +67,7 @@ import org.apache.http.auth.AuthenticationException;
 import org.klnusbaum.udj.auth.AuthActivity;
 import org.klnusbaum.udj.network.ServerConnection;
 import org.klnusbaum.udj.containers.Event;
+import org.klnusbaum.udj.containers.VoteRequests;
 
 /**
  * Class used for displaying the contents of the Playlist.
@@ -186,10 +186,11 @@ public class EventSelectorActivity extends FragmentActivity{
         if(ServerConnection.joinEvent(params[0], userId, authToken)){
           UDJEventProvider.eventCleanup(cr);          
           HashMap<Long,Long> previousRequests = ServerConnection.getAddRequests(
-            Long.valueOf(am.getUserData(account,Constants.USER_ID_DATA)),
-            params[0], 
-            authToken);
+            userId, params[0], authToken);
           UDJEventProvider.setPreviousAddRequests(cr, previousRequests);
+          VoteRequests previousVotes = 
+            ServerConnection.getVoteRequests(userId, params[0], authToken);
+          UDJEventProvider.setPreviousVoteRequests(cr, previousVotes);
           return params[0]; 
         }
       }

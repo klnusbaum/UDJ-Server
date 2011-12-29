@@ -65,6 +65,7 @@ import org.json.JSONException;
 import org.klnusbaum.udj.containers.LibraryEntry;
 import org.klnusbaum.udj.containers.PlaylistEntry;
 import org.klnusbaum.udj.containers.Event;
+import org.klnusbaum.udj.containers.VoteRequests;
 
 /**
  * A connection to the UDJ server
@@ -448,4 +449,38 @@ public class ServerConnection{
     }
     return toReturn;
   }
+
+  public static VoteRequests getVoteRequests(
+    long userId, long eventId, String authToken)
+    throws JSONException, ParseException, IOException, AuthenticationException
+  {
+    try{
+      URI uri = new URI(
+        NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT,
+        "/udj/events/"+eventId+"/active_playlist/users/"+
+          userId + "/votes",
+        null, null);
+      return parseVoteRequests(new JSONObject(doGet(uri, authToken)));
+    }
+    catch(URISyntaxException e){
+      //TDOD inform caller that theire query is bad 
+    }
+    return null;
+  }
+
+  private static VoteRequests parseVoteRequests(JSONObject voteRequests)
+    throws JSONException
+  {
+    VoteRequests toReturn = new VoteRequests(); 
+    JSONArray upvotesArray = voteRequests.getJSONArray("up_vote_ids");
+    JSONArray downvotesArray = voteRequests.getJSONArray("down_vote_ids");
+    for(int i=0; i<upvotesArray.length(); i++){
+      toReturn.upvotes.add(upvotesArray.getLong(i));
+    }
+    for(int i=0; i<downvotesArray.length(); i++){
+      toReturn.downvotes.add(downvotesArray.getLong(i));
+    }
+    return toReturn;
+  }
+
 }

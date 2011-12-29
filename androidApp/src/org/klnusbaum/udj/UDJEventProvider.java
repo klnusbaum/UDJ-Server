@@ -37,6 +37,8 @@ import android.os.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.klnusbaum.udj.containers.VoteRequests;
+
 /**
  * Content provider used to maintain the content asociated
  * with the current event the user is logged into.
@@ -55,11 +57,9 @@ public class UDJEventProvider extends ContentProvider{
   public static final Uri PLAYLIST_ADD_REQUEST_URI = 
     Uri.parse("content://org.klnusbaum.udj/playlist/add_request");
 
-  public static final Uri UP_VOTES_URI = 
-    Uri.parse("content://org.klnusbaum.udj/playlist/up_votes");
+  public static final Uri VOTES_URI = 
+    Uri.parse("content://org.klnusbaum.udj/playlist/votes");
 
-  public static final Uri DOWN_VOTES_URI = 
-    Uri.parse("content://org.klnusbaum.udj/playlist/down_votes");
 
   /** PLAYLIST TABLE */
 
@@ -201,10 +201,14 @@ public class UDJEventProvider extends ContentProvider{
       SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
       return db.delete(PLAYLIST_TABLE_NAME, where, whereArgs);
     }
-    if(uri.equals(PLAYLIST_ADD_REQUEST_URI)){
+    else if(uri.equals(PLAYLIST_ADD_REQUEST_URI)){
       SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
       return db.delete(ADD_REQUESTS_TABLE_NAME, where, whereArgs);
     } 
+    else if(uri.equals(VOTES_URI)){
+      SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+      return db.delete(VOTES_TABLE_NAME, where, whereArgs);
+    }
     throw new IllegalArgumentException("Unknown URI " + uri);
   }
 
@@ -284,6 +288,8 @@ public class UDJEventProvider extends ContentProvider{
 
   public static void eventCleanup(ContentResolver cr){
     cr.delete(PLAYLIST_ADD_REQUEST_URI, null, null);
+    cr.delete(PLAYLIST_URI, null, null);
+    cr.delete(VOTES_URI, null, null);
   }
 
   public static void setPreviousAddRequests(
@@ -326,5 +332,50 @@ public class UDJEventProvider extends ContentProvider{
         UDJEventProvider.ADD_REQUEST_SYNCED);
     return insertOp.build();
 
+  }
+
+  public static void setPreviousVoteRequests(
+    ContentResolver cr, 
+    VoteRequests votes)
+  {
+    ArrayList<ContentProviderOperation> batchOps = 
+      new ArrayList<ContentProviderOperation>();
+    try{
+      for(Long entryId : votes.upvotes){
+        batchOps.add(getVoteRequestInsertOp(entryId, UP_VOTE_TYPE)); 
+        if(batchOps.size() > 0){
+          cr.applyBatch(Constants.AUTHORITY, batchOps);
+          batchOps.clear();
+        }
+      }
+      for(Long entryId : votes.downvotes){
+        batchOps.add(getVoteRequestInsertOp(entryId, DOWN_VOTE_TYPE)); 
+        if(batchOps.size() > 0){
+          cr.applyBatch(Constants.AUTHORITY, batchOps);
+          batchOps.clear();
+        }
+      }
+      if(batchOps.size() > 0){
+        cr.applyBatch(Constants.AUTHORITY, batchOps);
+        batchOps.clear();
+      }
+    }
+    catch(RemoteException e){
+
+    }
+    catch(OperationApplicationException e){
+    
+    }
+  }
+
+  private static ContentProviderOperation getVoteRequestInsertOp(
+    long playlistId, int voteType)
+  {
+    final ContentProviderOperation.Builder insertOp = 
+      ContentProviderOperation.newInsert(VOTES_URI)
+      .withValue(VOTE_PLAYLIST_ENTRY_ID_COLUMN, playlistId)
+      .withValue(VOTE_TYPE_COLUMN, voteType)
+      .withValue(VOTE_SYNC_STATUS_COLUMN, VOTE_SYNCED);
+    return insertOp.build();
   }
 }
