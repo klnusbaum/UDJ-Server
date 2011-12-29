@@ -90,15 +90,16 @@ public class PlaylistFragment extends ListFragment
   }
 
   public void onLoaderReset(Loader<Cursor> loader){
-    playlistAdapter.swapCursor(null);
+    //playlistAdapter.swapCursor(null);
   }
 
   private class PlaylistAdapter extends CursorAdapter{
-    AccountManager am;
-
+    private long userId;
+    private static final String PLAYLIST_ADAPTER_TAG = "PlaylistAdapter";
     public PlaylistAdapter(Context context, Cursor c){
       super(context, c);
-      am = AccountManager.get(context);
+      userId = Long.valueOf(AccountManager.get(context).getUserData(
+        account, Constants.USER_ID_DATA));
     }
 
     @Override
@@ -137,28 +138,29 @@ public class PlaylistFragment extends ListFragment
       if(
         cursor.getLong(cursor.getColumnIndex(UDJEventProvider.ADDER_ID_COLUMN))
         ==
-        Long.valueOf(am.getUserData(account, Constants.USER_ID_DATA))
+        userId 
       )
       {
         upVote.setEnabled(false); 
         downVote.setEnabled(false); 
       }
+      else{
+        /* String voteStatus = cursor.getString(cursor.getColumnIndex(
+          UDJPartyProvider.VOTE_STATUS_COLUMN));
+        if(voteStatus.equals(UDJPartyProvider.VOTED_UP)){
+          upVote.setEnabled(false); 
+        }
+        else{
+          upVote.setEnabled(true);
+        } 
   
-     /* String voteStatus = cursor.getString(cursor.getColumnIndex(
-        UDJPartyProvider.VOTE_STATUS_COLUMN));
-      if(voteStatus.equals(UDJPartyProvider.VOTED_UP)){
-        upVote.setEnabled(false); 
+        if(voteStatus.equals(UDJPartyProvider.VOTED_DOWN)){
+          downVote.setEnabled(false); 
+        }
+        else{
+          downVote.setEnabled(true);
+        }*/
       }
-      else{
-        upVote.setEnabled(true);
-      } 
- 
-      if(voteStatus.equals(UDJPartyProvider.VOTED_DOWN)){
-        downVote.setEnabled(false); 
-      }
-      else{
-        downVote.setEnabled(true);
-      }*/
 
       TextView votes = 
         (TextView)view.findViewById(R.id.playlistVotes);

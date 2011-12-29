@@ -236,6 +236,17 @@ public class UDJEventProvider extends ContentProvider{
         return null;
       }
     }
+    else if(uri.equals(VOTES_URI)){
+      SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+      long rowId = db.insert(VOTES_TABLE_NAME, null, initialValues);    
+      if(rowId >=0){
+        return Uri.withAppendedPath(
+          VOTES_URI, String.valueOf(rowId));
+      }
+      else{
+        return null;
+      }
+    }
     throw new IllegalArgumentException("Unknown URI " + uri);
   }
   
