@@ -153,6 +153,18 @@ public class UDJEventProvider extends ContentProvider{
     " OR " + VOTE_SYNC_STATUS_COLUMN + "=" + VOTE_SYNCED + "));";
 
 
+  /** Playlist View */
+
+  /** Name of view */
+  private static final String PLAYLIST_VIEW_NAME = "playlist_view";
+ 
+  /** SQL statement for creating the playlist view */
+  private static final String PLAYLIST_VIEW_CREATE =
+    "CREATE VIEW " + PLAYLIST_VIEW_NAME + " AS SELECT * FROM " +
+    PLAYLIST_TABLE_NAME + " LEFT JOIN " + VOTES_TABLE_NAME + " ON " +
+    PLAYLIST_TABLE_NAME + "." + PLAYLIST_ID_COLUMN + "=" +
+    VOTES_TABLE_NAME + "." + VOTE_PLAYLIST_ENTRY_ID_COLUMN + ";";
+
 
 	/** Helper for opening up the actual database. */
   private EventDBHelper dbOpenHelper;
@@ -176,6 +188,7 @@ public class UDJEventProvider extends ContentProvider{
       db.execSQL(PLAYLIST_TABLE_CREATE);
       db.execSQL(ADD_REQUEST_TABLE_CREATE);
       db.execSQL(VOTES_TABLE_CREATE);
+      db.execSQL(PLAYLIST_VIEW_CREATE);
     }
 
     @Override
@@ -256,7 +269,7 @@ public class UDJEventProvider extends ContentProvider{
   {
     SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
     if(uri.equals(PLAYLIST_URI)){
-      qb.setTables(PLAYLIST_TABLE_NAME);
+      qb.setTables(PLAYLIST_VIEW_NAME);
     }
     else if(uri.equals(PLAYLIST_ADD_REQUEST_URI)){
       qb.setTables(ADD_REQUESTS_TABLE_NAME);
@@ -270,10 +283,7 @@ public class UDJEventProvider extends ContentProvider{
       db, projection, selection, selectionArgs, null,
       null, sortOrder);
 
-    if(uri.equals(PLAYLIST_URI)){
-      toReturn.setNotificationUri(
-        getContext().getContentResolver(), PLAYLIST_URI);
-    }
+    toReturn.setNotificationUri(getContext().getContentResolver(), uri);
     return toReturn;
   }
 
