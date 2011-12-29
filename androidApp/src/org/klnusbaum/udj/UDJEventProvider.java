@@ -321,6 +321,9 @@ public class UDJEventProvider extends ContentProvider{
     else if(uri.equals(CURRENT_SONG_URI)){
       qb.setTables(CURRENT_SONG_TABLE_NAME);
     }
+    else if(uri.equals(VOTES_URI)){
+      qb.setTables(VOTES_TABLE_NAME);
+    }
     else{
       throw new IllegalArgumentException("Unknown URI " + uri);
     }
@@ -344,10 +347,16 @@ public class UDJEventProvider extends ContentProvider{
         db.update(PLAYLIST_TABLE_NAME, values, where, whereArgs);
       return numRowsChanged;
     }
-    if(uri.equals(PLAYLIST_ADD_REQUEST_URI)){
+    else if(uri.equals(PLAYLIST_ADD_REQUEST_URI)){
       SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
       int numRowsChanged = 
         db.update(ADD_REQUESTS_TABLE_NAME, values, where, whereArgs);
+      return numRowsChanged;
+    } 
+    else if(uri.equals(VOTES_URI)){
+      SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+      int numRowsChanged = 
+        db.update(VOTES_TABLE_NAME, values, where, whereArgs);
       return numRowsChanged;
     } 
     throw new IllegalArgumentException("Unknown URI " + uri);

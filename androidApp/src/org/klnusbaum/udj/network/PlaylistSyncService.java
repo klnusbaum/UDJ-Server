@@ -73,7 +73,7 @@ public class PlaylistSyncService extends IntentService{
 
   @Override
   public void onHandleIntent(Intent intent){
-    Log.i(TAG, "In playlist sync server");
+    Log.i(TAG, "In playlist sync service");
     final Account account = 
       (Account)intent.getParcelableExtra(Constants.ACCOUNT_EXTRA);
     long eventId = intent.getLongExtra(Constants.EVENT_ID_EXTRA, -1);

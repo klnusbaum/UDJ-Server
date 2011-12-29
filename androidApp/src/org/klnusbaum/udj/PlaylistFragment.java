@@ -250,14 +250,14 @@ public class PlaylistFragment extends ListFragment
       toInsert.put(UDJEventProvider.VOTE_PLAYLIST_ENTRY_ID_COLUMN, playlistId);
       ContentResolver cr = getActivity().getContentResolver();
       cr.insert(UDJEventProvider.VOTES_URI, toInsert);
-      Intent getPlaylist = new Intent(
-        Intent.ACTION_VIEW,
+      Intent syncVotes = new Intent(
+        Intent.ACTION_INSERT,
         UDJEventProvider.VOTES_URI,
         getActivity(),
         PlaylistSyncService.class);
-      getPlaylist.putExtra(Constants.EVENT_ID_EXTRA, eventId);
-      getPlaylist.putExtra(Constants.ACCOUNT_EXTRA, account);
-      getActivity().startService(getPlaylist);
+      syncVotes.putExtra(Constants.EVENT_ID_EXTRA, eventId);
+      syncVotes.putExtra(Constants.ACCOUNT_EXTRA, account);
+      getActivity().startService(syncVotes);
     }
   }
 }
