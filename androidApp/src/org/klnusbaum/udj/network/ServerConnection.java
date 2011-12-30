@@ -167,59 +167,15 @@ public class ServerConnection{
     }
   }
 
-  public static List<LibraryEntry> availableMusicQuery(
-    String query,
-    int eventId,
-    String ticketHash)
-    throws JSONException, ParseException, IOException, AuthenticationException
-  {
-    try{
-      URI queryUri = new URI(
-        NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT, 
-        "/udj/events/" + eventId + "/available_music", 
-        AVAILABLE_QUERY_PARAM + "=" +query, "");
-      JSONArray searchResults = new JSONArray(doGet(queryUri, ticketHash));
-      return LibraryEntry.fromJSONArray(searchResults);
-    }
-    catch(URISyntaxException e){
-      return null;
-      //TDOD inform caller that theire query is bad 
-    }
-  }
-
-  public static String doPost(URI uri, String authToken, String payload)
-    throws AuthenticationException, IOException
-  {
-    String toReturn = null;
-    final HttpPost post = new HttpPost(uri);
-    if(payload != null){
-      StringEntity entity = new StringEntity(payload);
-      entity.setContentType("text/json");
-      post.setEntity(entity);
-    }
-    post.addHeader(TICKET_HASH_HEADER, authToken);
-    final HttpResponse resp = getHttpClient().execute(post);
-    final String response = EntityUtils.toString(resp.getEntity());
-    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
-      toReturn = response;
-    } 
-    else if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
-      throw new AuthenticationException();
-    }
-    else{
-      throw new IOException();
-    }
-    return toReturn;
-  }
-
   public static String doGet(URI uri, String ticketHash)
     throws AuthenticationException, IOException
   {
+    Log.d(TAG, "Doing get with uri: " + uri);
     final HttpGet get = new HttpGet(uri);
     get.addHeader(TICKET_HASH_HEADER, ticketHash);
     final HttpResponse resp = getHttpClient().execute(get);
     final String response = EntityUtils.toString(resp.getEntity());
-    Log.v(TAG, "Get Response \n" + response);
+    Log.d(TAG, "Get response: \"" + response +"\"");
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
       return response;
     }
@@ -234,6 +190,8 @@ public class ServerConnection{
   public static String doPut(URI uri, String ticketHash, String payload)
     throws AuthenticationException, IOException
   {
+    Log.d(TAG, "Doing put to uri: " + uri);
+    Log.d(TAG, "Put payload is: "+ (payload != null ? payload : "no payload"));
     String toReturn = null;
     final HttpPut put = new HttpPut(uri);
     put.addHeader(TICKET_HASH_HEADER, ticketHash);
@@ -245,6 +203,7 @@ public class ServerConnection{
     }
     final HttpResponse resp = getHttpClient().execute(put);
     final String response = EntityUtils.toString(resp.getEntity());
+    Log.d(TAG, "Put response: \"" + response +"\"");
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED){
       toReturn = response;
     } 
@@ -260,12 +219,43 @@ public class ServerConnection{
     return toReturn;
   }
 
+  public static String doPost(URI uri, String authToken, String payload)
+    throws AuthenticationException, IOException
+  {
+    Log.d(TAG, "Doing post to uri: " + uri);
+    Log.d(TAG, "Post payload is: "+ (payload != null ? payload : "no payload"));
+    String toReturn = null;
+    final HttpPost post = new HttpPost(uri);
+    if(payload != null){
+      StringEntity entity = new StringEntity(payload);
+      entity.setContentType("text/json");
+      post.setEntity(entity);
+    }
+    post.addHeader(TICKET_HASH_HEADER, authToken);
+    final HttpResponse resp = getHttpClient().execute(post);
+    final String response = EntityUtils.toString(resp.getEntity());
+    Log.d(TAG, "Post response: \"" + response +"\"");
+    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
+      toReturn = response;
+    } 
+    else if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
+      throw new AuthenticationException();
+    }
+    else{
+      throw new IOException();
+    }
+    return toReturn;
+  }
+
   public static void doDelete(URI uri, String ticketHash)
     throws IOException, AuthenticationException
   {
+    Log.d(TAG, "Doing delete to uri: " + uri);
     final HttpDelete delete = new HttpDelete(uri);
     delete.addHeader(TICKET_HASH_HEADER, ticketHash);
     final HttpResponse resp = getHttpClient().execute(delete);
+    final String response = EntityUtils.toString(resp.getEntity());
+    Log.d(TAG, "Delete response: \"" + response +"\"");
     if(resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK){
       //TODO probably shouldn't be throwing an IOException as that really 
       //doesn't describe what went wrong.
@@ -302,7 +292,7 @@ public class ServerConnection{
     try{
       URI eventsQuery = new URI(
         NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT, 
-        "/udj/events/",
+        "/udj/events",
         PARAME_EVENT_NAME+"="+query, null);
       JSONArray events = new JSONArray(doGet(eventsQuery, ticketHash));
       return Event.fromJSONArray(events);
@@ -338,6 +328,21 @@ public class ServerConnection{
     return true;
   }
 
+  public static void leaveEvent(long eventId, long userId, String authToken)
+    throws IOException, AuthenticationException
+  {
+    try{
+      URI uri = new URI(
+        NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT, 
+        "/udj/events/"+eventId+"/users/"+userId,
+        null, null);
+      doDelete(uri, authToken);
+    }
+    catch(URISyntaxException e){
+      //TODO inform caller that theire query is bad 
+    }
+  }
+
   public static JSONObject getActivePlaylist(long eventId, 
     String authToken)
     throws JSONException, ParseException, IOException, AuthenticationException
@@ -351,25 +356,10 @@ public class ServerConnection{
     }
     catch(URISyntaxException e){
       return null;
-      //TDOD inform caller that theire query is bad 
+      //TODO inform caller that theire query is bad 
     }
   }
 
-  public static void leaveEvent(long eventId, long userId, String authToken)
-    throws IOException, AuthenticationException
-  {
-    try{
-      URI uri = new URI(
-        NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT, 
-        "/udj/events/"+eventId+"/users/"+userId,
-        null, null);
-      doDelete(uri, authToken);
-    }
-    catch(URISyntaxException e){
-      //TDOD inform caller that theire query is bad 
-    }
-
-  }
 
   public static List<LibraryEntry> availableMusicQuery(
     String query, long eventId, String authToken)
@@ -384,24 +374,7 @@ public class ServerConnection{
       return LibraryEntry.fromJSONArray(libEntries);
     }
     catch(URISyntaxException e){
-      //TDOD inform caller that theire query is bad 
-    }
-    return null;
-  }
-
-  public static JSONObject getCurrentSong(
-    long eventId, String authToken)
-    throws JSONException, ParseException, IOException, AuthenticationException
-  {
-    try{
-      URI uri = new URI(
-        NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT,
-        "/udj/events/"+eventId+"/current_song",
-        null, null);
-      return new JSONObject(doGet(uri, authToken));
-    }
-    catch(URISyntaxException e){
-      //TDOD inform caller that theire query is bad 
+      //TODO inform caller that theire query is bad 
     }
     return null;
   }
@@ -421,7 +394,7 @@ public class ServerConnection{
       doPut(uri, authToken, payload); 
     }
     catch(URISyntaxException e){
-      //TDOD inform caller that theire query is bad 
+      //TODO inform caller that theire query is bad 
     }
   }
 
@@ -452,7 +425,7 @@ public class ServerConnection{
       return getRequestsHashMap(new JSONArray(doGet(uri, authToken)));
     }
     catch(URISyntaxException e){
-      //TDOD inform caller that theire query is bad 
+      //TODO inform caller that theire query is bad 
     }
     return null;
   }
@@ -481,7 +454,7 @@ public class ServerConnection{
       return parseVoteRequests(new JSONObject(doGet(uri, authToken)));
     }
     catch(URISyntaxException e){
-      //TDOD inform caller that theire query is bad 
+      //TODO inform caller that theire query is bad 
     }
     return null;
   }
@@ -538,7 +511,7 @@ public class ServerConnection{
       doPost(uri, authToken, null);
     }
     catch(URISyntaxException e){
-      //TDOD inform caller that theire query is bad 
+      //TODO inform caller that theire query is bad 
     }
   }
 }

@@ -45,7 +45,7 @@ public class EventsLoader extends
 {
   public enum EventLoaderError{
     NO_ERROR, SERVER_ERROR, NO_LOCATION, 
-    AUTHENTICATION_ERROR};
+    AUTHENTICATION_ERROR, NO_ACCOUNT};
 
   public static class EventsLoaderResult{
     private List<Event> events;
@@ -93,8 +93,7 @@ public class EventsLoader extends
     this.searchQuery = query;
     locationSearch = false;
   }
-    
-    
+
   @Override
   protected void onStartLoading(){
     if(takeContentChanged() || events==null){
@@ -103,16 +102,21 @@ public class EventsLoader extends
   }
  
   public EventsLoaderResult loadInBackground(){
-    if(location == null && locationSearch){
+    if(account == null){
+      return new EventsLoaderResult(null, EventLoaderError.NO_ACCOUNT);
+    }
+    else if(location == null && locationSearch){
       return new EventsLoaderResult(null, EventLoaderError.NO_LOCATION);
     }
     else{
       try{
         String authToken = am.blockingGetAuthToken(account, "", true); 
         if(locationSearch){
+          Log.d(TAG, "Doing location search");
           return doLocationSearch(authToken);
         }
         else{
+          Log.d(TAG, "Doing name search");
           return doNameSearch(authToken);
         }
       }

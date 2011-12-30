@@ -80,11 +80,13 @@ public class EventSelectorActivity extends ActionBarActivity{
   private static final int EVENT_NAME_SEARCH = 1; 
   private static final String LOCATION_EXTRA = "location";
   private static final int ACCOUNT_CREATION = 0;
+  private static final String LOCATION_STATE_EXTRA = 
+    "org.klnusbaum.udj.LastKnownLocation";
   private Account account;
   /** Keep track of the progress dialog so we can dismiss it */
   private ProgressDialog mProgressDialog = null;
   private EventLoginTask loginTask;
-
+  private EventListFragment list = null;
 
   @Override
   public void onCreate(Bundle savedInstanceState){
@@ -92,7 +94,7 @@ public class EventSelectorActivity extends ActionBarActivity{
 
     FragmentManager fm = getSupportFragmentManager();
     if(fm.findFragmentById(android.R.id.content) == null){
-      EventListFragment list = new EventListFragment();
+      list = new EventListFragment();
       fm.beginTransaction().add(android.R.id.content, list).commit();
     }
   }
@@ -236,11 +238,7 @@ public class EventSelectorActivity extends ActionBarActivity{
   @Override
   protected void onNewIntent(Intent intent){
     if(Intent.ACTION_SEARCH.equals(intent.getAction())){
-      Bundle loaderArgs = new Bundle();
-      loaderArgs.putInt(EVENT_SEARCH_TYPE_EXTRA, EVENT_NAME_SEARCH);
-      loaderArgs.putString(EVENT_SEARCH_QUERY, 
-        intent.getStringExtra(SearchManager.QUERY));
-      getLoaderManager().restartLoader(0, loaderArgs, null);
+      list.searchByName(intent.getStringExtra(SearchManager.QUERY));
     }
     else{
       super.onNewIntent(intent);
@@ -252,11 +250,26 @@ public class EventSelectorActivity extends ActionBarActivity{
     LoaderManager.LoaderCallbacks<EventsLoader.EventsLoaderResult>,
     LocationListener
   {
+
+    public void searchByName(String query){
+      Bundle loaderArgs = new Bundle();
+      loaderArgs.putInt(EVENT_SEARCH_TYPE_EXTRA, EVENT_NAME_SEARCH);
+      loaderArgs.putString(EVENT_SEARCH_QUERY, query);
+      getLoaderManager().restartLoader(0, loaderArgs, this);
+    }
+
     private EventListAdapter eventAdapter;
     private LocationManager lm;
+    Location lastKnown;
 
-    public void onActivityCreated(Bundle savedInstanceState){
-      super.onActivityCreated(savedInstanceState);
+    public void onActivityCreated(Bundle icicle){
+      super.onActivityCreated(icicle);
+      if(icicle != null && icicle.containsKey(LOCATION_STATE_EXTRA)){
+        lastKnown = (Location)icicle.getParcelable(LOCATION_STATE_EXTRA);
+      }
+      else{
+        lastKnown = null;
+      }
       loginTask = null;
       account = null;
       setEmptyText(getActivity().getString(R.string.no_party_items));
@@ -283,10 +296,17 @@ public class EventSelectorActivity extends ActionBarActivity{
       lm = (LocationManager)getSystemService(
         Context.LOCATION_SERVICE);
       lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,0, 50, this);
-      //lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0, 50, this);
+      lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0, 50, this);
+    }
 
-      Location lastKnown = 
-        lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+    public void onResume(){
+      super.onResume();
+      if(lastKnown == null){
+        lastKnown = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+      }
+      if(lastKnown == null){
+        lastKnown = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+      }
       Bundle loaderArgs = new Bundle(); 
       loaderArgs.putInt(EVENT_SEARCH_TYPE_EXTRA, EVENT_LOCATION_SERACH);
       loaderArgs.putParcelable(LOCATION_EXTRA, lastKnown);
@@ -298,10 +318,13 @@ public class EventSelectorActivity extends ActionBarActivity{
       lm.removeUpdates(this); 
     }
 
+    public void onSaveInstanceState(Bundle outState){
+      super.onSaveInstanceState(outState);
+      outState.putParcelable(LOCATION_STATE_EXTRA, lastKnown);
+    }
+
     public void onLocationChanged(Location location){
-      /*Bundle loaderArgs = new Bundle(); 
-      loaderArgs.putParcelable(LOCATION_EXTRA, location);
-      getLoaderManager().restartLoader(0, loaderArgs, this);*/
+      lastKnown = location;
     }
 
     public void onProviderDisabled(String provider){

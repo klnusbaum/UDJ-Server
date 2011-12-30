@@ -44,6 +44,7 @@ import android.support.v4.app.DialogFragment;
 import java.util.HashMap;
 
 import org.klnusbaum.udj.auth.AuthActivity;
+import org.klnusbaum.udj.actionbar.ActionBarActivity;
 import org.klnusbaum.udj.Constants;
 import org.klnusbaum.udj.network.PlaylistSyncService;
 import org.klnusbaum.udj.network.EventCommService;
@@ -51,7 +52,7 @@ import org.klnusbaum.udj.network.EventCommService;
 /**
  * The main activity display class.
  */
-public class EventActivity extends FragmentActivity{
+public class EventActivity extends ActionBarActivity{
 
   private static final String QUIT_DIALOG_TAG = "quit_dialog";
 

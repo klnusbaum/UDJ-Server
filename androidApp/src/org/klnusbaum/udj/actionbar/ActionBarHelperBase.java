@@ -59,7 +59,8 @@ public class ActionBarHelperBase extends ActionBarHelper {
     /**{@inheritDoc}*/
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        mActivity.requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+        //mActivity.requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+        mActivity.requestWindowFeature(Window.FEATURE_NO_TITLE);
     }
 
     /**{@inheritDoc}*/
