@@ -68,11 +68,13 @@ import org.klnusbaum.udj.auth.AuthActivity;
 import org.klnusbaum.udj.network.ServerConnection;
 import org.klnusbaum.udj.containers.Event;
 import org.klnusbaum.udj.containers.VoteRequests;
+import org.klnusbaum.udj.containers.VoteRequests;
+import org.klnusbaum.udj.actionbar.ActionBarActivity;
 
 /**
  * Class used for displaying the contents of the Playlist.
  */
-public class EventSelectorActivity extends FragmentActivity{
+public class EventSelectorActivity extends ActionBarActivity{
 
   private static final int SELECTING_PARTY_DIALOG = 0;
   private static final String LOCATION_EXTRA = "location";
