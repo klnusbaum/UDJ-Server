@@ -37,6 +37,10 @@ import android.os.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONException;
+
 import org.klnusbaum.udj.containers.VoteRequests;
 
 /**
@@ -414,20 +418,24 @@ public class UDJEventProvider extends ContentProvider{
 
   public static void setPreviousVoteRequests(
     ContentResolver cr, 
-    VoteRequests votes)
+    JSONObject votes)
+    throws JSONException
   {
     ArrayList<ContentProviderOperation> batchOps = 
       new ArrayList<ContentProviderOperation>();
+    JSONArray upVotes = votes.getJSONArray("up_vote_ids");
+    JSONArray downVotes = votes.getJSONArray("down_vote_ids");
     try{
-      for(Long entryId : votes.upvotes){
-        batchOps.add(getVoteRequestInsertOp(entryId, UP_VOTE_TYPE)); 
+      for(int i=0; i<upVotes.length(); i++){
+        batchOps.add(getVoteRequestInsertOp(upVotes.getLong(i), UP_VOTE_TYPE)); 
         if(batchOps.size() > 0){
           cr.applyBatch(Constants.AUTHORITY, batchOps);
           batchOps.clear();
         }
       }
-      for(Long entryId : votes.downvotes){
-        batchOps.add(getVoteRequestInsertOp(entryId, DOWN_VOTE_TYPE)); 
+      for(int i=0; i<downVotes.length(); i++){
+        batchOps.add(
+          getVoteRequestInsertOp(downVotes.getLong(i), DOWN_VOTE_TYPE)); 
         if(batchOps.size() > 0){
           cr.applyBatch(Constants.AUTHORITY, batchOps);
           batchOps.clear();

@@ -57,6 +57,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import org.apache.http.auth.AuthenticationException;
 
@@ -193,7 +194,7 @@ public class EventSelectorActivity extends ActionBarActivity{
           HashMap<Long,Long> previousRequests = ServerConnection.getAddRequests(
             userId, params[0], authToken);
           UDJEventProvider.setPreviousAddRequests(cr, previousRequests);
-          VoteRequests previousVotes = 
+          JSONObject previousVotes = 
             ServerConnection.getVoteRequests(userId, params[0], authToken);
           UDJEventProvider.setPreviousVoteRequests(cr, previousVotes);
           return params[0]; 
