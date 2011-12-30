@@ -23,8 +23,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.support.v4.content.AsyncTaskLoader;
 
+import android.os.AsyncTask;
 import android.content.ContentResolver;
 import android.app.Activity;
 import android.os.Bundle;
@@ -47,14 +47,10 @@ import android.location.LocationManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.widget.Toast;
-import android.os.AsyncTask;
 import android.app.ProgressDialog;
 import android.net.Uri;
+import android.app.SearchManager;
 
-import java.io.FileOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
@@ -68,7 +64,6 @@ import org.klnusbaum.udj.auth.AuthActivity;
 import org.klnusbaum.udj.network.ServerConnection;
 import org.klnusbaum.udj.containers.Event;
 import org.klnusbaum.udj.containers.VoteRequests;
-import org.klnusbaum.udj.containers.VoteRequests;
 import org.klnusbaum.udj.actionbar.ActionBarActivity;
 
 /**
@@ -77,6 +72,12 @@ import org.klnusbaum.udj.actionbar.ActionBarActivity;
 public class EventSelectorActivity extends ActionBarActivity{
 
   private static final int SELECTING_PARTY_DIALOG = 0;
+  private static final String EVENT_SEARCH_QUERY = 
+    "org.klnusbaum.udj.EventSearchQuery";
+  private static final String EVENT_SEARCH_TYPE_EXTRA = 
+    "org.klnusbaum.udj.EventSearchType";
+  private static final int EVENT_LOCATION_SERACH = 0; 
+  private static final int EVENT_NAME_SEARCH = 1; 
   private static final String LOCATION_EXTRA = "location";
   private static final int ACCOUNT_CREATION = 0;
   private Account account;
@@ -232,9 +233,23 @@ public class EventSelectorActivity extends ActionBarActivity{
     }
   }
 
+  @Override
+  protected void onNewIntent(Intent intent){
+    if(Intent.ACTION_SEARCH.equals(intent.getAction())){
+      Bundle loaderArgs = new Bundle();
+      loaderArgs.putInt(EVENT_SEARCH_TYPE_EXTRA, EVENT_NAME_SEARCH);
+      loaderArgs.putString(EVENT_SEARCH_QUERY, 
+        intent.getStringExtra(SearchManager.QUERY));
+      getLoaderManager().restartLoader(0, loaderArgs, null);
+    }
+    else{
+      super.onNewIntent(intent);
+    }
+  }
+
 
   public class EventListFragment extends ListFragment implements 
-    LoaderManager.LoaderCallbacks<EventLoaderResult >,
+    LoaderManager.LoaderCallbacks<EventsLoader.EventsLoaderResult>,
     LocationListener
   {
     private EventListAdapter eventAdapter;
@@ -265,10 +280,6 @@ public class EventSelectorActivity extends ActionBarActivity{
         account=udjAccounts[0];
         //TODO implement if there are more than 1 account
       }
-    }
-
-    public void onResume(){
-      super.onResume();
       lm = (LocationManager)getSystemService(
         Context.LOCATION_SERVICE);
       lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,0, 50, this);
@@ -277,8 +288,9 @@ public class EventSelectorActivity extends ActionBarActivity{
       Location lastKnown = 
         lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
       Bundle loaderArgs = new Bundle(); 
+      loaderArgs.putInt(EVENT_SEARCH_TYPE_EXTRA, EVENT_LOCATION_SERACH);
       loaderArgs.putParcelable(LOCATION_EXTRA, lastKnown);
-      getLoaderManager().restartLoader(0, loaderArgs, this);
+      getLoaderManager().initLoader(0, loaderArgs, this);
     }
 
     public void onPause(){
@@ -315,29 +327,43 @@ public class EventSelectorActivity extends ActionBarActivity{
       showProgress();
     }
 
-    public Loader<EventLoaderResult> onCreateLoader(int id, Bundle args){
-      return new EventsLoader(
-        getActivity(), 
-        account,
-        (Location)args.getParcelable(LOCATION_EXTRA));
+    public Loader<EventsLoader.EventsLoaderResult> onCreateLoader(
+      int id, Bundle args)
+    {
+      int eventSearchType = args.getInt(EVENT_SEARCH_TYPE_EXTRA, 
+        -1);
+      if(eventSearchType == EVENT_LOCATION_SERACH){
+        return new EventsLoader(
+          getActivity(), 
+          account,
+          (Location)args.getParcelable(LOCATION_EXTRA));
+      }
+      else if(eventSearchType == EVENT_NAME_SEARCH){
+        return new EventsLoader(
+          getActivity(), 
+          account,
+          args.getString(EVENT_SEARCH_QUERY));
+      }
+      else{
+        return null;
+      }
     }
   
-    public void onLoadFinished(Loader<EventLoaderResult> loader, 
-      EventLoaderResult data)
+    public void onLoadFinished(Loader<EventsLoader.EventsLoaderResult> loader, 
+      EventsLoader.EventsLoaderResult data)
     {
-      if(data == null){
-        setEmptyText(getString(R.string.party_load_error));
-      }
-      else if(data.getError() == EventLoaderResult.NO_ERROR){
+      switch(data.getError()){
+      case NO_ERROR:
         eventAdapter = 
           new EventListAdapter(getActivity(), data.getEvents(), null);
         setListAdapter(eventAdapter);
-      }
-      else if(data.getError() == EventLoaderResult.NO_LOCATION){
+        break;
+      case NO_LOCATION:
         setEmptyText(getString(R.string.no_location_error));
-      }
-      else{
+        break;
+      case SERVER_ERROR:
         setEmptyText(getString(R.string.party_load_error));
+        break;
       }
 
       if(isResumed()){
@@ -348,89 +374,9 @@ public class EventSelectorActivity extends ActionBarActivity{
       }
     }
   
-    public void onLoaderReset(Loader<EventLoaderResult> loader){
+    public void onLoaderReset(Loader<EventsLoader.EventsLoaderResult> loader){
       eventAdapter = new EventListAdapter(getActivity());
     }
   } 
-
-  public static class EventLoaderResult{
-    public static final String NO_ERROR ="no_error";
-    public static final String NO_LOCATION ="location_error";
-    private List<Event> events;
-    private String error; 
-    public EventLoaderResult(List<Event> events, String error){
-      this.events = events;
-      this.error = error;
-    }
-
-    public String getError(){ 
-      return error;
-    }
-
-    public List<Event> getEvents(){
-      return events;
-    }
-  }
-
-  public static class EventsLoader extends AsyncTaskLoader<EventLoaderResult>{
-     
-    Context context;
-    Account account;
-    Location location;
-    List<Event> events;
-
-    public EventsLoader(Context context, Account account, Location location){
-      super(context);
-      this.context = context;
-      this.account = account;
-      this.location = location;
-      events = null;
-    }
-    
-    @Override
-    protected void onStartLoading(){
-      if(takeContentChanged() || events==null){
-        forceLoad();
-      }
-    }
- 
-    public EventLoaderResult loadInBackground(){
-      if(account == null){
-        Log.i("EVENT LOADER", "ACCOUNT IS NULL");
-        return null;
-      }
-      if(location == null){
-        return new EventLoaderResult(null, EventLoaderResult.NO_LOCATION);
-      }
-      try{
-        AccountManager am = AccountManager.get(context);
-        String authToken = am.blockingGetAuthToken(account, "", true); 
-        List<Event> events = 
-          ServerConnection.getNearbyEvents(location, authToken);
-        return new EventLoaderResult(events, EventLoaderResult.NO_ERROR);
-      }
-      catch(JSONException e){
-        Log.e("EVENT LOADER", "Json exception");
-        //TODO notify the user
-      }
-      catch(IOException e){
-        Log.e("EVENT LOADER", "Io eception");
-        //TODO notify the user
-      }
-      catch(AuthenticatorException e){
-        Log.e("EVENT LOADER", "Authenticator exception");
-        //TODO notify the user
-      }
-      catch(AuthenticationException e){
-        Log.e("EVENT LOADER", "Authentication exception");
-        //TODO notify the user
-      }
-      catch(OperationCanceledException e){
-        Log.e("EVENT LOADER", "Operation cancelced exception");
-        //TODO notify user
-      }
-      return null;
-    }
-  }
 }
 

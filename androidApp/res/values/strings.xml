@@ -38,7 +38,8 @@
   <string name="login_error">Login Error</string>
   <string name="login_error_message">Looks like there was a problem logging in. Can you try retyping your name and password please?</string>
   <string name="logging_into_party">Logging into party...</string>
-  <string name="search_hint">Search for songs...</string>
+  <string name="song_search_hint">Search for songs...</string>
+  <string name="event_search_hint">Search for events...</string>
   <string name="searching_lib">Searching library...</string>
   <string name="bad_password">Password incorrect</string>
   <string name="bad_username_and_password">Couldn\'t find account matching the given username and password</string>
