@@ -101,6 +101,9 @@ public class EventActivity extends ActionBarActivity{
       this,
       EventCommService.class);
     leaveEvent.putExtra(Constants.ACCOUNT_EXTRA, account);
+    leaveEvent.putExtra(
+      Constants.EVENT_ID_EXTRA, 
+      AccountManager.get(this).getUserData(account, Constants.EVENT_ID_EXTRA));
     startService(leaveEvent);
     setResult(Activity.RESULT_OK);
     finish();

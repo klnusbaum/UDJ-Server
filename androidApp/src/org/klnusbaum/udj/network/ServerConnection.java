@@ -303,7 +303,7 @@ public class ServerConnection{
   }
 
   public static boolean joinEvent(long eventId, long userId, String ticketHash)
-    throws IOException
+    throws IOException, AuthenticationException
   {
     try{
       URI uri  = new URI(
@@ -313,16 +313,8 @@ public class ServerConnection{
        doPut(uri, ticketHash, null); 
     }
     catch(URISyntaxException e){
-      Log.e("Server conn", "URI syntax error in join event");
+      Log.e(TAG, "URI syntax error in join event");
       return false; 
-    }
-    catch(AuthenticationException e){
-      Log.e("Server conn", "Auth error in join event");
-      return false;
-    }
-    catch(IOException e){
-      Log.e("Server conn", "IO eeror in join event");
-      return false;
     }
     return true;
   }

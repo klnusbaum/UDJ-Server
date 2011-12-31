@@ -26,7 +26,6 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.OperationCanceledException;
 import android.accounts.AuthenticatorException;
-import android.os.RemoteException;
 import android.content.OperationApplicationException;
 import android.util.Log;
 import android.app.IntentService;
@@ -39,7 +38,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.apache.http.auth.AuthenticationException;
-import org.apache.http.ParseException;
 
 import org.klnusbaum.udj.Constants;
 import org.klnusbaum.udj.UDJEventProvider;
@@ -51,7 +49,6 @@ import org.klnusbaum.udj.UDJEventProvider;
 public class EventCommService extends IntentService{
 
   private static final String TAG = "EventCommService";
-  private AccountManager am = AccountManager.get(this);
 
   public EventCommService(){
     super("EventCommService");
@@ -60,29 +57,45 @@ public class EventCommService extends IntentService{
   @Override
   public void onHandleIntent(Intent intent){
     Log.d(TAG, "In Event Comm Service");
-    final Account account = 
-      (Account)intent.getParcelableExtra(Constants.ACCOUNT_EXTRA);
-    //TODO hanle error if account isn't provided
-    long eventId = Long.valueOf(
-      am.getUserData(account, Constants.EVENT_ID_DATA));
-    //TODO handle if event id isn't provided
-    if(intent.getAction().equals(Intent.ACTION_INSERT)){
-      enterEvent(account, eventId);
-    }
-    else if(intent.getAction().equals(Intent.ACTION_DELETE)){
-      leaveEvent(account, eventId);
-    }
-    else{
-      Log.d(TAG, "ACTION wasn't delete or insert, it was " + 
-        intent.getAction());
-    } 
-  }
-
-  private void enterEvent(Account account, long eventId){
+    long eventId = intent.getLongExtra(
+      Constants.EVENT_ID_EXTRA, 
+      Constants.NO_EVENT_ID);
+    AccountManager am = AccountManager.get(this);
     try{
-      String authToken = am.blockingGetAuthToken(account, "", true);  
+      final Account account = 
+        (Account)intent.getParcelableExtra(Constants.ACCOUNT_EXTRA);
+      //TODO hanle error if account isn't provided
       long userId = 
         Long.valueOf(am.getUserData(account, Constants.USER_ID_DATA));
+      //TODO handle if event id isn't provided
+      String authToken = am.blockingGetAuthToken(account, "", true);  
+      if(intent.getAction().equals(Intent.ACTION_INSERT)){
+        enterEvent(account, eventId, userId, authToken);
+      }
+      else if(intent.getAction().equals(Intent.ACTION_DELETE)){
+        //TODO handle if userId is null shouldn't ever be, but hey...
+        leaveEvent(account, eventId, userId, authToken, am);
+      }
+      else{
+        Log.d(TAG, "ACTION wasn't delete or insert, it was " + 
+          intent.getAction());
+      } 
+    }
+    catch(OperationCanceledException e){
+      Log.e(TAG, "Operation canceled exception in EventCommService" );
+    }
+    catch(AuthenticatorException e){
+      Log.e(TAG, "Authenticator exception in EventCommService" );
+    }
+    catch(IOException e){
+      Log.e(TAG, "IO exception in EventCommService" );
+    }
+  }
+
+  private void enterEvent(Account account, long eventId, long userId, 
+    String authToken)
+  {
+    try{
       if(ServerConnection.joinEvent(eventId, userId, authToken)){
         ContentResolver cr = getContentResolver();
         UDJEventProvider.eventCleanup(cr);          
@@ -104,44 +117,30 @@ public class EventCommService extends IntentService{
       }
     }
     catch(IOException e){
-      Log.e(TAG, "IO exception when logging in" + e.getMessage());
+      Log.e(TAG, "IO exception when joining event");
       //TODO notify the user
-    }
-    catch(AuthenticatorException e){
-      Log.e(TAG, 
-        "Authentiator exception when logging in" + e.getMessage());
-      //TODO notify the user
-    }
-    catch(OperationCanceledException e){
-      Log.e(TAG, 
-        "Op cancled exception when logging in" + e.getMessage());
-        //TODO notify user
     }
     catch(JSONException e){
       Log.e(TAG, 
-        "JSON exception when logging in" + e.getMessage());
+        "JSON exception when joining event");
       //TODO notify user
     }
     catch(AuthenticationException e){
       Log.e(TAG, 
-        "Authentication exception when logging in" + e.getMessage());
+        "Authentication exception when joining event");
       //TODO notify user
     }
-    //Inform user loggning in was unsuccesuf
     Intent eventJoinFailedIntent = 
       new Intent(Constants.EVENT_JOIN_FAILED_ACTION);
+    Log.d(TAG, "Sending event join failure broadcast");
     sendBroadcast(eventJoinFailedIntent);
   }
 
-  private void leaveEvent(Account account, long eventId){
+  private void leaveEvent(Account account, 
+    long eventId, long userId, String authToken, AccountManager am)
+  {
     Log.d(TAG, "In leave event"); 
-    String authToken = null;
-    AccountManager am = AccountManager.get(this);
     try{
-      authToken = am.get(this).blockingGetAuthToken(account, "", true);
-      String userId = AccountManager.get(this).getUserData(
-        account, Constants.USER_ID_DATA);
-      //TODO handle if userId is null shouldn't ever be, but hey...
       ServerConnection.leaveEvent(eventId, Long.valueOf(userId), authToken);
       am.setUserData(account, Constants.EVENT_ID_DATA, 
         String.valueOf(Constants.NO_EVENT_ID));
@@ -153,12 +152,6 @@ public class EventCommService extends IntentService{
     }
     catch(AuthenticationException e){
       Log.e(TAG, "Authentication exception in EventCommService" );
-    }
-    catch(OperationCanceledException e){
-      Log.e(TAG, "Operation canceled exception in EventCommService" );
-    }
-    catch(AuthenticatorException e){
-      Log.e(TAG, "Operation canceled exception in EventCommService" );
     }
   }
 }

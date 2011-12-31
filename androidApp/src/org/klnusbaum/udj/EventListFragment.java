@@ -63,6 +63,7 @@ public class EventListFragment extends ListFragment implements
   LoaderManager.LoaderCallbacks<EventsLoader.EventsLoaderResult>,
   LocationListener
 {
+  private static final String TAG = "EventListFragment";
   private static final String PROG_DIALOG_TAG = "prog_dialog";
   private static final int EVENT_LOCATION_SERACH = 0; 
   private static final int EVENT_NAME_SEARCH = 1; 
@@ -81,12 +82,16 @@ public class EventListFragment extends ListFragment implements
 
   private BroadcastReceiver eventJoinedReceiver = new BroadcastReceiver(){
     public void onReceive(Context context, Intent intent){
+      Log.d(TAG, "Recieved event broadcats");
       dismissProgress();
-      unregisterEventReceivers();
+      getActivity().unregisterReceiver(eventJoinedReceiver);
       if(intent.getAction().equals(Constants.JOINED_EVENT_ACTION)){
         Intent eventActivityIntent = new Intent(context, EventActivity.class);
         eventActivityIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
         startActivity(eventActivityIntent); 
+      }
+      else if(intent.getAction().equals(Constants.EVENT_JOIN_FAILED_ACTION)){
+        //TODO inform user of event joining failure
       }
     }
   };
@@ -152,10 +157,13 @@ public class EventListFragment extends ListFragment implements
   
   @Override
   public void onListItemClick(ListView l, View v, int position, long id){
-    Long[] eventId = new Long[]{eventAdapter.getItemId(position)};
     showProgress();
     Intent joinEventIntent = new Intent(
       Intent.ACTION_INSERT, null, getActivity(), EventCommService.class);
+    joinEventIntent.putExtra(
+      Constants.EVENT_ID_EXTRA, 
+      eventAdapter.getItemId(position));
+    joinEventIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
     getActivity().startService(joinEventIntent);
   }
 
@@ -226,7 +234,7 @@ public class EventListFragment extends ListFragment implements
       new IntentFilter(Constants.JOINED_EVENT_ACTION));
     getActivity().registerReceiver(
       eventJoinedReceiver, 
-      new IntentFilter(Constants.JOINED_EVENT_ACTION));
+      new IntentFilter(Constants.EVENT_JOIN_FAILED_ACTION));
     ProgressFragment progFragment = new ProgressFragment();
     progFragment.show(
       getActivity().getSupportFragmentManager(), PROG_DIALOG_TAG);
@@ -237,12 +245,6 @@ public class EventListFragment extends ListFragment implements
     pd.dismiss();
   }
 
-  private void unregisterEventReceivers(){
-    getActivity().unregisterReceiver(eventJoinedReceiver);
-    getActivity().unregisterReceiver(eventJoinedReceiver);
-  }
-
-
   private class ProgressFragment extends DialogFragment{
     public Dialog onCreateDialog(Bundle icicle){
       final ProgressDialog dialog = new ProgressDialog(getActivity());
@@ -251,7 +253,7 @@ public class EventListFragment extends ListFragment implements
       dialog.setCancelable(true);
       dialog.setOnCancelListener(new DialogInterface.OnCancelListener(){
         public void onCancel(DialogInterface dialog){
-          unregisterEventReceivers();
+          getActivity().unregisterReceiver(eventJoinedReceiver);
         }
       });
       return dialog;
