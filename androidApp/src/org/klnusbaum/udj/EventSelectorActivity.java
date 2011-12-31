@@ -50,8 +50,13 @@ public class EventSelectorActivity extends ActionBarActivity{
     super.onCreate(savedInstanceState);
     am = AccountManager.get(this);
     Account[] udjAccounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
+
+    FragmentManager fm = getSupportFragmentManager();
+    if(fm.findFragmentById(android.R.id.content) == null){
+      list = new EventListFragment();
+      fm.beginTransaction().add(android.R.id.content, list).commit();
+    }
     if(udjAccounts.length < 1){
-      //TODO implement if there aren't any account
       Intent getAccountIntent = new Intent(this, AuthActivity.class);
       startActivityForResult(getAccountIntent, ACCOUNT_CREATION);
     }
@@ -74,13 +79,8 @@ public class EventSelectorActivity extends ActionBarActivity{
       eventActivityIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
       startActivity(eventActivityIntent); 
     }
-    FragmentManager fm = getSupportFragmentManager();
-    if(fm.findFragmentById(android.R.id.content) == null){
-      list = new EventListFragment();
-      Bundle listArgs = new Bundle();
-      listArgs.putParcelable(Constants.ACCOUNT_EXTRA, account);
-      list.setArguments(listArgs);
-      fm.beginTransaction().add(android.R.id.content, list).commit();
+    else{
+      list.setAccount(account);
     }
   }
 

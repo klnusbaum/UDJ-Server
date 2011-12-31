@@ -41,8 +41,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 
-import org.klnusbaum.udj.containers.VoteRequests;
-
 /**
  * Content provider used to maintain the content asociated
  * with the current event the user is logged into.

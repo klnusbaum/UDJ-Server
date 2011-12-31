@@ -76,8 +76,8 @@ public class EventListFragment extends ListFragment implements
 
   private EventListAdapter eventAdapter;
   private LocationManager lm;
-  private Location lastKnown;
-  private Account account;
+  private Location lastKnown = null;
+  private Account account = null;
 
   private BroadcastReceiver eventJoinedReceiver = new BroadcastReceiver(){
     public void onReceive(Context context, Intent intent){
@@ -93,16 +93,12 @@ public class EventListFragment extends ListFragment implements
 
       
 
-  public void onCreate(Bundle icicle){
+  public void onActivityCreate(Bundle icicle){
     super.onCreate(icicle);
     //TODO we shouldn't just assume the arguements are there...
     //that said it always should be.
-    account = (Account)getArguments().getParcelable(Constants.ACCOUNT_EXTRA);
     if(icicle != null && icicle.containsKey(LOCATION_STATE_EXTRA)){
       lastKnown = (Location)icicle.getParcelable(LOCATION_STATE_EXTRA);
-    }
-    else{
-      lastKnown = null;
     }
     setEmptyText(getActivity().getString(R.string.no_party_items));
     eventAdapter = new EventListAdapter(getActivity());
@@ -145,6 +141,14 @@ public class EventListFragment extends ListFragment implements
   public void onProviderDisabled(String provider){}
   public void onProviderEnabled(String provider){}
   public void onStatusChanged(String provider, int status, Bundle extras){}
+
+  public void setAccount(Account account){
+    this.account = account;
+    Bundle loaderArgs = new Bundle(); 
+    loaderArgs.putInt(EVENT_SEARCH_TYPE_EXTRA, EVENT_LOCATION_SERACH);
+    loaderArgs.putParcelable(LOCATION_EXTRA, lastKnown);
+    getLoaderManager().restartLoader(0, loaderArgs, this);
+  }
   
   @Override
   public void onListItemClick(ListView l, View v, int position, long id){
@@ -198,6 +202,9 @@ public class EventListFragment extends ListFragment implements
       break;
     case SERVER_ERROR:
       setEmptyText(getString(R.string.party_load_error));
+      break;
+    case NO_ACCOUNT:
+      setEmptyText(getString(R.string.no_account_error));
       break;
     }
 

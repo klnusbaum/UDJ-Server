@@ -65,7 +65,6 @@ import org.json.JSONException;
 
 import org.klnusbaum.udj.containers.LibraryEntry;
 import org.klnusbaum.udj.containers.Event;
-import org.klnusbaum.udj.containers.VoteRequests;
 import org.klnusbaum.udj.UDJEventProvider;
 /**
  * A connection to the UDJ server
