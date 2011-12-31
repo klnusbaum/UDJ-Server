@@ -42,23 +42,23 @@ public class AvailableMusicSearchLoader
   extends AsyncTaskLoader<List<LibraryEntry>>
 {
   private String query;
-  private long eventId;
   private Account account;
 
   public AvailableMusicSearchLoader(
-    Context context, String query, long eventId,  Account account)
+    Context context, String query, Account account)
   {
     super(context);
     this.query = query;
-    this.eventId = eventId;
     this.account = account;
   }
 
   public List<LibraryEntry> loadInBackground(){
     if(query != null){
       try{
-        String authToken = AccountManager.get(getContext()).
-          blockingGetAuthToken(account, "", true);
+        AccountManager am = AccountManager.get(getContext());
+        String authToken = am.blockingGetAuthToken(account, "", true);
+        long eventId = 
+          Long.valueOf(am.getUserData(account, Constants.EVENT_ID_DATA));
         return ServerConnection.availableMusicQuery(query, eventId, authToken);
         //TODO do something to the potential errors
       }

@@ -83,7 +83,6 @@ public class EventActivity extends ActionBarActivity{
     if(Intent.ACTION_SEARCH.equals(intent.getAction())){
       intent.setClass(this, AvailableMusicSearchActivity.class);
       intent.putExtra(Constants.ACCOUNT_EXTRA, account);
-      intent.putExtra(Constants.EVENT_ID_EXTRA, eventId);
       startActivity(intent);
     }
   }
@@ -101,7 +100,6 @@ public class EventActivity extends ActionBarActivity{
       new Uri.Builder().authority(Constants.AUTHORITY).appendPath("event").build(),
       this,
       EventCommService.class);
-    leaveEvent.putExtra(Constants.EVENT_ID_EXTRA, eventId);
     leaveEvent.putExtra(Constants.ACCOUNT_EXTRA, account);
     startService(leaveEvent);
     setResult(Activity.RESULT_OK);

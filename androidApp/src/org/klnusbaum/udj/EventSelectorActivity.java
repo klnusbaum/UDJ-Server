@@ -20,7 +20,10 @@ package org.klnusbaum.udj;
 
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.accounts.AccountManager;
 import android.accounts.Account;
@@ -40,6 +43,7 @@ public class EventSelectorActivity extends ActionBarActivity{
   private static final int ACCOUNT_CREATION = 0;
   private Account account;
   private AccountManager am;
+  private EventListFragment list;
 
   @Override
   public void onCreate(Bundle savedInstanceState){
@@ -48,10 +52,8 @@ public class EventSelectorActivity extends ActionBarActivity{
     Account[] udjAccounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
     if(udjAccounts.length < 1){
       //TODO implement if there aren't any account
-      Intent getAccountIntent = 
-        new Intent(getActivity(), AuthActivity.class);
-      getActivity().startActivityForResult(
-        getAccountIntent, ACCOUNT_CREATION);
+      Intent getAccountIntent = new Intent(this, AuthActivity.class);
+      startActivityForResult(getAccountIntent, ACCOUNT_CREATION);
     }
     else if(udjAccounts.length == 1){
       account=udjAccounts[0];
@@ -68,7 +70,7 @@ public class EventSelectorActivity extends ActionBarActivity{
     if(Long.valueOf(am.getUserData(account, Constants.EVENT_ID_DATA)) !=
       Constants.NO_EVENT_ID)
     {
-      Intent eventActivityIntent(context, EventActivity.class);
+      Intent eventActivityIntent = new Intent(this, EventActivity.class);
       eventActivityIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
       startActivity(eventActivityIntent); 
     }
@@ -87,7 +89,7 @@ public class EventSelectorActivity extends ActionBarActivity{
   {
     if(resultCode == Activity.RESULT_OK){
       account = (Account)data.getParcelableExtra(Constants.ACCOUNT_EXTRA);
-      addEventListFragment();
+      showEventUI();
     }
     else{
       setResult(Activity.RESULT_CANCELED);

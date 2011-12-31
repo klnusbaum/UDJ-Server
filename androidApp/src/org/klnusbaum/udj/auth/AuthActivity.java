@@ -198,7 +198,7 @@ public class AuthActivity extends AccountAuthenticatorActivity{
         mAccountManager.setUserData(account, Constants.USER_ID_DATA, 
           Long.toString(authResult.userId));
         mAccountManager.setUserData(account, Constants.EVENT_ID_DATA, 
-          Long.toString(NO_EVENT_ID));
+          Long.toString(Constants.NO_EVENT_ID));
         final Intent intent = new Intent();
         intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, mUsername);
         intent.putExtra(

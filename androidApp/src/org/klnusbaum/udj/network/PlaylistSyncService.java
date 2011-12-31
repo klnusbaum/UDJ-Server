@@ -77,8 +77,8 @@ public class PlaylistSyncService extends IntentService{
     final Account account = 
       (Account)intent.getParcelableExtra(Constants.ACCOUNT_EXTRA);
     //TODO handle error if no account provider
-    long eventId = AccountManager.get(this).getUserData(
-      account, Constants.EVENT_ID_DATA);
+    long eventId = Long.valueOf(AccountManager.get(this).getUserData(
+      account, Constants.EVENT_ID_DATA));
     //TODO hanle error if eventId is bad
     if(intent.getAction().equals(Intent.ACTION_INSERT)){
       if(intent.getData().equals(UDJEventProvider.PLAYLIST_ADD_REQUEST_URI)){

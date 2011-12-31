@@ -144,7 +144,7 @@ public class AvailableMusicSearchActivity extends FragmentActivity{
     public Loader<List<LibraryEntry>> onCreateLoader(int id, Bundle args){
       if(id == LIB_SEARCH_LOADER_TAG){
         return new AvailableMusicSearchLoader(
-          getActivity(), searchQuery, eventId, account);
+          getActivity(), searchQuery, account);
       }
       return null;
     }

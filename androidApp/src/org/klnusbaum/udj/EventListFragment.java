@@ -21,6 +21,7 @@ package org.klnusbaum.udj;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.BroadcastReceiver;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.location.LocationManager;
@@ -33,12 +34,18 @@ import android.widget.ListView;
 import android.content.Context;
 import android.view.View;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.util.Log;
 import android.widget.Toast;
 
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.ListFragment;
+import android.support.v4.content.Loader;
+import android.support.v4.app.LoaderManager;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -48,7 +55,7 @@ import org.apache.http.auth.AuthenticationException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import org.klnusbaum.udj.network.ServerConnection;
+import org.klnusbaum.udj.network.EventCommService;
 import org.klnusbaum.udj.containers.Event;
 
 
@@ -56,6 +63,7 @@ public class EventListFragment extends ListFragment implements
   LoaderManager.LoaderCallbacks<EventsLoader.EventsLoaderResult>,
   LocationListener
 {
+  private static final String PROG_DIALOG_TAG = "prog_dialog";
   private static final int EVENT_LOCATION_SERACH = 0; 
   private static final int EVENT_NAME_SEARCH = 1; 
   private static final String LOCATION_EXTRA = "location";
@@ -76,12 +84,12 @@ public class EventListFragment extends ListFragment implements
       dismissProgress();
       unregisterEventReceivers();
       if(intent.getAction().equals(Constants.JOINED_EVENT_ACTION)){
-        Intent eventActivityIntent(context, EventActivity.class);
+        Intent eventActivityIntent = new Intent(context, EventActivity.class);
         eventActivityIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
         startActivity(eventActivityIntent); 
       }
     }
-  }
+  };
 
       
 
@@ -104,7 +112,7 @@ public class EventListFragment extends ListFragment implements
 
   public void onResume(){
     super.onResume();
-    lm = (LocationManager)getSystemService(
+    lm = (LocationManager)getActivity().getSystemService(
       Context.LOCATION_SERVICE);
     lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,0, 50, this);
     lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0, 50, this);
@@ -144,8 +152,7 @@ public class EventListFragment extends ListFragment implements
     showProgress();
     Intent joinEventIntent = new Intent(
       Intent.ACTION_INSERT, null, getActivity(), EventCommService.class);
-    joinEventIntent.putExtra(Constants.EVENT_ID_EXTRA, eventId);
-    startService(joinEventIntent);
+    getActivity().startService(joinEventIntent);
   }
 
   public void searchByName(String query){
@@ -207,43 +214,39 @@ public class EventListFragment extends ListFragment implements
   }
 
   private void showProgress(){
-    registerReceiver(
+    getActivity().registerReceiver(
       eventJoinedReceiver, 
       new IntentFilter(Constants.JOINED_EVENT_ACTION));
-    registerReceiver(
+    getActivity().registerReceiver(
       eventJoinedReceiver, 
       new IntentFilter(Constants.JOINED_EVENT_ACTION));
     ProgressFragment progFragment = new ProgressFragment();
-    progFragment.show(getSupportFragmentManager(), PROG_DIALOG_TAG);
+    progFragment.show(
+      getActivity().getSupportFragmentManager(), PROG_DIALOG_TAG);
   }
 
-  private void dismissProgres(){
-    ProgressFragment pd = (ProgressFragment)getSupportFragmentManager().
-      findFragmentByTag(PROG_DIALOG_TAG);
+  private void dismissProgress(){
+    ProgressFragment pd = (ProgressFragment)getActivity().getSupportFragmentManager().findFragmentByTag(PROG_DIALOG_TAG);
     pd.dismiss();
   }
 
   private void unregisterEventReceivers(){
-    unregisterReceiver(
-      eventJoinedReceiver, 
-      new IntentFilter(Constants.JOINED_EVENT_ACTION));
-    unregisterReceiver(
-      eventJoinFailedReceiver, 
-      new IntentFilter(Constants.EVENT_JOIN_FAILED_ACTION));
+    getActivity().unregisterReceiver(eventJoinedReceiver);
+    getActivity().unregisterReceiver(eventJoinedReceiver);
   }
 
 
-  private static class ProgressFragment extends DialogFragment{
+  private class ProgressFragment extends DialogFragment{
     public Dialog onCreateDialog(Bundle icicle){
       final ProgressDialog dialog = new ProgressDialog(getActivity());
-      dialog.setMessage(getString(R.string.joining_event));
+      dialog.setMessage(getActivity().getString(R.string.joining_event));
       dialog.setIndeterminate(true);
       dialog.setCancelable(true);
       dialog.setOnCancelListener(new DialogInterface.OnCancelListener(){
         public void onCancel(DialogInterface dialog){
-          ((EventListFragment)getActivity()).removeEventListener();
+          unregisterEventReceivers();
         }
-      }
+      });
       return dialog;
     }
   }
