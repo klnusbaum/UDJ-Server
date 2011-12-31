@@ -159,7 +159,10 @@ public class EventListFragment extends ListFragment implements
   public void onListItemClick(ListView l, View v, int position, long id){
     showProgress();
     Intent joinEventIntent = new Intent(
-      Intent.ACTION_INSERT, null, getActivity(), EventCommService.class);
+      Intent.ACTION_INSERT, 
+      Constants.EVENT_URI, 
+      getActivity(), 
+      EventCommService.class);
     joinEventIntent.putExtra(
       Constants.EVENT_ID_EXTRA, 
       eventAdapter.getItemId(position));

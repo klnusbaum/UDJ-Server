@@ -57,9 +57,6 @@ public class EventCommService extends IntentService{
   @Override
   public void onHandleIntent(Intent intent){
     Log.d(TAG, "In Event Comm Service");
-    long eventId = intent.getLongExtra(
-      Constants.EVENT_ID_EXTRA, 
-      Constants.NO_EVENT_ID);
     AccountManager am = AccountManager.get(this);
     try{
       final Account account = 
@@ -70,11 +67,14 @@ public class EventCommService extends IntentService{
       //TODO handle if event id isn't provided
       String authToken = am.blockingGetAuthToken(account, "", true);  
       if(intent.getAction().equals(Intent.ACTION_INSERT)){
-        enterEvent(account, eventId, userId, authToken);
+        long eventId = intent.getLongExtra(
+          Constants.EVENT_ID_EXTRA, 
+          Constants.NO_EVENT_ID);
+        enterEvent(account, eventId, userId, authToken, am);
       }
       else if(intent.getAction().equals(Intent.ACTION_DELETE)){
         //TODO handle if userId is null shouldn't ever be, but hey...
-        leaveEvent(account, eventId, userId, authToken, am);
+        leaveEvent(account, userId, authToken, am);
       }
       else{
         Log.d(TAG, "ACTION wasn't delete or insert, it was " + 
@@ -93,7 +93,7 @@ public class EventCommService extends IntentService{
   }
 
   private void enterEvent(Account account, long eventId, long userId, 
-    String authToken)
+    String authToken, AccountManager am)
   {
     try{
       if(ServerConnection.joinEvent(eventId, userId, authToken)){
@@ -106,6 +106,8 @@ public class EventCommService extends IntentService{
           ServerConnection.getVoteRequests(userId, eventId, authToken);
         UDJEventProvider.setPreviousVoteRequests(cr, previousVotes);
         Intent joinedEventIntent = new Intent(Constants.JOINED_EVENT_ACTION);
+        am.setUserData(
+          account, Constants.EVENT_ID_DATA, String.valueOf(eventId));
         sendBroadcast(joinedEventIntent);
         return;
       }
@@ -136,11 +138,13 @@ public class EventCommService extends IntentService{
     sendBroadcast(eventJoinFailedIntent);
   }
 
-  private void leaveEvent(Account account, 
-    long eventId, long userId, String authToken, AccountManager am)
+  private void leaveEvent(Account account, long userId, String authToken, 
+    AccountManager am)
   {
     Log.d(TAG, "In leave event"); 
     try{
+      long eventId = 
+        Long.valueOf(am.getUserData(account, Constants.EVENT_ID_DATA));
       ServerConnection.leaveEvent(eventId, Long.valueOf(userId), authToken);
       am.setUserData(account, Constants.EVENT_ID_DATA, 
         String.valueOf(Constants.NO_EVENT_ID));
@@ -153,5 +157,8 @@ public class EventCommService extends IntentService{
     catch(AuthenticationException e){
       Log.e(TAG, "Authentication exception in EventCommService" );
     }
+    //TODO need to implement exponential back off when log out fails.
+    // 1. This is just nice to the server
+    // 2. If we don't log out, there could be problems on the next event joined
   }
 }

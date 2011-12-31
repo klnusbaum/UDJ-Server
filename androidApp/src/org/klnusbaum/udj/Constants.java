@@ -18,6 +18,8 @@
  */
 package org.klnusbaum.udj;
 
+import android.net.Uri;
+
 public class Constants{
   public static final String ACCOUNT_TYPE = "org.klnusbaum.udj";
   public static final String AUTHORITY = "org.klnusbaum.udj";
@@ -33,4 +35,7 @@ public class Constants{
     "org.klnusbaum.udj.JoinedEvent";
   public static final String EVENT_JOIN_FAILED_ACTION = 
     "org.klnusbaum.udj.EventJoinFailed";
+
+  public static final Uri EVENT_URI = new Uri.Builder().
+    authority(Constants.AUTHORITY).appendPath("event").build();
 }
