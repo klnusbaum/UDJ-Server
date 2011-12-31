@@ -52,7 +52,6 @@ public class PlaylistFragment extends ListFragment
   private static final int PLAYLIST_LOADER_ID = 0;
   private static final int CURRENT_SONG_LOADER_ID = 1;
   private Account account;
-  private long eventId;
 
   /**
    * Adapter used to help display the contents of the playlist.
@@ -66,8 +65,6 @@ public class PlaylistFragment extends ListFragment
     super.onActivityCreated(savedInstanceState);
     account = 
       getActivity().getIntent().getParcelableExtra(Constants.ACCOUNT_EXTRA);
-    eventId = 
-      getActivity().getIntent().getLongExtra(Constants.EVENT_ID_EXTRA, -1);
     setEmptyText(getActivity().getString(R.string.no_playlist_items));
     playlistAdapter = new PlaylistAdapter(getActivity(), null);
     LayoutInflater inflater = (LayoutInflater)getActivity().getSystemService(
@@ -255,7 +252,6 @@ public class PlaylistFragment extends ListFragment
         UDJEventProvider.VOTES_URI,
         getActivity(),
         PlaylistSyncService.class);
-      syncVotes.putExtra(Constants.EVENT_ID_EXTRA, eventId);
       syncVotes.putExtra(Constants.ACCOUNT_EXTRA, account);
       getActivity().startService(syncVotes);
     }

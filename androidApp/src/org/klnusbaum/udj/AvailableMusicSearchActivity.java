@@ -59,7 +59,6 @@ public class AvailableMusicSearchActivity extends FragmentActivity{
   private static final int LIB_SEARCH_LOADER_TAG = 0;
   private String searchQuery;
   private Account account;
-  private long eventId;
 
   
   @Override
@@ -74,7 +73,6 @@ public class AvailableMusicSearchActivity extends FragmentActivity{
     }
 
     account = getIntent().getParcelableExtra(Constants.ACCOUNT_EXTRA);
-    eventId = getIntent().getLongExtra(Constants.EVENT_ID_EXTRA, -1);
     //TODO Hanle null account or bad event id.
 
     if(searchQuery == null){
@@ -87,7 +85,6 @@ public class AvailableMusicSearchActivity extends FragmentActivity{
       Bundle queryBundle = new Bundle();
       queryBundle.putString(SEARCH_QUERY_EXTRA, searchQuery);
       queryBundle.putParcelable(Constants.ACCOUNT_EXTRA, account);
-      queryBundle.putLong(Constants.EVENT_ID_EXTRA, eventId);
       AvailableMusicSearchFragment list = new AvailableMusicSearchFragment();
       list.setArguments(queryBundle);
       fm.beginTransaction().add(android.R.id.content, list).commit();
@@ -101,7 +98,6 @@ public class AvailableMusicSearchActivity extends FragmentActivity{
     AvailableMusicSearchAdapter searchAdapter;
     private String searchQuery;
     private Account account;
-    private long eventId;
   
     private View.OnClickListener addSongToPlaylistListener =
       new View.OnClickListener(){
@@ -123,7 +119,6 @@ public class AvailableMusicSearchActivity extends FragmentActivity{
             getActivity(),
             PlaylistSyncService.class);
           addSongIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
-          addSongIntent.putExtra(Constants.EVENT_ID_EXTRA, eventId);
           getActivity().startService(addSongIntent);
         }
       };
@@ -138,8 +133,7 @@ public class AvailableMusicSearchActivity extends FragmentActivity{
       Bundle args = getArguments();
       searchQuery = args.getString(SEARCH_QUERY_EXTRA);
       account = args.getParcelable(Constants.ACCOUNT_EXTRA);
-      eventId = args.getLong(Constants.EVENT_ID_EXTRA, -1);
-    //TODO Hanle null account or bad event id.
+      //TODO Hanle null account.
 
       searchAdapter = new AvailableMusicSearchAdapter(getActivity());
       setListAdapter(searchAdapter);
@@ -159,12 +153,6 @@ public class AvailableMusicSearchActivity extends FragmentActivity{
       Loader<List<LibraryEntry>> loader,
       List<LibraryEntry> data)
     {
-      if(data != null){
-        Log.i("TAG", "Size of data: " + data.size());
-      }
-      else{
-        Log.i("TAG", "Data returned was null");
-      }
       searchAdapter = new AvailableMusicSearchAdapter(
         getActivity(), 
         data,

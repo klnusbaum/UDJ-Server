@@ -57,31 +57,28 @@ public class EventActivity extends ActionBarActivity{
   private static final String QUIT_DIALOG_TAG = "quit_dialog";
 
   private Account account;
-  private long eventId;
 
   @Override
   protected void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
-    eventId = getIntent().getLongExtra(Constants.EVENT_ID_EXTRA, -1);
     account = (Account)getIntent().getParcelableExtra(Constants.ACCOUNT_EXTRA);
-    //TODO handle if no event id or account was given 
+    //TODO hanle if no event
     
-    FragmentManager fm = getSupportFragmentManager();
-    if(fm.findFragmentById(android.R.id.content) == null){
-      PlaylistFragment list = new PlaylistFragment();
-      fm.beginTransaction().add(android.R.id.content, list).commit();
-    }
     Intent getPlaylist = new Intent(
       Intent.ACTION_VIEW,
       UDJEventProvider.PLAYLIST_URI,
       this,
       PlaylistSyncService.class);
-    getPlaylist.putExtra(Constants.EVENT_ID_EXTRA, eventId);
     getPlaylist.putExtra(Constants.ACCOUNT_EXTRA, account);
     startService(getPlaylist);
+
+    FragmentManager fm = getSupportFragmentManager();
+    if(fm.findFragmentById(android.R.id.content) == null){
+      PlaylistFragment list = new PlaylistFragment();
+      fm.beginTransaction().add(android.R.id.content, list).commit();
+    }
   }
 
-  @Override
   protected void onNewIntent(Intent intent){
     if(Intent.ACTION_SEARCH.equals(intent.getAction())){
       intent.setClass(this, AvailableMusicSearchActivity.class);

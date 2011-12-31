@@ -187,7 +187,6 @@ public class AuthActivity extends AccountAuthenticatorActivity{
      * @param result the confirmCredentials result.
      */
     private void finishLogin(ServerConnection.AuthResult authResult) {
-
         Log.i(TAG, "finishLogin()");
         final Account account = new Account(mUsername, Constants.ACCOUNT_TYPE);
         if (mRequestNewAccount) {
@@ -198,6 +197,8 @@ public class AuthActivity extends AccountAuthenticatorActivity{
         }
         mAccountManager.setUserData(account, Constants.USER_ID_DATA, 
           Long.toString(authResult.userId));
+        mAccountManager.setUserData(account, Constants.EVENT_ID_DATA, 
+          Long.toString(NO_EVENT_ID));
         final Intent intent = new Intent();
         intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, mUsername);
         intent.putExtra(

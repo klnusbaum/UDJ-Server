@@ -63,26 +63,89 @@ public class EventCommService extends IntentService{
     final Account account = 
       (Account)intent.getParcelableExtra(Constants.ACCOUNT_EXTRA);
     //TODO hanle error if account isn't provided
-    if(intent.getAction().equals(Intent.ACTION_DELETE)){
+    long eventId = 
+      intent.getLongExtra(Constants.EVENT_ID_EXTRA, Constants.NO_EVENT_ID);
+    //TODO handle if event id isn't provided
+    if(intent.getAction().equals(Intent.ACTION_INSERT)){
+      enterEvent(account, intent);
+    }
+    else if(intent.getAction().equals(Intent.ACTION_DELETE)){
       leaveEvent(account, intent);
     }
     else{
-      Log.d(TAG, "ACTION wasn't delete, it was " + intent.getAction());
+      Log.d(TAG, "ACTION wasn't delete or insert, it was " + 
+        intent.getAction());
     } 
   }
 
-  private void leaveEvent(Account account, Intent intent){
+  private void enterEvent(Account account, long eventId){
+    try{
+      AccountManager am = AccountManager.get(this);
+      String authToken = am.blockingGetAuthToken(account, "", true);  
+      long userId = 
+        Long.valueOf(am.getUserData(account, Constants.USER_ID_DATA));
+      if(ServerConnection.joinEvent(eventId, userId, authToken)){
+        UDJEventProvider.eventCleanup(cr);          
+        HashMap<Long,Long> previousRequests = ServerConnection.getAddRequests(
+          userId, params[0], authToken);
+        UDJEventProvider.setPreviousAddRequests(cr, previousRequests);
+        JSONObject previousVotes = 
+          ServerConnection.getVoteRequests(userId, params[0], authToken);
+        UDJEventProvider.setPreviousVoteRequests(cr, previousVotes);
+        Intent joinedEventIntent = new Intent(Contants.JOINED_EVENT_ACTION);
+        sendBroadcast(joinedEventIntent);
+        return;
+      }
+      else{
+        Intent eventJoinFailedIntent = 
+          new Intent(Contants.EVENT_JOIN_FAILED_ACTION);
+        sendBroadcast(eventJoinFailedIntent);
+        return;
+      }
+    }
+    catch(IOException e){
+      Log.e(EVENT_LOGIN_TAG, "IO exception when logging in" + e.getMessage());
+      //TODO notify the user
+    }
+    catch(AuthenticatorException e){
+      Log.e(EVENT_LOGIN_TAG, 
+        "Authentiator exception when logging in" + e.getMessage());
+      //TODO notify the user
+    }
+    catch(OperationCanceledException e){
+      Log.e(EVENT_LOGIN_TAG, 
+        "Op cancled exception when logging in" + e.getMessage());
+        //TODO notify user
+    }
+    catch(JSONException e){
+      Log.e(EVENT_LOGIN_TAG, 
+        "JSON exception when logging in" + e.getMessage());
+      //TODO notify user
+    }
+    catch(AuthenticationException e){
+      Log.e(EVENT_LOGIN_TAG, 
+        "Authentication exception when logging in" + e.getMessage());
+      //TODO notify user
+    }
+    //Inform user loggning in was unsuccesuf
+    Intent eventJoinFailedIntent = 
+      new Intent(Contants.EVENT_JOIN_FAILED_ACTION);
+    sendBroadcast(eventJoinFailedIntent);
+  }
+
+  private void leaveEvent(Account account, long eventId){
     Log.d(TAG, "In leave event"); 
     String authToken = null;
+    AccountManager am = AccountManager.get(this);
     try{
-      authToken = 
-        AccountManager.get(this).blockingGetAuthToken(account, "", true);
-      long eventId = intent.getLongExtra(Constants.EVENT_ID_EXTRA, -1);
-      //TODO handle if event id isn't provided
+      authToken = am.get(this).blockingGetAuthToken(account, "", true);
       String userId = AccountManager.get(this).getUserData(
         account, Constants.USER_ID_DATA);
       //TODO handle if userId is null shouldn't ever be, but hey...
       ServerConnection.leaveEvent(eventId, Long.valueOf(userId), authToken);
+      am.setUserData(account, Constants.EVENT_ID_EXTRA, Constants.NO_EVENT_ID);
+      Intent leftEventIntent = new Intent(Contants.LEFT_EVENT_ACTION);
+      sendBroadcast(leftEventIntent);
     }
     catch(IOException e){
       Log.e(TAG, "IO exception in EventCommService: " + e.getMessage());
