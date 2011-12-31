@@ -1,1 +1,1 @@
-web: python udjserver/manage.py runserver 0.0.0.0:4897
+web: bundle exec rails server -p 4897
