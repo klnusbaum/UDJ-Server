@@ -1,1 +1,0 @@
-web: python udjserver/manage.py runserver -p 4897
