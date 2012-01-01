@@ -425,74 +425,83 @@
   }, 
   {
     "pk": 1, 
-    "model": "udj.upvote", 
+    "model": "udj.vote", 
     "fields": {
       "playlist_entry": 1, 
-      "user": 2
+      "user": 2,
+      "weight" : 1
     }
   }, 
   {
     "pk": 2, 
-    "model": "udj.upvote", 
+    "model": "udj.vote", 
     "fields": {
       "playlist_entry": 2, 
-      "user": 3
+      "user": 3,
+      "weight" : 1
     }
   }, 
   {
     "pk": 3, 
-    "model": "udj.upvote", 
+    "model": "udj.vote", 
     "fields": {
       "playlist_entry": 3, 
-      "user": 2
+      "user": 2,
+      "weight" : 1
     }
   }, 
   {
     "pk": 4, 
-    "model": "udj.upvote", 
+    "model": "udj.vote", 
     "fields": {
       "playlist_entry": 4, 
-      "user": 3
+      "user": 3,
+      "weight" : 1
     }
   }, 
   {
     "pk": 5, 
-    "model": "udj.upvote", 
+    "model": "udj.vote", 
     "fields": {
       "playlist_entry": 5, 
-      "user": 2
+      "user": 2,
+      "weight" : 1
     }
   }, 
   {
     "pk": 6, 
-    "model": "udj.upvote", 
+    "model": "udj.vote", 
     "fields": {
       "playlist_entry": 7, 
-      "user": 2
+      "user": 2,
+      "weight" : 1
     }
   }, 
   {
     "pk": 7, 
-    "model": "udj.upvote", 
+    "model": "udj.vote", 
     "fields": {
       "playlist_entry": 6, 
-      "user": 3
+      "user": 3,
+      "weight" : 1
     }
   }, 
   {
     "pk": 8, 
-    "model": "udj.upvote", 
+    "model": "udj.vote", 
     "fields": {
       "playlist_entry": 1, 
-      "user": 3
+      "user": 3,
+      "weight" : 1
     }
   }, 
   {
-    "pk": 1, 
-    "model": "udj.downvote", 
+    "pk": 9, 
+    "model": "udj.vote", 
     "fields": {
       "playlist_entry": 3, 
-      "user": 3
+      "user": 3,
+      "weight" : -1
     }
   }, 
   {

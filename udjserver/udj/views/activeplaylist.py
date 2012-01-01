@@ -17,8 +17,7 @@ from django.db.models import Sum
 from udj.models import ActivePlaylistEntry
 from udj.models import LibraryEntry
 from udj.models import Event
-from udj.models import UpVote
-from udj.models import DownVote
+from udj.models import Vote
 from udj.JSONCodecs import getActivePlaylistArray
 from udj.JSONCodecs import getActivePlaylistEntryDictionary
 from udj.auth import getUserForTicket
@@ -28,23 +27,15 @@ from udj.auth import getUserForTicket
 @AcceptsMethods('GET')
 def getActivePlaylist(request, event_id):
   playlistEntries = ActivePlaylistEntry.objects.filter(
-    event__id=event_id, state=u'QE').\
-    annotate(upvotes=Count('upvote'), downvotes=Count('downvote')).\
-    order_by('time_added')
-  
-  playlistEntries = sorted(
-    playlistEntries, key=lambda entry: -(entry.upvotes-entry.downvotes))
+    event__id=event_id, state=u'QE').annotate(
+      totalvotes=Sum('vote__weight')).order_by('-totalvotes','time_added')
 
   activePlaylist = getActivePlaylistArray(playlistEntries)
-
   currentSongDict = {}
   try:
     currentSong = ActivePlaylistEntry.objects.get(
       event__id=event_id, state=u'PL')
-    currentSongDict = getActivePlaylistEntryDictionary(
-      currentSong,
-      UpVote.objects.filter(playlist_entry=currentSong).count(),
-      DownVote.objects.filter(playlist_entry=currentSong).count())
+    currentSongDict = getActivePlaylistEntryDictionary(currentSong)
     currentSongDict['time_played'] = \
       currentSong.time_played.replace(microsecond=0).isoformat()
   except ObjectDoesNotExist:
@@ -76,7 +67,7 @@ def addSong2ActivePlaylist(song_request, event_id, adding_user):
     event=event,
     client_request_id=song_request['client_request_id'])
   added.save()
-  UpVote(playlist_entry=added, user=adding_user).save()
+  Vote(user=adding_user, playlist_entry=added, weight=1).save()
 
 #TODO Need to add a check to make sure that they aren't trying to add
 #a song  that's not in the available music.
@@ -98,26 +89,29 @@ def addToPlaylist(request, event_id):
 @InParty
 @AcceptsMethods('POST')
 def voteSongDown(request, event_id, playlist_id, user_id):
-  return voteSong(event_id, playlist_id, user_id, DownVote)
+  return voteSong(event_id, playlist_id, user_id, -1)
 
 @csrf_exempt
 @NeedsAuth
 @InParty
 @AcceptsMethods('POST')
 def voteSongUp(request, event_id, playlist_id, user_id):
-  return voteSong(event_id, playlist_id, user_id, UpVote)
+  return voteSong(event_id, playlist_id, user_id, 1)
 
-def hasAlreadyVoted(votingUser, entryToVote, VoteType):
-  return VoteType.objects.filter(
-    user=votingUser, playlist_entry=entryToVote).exists()
-
-def voteSong(event_id, playlist_id, user_id, VoteType):
+def voteSong(event_id, playlist_id, user_id, voteWeigth):
   votingUser = User.objects.get(pk=user_id)
   entryToVote = get_object_or_404(ActivePlaylistEntry, pk=playlist_id)
-  if hasAlreadyVoted(votingUser, entryToVote, VoteType):
-    return HttpResponseForbidden()
-
-  VoteType(playlist_entry=entryToVote, user=votingUser).save()
+  #Check to see if a previous vote exists. If it does, change the weight
+  #to the weight given in the arguments. If it doesn't, create a new one
+  #with the specified weight
+  try:
+    previousVote = Vote.objects.get(
+      user=votingUser, playlist_entry=entryToVote)
+    previousVote.weight = voteWeigth
+    previousVote.save()
+  except ObjectDoesNotExist:
+    Vote(user=votingUser, playlist_entry=entryToVote, weight=voteWeigth).save()
+ 
   return HttpResponse()
 
 @NeedsAuth
@@ -151,14 +145,11 @@ def getAddRequests(request, event_id, user_id):
 @TicketUserMatch
 @AcceptsMethods('GET')
 def getVotes(request, event_id, user_id):
-  upVotes = UpVote.objects.filter(
+  votes = Vote.objects.filter(
     playlist_entry__event__id=event_id,
     user__id=user_id, playlist_entry__state=u'QE')
-  upvoteIds = [vote.playlist_entry.id for vote in upVotes]
-  downVotes = DownVote.objects.filter(
-    playlist_entry__event__id=event_id,
-    user__id=user_id, playlist_entry__state=u'QE')
-  downvoteIds = [vote.playlist_entry.id for vote in downVotes]
+  upvoteIds = [vote.playlist_entry.id for vote in votes if vote.weight==1]
+  downvoteIds = [vote.playlist_entry.id for vote in votes if vote.weight==-1]
   return HttpResponse(json.dumps(
     {'up_vote_ids' : upvoteIds, 'down_vote_ids' : downvoteIds}))
   

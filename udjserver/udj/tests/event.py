@@ -10,8 +10,6 @@ from udj.models import Ticket
 from udj.models import EventGoer
 from udj.models import ActivePlaylistEntry
 from udj.models import AvailableSong
-from udj.models import UpVote
-from udj.models import DownVote
 from decimal import Decimal
 from datetime import datetime
 

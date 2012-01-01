@@ -64,6 +64,11 @@ class ActivePlaylistEntry(models.Model):
   client_request_id = models.IntegerField()
   state = models.CharField(max_length=2, choices=STATE_CHOICES, default=u'QE')
 
+  def upvote_count(self):
+    return self.vote_set.filter(weight=1).count()
+
+  def downvote_count(self):
+    return self.vote_set.filter(weight=-1).count()
 
   class Meta:
     unique_together = ("adder", "client_request_id", "event")
@@ -94,16 +99,11 @@ class EventGoer(models.Model):
   def __unicode__(self):
     return "User " + str(self.user.id) + " is in Event " + str(self.event.name)
 
-class UpVote(models.Model):
+class Vote(models.Model):
   playlist_entry = models.ForeignKey(ActivePlaylistEntry) 
   user =  models.ForeignKey(User)
+  weight = models.IntegerField()
 
-  def __unicode__(self):
-    return "Upvote for: " + str(self.playlist_entry.song.title) 
+  class Meta: 
+    unique_together = ("user", "playlist_entry")
 
-class DownVote(models.Model):
-  playlist_entry = models.ForeignKey(ActivePlaylistEntry) 
-  user =  models.ForeignKey(User)
-
-  def __unicode__(self):
-    return "Downvote for: " + str(self.playlist_entry.song.title) 

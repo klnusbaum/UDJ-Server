@@ -4,9 +4,8 @@ from udj.tests import User2TestCase
 from udj.tests import User3TestCase
 from udj.tests import User4TestCase
 from udj.tests import User5TestCase
-from udj.models import UpVote
-from udj.models import DownVote
 from udj.models import ActivePlaylistEntry
+from udj.models import Vote
 
 class GetActivePlaylistTest(User3TestCase):
 
@@ -45,10 +44,10 @@ class GetActivePlaylistTest(User3TestCase):
     self.assertEqual(actualCurrentSong.song.album, result['album'])
     self.assertEqual(actualCurrentSong.song.duration, result['duration'])
     self.assertEqual(
-      UpVote.objects.filter(playlist_entry=actualCurrentSong).count(),
+      Vote.objects.filter(playlist_entry=actualCurrentSong, weight=1).count(),
       result['up_votes'])
     self.assertEqual(
-      DownVote.objects.filter(playlist_entry=actualCurrentSong).count(),
+      Vote.objects.filter(playlist_entry=actualCurrentSong, weight=-1).count(),
       result['down_votes'])
     self.assertEqual(
       actualCurrentSong.time_added, 
@@ -80,15 +79,17 @@ class AddSongToPlaylistTests(User2TestCase):
 
     entry = ActivePlaylistEntry.objects.get(adder__id=2, event__id=2, 
       client_request_id=request_id)
-    upvotes = UpVote.objects.filter(
+    upvotes = Vote.objects.filter(
       playlist_entry__client_request_id=request_id,
       playlist_entry__event__id=2,
-      user__id=2)
+      user__id=2,
+      weight=1)
     self.assertEqual(upvotes.count(),  1)
-    downvotes = DownVote.objects.filter(
+    downvotes = Vote.objects.filter(
       playlist_entry__client_request_id=request_id,
       playlist_entry__event__id=2,
-      user__id=2)
+      user__id=2,
+      weight=-1)
     self.assertEqual(downvotes.count(), 0)
     addedEntry = ActivePlaylistEntry.objects.get(
       adder__id=2,  
@@ -160,21 +161,26 @@ class TestVoting(User5TestCase):
     playlist_id = 3
     response = self.doPost('/udj/events/2/active_playlist/3/users/5/upvote', {})
     self.assertEqual(response.status_code, 200)
-    upvote = UpVote.objects.get(playlist_entry__id=playlist_id, user__id=5)
+    upvote = Vote.objects.get(
+      playlist_entry__id=playlist_id, user__id=5, weight=1)
 
   def testDownVote(self):
     playlist_id = 3
     response = self.doPost(
       '/udj/events/2/active_playlist/3/users/5/downvote', {})
     self.assertEqual(response.status_code, 200)
-    downvote = DownVote.objects.get(playlist_entry__id=playlist_id, user__id=5)
+    downvote = Vote.objects.get(
+      playlist_entry__id=playlist_id, user__id=5, weight=-1)
 
   def testDoubleUpVote(self):
     playlist_id = 3
     response = self.doPost('/udj/events/2/active_playlist/3/users/5/upvote', {})
     self.assertEqual(response.status_code, 200)
     response = self.doPost('/udj/events/2/active_playlist/3/users/5/upvote', {})
-    self.assertEqual(response.status_code, 403)
+    self.assertEqual(response.status_code, 200)
+    upvote = Vote.objects.get(
+      playlist_entry__id=playlist_id, user__id=5, weight=1)
+    
 
   def testDoubleDownVote(self):
     playlist_id = 3
@@ -183,7 +189,32 @@ class TestVoting(User5TestCase):
     self.assertEqual(response.status_code, 200)
     response = self.doPost(
       '/udj/events/2/active_playlist/3/users/5/downvote', {})
-    self.assertEqual(response.status_code, 403)
+    self.assertEqual(response.status_code, 200)
+    upvote = Vote.objects.get(
+      playlist_entry__id=playlist_id, user__id=5, weight=-1)
+
+  def testUpVoteDownVote(self):
+    playlist_id = 3
+    response = self.doPost(
+      '/udj/events/2/active_playlist/3/users/5/upvote', {})
+    self.assertEqual(response.status_code, 200)
+    response = self.doPost(
+      '/udj/events/2/active_playlist/3/users/5/downvote', {})
+    self.assertEqual(response.status_code, 200)
+    upvote = Vote.objects.get(
+      playlist_entry__id=playlist_id, user__id=5, weight=-1)
+
+  def testDownvoteUpvote(self):
+    playlist_id = 3
+    response = self.doPost(
+      '/udj/events/2/active_playlist/3/users/5/downvote', {})
+    self.assertEqual(response.status_code, 200)
+    response = self.doPost(
+      '/udj/events/2/active_playlist/3/users/5/upvote', {})
+    self.assertEqual(response.status_code, 200)
+    upvote = Vote.objects.get(
+      playlist_entry__id=playlist_id, user__id=5, weight=1)
+
 
 class TestRemoveSong(User2TestCase):
   def testBasicRemove(self):

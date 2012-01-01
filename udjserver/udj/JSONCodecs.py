@@ -47,7 +47,7 @@ def getJSONForEvents(events):
     toReturn.append(getEventDictionary(event))
   return json.dumps(toReturn)
 
-def getActivePlaylistEntryDictionary(entry, upvotes, downvotes):
+def getActivePlaylistEntryDictionary(entry):
    return { 
       'id' : entry.id,
       'lib_song_id' : entry.song.host_lib_song_id,
@@ -55,8 +55,8 @@ def getActivePlaylistEntryDictionary(entry, upvotes, downvotes):
       'artist' : entry.song.artist,
       'album' : entry.song.album,
       'duration' : entry.song.duration,
-      'up_votes' : upvotes,
-      'down_votes' : downvotes,
+      'up_votes' : entry.upvote_count(),
+      'down_votes' : entry.downvote_count(),
       'time_added' : entry.time_added.replace(microsecond=0).isoformat(),
       'adder_id' : entry.adder.id,
       'adder_username' : entry.adder.username
@@ -65,8 +65,7 @@ def getActivePlaylistEntryDictionary(entry, upvotes, downvotes):
 def getActivePlaylistArray(entries):
   toReturn = []
   for entry in entries:
-    toReturn.append(
-      getActivePlaylistEntryDictionary(entry, entry.upvotes, entry.downvotes))
+    toReturn.append(getActivePlaylistEntryDictionary(entry))
   return toReturn
 
 def getEventGoerJSON(eventGoer):

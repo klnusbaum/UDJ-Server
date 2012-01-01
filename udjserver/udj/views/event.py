@@ -29,8 +29,6 @@ from udj.models import LibraryEntry
 from udj.models import AvailableSong
 from udj.models import EventGoer
 from udj.models import ActivePlaylistEntry
-from udj.models import UpVote
-from udj.models import DownVote
 from udj.JSONCodecs import getEventDictionary
 from udj.JSONCodecs import getJSONForEvents
 from udj.JSONCodecs import getJSONForAvailableSongs
