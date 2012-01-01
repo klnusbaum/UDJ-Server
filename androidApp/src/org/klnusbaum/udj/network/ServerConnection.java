@@ -32,6 +32,7 @@ import java.net.URISyntaxException;
 
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.HttpVersion;
+import org.apache.http.Header;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.scheme.PlainSocketFactory;
@@ -157,6 +158,9 @@ public class ServerConnection{
       throw new AuthenticationException();
     }
     else if(!resp.containsHeader(TICKET_HASH_HEADER)){
+      for(Header h: resp.getAllHeaders()){
+        Log.d(TAG, "Response had header " + h.getName());
+      }
       throw new IOException("No ticket hash header was found in resposne");
     }
     else{
