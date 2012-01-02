@@ -91,7 +91,6 @@ class ActivePlaylistEntry(models.Model):
     (u'FN', u'Finished'),)
   song = models.ForeignKey(LibraryEntry)
   time_added = models.DateTimeField(auto_now_add=True)
-  time_played = models.DateTimeField(null=True)
   adder = models.ForeignKey(User)
   event = models.ForeignKey(Event)
   client_request_id = models.IntegerField()
@@ -108,6 +107,21 @@ class ActivePlaylistEntry(models.Model):
 
   def __unicode__(self):
     return self.song.title + " added by " + self.adder.username
+
+class PlaylistEntryTimePlayed(models.Model):
+  playlist_entry = models.ForeignKey(ActivePlaylistEntry, unique=True)
+  time_played = models.DateTimeField(auto_now_add=True)
+
+  def clean(self):
+    from django.core.exceptions import ValidationError
+    if self.event.playlist_entry.state != u'FN' \
+    or self.event.playlist_entry.state != u'PL':
+      raise ValidationError('Playtimes may only be for songs that have played' +
+      'or are currnetly playing')
+
+  def __unicode__(self):
+    return self.playlist_entry.song.title +  " : played at " + self.time_played
+
   
 class Ticket(models.Model):
   user = models.ForeignKey(User, primary_key=True)

@@ -32,6 +32,7 @@ from udj.models import LibraryEntry
 from udj.models import AvailableSong
 from udj.models import EventGoer
 from udj.models import ActivePlaylistEntry
+from udj.models import PlaylistEntryTimePlayed
 from udj.JSONCodecs import getEventDictionary
 from udj.JSONCodecs import getJSONForEvents
 from udj.JSONCodecs import getJSONForAvailableSongs
@@ -216,13 +217,6 @@ def setCurrentSong(request, event_id):
     return HttpResponseBadRequest(
       'Please specifiy the playlist entry to set as the current song')
 
-  newId = request.POST['playlist_entry_id']
-  newCurrentSong = get_object_or_404(
-    ActivePlaylistEntry, 
-    pk=request.POST['playlist_entry_id'],
-    event__id=event_id)
-  newCurrentSong.state = u'PL'
-
   currentSong = None
   try:
     currentSong = ActivePlaylistEntry.objects.get(
@@ -231,7 +225,17 @@ def setCurrentSong(request, event_id):
     currentSong.save()
   except ObjectDoesNotExist:
     pass
+
+  newId = request.POST['playlist_entry_id']
+  newCurrentSong = get_object_or_404(
+    ActivePlaylistEntry, 
+    pk=request.POST['playlist_entry_id'],
+    event__id=event_id)
+  newCurrentSong.state = u'PL'
   newCurrentSong.save()
+
+  PlaylistEntryTimePlayed(playlist_entry=newCurrentSong).save() 
+
   return HttpResponse("Song changed")
 
   

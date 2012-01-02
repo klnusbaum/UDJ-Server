@@ -6,6 +6,7 @@ from udj.tests import User4TestCase
 from udj.tests import User5TestCase
 from udj.models import ActivePlaylistEntry
 from udj.models import Vote
+from udj.models import PlaylistEntryTimePlayed
 
 class GetActivePlaylistTest(User3TestCase):
 
@@ -52,8 +53,8 @@ class GetActivePlaylistTest(User3TestCase):
     self.assertEqual(
       actualCurrentSong.time_added, 
       datetime.strptime(result['time_added'], "%Y-%m-%dT%H:%M:%S"))
-    self.assertEqual(
-      actualCurrentSong.time_played, 
+    self.assertEqual(PlaylistEntryTimePlayed.objects.get(
+      playlist_entry=actualCurrentSong).time_played, 
       datetime.strptime(result['time_played'], "%Y-%m-%dT%H:%M:%S"))
     self.assertEqual(actualCurrentSong.adder.id, result['adder_id'])
     self.assertEqual(actualCurrentSong.adder.username, result['adder_username'])

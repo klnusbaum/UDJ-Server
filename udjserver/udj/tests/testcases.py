@@ -14,7 +14,7 @@ from udj.headers import getDjangoTicketHeader
 from udj.headers import getUserIdHeader
 from udj.models import Ticket
 
-class AuthTestCase(TestCase):
+class AuthTest(TestCase):
   fixtures = ['test_fixture.json']
 
   def testAuth(self):

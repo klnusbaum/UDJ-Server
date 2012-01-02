@@ -15,6 +15,7 @@ from udj.decorators import TicketUserMatch
 from django.db.models import Count
 from django.db.models import Sum
 from udj.models import ActivePlaylistEntry
+from udj.models import PlaylistEntryTimePlayed
 from udj.models import LibraryEntry
 from udj.models import Event
 from udj.models import Vote
@@ -37,7 +38,7 @@ def getActivePlaylist(request, event_id):
       event__id=event_id, state=u'PL')
     currentSongDict = getActivePlaylistEntryDictionary(currentSong)
     currentSongDict['time_played'] = \
-      currentSong.time_played.replace(microsecond=0).isoformat()
+      PlaylistEntryTimePlayed.objects.get(playlist_entry=currentSong).time_played.replace(microsecond=0).isoformat()
   except ObjectDoesNotExist:
     pass
 
@@ -47,27 +48,18 @@ def getActivePlaylist(request, event_id):
       "active_playlist" : activePlaylist
     }
   ))
-
-
-def hasBeenAdded(song_request, event_id, user):
-  return ActivePlaylistEntry.objects.filter(
-      adder=user, 
-      client_request_id=song_request['client_request_id'],
-      event__id=event_id
-    ).exists() 
-
   
 def addSong2ActivePlaylist(song_request, event_id, adding_user):
   event = Event.objects.get(pk=event_id)
   songToAdd = LibraryEntry.objects.get(
       host_lib_song_id=song_request['lib_id'], owning_user=event.host)
-  added = ActivePlaylistEntry(
-    song=songToAdd,
+  added , created = ActivePlaylistEntry.objects.get_or_create(
     adder=adding_user,
     event=event,
-    client_request_id=song_request['client_request_id'])
-  added.save()
-  Vote(user=adding_user, playlist_entry=added, weight=1).save()
+    client_request_id=song_request['client_request_id'],
+    defaults={'song' : songToAdd})
+  if created:
+    Vote(user=adding_user, playlist_entry=added, weight=1).save()
 
 #TODO Need to add a check to make sure that they aren't trying to add
 #a song  that's not in the available music.
@@ -79,8 +71,7 @@ def addToPlaylist(request, event_id):
   user = getUserForTicket(request)
   songsToAdd = json.loads(request.raw_post_data)
   for song_request in songsToAdd:
-    if not hasBeenAdded(song_request, event_id, user):
-      addSong2ActivePlaylist(song_request, event_id, user)
+    addSong2ActivePlaylist(song_request, event_id, user)
   
   return HttpResponse(status = 201)
 
