@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.content.Intent;
 import android.widget.TabHost;
 import android.view.View;
+import android.widget.TextView;
 import android.content.Context;
 import android.accounts.AccountManager;
 import android.accounts.Account;
@@ -34,12 +35,16 @@ import android.util.Log;
 import android.app.Dialog;
 import android.app.SearchManager;
 import android.net.Uri;
+import android.database.Cursor;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 
 import java.util.HashMap;
 
@@ -52,15 +57,22 @@ import org.klnusbaum.udj.network.EventCommService;
 /**
  * The main activity display class.
  */
-public class EventActivity extends ActionBarActivity{
+public class EventActivity extends ActionBarActivity
+  implements LoaderManager.LoaderCallbacks<Cursor>
+{
 
   private static final String QUIT_DIALOG_TAG = "quit_dialog";
+  private static final int CURRENT_SONG_LOADER_ID = 1;
 
   private Account account;
+  private TextView currentSong;
 
   @Override
   protected void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
+    setContentView(R.layout.event);
+    currentSong = (TextView)findViewById(R.id.current_song_title);
+    setCurrentSongDisplay(null);
     account = (Account)getIntent().getParcelableExtra(Constants.ACCOUNT_EXTRA);
     //TODO hanle if no event
     
@@ -72,12 +84,44 @@ public class EventActivity extends ActionBarActivity{
     getPlaylist.putExtra(Constants.ACCOUNT_EXTRA, account);
     startService(getPlaylist);
 
-    FragmentManager fm = getSupportFragmentManager();
-    if(fm.findFragmentById(android.R.id.content) == null){
-      PlaylistFragment list = new PlaylistFragment();
-      fm.beginTransaction().add(android.R.id.content, list).commit();
+    getSupportLoaderManager().initLoader(CURRENT_SONG_LOADER_ID, null, this);
+  }
+
+  public Loader<Cursor> onCreateLoader(int id, Bundle args){
+    switch(id){
+    case CURRENT_SONG_LOADER_ID:
+      return new CursorLoader(
+        this,
+        UDJEventProvider.CURRENT_SONG_URI,
+        null,
+        null,
+        null,
+        null);
+    default:
+      return null;
     }
   }
+
+  public void onLoadFinished(Loader<Cursor> loader, Cursor data){
+    if(loader.getId()==CURRENT_SONG_LOADER_ID){
+      setCurrentSongDisplay(data);   
+    }
+  }
+
+  public void onLoaderReset(Loader<Cursor> loader){
+    
+  }
+
+  private void setCurrentSongDisplay(Cursor data){
+    if(data != null && data.moveToFirst()){
+      currentSong.setText(data.getString(data.getColumnIndex(
+        UDJEventProvider.TITLE_COLUMN)));
+    }
+    else{
+      currentSong.setText(R.string.no_current_song);
+    }
+  }
+
 
   protected void onNewIntent(Intent intent){
     if(Intent.ACTION_SEARCH.equals(intent.getAction())){
