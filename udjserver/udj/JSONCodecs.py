@@ -1,6 +1,8 @@
 import json
 from udj.models import LibraryEntry
 from udj.models import Event
+from udj.models import EventLocation
+from udj.models import EventPassword
 from udj.models import EventGoer
 from django.contrib.auth.models import User
 from datetime import datetime
@@ -29,16 +31,19 @@ def getJSONForAvailableSongs(songs):
   return json.dumps(toReturn)
     
 def getEventDictionary(event):
-  hasPassword = event.password_hash != None
-  return {
+  hasPassword = EventPassword.objects.filter(event=event).exists()
+  toReturn =  {
     'id' : event.id,
     'name' : event.name, 
     'host_id' : event.host.id,
     'host_username' : event.host.username,
-    'latitude' : float(event.latitude),
-    'longitude' : float(event.longitude),
     'has_password' : hasPassword
   }
+  location = EventLocation.objects.filter(event=event)
+  if location.exists():
+    toReturn['latitude'] = location[0].latitude
+    toReturn['longitude'] = location[0].longitude
+  return toReturn
 
 
 def getJSONForEvents(events):

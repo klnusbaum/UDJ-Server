@@ -5,18 +5,51 @@ class Event(models.Model):
   STATE_CHOICES = ((u'AC', u'Active'), (u'FN', 'Finished'),)
   name = models.CharField(max_length=200)
   host = models.ForeignKey(User)
-  latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
-  longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
-  password_hash = models.CharField(max_length=32, null=True)
   time_started = models.DateTimeField(auto_now_add=True)
-  time_ended = models.DateTimeField(null=True)
   state = models.CharField(max_length=2, choices=STATE_CHOICES, default=u'AC')
+
+  def validate_unique(self, exclude=None):
+    if self.state==u'AC' and \
+      Event.objects.exclude(pk=self.pk).filter(host=self.host, state=u'AC')\
+      .exists()\
+    : 
+      raise ValidationError(
+        'User hosting two parties at the same time, that\'s a no-no')
+    super(LibraryEntry, self).validate_unique(exclude=exclude)
 
   def __unicode__(self):
     return "Event " + str(self.id) + ": " + self.name
 
-  class Meta: 
-    unique_together = ("id", "host")
+class EventEndTime(models.Model):
+  event = models.ForeignKey(Event, unique=True)
+  time_ended = models.DateTimeField(auto_now_add=True)
+
+  def clean(self):
+    from django.core.exceptions import ValidationError
+    if self.event.status != u'FN':
+      raise ValidationError(
+        'End time was inserted for an event that is not yet over')
+
+  def __unicode__(self):
+    return self.event.name + " ended at " + time_ended
+
+class EventPassword(models.Model):
+  event = models.ForeignKey(Event, unique=True)
+  password_hash = models.CharField(max_length=32)
+
+  def __unicode__(self):
+    return self.event.name + " password" 
+
+class EventLocation(models.Model):
+  event = models.ForeignKey(Event, unique=True)
+  longitude = models.FloatField()
+  latitude = models.FloatField()
+
+  #TODO put some sort of validation to make sure that long and lat are valid
+
+  def __unicode__(self):
+    return self.event.name + " is at (" +str(self.longitude) + \
+      "," + str(self.latitude)
 
 class LibraryEntry(models.Model):
   host_lib_song_id = models.IntegerField()

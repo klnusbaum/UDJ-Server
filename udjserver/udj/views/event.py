@@ -25,6 +25,9 @@ from udj.decorators import IsUserOrHost
 from udj.decorators import IsntHost
 from udj.models import EventGoer
 from udj.models import Event
+from udj.models import EventLocation
+from udj.models import EventPassword
+from udj.models import EventEndTime
 from udj.models import LibraryEntry
 from udj.models import AvailableSong
 from udj.models import EventGoer
@@ -69,26 +72,25 @@ def createEvent(request):
 
   if 'name' not in event:
     return HttpResponseBadRequest("Must include a name attribute")
-  toInsert = Event(name=event['name'], host=user)
+  newEvent = Event(name=event['name'], host=user)
+  newEvent.save()
 
   if 'coords' in event:
     if 'latitude' not in event['coords'] or 'longitude' not in event['coords']:
       return HttpResponseBadRequest("Must include both latitude and "
         "longitude with coords")
     else:
-      toInsert.latitude = event['coords']['latitude']
-      toInsert.longitude = event['coords']['longitude']
+      EventLocation(event=newEvent, latitude=event['coords']['latitude'],
+        longitude=event['coords']['longitude']).save()
 
   if 'password' in event:
     m = hashlib.sha1()
     m.update(event[password])
-    toInsert.password_hash = m.hexdigest()
-      
-  toInsert.save()
+    EventPassword(event=newEvent, password_hash=m.hexdigest()).save()
   
-  hostInsert = EventGoer(user=user, event=toInsert)
+  hostInsert = EventGoer(user=user, event=newEvent)
   hostInsert.save()
-  return HttpResponse('{"event_id" : ' + str(toInsert.id) + '}', status=201)
+  return HttpResponse('{"event_id" : ' + str(newEvent.id) + '}', status=201)
 
 #Should be able to make only one call to the events table to ensure it:
 # 1. Exsits
@@ -104,8 +106,8 @@ def endEvent(request, event_id):
   #in the future
   toEnd = Event.objects.get(pk=event_id)
   toEnd.state = u'FN'
-  toEnd.time_ended = datetime.now()
   toEnd.save()
+  EventEndTime(event=toEnd).save()
   user = getUserForTicket(request) 
   host = EventGoer.objects.get(user=user, event__id=event_id)
   host.state=u'LE'

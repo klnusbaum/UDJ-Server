@@ -5,6 +5,7 @@ from udj.tests.testcases import User3TestCase
 from udj.tests.testcases import User4TestCase
 from udj.tests.testcases import User5TestCase
 from udj.models import Event
+from udj.models import EventEndTime
 from udj.models import LibraryEntry
 from udj.models import Ticket
 from udj.models import EventGoer
@@ -53,6 +54,7 @@ class EndEventTest(User2TestCase):
   def testEndEvent(self):
     response = self.doDelete('/udj/events/2')
     self.assertEqual(Event.objects.get(pk=2).state,u'FN')
+    EventEndTime.objects.get(event__id=2)
     EventGoer.objects.get(user__id=2, event__id=2, state=u'LE')
 
 class EndEmptyEventTest(User4TestCase):

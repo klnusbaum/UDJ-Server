@@ -5,11 +5,7 @@
     "fields": {
       "time_started": "2011-12-28 01:03:43", 
       "state": "FN", 
-      "longitude": "-88.224006", 
-      "time_ended": "2011-12-28 01:20:55", 
       "host": 3, 
-      "latitude": "40.113523", 
-      "password_hash": null, 
       "name": "Finished Event"
     }
   }, 
@@ -19,11 +15,7 @@
     "fields": {
       "time_started": "2011-12-28 01:22:04", 
       "state": "AC", 
-      "longitude": "-88.224006", 
-      "time_ended": null, 
       "host": 2, 
-      "latitude": "40.113523", 
-      "password_hash": null, 
       "name": "Ongoing event"
     }
   }, 
@@ -33,14 +25,45 @@
     "fields": {
       "time_started": "2011-12-28 01:56:17", 
       "state": "AC", 
-      "longitude": "-88.224006", 
-      "time_ended": null, 
       "host": 4, 
-      "latitude": "40.113523", 
-      "password_hash": null, 
       "name": "Empty Event"
     }
   }, 
+  {
+    "pk" : 1,
+    "model" : "udj.eventlocation",
+    "fields":{
+      "event" : 1,
+      "longitude": "-88.224006", 
+      "latitude": "40.113523"
+    }
+  },
+  {
+    "pk" : 2,
+    "model" : "udj.eventlocation",
+    "fields":{
+      "event" : 2,
+      "longitude": "-88.224006", 
+      "latitude": "40.113523"
+    }
+  },
+  {
+    "pk" : 3,
+    "model" : "udj.eventlocation",
+    "fields":{
+      "event" : 3,
+      "longitude": "-88.224006", 
+      "latitude": "40.113523"
+    }
+  },
+  {
+    "pk" : 1,
+    "model" : "udj.eventendtime",
+    "fields":{
+      "event": 1,
+      "time_ended": "2011-12-28 01:20:55"
+    }
+  },
   {
     "pk": 1, 
     "model": "udj.libraryentry", 
