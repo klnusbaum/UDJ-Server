@@ -106,7 +106,7 @@ public class RESTProcessor{
       currentEntry = playlistEntries.getJSONObject(i);
       long id = currentEntry.getLong("id");
       if(needUpdate.contains(id)){
-        batchOps.add(getPlaylistPriorityUpdate(id, priority));
+        batchOps.add(getPlaylistPriorityUpdate(currentEntry, priority));
       }
       else{
         batchOps.add(getPlaylistInsertOp(currentEntry, priority)); 
@@ -186,13 +186,19 @@ public class RESTProcessor{
   }
 
   private static ContentProviderOperation getPlaylistPriorityUpdate(
-    long id, int priority)
+    JSONObject currentEntry, int priority)
+    throws JSONException
   {
     final ContentProviderOperation.Builder updateOp = 
       ContentProviderOperation.newUpdate(UDJEventProvider.PLAYLIST_URI)
       .withSelection(
-        UDJEventProvider.PLAYLIST_ID_COLUMN + "=" + String.valueOf(id), null)
-      .withValue(UDJEventProvider.PRIORITY_COLUMN, String.valueOf(priority));
+        UDJEventProvider.PLAYLIST_ID_COLUMN + 
+        "=" + currentEntry.getInt("id"), null)
+      .withValue(UDJEventProvider.PRIORITY_COLUMN, String.valueOf(priority))
+      .withValue(
+        UDJEventProvider.UP_VOTES_COLUMN, currentEntry.getInt("up_votes"))
+      .withValue(
+        UDJEventProvider.DOWN_VOTES_COLUMN, currentEntry.getInt("down_votes"));
     return updateOp.build();
   }
 

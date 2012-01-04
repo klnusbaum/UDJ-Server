@@ -47,7 +47,7 @@ import org.klnusbaum.udj.network.PlaylistSyncService;
 public class PlaylistFragment extends ListFragment
   implements LoaderManager.LoaderCallbacks<Cursor>
 {
-
+  private static final String TAG = "PlaylistFragment";
   private static final int PLAYLIST_LOADER_ID = 0;
   private Account account;
 
