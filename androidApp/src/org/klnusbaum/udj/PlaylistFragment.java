@@ -125,6 +125,24 @@ public class PlaylistFragment extends ListFragment
       artist.setText(cursor.getString(cursor.getColumnIndex(
         UDJEventProvider.ARTIST_COLUMN)));
 
+      TextView addByUser = 
+        (TextView)view.findViewById(R.id.playlistAddedByName);
+      if(
+        cursor.getLong(cursor.getColumnIndex(UDJEventProvider.ADDER_ID_COLUMN))
+        ==
+        userId 
+      )
+      {
+        addByUser.setText(getString(R.string.you)); 
+      }
+      else{
+        addByUser.setText(cursor.getString(
+          cursor.getColumnIndex(UDJEventProvider.ADDER_USERNAME_COLUMN)));
+      }
+
+      artist.setText(cursor.getString(cursor.getColumnIndex(
+        UDJEventProvider.ARTIST_COLUMN)));
+
       ImageButton upVote = 
         (ImageButton)view.findViewById(R.id.up_vote_button);
       upVote.setTag(String.valueOf(playlistId));
