@@ -171,11 +171,7 @@ public class PlaylistFragment extends ListFragment
       else if(!cursor.isNull(
         cursor.getColumnIndex(UDJEventProvider.VOTE_TYPE_COLUMN)))
       {
-        upVote.setEnabled(false); 
-        downVote.setEnabled(false); 
-        //For now I'm just going to make it that if you already voted
-        // you don't get to change your vote
-        /*int voteType = cursor.getInt(
+        int voteType = cursor.getInt(
             cursor.getColumnIndex(UDJEventProvider.VOTE_TYPE_COLUMN));
         if(voteType == UDJEventProvider.UP_VOTE_TYPE){
           upVote.setEnabled(false); 
@@ -184,7 +180,7 @@ public class PlaylistFragment extends ListFragment
         else{
           upVote.setEnabled(true); 
           downVote.setEnabled(false); 
-        }*/
+        }
       }
       else{
         upVote.setEnabled(true); 
@@ -209,12 +205,34 @@ public class PlaylistFragment extends ListFragment
     }
 
     private void voteOnSong(View view, int voteType){
-      long playlistId = Long.valueOf(view.getTag().toString());
-      ContentValues toInsert = new ContentValues();
-      toInsert.put(UDJEventProvider.VOTE_TYPE_COLUMN, voteType);
-      toInsert.put(UDJEventProvider.VOTE_PLAYLIST_ENTRY_ID_COLUMN, playlistId);
+      String playlistId = view.getTag().toString();
       ContentResolver cr = getActivity().getContentResolver();
-      cr.insert(UDJEventProvider.VOTES_URI, toInsert);
+      Cursor alreadyThere = cr.query(
+        UDJEventProvider.VOTES_URI, 
+        null,
+        UDJEventProvider.VOTE_PLAYLIST_ENTRY_ID_COLUMN+"="+playlistId, 
+        null, 
+        null);
+      if(alreadyThere.moveToFirst()){
+        ContentValues toUpdate = new ContentValues();
+        toUpdate.put(UDJEventProvider.VOTE_TYPE_COLUMN, voteType);
+        toUpdate.put(UDJEventProvider.VOTE_SYNC_STATUS_COLUMN, 
+          UDJEventProvider.VOTE_NEEDS_SYNC);
+        cr.update(
+          UDJEventProvider.VOTES_URI, 
+          toUpdate, 
+          UDJEventProvider.VOTE_PLAYLIST_ENTRY_ID_COLUMN+"="+playlistId, 
+          null);
+      }
+      else{
+        ContentValues toInsert = new ContentValues();
+        toInsert.put(UDJEventProvider.VOTE_TYPE_COLUMN, voteType);
+        toInsert.put(
+          UDJEventProvider.VOTE_PLAYLIST_ENTRY_ID_COLUMN, 
+          Long.valueOf(playlistId));
+        cr.insert(UDJEventProvider.VOTES_URI, toInsert);
+      }
+      alreadyThere.close();
       Intent syncVotes = new Intent(
         Intent.ACTION_INSERT,
         UDJEventProvider.VOTES_URI,
