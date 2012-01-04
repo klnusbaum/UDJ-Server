@@ -262,51 +262,42 @@ public class UDJEventProvider extends ContentProvider{
 
   @Override
   public Uri insert(Uri uri, ContentValues initialValues){
+    Uri toReturn = null;
     if(uri.equals(PLAYLIST_URI)){
       SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
       long rowId = db.insert(PLAYLIST_TABLE_NAME, null, initialValues);    
       if(rowId >=0){
-        return Uri.withAppendedPath(
+        toReturn = Uri.withAppendedPath(
           PLAYLIST_URI, String.valueOf(rowId));
-      }
-      else{
-        return null;
       }
     }
     else if(uri.equals(PLAYLIST_ADD_REQUEST_URI)){
       SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
       long rowId = db.insert(ADD_REQUESTS_TABLE_NAME, null, initialValues);    
       if(rowId >=0){
-        return Uri.withAppendedPath(
+        toReturn = Uri.withAppendedPath(
           PLAYLIST_ADD_REQUEST_URI, String.valueOf(rowId));
-      }
-      else{
-        return null;
       }
     }
     else if(uri.equals(VOTES_URI)){
       SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
       long rowId = db.insert(VOTES_TABLE_NAME, null, initialValues);    
       if(rowId >=0){
-        return Uri.withAppendedPath(
+        toReturn = Uri.withAppendedPath(
           VOTES_URI, String.valueOf(rowId));
-      }
-      else{
-        return null;
       }
     }
     else if(uri.equals(CURRENT_SONG_URI)){
       SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
       long rowId = db.insert(CURRENT_SONG_TABLE_NAME, null, initialValues);    
       if(rowId >=0){
-        return Uri.withAppendedPath(
-          CURRENT_SONG_URI, String.valueOf(rowId));
-      }
-      else{
-        return null;
+        toReturn = CURRENT_SONG_URI;
       }
     }
-    throw new IllegalArgumentException("Unknown URI " + uri);
+    else{
+      throw new IllegalArgumentException("Unknown URI " + uri);
+    }
+    return toReturn;
   }
   
   @Override

@@ -81,6 +81,7 @@ public class RESTProcessor{
       UDJEventProvider.ADDER_USERNAME_COLUMN, 
       currentSong.getString("adder_username"));
     cr.insert(UDJEventProvider.CURRENT_SONG_URI, toInsert);
+    cr.notifyChange(UDJEventProvider.CURRENT_SONG_URI, null);
   }
 
   public static void setActivePlaylist(
@@ -120,7 +121,7 @@ public class RESTProcessor{
       resolver.applyBatch(Constants.AUTHORITY, batchOps);
       batchOps.clear();
     }
-    resolver.notifyChange(UDJEventProvider.PLAYLIST_URI, null, true);
+    resolver.notifyChange(UDJEventProvider.PLAYLIST_URI, null);
   }
 
   private static Set<Long> getNeedUpdatePlaylistEntries(ContentResolver cr){

@@ -63,6 +63,8 @@ public class EventActivity extends ActionBarActivity
 
   private static final String QUIT_DIALOG_TAG = "quit_dialog";
   private static final int CURRENT_SONG_LOADER_ID = 1;
+  private static final String TAG = "EventActivity";
+
 
   private Account account;
   private TextView currentSong;
@@ -93,7 +95,7 @@ public class EventActivity extends ActionBarActivity
       return new CursorLoader(
         this,
         UDJEventProvider.CURRENT_SONG_URI,
-        null,
+        new String[]{UDJEventProvider.TITLE_COLUMN},
         null,
         null,
         null);
