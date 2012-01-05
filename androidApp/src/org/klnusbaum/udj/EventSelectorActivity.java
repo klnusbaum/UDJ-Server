@@ -32,6 +32,9 @@ import android.content.Context;
 import android.view.View;
 import android.view.Window;
 import android.app.SearchManager;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MenuInflater;
 
 import org.klnusbaum.udj.auth.AuthActivity;
 import org.klnusbaum.udj.actionbar.ActionBarActivity;
@@ -101,10 +104,38 @@ public class EventSelectorActivity extends FragmentActivity{
 
   protected void onNewIntent(Intent intent){
     if(Intent.ACTION_SEARCH.equals(intent.getAction())){
-      list.searchByName(intent.getStringExtra(SearchManager.QUERY));
+      list.setEventSearch(new EventListFragment.NameEventSearch(
+        intent.getStringExtra(SearchManager.QUERY)));
     }
     else{
       super.onNewIntent(intent);
     }
   }
+
+  public boolean onCreateOptionsMenu(Menu menu){
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.event_list, menu);
+    return true;
+  }
+
+  public boolean onOptionsItemSelected(MenuItem item){
+    switch (item.getItemId()) {
+    case R.id.menu_refresh:
+      list.refreshEventList();
+      /*getActionBarHelper().setRefreshActionItemState(true);
+      getWindow().getDecorView().postDelayed(
+        new Runnable() {
+          @Override
+          public void run() {
+            getActionBarHelper().setRefreshActionItemState(false);
+          }
+       }, 1000);*/
+       break;
+     case R.id.menu_search:
+       startSearch(null, false, null, false);
+       break;
+    }
+    return super.onOptionsItemSelected(item);
+  }
+
 }

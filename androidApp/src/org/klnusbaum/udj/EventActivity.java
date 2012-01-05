@@ -41,6 +41,7 @@ import android.app.SearchManager;
 import android.net.Uri;
 import android.database.Cursor;
 import android.view.Window;
+import android.os.Build;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -77,7 +78,9 @@ public class EventActivity extends FragmentActivity
   @Override
   protected void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
-    requestWindowFeature(Window.FEATURE_NO_TITLE);
+    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){ 
+      requestWindowFeature(Window.FEATURE_NO_TITLE);
+    }
     setContentView(R.layout.event);
     currentSong = (TextView)findViewById(R.id.current_song_title);
     setCurrentSongDisplay(null);

@@ -66,8 +66,6 @@ public class EventListFragment extends ListFragment implements
 {
   private static final String TAG = "EventListFragment";
   private static final String PROG_DIALOG_TAG = "prog_dialog";
-  private static final int EVENT_LOCATION_SERACH = 0; 
-  private static final int EVENT_NAME_SEARCH = 1; 
   private static final String LOCATION_EXTRA = "location";
   private static final String EVENT_SEARCH_QUERY = 
     "org.klnusbaum.udj.EventSearchQuery";
@@ -75,11 +73,67 @@ public class EventListFragment extends ListFragment implements
     "org.klnusbaum.udj.EventSearchType";
   private static final String LOCATION_STATE_EXTRA = 
     "org.klnusbaum.udj.LastKnownLocation";
+  private static final String LAST_SEARCH_TYPE_EXTRA = 
+    "org.klnusbaum.udj.LastSearchType";
+
+  private interface EventSearch{
+    public abstract Bundle getLoaderArgs();
+    public abstract int getSearchType();
+  }
+
+  public static class LocationEventSearch implements EventSearch{
+    Location givenLocation;
+    public static final int SEARCH_TYPE = 0; 
+
+    public LocationEventSearch(Location givenLocation){
+      this.givenLocation = givenLocation;
+    }
+
+    public void setLocation(Location newLocation){
+      givenLocation = newLocation; 
+    }
+
+    public Bundle getLoaderArgs(){
+      Bundle loaderArgs = new Bundle(); 
+      loaderArgs.putInt(EVENT_SEARCH_TYPE_EXTRA, SEARCH_TYPE);
+      loaderArgs.putParcelable(LOCATION_EXTRA, givenLocation);
+      return loaderArgs;
+    }
+    
+    public int getSearchType(){
+      return SEARCH_TYPE; 
+    }
+  }
+
+  public static class NameEventSearch implements EventSearch{
+    String query;
+    private static final int SEARCH_TYPE = 1; 
+    public NameEventSearch(String query){
+      this.query = query;
+    }
+
+    public Bundle getLoaderArgs(){
+      Bundle loaderArgs = new Bundle();
+      loaderArgs.putInt(EVENT_SEARCH_TYPE_EXTRA, SEARCH_TYPE);
+      loaderArgs.putString(EVENT_SEARCH_QUERY, query);
+      return loaderArgs;
+    }
+
+    public int getSearchType(){
+      return SEARCH_TYPE;
+    }
+
+    public String getQuery(){
+      return query; 
+    }
+  }
+
 
   private EventListAdapter eventAdapter;
   private LocationManager lm;
   private Location lastKnown = null;
   private Account account = null;
+  private EventSearch lastSearch = null;
 
   private BroadcastReceiver eventJoinedReceiver = new BroadcastReceiver(){
     public void onReceive(Context context, Intent intent){
@@ -97,14 +151,17 @@ public class EventListFragment extends ListFragment implements
     }
   };
 
-      
-
   public void onActivityCreate(Bundle icicle){
     super.onCreate(icicle);
     //TODO we shouldn't just assume the arguements are there...
     //that said it always should be.
-    if(icicle != null && icicle.containsKey(LOCATION_STATE_EXTRA)){
-      lastKnown = (Location)icicle.getParcelable(LOCATION_STATE_EXTRA);
+    if(icicle != null){
+      if(icicle.containsKey(LOCATION_STATE_EXTRA)){
+        lastKnown = (Location)icicle.getParcelable(LOCATION_STATE_EXTRA);
+      }
+      if(icicle.containsKey(LAST_SEARCH_TYPE_EXTRA)){
+        restoreLastSearch(icicle);
+      }
     }
     setEmptyText(getActivity().getString(R.string.no_party_items));
     eventAdapter = new EventListAdapter(getActivity());
@@ -112,8 +169,8 @@ public class EventListFragment extends ListFragment implements
     setListShown(false);
   }
 
-  public void onResume(){
-    super.onResume();
+  public void onStart(){
+    super.onStart();
     lm = (LocationManager)getActivity().getSystemService(
       Context.LOCATION_SERVICE);
     List<String> providers = lm.getProviders(false);
@@ -129,37 +186,64 @@ public class EventListFragment extends ListFragment implements
         lastKnown = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
       }
     }
-    Bundle loaderArgs = new Bundle(); 
-    loaderArgs.putInt(EVENT_SEARCH_TYPE_EXTRA, EVENT_LOCATION_SERACH);
-    loaderArgs.putParcelable(LOCATION_EXTRA, lastKnown);
-    getLoaderManager().initLoader(0, loaderArgs, this);
+    if(lastSearch == null){
+      lastSearch = new LocationEventSearch(lastKnown);
+    }
+    refreshEventList();
   }
 
-  public void onPause(){
-    super.onPause();
+  public void setEventSearch(EventSearch newSearch){
+    lastSearch = newSearch;
+    refreshEventList();
+  }
+
+  public void onStop(){
+    super.onStop();
     lm.removeUpdates(this); 
   }
 
   public void onSaveInstanceState(Bundle outState){
     super.onSaveInstanceState(outState);
     outState.putParcelable(LOCATION_STATE_EXTRA, lastKnown);
+    outState.putInt(EVENT_SEARCH_TYPE_EXTRA, lastSearch.getSearchType());
+    if(lastSearch.getSearchType() == NameEventSearch.SEARCH_TYPE){
+      outState.putString(
+        EVENT_SEARCH_QUERY, ((NameEventSearch)lastSearch).getQuery());
+    }
+  }
+
+  private void restoreLastSearch(Bundle icicle){
+    int searchType = icicle.getInt(LAST_SEARCH_TYPE_EXTRA, -1);
+    switch(searchType){
+    case LocationEventSearch.SEARCH_TYPE:
+      lastSearch = new LocationEventSearch(lastKnown);
+      break;
+    case NameEventSearch.SEARCH_TYPE:
+      lastSearch = new NameEventSearch(
+        icicle.getString(EVENT_SEARCH_QUERY));
+      break;
+    } 
   }
 
   public void onLocationChanged(Location location){
     lastKnown = location;
+    if(lastSearch.getSearchType() == LocationEventSearch.SEARCH_TYPE){
+      ((LocationEventSearch)lastSearch).setLocation(lastKnown);
+    }
   }
 
   public void onProviderDisabled(String provider){}
   public void onProviderEnabled(String provider){}
   public void onStatusChanged(String provider, int status, Bundle extras){}
 
+  public void refreshEventList(){
+    getLoaderManager().restartLoader(0, lastSearch.getLoaderArgs(), this);
+  }
+
   public void setAccount(Account account){
     this.account = account;
     if(isAdded()){
-      Bundle loaderArgs = new Bundle(); 
-      loaderArgs.putInt(EVENT_SEARCH_TYPE_EXTRA, EVENT_LOCATION_SERACH);
-      loaderArgs.putParcelable(LOCATION_EXTRA, lastKnown);
-      getLoaderManager().restartLoader(0, loaderArgs, this);
+      refreshEventList();
     }
   }
   
@@ -178,25 +262,18 @@ public class EventListFragment extends ListFragment implements
     getActivity().startService(joinEventIntent);
   }
 
-  public void searchByName(String query){
-    Bundle loaderArgs = new Bundle();
-    loaderArgs.putInt(EVENT_SEARCH_TYPE_EXTRA, EVENT_NAME_SEARCH);
-    loaderArgs.putString(EVENT_SEARCH_QUERY, query);
-    getLoaderManager().restartLoader(0, loaderArgs, this);
-  }
-
   public Loader<EventsLoader.EventsLoaderResult> onCreateLoader(
     int id, Bundle args)
   {
     int eventSearchType = args.getInt(EVENT_SEARCH_TYPE_EXTRA, 
       -1);
-    if(eventSearchType == EVENT_LOCATION_SERACH){
+    if(eventSearchType == LocationEventSearch.SEARCH_TYPE){
       return new EventsLoader(
         getActivity(), 
         account,
         (Location)args.getParcelable(LOCATION_EXTRA));
     }
-    else if(eventSearchType == EVENT_NAME_SEARCH){
+    else if(eventSearchType == NameEventSearch.SEARCH_TYPE){
       return new EventsLoader(
         getActivity(), 
         account,
