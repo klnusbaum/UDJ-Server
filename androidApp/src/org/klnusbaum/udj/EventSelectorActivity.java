@@ -30,6 +30,7 @@ import android.accounts.Account;
 import android.content.Intent;
 import android.content.Context;
 import android.view.View;
+import android.view.Window;
 import android.app.SearchManager;
 
 import org.klnusbaum.udj.auth.AuthActivity;
@@ -38,7 +39,7 @@ import org.klnusbaum.udj.actionbar.ActionBarActivity;
 /**
  * Class used for displaying the contents of the Playlist.
  */
-public class EventSelectorActivity extends ActionBarActivity{
+public class EventSelectorActivity extends FragmentActivity{
 
   private static final int ACCOUNT_CREATION = 0;
   private Account account;
@@ -48,6 +49,7 @@ public class EventSelectorActivity extends ActionBarActivity{
   @Override
   public void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
+    requestWindowFeature(Window.FEATURE_NO_TITLE);
     am = AccountManager.get(this);
     Account[] udjAccounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
 

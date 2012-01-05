@@ -49,6 +49,7 @@ import android.support.v4.app.LoaderManager;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.http.auth.AuthenticationException;
 
@@ -115,13 +116,18 @@ public class EventListFragment extends ListFragment implements
     super.onResume();
     lm = (LocationManager)getActivity().getSystemService(
       Context.LOCATION_SERVICE);
-    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,0, 50, this);
-    lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0, 50, this);
-    if(lastKnown == null){
-      lastKnown = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+    List<String> providers = lm.getProviders(false);
+    if(providers.contains(LocationManager.GPS_PROVIDER)){
+      lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,0, 50, this);
+      if(lastKnown == null){
+        lastKnown = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+      }
     }
-    if(lastKnown == null){
-      lastKnown = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+    if(providers.contains(LocationManager.NETWORK_PROVIDER)){
+      lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0, 50, this);
+      if(lastKnown == null){
+        lastKnown = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+      }
     }
     Bundle loaderArgs = new Bundle(); 
     loaderArgs.putInt(EVENT_SEARCH_TYPE_EXTRA, EVENT_LOCATION_SERACH);
@@ -149,10 +155,12 @@ public class EventListFragment extends ListFragment implements
 
   public void setAccount(Account account){
     this.account = account;
-    Bundle loaderArgs = new Bundle(); 
-    loaderArgs.putInt(EVENT_SEARCH_TYPE_EXTRA, EVENT_LOCATION_SERACH);
-    loaderArgs.putParcelable(LOCATION_EXTRA, lastKnown);
-    getLoaderManager().restartLoader(0, loaderArgs, this);
+    if(isAdded()){
+      Bundle loaderArgs = new Bundle(); 
+      loaderArgs.putInt(EVENT_SEARCH_TYPE_EXTRA, EVENT_LOCATION_SERACH);
+      loaderArgs.putParcelable(LOCATION_EXTRA, lastKnown);
+      getLoaderManager().restartLoader(0, loaderArgs, this);
+    }
   }
   
   @Override

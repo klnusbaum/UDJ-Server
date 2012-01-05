@@ -22,6 +22,10 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.content.Intent;
 import android.widget.TabHost;
+import android.widget.Toast;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.content.Context;
@@ -36,6 +40,7 @@ import android.app.Dialog;
 import android.app.SearchManager;
 import android.net.Uri;
 import android.database.Cursor;
+import android.view.Window;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -57,7 +62,7 @@ import org.klnusbaum.udj.network.EventCommService;
 /**
  * The main activity display class.
  */
-public class EventActivity extends ActionBarActivity
+public class EventActivity extends FragmentActivity
   implements LoaderManager.LoaderCallbacks<Cursor>
 {
 
@@ -72,12 +77,17 @@ public class EventActivity extends ActionBarActivity
   @Override
   protected void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
+    requestWindowFeature(Window.FEATURE_NO_TITLE);
     setContentView(R.layout.event);
     currentSong = (TextView)findViewById(R.id.current_song_title);
     setCurrentSongDisplay(null);
     account = (Account)getIntent().getParcelableExtra(Constants.ACCOUNT_EXTRA);
     //TODO hanle if no event
-    
+    getPlaylistFromServer();    
+    getSupportLoaderManager().initLoader(CURRENT_SONG_LOADER_ID, null, this);
+  }
+
+  private void getPlaylistFromServer(){
     Intent getPlaylist = new Intent(
       Intent.ACTION_VIEW,
       UDJEventProvider.PLAYLIST_URI,
@@ -85,9 +95,7 @@ public class EventActivity extends ActionBarActivity
       PlaylistSyncService.class);
     getPlaylist.putExtra(Constants.ACCOUNT_EXTRA, account);
     startService(getPlaylist);
-
-    getSupportLoaderManager().initLoader(CURRENT_SONG_LOADER_ID, null, this);
-  }
+  } 
 
   public Loader<Cursor> onCreateLoader(int id, Bundle args){
     switch(id){
@@ -122,6 +130,32 @@ public class EventActivity extends ActionBarActivity
     else{
       currentSong.setText(R.string.no_current_song);
     }
+  }
+
+  public boolean onCreateOptionsMenu(Menu menu){
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.event, menu);
+    return true;
+  }
+
+  public boolean onOptionsItemSelected(MenuItem item){
+    switch (item.getItemId()) {
+    case R.id.menu_refresh:
+      getPlaylistFromServer();
+      /*getActionBarHelper().setRefreshActionItemState(true);
+      getWindow().getDecorView().postDelayed(
+        new Runnable() {
+          @Override
+          public void run() {
+            getActionBarHelper().setRefreshActionItemState(false);
+          }
+       }, 1000);*/
+       break;
+     case R.id.menu_search:
+       startSearch(null, false, null, false);
+       break;
+    }
+    return super.onOptionsItemSelected(item);
   }
 
 
