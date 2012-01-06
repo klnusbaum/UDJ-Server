@@ -76,7 +76,7 @@ class LibraryEntry(models.Model):
     return "Library Entry " + str(self.host_lib_song_id) + ": " + self.title
 
 class AvailableSong(models.Model):
-  song = models.ForeignKey(LibraryEntry, unique=True)
+  song = models.ForeignKey(LibraryEntry)
   event = models.ForeignKey(Event)
 
   class Meta: 

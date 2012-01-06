@@ -31,6 +31,7 @@ import android.accounts.AccountManager;
 import android.accounts.AuthenticatorException;
 
 import java.io.IOException;
+import java.io.FileOutputStream;
 import java.util.List;
 
 import org.apache.http.auth.AuthenticationException;
@@ -149,6 +150,14 @@ public class EventsLoader extends
     }
     catch(IOException e){
       Log.e(TAG, "Io eception");
+      try{
+        FileOutputStream fos = 
+          getContext().openFileOutput("error.html", Context.MODE_PRIVATE);
+        fos.write(e.getMessage().getBytes());
+        fos.close();
+      }catch(Exception f){
+
+      }
       //TODO notify the user
     }
     catch(AuthenticationException e){

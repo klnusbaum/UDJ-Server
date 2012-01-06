@@ -189,7 +189,8 @@ def addToAvailableMusic(request, event_id):
   for song_id in toAdd:
     songToAdd = LibraryEntry.objects.get(
       host_lib_song_id=song_id, owning_user=event.host)
-    addedSong = AvailableSong.objects.get_or_create(event=event, song=songToAdd)
+    addedSong , created = AvailableSong.objects.get_or_create(
+      event=event, song=songToAdd)
     added.append(song_id)
 
   return HttpResponse(json.dumps(added), status=201)
