@@ -144,6 +144,7 @@ public class EventsLoader extends
     }
     catch(JSONException e){
       Log.e(TAG, "Json exception");
+      Log.e(TAG, e.getMessage());
       //TODO notify the user
     }
     catch(IOException e){

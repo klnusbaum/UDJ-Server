@@ -52,7 +52,7 @@ const QByteArray JSONHelper::getJSONForLibAdd(
   for(song_iterator it=songs.begin(); it!=songs.end(); ++it){
     QVariantMap songToAdd;
     songToAdd["id"] = QVariant::fromValue<library_song_id_t>(it->id);
-    songToAdd["song"] = it->songName;
+    songToAdd["title"] = it->songName;
     songToAdd["artist"] = it->artistName;
     songToAdd["album"] = it->albumName;
     songToAdd["duration"] = it->duration;
@@ -226,14 +226,14 @@ const QVariantList JSONHelper::getActivePlaylistFromJSON(QNetworkReply *reply){
   QByteArray responseData = reply->readAll();
   QString responseString = QString::fromUtf8(responseData);
   bool success;
-  QVariantList activePlaylist = 
-    QtJson::Json::parse(responseString, success).toList();
+  QVariantMap activePlaylist = 
+    QtJson::Json::parse(responseString, success).toMap();
   if(!success){
     std::cerr << "Error parsing json from a response to an event creation" <<
      "request" << std::endl <<
       responseString.toStdString() << std::endl;
   }
-  return activePlaylist;
+  return activePlaylist["active_playlist"].toList();
 }
 
 

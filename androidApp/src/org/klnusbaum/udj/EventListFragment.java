@@ -167,26 +167,34 @@ public class EventListFragment extends ListFragment implements
     eventAdapter = new EventListAdapter(getActivity());
     setListAdapter(eventAdapter);
     setListShown(false);
-    lm = (LocationManager)getActivity().getSystemService(
-      Context.LOCATION_SERVICE);
-    List<String> providers = lm.getProviders(false);
-    if(providers.contains(LocationManager.GPS_PROVIDER) && lastKnown == null){
-      lastKnown = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-    }
-    if(lastSearch == null){
-      lastSearch = new LocationEventSearch(lastKnown);
-    }
   }
 
   public void onStart(){
     super.onStart();
+    lm = (LocationManager)getActivity().getSystemService(
+      Context.LOCATION_SERVICE);
     List<String> providers = lm.getProviders(false);
     if(providers.contains(LocationManager.GPS_PROVIDER)){
       lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,0, 50, this);
+      if(lastKnown == null){
+        lastKnown = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+      }
     }
-    /*if(providers.contains(LocationManager.NETWORK_PROVIDER)){
+    if(providers.contains(LocationManager.NETWORK_PROVIDER)){
       lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0, 50, this);
-    }*/
+      if(lastKnown == null){
+        lastKnown = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+      }
+    }
+    if(lastSearch == null){
+      lastSearch = new LocationEventSearch(lastKnown);
+    }
+    refreshEventList();
+  }
+
+  public void setEventSearch(EventSearch newSearch){
+    lastSearch = newSearch;
+    refreshEventList();
   }
 
   public void onStop(){
@@ -237,11 +245,6 @@ public class EventListFragment extends ListFragment implements
     if(isAdded()){
       refreshEventList();
     }
-  }
-
-  public void setEventSearch(EventSearch newSearch){
-    lastSearch = newSearch;
-    refreshEventList();
   }
   
   @Override

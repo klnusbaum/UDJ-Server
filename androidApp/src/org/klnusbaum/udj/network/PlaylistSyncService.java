@@ -105,6 +105,7 @@ public class PlaylistSyncService extends IntentService{
     }
     catch(JSONException e){
       Log.e(TAG, "JSON exception when retreiving playist");
+      Log.e(TAG, e.getMessage());
     }
     catch(ParseException e){
       Log.e(TAG, "Parse exception when retreiving playist");

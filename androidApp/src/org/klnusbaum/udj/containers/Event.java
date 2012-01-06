@@ -93,8 +93,8 @@ public class Event{
       jObj.getString(NAME_PARAM),
       jObj.getString(HOST_NAME_PARAM),
       jObj.getLong(HOST_ID_PARAM),
-      jObj.getDouble(LATITUDE_PARAM),
-      jObj.getDouble(LONGITUDE_PARAM));
+      jObj.optDouble(LATITUDE_PARAM, -100.0),
+      jObj.optDouble(LONGITUDE_PARAM, -100.0));
   }
 
   public static JSONObject getJSONObject(Event event)

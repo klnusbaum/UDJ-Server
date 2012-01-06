@@ -93,7 +93,10 @@ public class RESTProcessor{
     JSONObject currentSong = activePlaylist.getJSONObject("current_song");
     final ContentResolver resolver = context.getContentResolver();
 
-    setCurrentSong(currentSong, resolver);
+    if(currentSong.length() > 0){
+      setCurrentSong(currentSong, resolver);
+    }
+
     deleteRemovedPlaylistEntries(playlistEntries, resolver);
     
     ArrayList<ContentProviderOperation> batchOps = 

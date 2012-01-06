@@ -8,6 +8,7 @@ class Event(models.Model):
   time_started = models.DateTimeField(auto_now_add=True)
   state = models.CharField(max_length=2, choices=STATE_CHOICES, default=u'AC')
 
+  """
   def validate_unique(self, exclude=None):
     if self.state==u'AC' and \
       Event.objects.exclude(pk=self.pk).filter(host=self.host, state=u'AC')\
@@ -16,6 +17,7 @@ class Event(models.Model):
       raise ValidationError(
         'User hosting two parties at the same time, that\'s a no-no')
     super(LibraryEntry, self).validate_unique(exclude=exclude)
+  """
 
   def __unicode__(self):
     return "Event " + str(self.id) + ": " + self.name
