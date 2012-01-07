@@ -211,8 +211,8 @@ void UDJServerConnection::setCurrentSong(playlist_song_id_t currentSong){
 
 void UDJServerConnection::getEventGoers(){
   QNetworkRequest getEventGoersRequest(getUsersUrl());
-  setCurrentSongRequest.setRawHeader(getTicketHeaderName(), ticket_hash);
-  netAccessManager->post(setCurrentSongRequest, params.toUtf8());
+  getEventGoersRequest.setRawHeader(getTicketHeaderName(), ticket_hash);
+  netAccessManager->get(getEventGoersRequest);
 }
 
 void UDJServerConnection::recievedReply(QNetworkReply *reply){

@@ -802,7 +802,7 @@ void DataStore::processNewEventGoers(QVariantList newEventGoers){
 }
 
 void DataStore::addOrInsertEventGoer(const QVariantMap &eventGoer){
-  user_id_t id = eventGoer["id"].toValue<user_id_t>();
+  user_id_t id = eventGoer["id"].value<user_id_t>();
   if(alreadyHaveEventGoer(id)){
     updateEventGoer(eventGoer);
   }
@@ -811,28 +811,28 @@ void DataStore::addOrInsertEventGoer(const QVariantMap &eventGoer){
   }
 }
 
-void DataStore::alreadyHaveEventGoer(user_id_t id){
+bool DataStore::alreadyHaveEventGoer(user_id_t id){
   QSqlQuery hasEventGoer(database);
   hasEventGoer.prepare("SELECT * from " + getEventGoersTableName() + 
   " where " + getEventGoersIdColName() + "=" + QString::number(id) +";");
   EXEC_SQL(
     "Error determining if event goer is already in database",
-    hasEventGoer.exec();
+    hasEventGoer.exec(),
     hasEventGoer)
   return hasEventGoer.first(); 
 }
 
 void DataStore::updateEventGoer(const QVariantMap &eventGoer){
+  QSqlQuery updateUserQuery(database);
   updateUserQuery.prepare(
     "UPDATE " + getEventGoersTableName() +  
-    " SET " + getEventGoerStateColName() + " = " +
+    " SET " + getEventGoerStateColName() + " = \"" +
     (eventGoer["logged_in"].toBool() ? getEventGoerInEventState() : 
       getEventGoerLeftEventState()) +
-    " where " +
-    getEventGoersIdColName() + " = ? ;");
-  updateUserQuery.addBindValue(QVariant::fromValue<user_id_t>(id));
+    "\"  where " +
+    getEventGoersIdColName() + " = " + eventGoer["id"].toString() +";");
   EXEC_SQL(
-    "Error updateing event goer with id of " << id,
+    "Error updateing event goer with id of " << eventGoer["id"].toString().toStdString(),
     updateUserQuery.exec(),
     updateUserQuery)
 }

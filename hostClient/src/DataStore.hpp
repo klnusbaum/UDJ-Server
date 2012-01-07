@@ -1213,8 +1213,8 @@ private:
       "CREATE TABLE IF NOT EXISTS " + getEventGoersTableName() + 
       "(" + getEventGoersIdColName() + " INTEGER PRIMARY KEY, " + 
       getEventGoerUsernameColName() + " TEXT NOT NULL, " +
-      getEventGoerFirstNameColName() + " TEXT NOT NULL, " +
-      getEventGoerLastNameColName() + " TEXT NOT NULL, " +
+      getEventGoerFirstNameColName() + " TEXT, " +
+      getEventGoerLastNameColName() + " TEXT, " +
       getEventGoerStateColName() + " TEXT NOT NULL " +
       "CHECK("+
         getEventGoerStateColName()+"=\""+
@@ -1314,7 +1314,9 @@ private slots:
 
   void processNewEventGoers(QVariantList newEventGoers);
 
-  void alreadyHaveEventGoer(user_id_t id);
+  void addOrInsertEventGoer(const QVariantMap& eventGoer);
+
+  bool alreadyHaveEventGoer(user_id_t id);
 
   void updateEventGoer(const QVariantMap &eventGoer);
 

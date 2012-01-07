@@ -467,6 +467,8 @@ private:
    */
   QUrl getCurrentSongUrl() const;
 
+  QUrl getUsersUrl() const;
+
   /**
    * \brief Determines whether or not a url path is a path which can be used 
    * for deleting a song from the library on the server.
