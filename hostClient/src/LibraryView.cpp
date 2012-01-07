@@ -23,6 +23,7 @@
 #include <QContextMenuEvent>
 #include <QMenu>
 #include <QSqlRecord>
+#include <QSqlQuery>
 #include <set>
 	
 
@@ -74,11 +75,29 @@ void LibraryView::createActions(){
 
 void LibraryView::handleContextMenuRequest(const QPoint &pos){
   QMenu contextMenu(this);
+  
   if(dataStore->isCurrentlyHosting()){
     contextMenu.addAction(addToAvailableMusicAction);
   }
+  QSqlQuery songLists = dataStore->getSongLists();
+  if(songLists.next()){
+    QMenu *songListsMenu = new QMenu(tr("Add To Song Lists"), this);
+    contextMenu.addMenu(songListsMenu);
+    QSqlRecord currentRecord;
+    do{
+      currentRecord = songLists.record();
+      QAction *addedAction = songListsMenu->addAction(
+        currentRecord.value(DataStore::getSongListNameColName()).toString());
+      addedAction->setData(
+        currentRecord.value(DataStore::getSongListIdColName()));
+    }while(songLists.next());
+  }
   contextMenu.addAction(deleteSongAction);
-  contextMenu.exec(QCursor::pos());
+  QAction *selected = contextMenu.exec(QCursor::pos());
+  QVariant data = selected->data();
+  if(data.isValid()){
+    addSongsToSongList(data.value<song_list_id_t>()); 
+  }
 }
 
 std::vector<library_song_id_t> LibraryView::getSelectedSongs(){
@@ -112,6 +131,10 @@ void LibraryView::addSongToAvailableMusic(){
 
 void LibraryView::deleteSongs(){
   dataStore->removeSongsFromLibrary(getSelectedSongs());
+}
+
+void LibraryView::addSongsToSongList(song_list_id_t songListId){
+  dataStore->addSongsToSongList(songListId, getSelectedSongs());
 }
 
 

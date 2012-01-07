@@ -134,6 +134,8 @@ private slots:
    */
   void refresh();
 
+  void addSongsToSongList(song_list_id_t songListId);
+
   //@}
 };
 

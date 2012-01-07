@@ -154,5 +154,10 @@ void ActivityList::deleteSelectedSongList(){
 }
 
 
+void ActivityList::switchToLibrary(){
+  setCurrentIndex(libraryItem->index());
+  emit libraryClicked();
+}
+
 
 }// end namespace UDJ

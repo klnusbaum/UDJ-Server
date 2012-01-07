@@ -471,18 +471,6 @@ public:
   }
 
   /** 
-   * \brief Gets the name of the entry number column (effectively the column
-   * which determines order in a give song list) in the song list entry 
-   * table.
-   *
-   * @return The name of the entry number column in the song list entry table.
-   */
-  static const QString& getSongListEntryNumberColName(){
-    static const QString songListEntryNumberColName = "entry_number";
-    return songListEntryNumberColName;
-  }
-
-  /** 
    * \brief Get the name of the available music table.
    *
    * \brief The name of the available music table.
@@ -695,6 +683,10 @@ public slots:
 
   void deleteSongList(song_list_id_t songListId);
 
+  void addSongsToSongList(
+    song_list_id_t songListId,
+    const std::vector<library_song_id_t>& songsToAdd);
+
   //@}
 
 signals:
@@ -747,6 +739,10 @@ signals:
   void manualSongChange(Phonon::MediaSource newSong);
 
   void eventGoersModified();
+
+  void songListModified(song_list_id_t songListId);
+
+  void songListDeleted(song_list_id_t songListId);
 
 //@}
 
@@ -896,8 +892,7 @@ private:
         getLibraryTableName() +"(" + getLibIdColName()+ ") ON DELETE CASCADE, "+
       getSongListEntrySongListIdColName() + " INTEGER REFERENCES " +
         getSongListTableName() +"(" + getSongListIdColName()+ 
-        ") ON DELETE CASCADE, "+
-      getSongListEntryNumberColName() + " INTEGER NOT NULL);";
+        ") ON DELETE CASCADE);";
     return createSongListEntryTableQuery;
   }
 

@@ -46,6 +46,9 @@ public:
 
   //@}
 
+signals:
+  void canNoLongerDisplay();
+
 public slots:
   void setSongListId(song_list_id_t songListId);
 
@@ -85,6 +88,8 @@ private slots:
    * @param pos The position where the context menu should be displayed.
    */ 
   void handleContextMenuRequest(const QPoint &pos);
+
+  void onSongListDelete(song_list_id_t deletedId);
 
   //@}
 };

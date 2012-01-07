@@ -926,7 +926,40 @@ void DataStore::deleteSongList(song_list_id_t songListId){
     "Error removing song list: " << songListId,
     removeQuery.exec(),
     removeQuery)
+  removeQuery = QSqlQuery("DELETE FROM " + getSongListEntryTableName() + 
+    " where "  + getSongListEntrySongListIdColName() + "=?;",
+    database);
+  removeQuery.addBindValue(QVariant::fromValue<song_list_id_t>(songListId));
+  EXEC_SQL(
+    "Error removing song list: " << songListId,
+    removeQuery.exec(),
+    removeQuery)
+  emit songListDeleted(songListId);
 }
+
+void DataStore::addSongsToSongList(
+  song_list_id_t songListId,
+  const std::vector<library_song_id_t>& songsToAdd)
+{
+  QVariantList toInsert;
+  for(
+    std::vector<library_song_id_t>::const_iterator it= songsToAdd.begin();
+    it!=songsToAdd.end();
+    ++it)
+  {
+    toInsert << QVariant::fromValue<library_song_id_t>(*it);
+  }
+  QSqlQuery bulkInsert(database);
+  bulkInsert.prepare("INSERT INTO " + getSongListEntryTableName() + 
+    "(" + getSongListEntrySongIdColName() + ", " +
+    getSongListEntrySongListIdColName() + ") VALUES( ? , " +
+    QString::number(songListId) + " );");
+  bulkInsert.addBindValue(toInsert);
+  EXEC_BULK_QUERY("Error inserting songs song list", 
+    bulkInsert)
+  emit songListModified(songListId);
+}
+
 
 
 } //end namespace

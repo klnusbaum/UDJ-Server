@@ -43,6 +43,10 @@ SongListView::SongListView(DataStore *dataStore, QWidget *parent):
   setContextMenuPolicy(Qt::CustomContextMenu);
   connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
     this, SLOT(handleContextMenuRequest(const QPoint&)));
+  connect(dataStore, SIGNAL(songListModified(song_list_id_t)),
+    this, SLOT(onSongListEntriesChanged(song_list_id_t)));
+  connect(dataStore, SIGNAL(songListDeleted(song_list_id_t)),
+    this, SLOT(onSongListDelete(song_list_id_t)));
 }
 
 void SongListView::handleContextMenuRequest(const QPoint &pos){
@@ -61,6 +65,7 @@ void SongListView::onSongListEntriesChanged(
     DataStore::getSongListEntrySongListIdColName() + "=?;",
     dataStore->getDatabaseConnection());
     query.addBindValue(QVariant::fromValue(currentSongListId));
+    query.exec();
     songListEntryModel->setQuery(query);
   }
 }
@@ -68,6 +73,12 @@ void SongListView::onSongListEntriesChanged(
 void SongListView::setSongListId(song_list_id_t songListId){
   currentSongListId = songListId;
   onSongListEntriesChanged(currentSongListId);
+}
+
+void SongListView::onSongListDelete(song_list_id_t deletedId){
+  if(deletedId == currentSongListId){
+    emit canNoLongerDisplay();
+  }
 }
 
 

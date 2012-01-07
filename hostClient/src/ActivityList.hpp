@@ -49,6 +49,9 @@ public:
 
   //@}
 
+public slots:
+  void switchToLibrary();
+
 signals:
   /** @name Signals */
   //@{

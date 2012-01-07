@@ -126,6 +126,14 @@ void MetaWindow::setupUi(){
     this,
     SLOT(displaySongList(song_list_id_t)));
 
+  connect(
+    songListView,
+    SIGNAL(canNoLongerDisplay()),
+    activityList,
+    SLOT(switchToLibrary()));
+
+
+
   resize(800,600);
 }
 
@@ -156,9 +164,11 @@ void MetaWindow::displayEventWidget(){
 
 
 void MetaWindow::displaySongList(song_list_id_t songListId){
+  std::cout << "About to display song list:  " << songListId << std::endl;
   songListView->setSongListId(songListId);
   contentStack->setCurrentWidget(songListView);
 }
+
 
 
 } //end namespace
