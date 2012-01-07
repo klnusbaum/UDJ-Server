@@ -50,12 +50,15 @@ void ActivityList::itemClicked(const QModelIndex& index){
 }
 
 void ActivityList::setupUi(){
+  songListRoot = new QStandardItem(getSongListTitle());
+  songListRoot->appendRow(new QStandardItem(getNewSongListTitle()));
   model = new QStandardItemModel(this);
   model->appendRow(new QStandardItem(getLibraryTitle()));
   model->appendRow(new QStandardItem(getEventTitle()));
-//  model->appendRow(new QStandardItem(getPlaylistTitle()));
+  model->appendRow(songListRoot);
   setModel(model);
   header()->hide();
+  expand(songListRoot->index());
 }
 
 

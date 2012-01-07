@@ -34,6 +34,7 @@
 #include <QMenuBar>
 #include <QLabel>
 #include <QStackedWidget>
+#include <QSplitter>
 
 
 namespace UDJ{
@@ -88,12 +89,13 @@ void MetaWindow::setupUi(){
   contentStack->addWidget(eventWidget);
   contentStack->setCurrentWidget(libraryView);
  
-  QHBoxLayout *contentLayout = new QHBoxLayout;
-  contentLayout->addWidget(activityList);
-  contentLayout->addWidget(contentStack,6);
+  QSplitter *content = new QSplitter(Qt::Horizontal, this);
+  content->addWidget(activityList);
+  content->addWidget(contentStack);
+  content->setStretchFactor(1, 10);
   
   QVBoxLayout *mainLayout = new QVBoxLayout;
-  mainLayout->addLayout(contentLayout,6);
+  mainLayout->addWidget(content,6);
   mainLayout->addWidget(playbackWidget);
 
   QWidget* widget = new QWidget;

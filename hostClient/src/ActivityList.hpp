@@ -22,6 +22,7 @@
 #include "ConfigDefs.hpp"
 
 class QStandardItemModel;
+class QStandardItem;
 
 namespace UDJ{
 
@@ -95,10 +96,17 @@ private:
     return eventTitle;
   }
 
- /* static const QString& getPlaylistTitle(){
-    static const QString playlistTitle(tr("Playlist"));
-    return playlistTitle;
-  }*/
+  static const QString& getSongListTitle(){
+    static const QString songListTitle(tr("Song Lists"));
+    return songListTitle;
+  }
+
+  static const QString& getNewSongListTitle(){
+    static const QString newSongListTitle(tr("New Song List"));
+    return newSongListTitle;
+  }
+
+  
 
   //@}
 
@@ -110,6 +118,8 @@ private:
 
   /** \brief Model used to list the activities. */
   QStandardItemModel *model;
+
+  QStandardItem *songListRoot;
 
   //@}
 
@@ -125,6 +135,7 @@ private slots:
    * @param index The index of the activity that was clicked.
    */
   void itemClicked(const QModelIndex& index);
+
 
   //@}
 };

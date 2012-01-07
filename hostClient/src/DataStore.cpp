@@ -219,6 +219,16 @@ void DataStore::setupDB(){
 		"Error creating event goers table",
   	setupQuery.exec(getCreateEventGoersTableQuery()),
 		setupQuery)
+
+  EXEC_SQL(
+    "Error creating song list table",
+    setupQuery.exec(getCreateSongListTableQuery()),
+    setupQuery)
+
+  EXEC_SQL(
+    "Error creating song list table",
+    setupQuery.exec(getCreateSongListEntryTableQuery()),
+    setupQuery)
 }
 
 void DataStore::addMusicToLibrary(

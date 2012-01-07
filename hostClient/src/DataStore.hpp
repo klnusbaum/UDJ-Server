@@ -391,89 +391,89 @@ public:
   }
   
   /** 
-   * \brief Gets the name of the playlist table.
+   * \brief Gets the name of the song list table.
    *
-   * @return The name of the playlist table.
+   * @return The name of the song list table.
    */
-  static const QString& getPlaylistTableName(){
-    static const QString playlistTableName = "playlist";
-    return playlistTableName;
+  static const QString& getSongListTableName(){
+    static const QString songListTableName = "song_list";
+    return songListTableName;
   }
 
   /** 
-   * \brief Gets the name of the id column in the playlist table.
+   * \brief Gets the name of the id column in the song list table.
    *
-   * @return The name of the id column in the playlist table.
+   * @return The name of the id column in the song list table.
    */
-  static const QString& getPlaylistIdColName(){
-    static const QString playlistIdColName = "id";
-    return playlistIdColName;
+  static const QString& getSongListIdColName(){
+    static const QString songListIdColName = "id";
+    return songListIdColName;
   }
 
   /** 
-   * \brief Gets the name of the name column in the playlist table.
+   * \brief Gets the name of the name column in the song list table.
    *
-   * @return The name of the name column in the playlist table.
+   * @return The name of the name column in the song list table.
    */
-  static const QString& getPlaylistNameColName(){
-    static const QString playlistNameColName = "name";
-    return playlistNameColName;
+  static const QString& getSongListNameColName(){
+    static const QString songListNameColName = "name";
+    return songListNameColName;
   }
 
   /** 
-   * \brief Gets the name of the playlist entry table.
+   * \brief Gets the name of the song list entry table.
    *
-   * @return The name of the playlist entry table.
+   * @return The name of the song list entry table.
    */
-  static const QString& getPlaylistEntryTableName(){
-    static const QString playlistEntryTableName = "playlist_entry";
-    return playlistEntryTableName;
+  static const QString& getSongListEntryTableName(){
+    static const QString songListEntryTableName = "songlist_entry";
+    return songListEntryTableName;
   }
 
   /** 
-   * \brief Gets the name of the id column in the playlist entry table.
+   * \brief Gets the name of the id column in the song list entry table.
    *
-   * @return The name of the id column in the playlist entry table.
+   * @return The name of the id column in the song list entry table.
    */
-  static const QString& getPlaylistEntryIdColName(){
-    static const QString playlistEntryIdColName = "id";
-    return playlistEntryIdColName;
+  static const QString& getSongListEntryIdColName(){
+    static const QString songListEntryIdColName = "id";
+    return songListEntryIdColName;
   }
 
   /** 
    * \brief Gets the name of the song id column (the column which refers to the
-   * library entry this playlist entry corresponds to) in the playlist entry 
+   * library entry this song list entry corresponds to) in the song list entry 
    * table.
    *
-   * @return The name of the song id column in the playlist entry table.
+   * @return The name of the song id column in the song list entry table.
    */
-  static const QString& getPlaylistEntrySongIdColName(){
-    static const QString playlistEntrySongIdColName = "lib_id";
-    return playlistEntrySongIdColName;
+  static const QString& getSongListEntrySongIdColName(){
+    static const QString songListEntrySongIdColName = "lib_id";
+    return songListEntrySongIdColName;
   }
 
   /** 
-   * \brief Gets the name of the playlist id column 
-   * (the column which refers to the playlist in which this entry belongs) 
-   * in the playlist entry table.
+   * \brief Gets the name of the song list id column 
+   * (the column which refers to the song list in which this entry belongs) 
+   * in the song list entry table.
    *
-   * @return The name of the playlist id column in the playlist entry table.
+   * @return The name of the song list id column in the song list entry table.
    */
-  static const QString& getPlaylistEntryPlaylistIdColName(){
-    static const QString playlistEntryPlaylistIdColName = "playlist_id";
-    return playlistEntryPlaylistIdColName;
+  static const QString& getSongListEntrySongListIdColName(){
+    static const QString songListEntrySongListIdColName = "songlist_id";
+    return songListEntrySongListIdColName;
   }
 
   /** 
    * \brief Gets the name of the entry number column (effectively the column
-   * which determines order in a give playlist) in the playlist entry 
+   * which determines order in a give song list) in the song list entry 
    * table.
    *
-   * @return The name of the entry number column in the playlist entry table.
+   * @return The name of the entry number column in the song list entry table.
    */
-  static const QString& getPlaylistEntryNumberColName(){
-    static const QString playlistEntryNumberColName = "entry_number";
-    return playlistEntryNumberColName;
+  static const QString& getSongListEntryNumberColName(){
+    static const QString songListEntryNumberColName = "entry_number";
+    return songListEntryNumberColName;
   }
 
   /** 
@@ -861,36 +861,36 @@ private:
   }
 
   /** 
-   * \brief Gets the query used to create the playlist table.
+   * \brief Gets the query used to create the song list table.
    *
-   * @return The query used to create the playlist table.
+   * @return The query used to create the song list table.
    */
-  static const QString& getCreatePlaylistTableQuery(){
-    static const QString createPlaylistTableQuery = 
+  static const QString& getCreateSongListTableQuery(){
+    static const QString createSongListTableQuery = 
       "CREATE TABLE IF NOT EXISTS " +
-      getPlaylistTableName() + "(" +
-      getPlaylistIdColName() + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-      getPlaylistNameColName() + " TEXT NOT NULL);";
-    return createPlaylistTableQuery;
+      getSongListTableName() + "(" +
+      getSongListIdColName() + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+      getSongListNameColName() + " TEXT NOT NULL);";
+    return createSongListTableQuery;
   }
 
   /** 
-   * \brief Gets the query used to create the playlist entry table.
+   * \brief Gets the query used to create the song list entry table.
    *
-   * @return The query used to create the playlist entry table.
+   * @return The query used to create the song list entry table.
    */
-  static const QString& getCreatePlaylistEntryTableQuery(){
-    static const QString createPlaylistEntryTableQuery = 
+  static const QString& getCreateSongListEntryTableQuery(){
+    static const QString createSongListEntryTableQuery = 
       "CREATE TABLE IF NOT EXISTS " +
-      getPlaylistEntryTableName() + "(" + 
-      getPlaylistEntryIdColName() + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-      getPlaylistEntrySongIdColName() + " INTEGER REFERENCES " +
+      getSongListEntryTableName() + "(" + 
+      getSongListEntryIdColName() + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+      getSongListEntrySongIdColName() + " INTEGER REFERENCES " +
         getLibraryTableName() +"(" + getLibIdColName()+ ") ON DELETE CASCADE, "+
-      getPlaylistEntryPlaylistIdColName() + " INTEGER REFERENCES " +
-        getPlaylistTableName() +"(" + getPlaylistIdColName()+ 
+      getSongListEntrySongListIdColName() + " INTEGER REFERENCES " +
+        getSongListTableName() +"(" + getSongListIdColName()+ 
         ") ON DELETE CASCADE, "+
-      getPlaylistEntryNumberColName() + " INTEGER NOT NULL);";
-    return createPlaylistEntryTableQuery;
+      getSongListEntryNumberColName() + " INTEGER NOT NULL);";
+    return createSongListEntryTableQuery;
   }
 
   /** 
