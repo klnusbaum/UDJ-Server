@@ -200,6 +200,8 @@ public slots:
    */
   void setCurrentSong(playlist_song_id_t currentSong);
 
+  void getEventGoers();
+
   //@}
 
 signals:
@@ -314,6 +316,9 @@ signals:
    * \brief Emitted when there in a error setting host is playing on the server.
    */
   void currentSongSetError();
+
+
+  void newEventGoers(QVariantList eventGoers);
 
   //@}
 
@@ -698,6 +703,8 @@ private:
    * @param reply Response from the server.
    */
   void handleRecievedCurrentSongSet(QNetworkReply *reply);
+
+  void handleRecievedNewEventGoers(QNetworkReply *reply);
 
   //@}
 

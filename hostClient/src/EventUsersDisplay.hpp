@@ -22,12 +22,16 @@
 
 namespace UDJ{
 
+class DataStore;
+class EventGoersView;
+
 
 class EventUsersDisplay : public QWidget{
 Q_OBJECT
 public:
-  EventUsersDisplay(QWidget *parent=0);
-
+  EventUsersDisplay(DataStore *dataStore, QWidget *parent=0);
+private:
+  DataStore *dataStore;
 };
 
 

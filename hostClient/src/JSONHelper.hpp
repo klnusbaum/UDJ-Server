@@ -238,6 +238,8 @@ public:
    */
   static const QVariantList getActivePlaylistFromJSON(QNetworkReply *reply);
 
+  static const QVariantList getEventGoersJSON(QNetworkReply *reply);
+
   //@}
 
   /** @name Constants */

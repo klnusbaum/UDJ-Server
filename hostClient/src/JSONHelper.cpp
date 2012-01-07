@@ -236,5 +236,14 @@ const QVariantList JSONHelper::getActivePlaylistFromJSON(QNetworkReply *reply){
   return activePlaylist["active_playlist"].toList();
 }
 
+static const QVariantList getEventGoersJSON(QNetworkReply *reply){
+  QByteArray responseData = reply->readAll();
+  QString responseString = QString::fromUtf8(responseData);
+  bool success;
+  QVariantList eventGoers = 
+    QtJson::Json::parse(responseString, success).toList();
+  return eventGoers;
+}
+
 
 } //end namespace UDJ

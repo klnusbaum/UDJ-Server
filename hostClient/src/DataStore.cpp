@@ -37,7 +37,9 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
 {
   serverConnection->setParent(this);
   activePlaylistRefreshTimer = new QTimer(this);
+  eventGoerRefreshTimer = new QTimer(this);
   activePlaylistRefreshTimer->setInterval(5000);
+  eventGoerRefreshTimer->setInterval(5000);
   eventName = "";
   setupDB();
   connect(
@@ -77,6 +79,12 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
 
   connect(
     serverConnection,
+    SIGNAL(eventCreated()),
+    eventGoerRefreshTimer,
+    SLOT(start()));
+
+  connect(
+    serverConnection,
     SIGNAL(eventCreationFailed(const QString)),
     this,
     SIGNAL(eventCreationFailed(const QString)));
@@ -86,6 +94,11 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
     serverConnection, 
     SIGNAL(eventEnded()), 
     activePlaylistRefreshTimer, 
+    SLOT(stop()));
+  connect(
+    serverConnection, 
+    SIGNAL(eventEnded()), 
+    eventGoerRefreshTimer, 
     SLOT(stop()));
   connect(serverConnection, SIGNAL(eventEnded()), this, SLOT(eventCleanUp()));
 
@@ -125,6 +138,11 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
     this,
     SLOT(refreshActivePlaylist()));
 
+  connect(eventGoerRefreshTimer,
+    SIGNAL(timeout()),
+    this,
+    SLOT(refreshEventGoers()));
+
   connect(
     serverConnection,
     SIGNAL(currentSongSet()),
@@ -142,6 +160,12 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
     SIGNAL(songRemovedFromActivePlaylist(const playlist_song_id_t)),
     this,
     SLOT(setPlaylistRemoveRequestSynced(const playlist_song_id_t)));
+
+  connect(
+    serverConnection,
+    SIGNAL(newEventGoers(QVariantList)),
+    this,
+    SLOT(processNewEventGoers(QVariantList)));
 
   syncLibrary();
 }
@@ -176,20 +200,24 @@ void DataStore::setupDB(){
 
 
 	EXEC_SQL(
-		"Error creating available music",
+		"Error creating available music table",
   	setupQuery.exec(getCreateAvailableMusicQuery()),
 		setupQuery)
 	EXEC_SQL(
-		"Error creating available music",
+		"Error creating available music view",
   	setupQuery.exec(getCreateAvailableMusicViewQuery()),
 		setupQuery)
 	EXEC_SQL(
-		"Error creating available music",
+		"Error creating add reqeusts table",
   	setupQuery.exec(getCreatePlaylistAddRequestsTableQuery()),
 		setupQuery)
 	EXEC_SQL(
-		"Error creating available music",
+		"Error creating remove requests table",
   	setupQuery.exec(getCreatePlaylistRemoveRequestsTableQuery()),
+		setupQuery)
+	EXEC_SQL(
+		"Error creating event goers table",
+  	setupQuery.exec(getCreateEventGoersTableQuery()),
 		setupQuery)
 }
 
@@ -339,9 +367,6 @@ void DataStore::removeSongsFromAvailableMusic(
     syncAvailableMusic();
   }
 }
-
-
-
 
 void DataStore::addSongToActivePlaylist(library_song_id_t libraryId){
   std::vector<library_song_id_t> toAdd(1, libraryId);
@@ -573,19 +598,24 @@ void DataStore::eventCleanUp(){
   )
   emit availableSongsModified();
   EXEC_SQL(
-    "Error deleteing contents of AvailableMusic",
+    "Error deleteing contents of active playlist",
     tearDownQuery.exec(getClearActivePlaylistQuery()),
     tearDownQuery
   )
   emit activePlaylistModified();
   EXEC_SQL(
-    "Error deleteing contents of AvailableMusic",
+    "Error deleteing contents of add requests",
     tearDownQuery.exec(getDeleteAddRequestsQuery()),
     tearDownQuery
   )
   EXEC_SQL(
-    "Error deleteing contents of AvailableMusic",
+    "Error deleteing contents of remove requests",
     tearDownQuery.exec(getDeleteRemoveRequestsQuery()),
+    tearDownQuery
+  )
+  EXEC_SQL(
+    "Error deleteing contents of remove requests",
+    tearDownQuery.exec(getDeleteEventGoersQuery()),
     tearDownQuery
   )
 }
@@ -610,8 +640,9 @@ void DataStore::addSong2ActivePlaylistFromQVariant(
     getUpVoteColName() + "," +
     getPriorityColName() + "," +
     getTimeAddedColName() +"," +
+    getAdderUsernameColName() +"," +
     getAdderIdColName() + ")" +
-    " VALUES ( :id , :libid , :down , :up, :pri , :time , :adder );", 
+    " VALUES ( :id , :libid , :down , :up, :pri , :time , :username, :adder );",
     database);
  
   addQuery.bindValue(":id", songToAdd["id"]);
@@ -620,6 +651,7 @@ void DataStore::addSong2ActivePlaylistFromQVariant(
   addQuery.bindValue(":up", songToAdd["up_votes"]);
   addQuery.bindValue(":pri", priority);
   addQuery.bindValue(":time", songToAdd["time_added"]);
+  addQuery.bindValue(":username", songToAdd["adder_username"]);
   addQuery.bindValue(":adder", songToAdd["adder_id"]);
 
   long insertId;
@@ -756,5 +788,81 @@ void DataStore::setPlaylistRemoveRequestSynced(
   }
 }
 
+
+void DataStore::refreshEventGoers(){
+  serverConnection->getEventGoers();
+}
+
+void DataStore::processNewEventGoers(QVariantList newEventGoers){
+  for(int i =0; i<newEventGoers.size(); ++i){
+    QVariantMap eventGoer = newEventGoers.at(i).toMap();
+    addOrInsertEventGoer(eventGoer);
+  }
+  emit eventGoersModified();
+}
+
+void DataStore::addOrInsertEventGoer(const QVariantMap &eventGoer){
+  user_id_t id = eventGoer["id"].toValue<user_id_t>();
+  if(alreadyHaveEventGoer(id)){
+    updateEventGoer(eventGoer);
+  }
+  else{
+    insertEventGoer(eventGoer);
+  }
+}
+
+void DataStore::alreadyHaveEventGoer(user_id_t id){
+  QSqlQuery hasEventGoer(database);
+  hasEventGoer.prepare("SELECT * from " + getEventGoersTableName() + 
+  " where " + getEventGoersIdColName() + "=" + QString::number(id) +";");
+  EXEC_SQL(
+    "Error determining if event goer is already in database",
+    hasEventGoer.exec();
+    hasEventGoer)
+  return hasEventGoer.first(); 
+}
+
+void DataStore::updateEventGoer(const QVariantMap &eventGoer){
+  updateUserQuery.prepare(
+    "UPDATE " + getEventGoersTableName() +  
+    " SET " + getEventGoerStateColName() + " = " +
+    (eventGoer["logged_in"].toBool() ? getEventGoerInEventState() : 
+      getEventGoerLeftEventState()) +
+    " where " +
+    getEventGoersIdColName() + " = ? ;");
+  updateUserQuery.addBindValue(QVariant::fromValue<user_id_t>(id));
+  EXEC_SQL(
+    "Error updateing event goer with id of " << id,
+    updateUserQuery.exec(),
+    updateUserQuery)
+}
+
+void DataStore::insertEventGoer(const QVariantMap &eventGoer){
+  QSqlQuery addQuery(
+    "INSERT INTO "+getEventGoersTableName()+ 
+    "("+
+    getEventGoersIdColName() + ","+
+    getEventGoerUsernameColName() + ","+
+    getEventGoerFirstNameColName() + ","+
+    getEventGoerLastNameColName() + "," +
+    getEventGoerStateColName() +")" +
+    "VALUES ( :id , :username , :firstname , :lastname, :state );", 
+    database);
+  
+  addQuery.bindValue(":id", eventGoer["id"]);
+  addQuery.bindValue(":username", eventGoer["username"]);
+  addQuery.bindValue(":firstname", eventGoer["first_name"]);
+  addQuery.bindValue(":lastname", eventGoer["last_name"]);
+  addQuery.bindValue(":state", (eventGoer["logged_in"].toBool() ? 
+    getEventGoerInEventState() : getEventGoerLeftEventState()));
+
+  user_id_t eventGoerId;
+	EXEC_INSERT(
+		"Failed to add event goer" << 
+      eventGoer["username"].toString().toStdString(), 
+		addQuery,
+    eventGoerId,
+    user_id_t)
+}
 
 } //end namespace

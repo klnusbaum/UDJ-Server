@@ -209,6 +209,12 @@ void UDJServerConnection::setCurrentSong(playlist_song_id_t currentSong){
   netAccessManager->post(setCurrentSongRequest, params.toUtf8());
 }
 
+void UDJServerConnection::getEventGoers(){
+  QNetworkRequest getEventGoersRequest(getUsersUrl());
+  setCurrentSongRequest.setRawHeader(getTicketHeaderName(), ticket_hash);
+  netAccessManager->post(setCurrentSongRequest, params.toUtf8());
+}
+
 void UDJServerConnection::recievedReply(QNetworkReply *reply){
   if(reply->request().url().path() == getAuthUrl().path()){
     handleAuthReply(reply);
@@ -242,6 +248,9 @@ void UDJServerConnection::recievedReply(QNetworkReply *reply){
   }
   else if(isActivePlaylistRemoveUrl(reply->request().url().path())){
     handleRecievedActivePlaylistRemove(reply);
+  }
+  else if(reply->request().url().path() == getUsersUrl().path()){
+    handleRecievedNewEventGoers(reply);
   }
   else{
     DEBUG_MESSAGE("Recieved unknown response")
@@ -390,7 +399,16 @@ void UDJServerConnection::handleRecievedActivePlaylistRemove(
     DEBUG_MESSAGE("Error deleting song from active playlist " <<
       QString(reply->readAll()).toStdString())
   } 
+}
 
+void UDJServerConnection::handleRecievedNewEventGoers(QNetworkReply *reply){
+  if(reply->error() == QNetworkReply::NoError){
+    emit newEventGoers(JSONHelper::getEventGoersJSON(reply));
+  }
+  else{
+    DEBUG_MESSAGE("Error retrieving event goer list" <<
+      QString(reply->readAll()).toStdString())
+  } 
 }
 
 QUrl UDJServerConnection::getLibAddSongUrl() const{
@@ -440,6 +458,11 @@ QUrl UDJServerConnection::getActivePlaylistRemoveUrl(
 QUrl UDJServerConnection::getCurrentSongUrl() const{
   return QUrl(getServerUrlPath() + "events/" + QString::number(eventId) +
     "/current_song");
+}
+
+QUrl UDJServerConnection::getUsersUrl() const{
+  return QUrl(getServerUrlPath() + "events/" + QString::number(eventId) +
+    "/users");
 }
 
 bool UDJServerConnection::isLibDeleteUrl(const QString& path) const{

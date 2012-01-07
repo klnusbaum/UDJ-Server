@@ -159,7 +159,7 @@ public:
    * about the event goesrs associated with the server connection.
    */
 	static const QString& getEventGoersTableName(){
-		static const QString eventGoersTableName = "my_event_goers";
+		static const QString eventGoersTableName = "event_goers";
     return eventGoersTableName;
 	}
   
@@ -247,6 +247,11 @@ public:
   static const QString& getAdderIdColName(){
     static const QString adderIdColName = "adderId";
     return adderIdColName;
+  }
+
+  static const QString& getAdderUsernameColName(){
+    static const QString adderUsernameColName = "adder_username";
+    return adderUsernameColName;
   }
 
   /** 
@@ -556,6 +561,41 @@ public:
     return availableMusicViewName;
   }
 
+  static const QString& getEventGoersIdColName(){
+    static const QString eventGoersIdColName = "id";
+    return eventGoersIdColName;
+  }
+
+  static const QString& getEventGoerUsernameColName(){
+    static const QString eventGoersUsernameColName = "username";
+    return eventGoersUsernameColName;
+  }
+
+  static const QString& getEventGoerFirstNameColName(){
+    static const QString eventGoerFirstNameColName = "first_name";
+    return eventGoerFirstNameColName;
+  }
+
+  static const QString& getEventGoerLastNameColName(){
+    static const QString eventGoerLastNameColName = "last_name";
+    return eventGoerLastNameColName;
+  }
+
+  static const QString& getEventGoerStateColName(){
+    static const QString eventGoerStateColName = "state";
+    return eventGoerStateColName;
+  }
+
+  static const QString& getEventGoerInEventState(){
+    static const QString inEventState = "IE";
+    return inEventState;
+  }
+
+  static const QString& getEventGoerLeftEventState(){
+    static const QString leftEventState = "LE";
+    return leftEventState;
+  }
+
 
  //@}
 
@@ -583,6 +623,8 @@ public slots:
    * \brief Refresh the active playlist table.
    */
   void refreshActivePlaylist();
+
+  void refreshEventGoers();
 
   /**
    * \brief Adds the specified song to the playlist.
@@ -696,6 +738,8 @@ signals:
    */
   void manualSongChange(Phonon::MediaSource newSong);
 
+  void eventGoersModified();
+
 //@}
 
 private:
@@ -715,6 +759,7 @@ private:
   /** \brief Timer used to refresh the active playlist. */
   QTimer *activePlaylistRefreshTimer;
   
+  QTimer *eventGoerRefreshTimer;
   //@}
 
   /** @name Private Functions */
@@ -889,6 +934,7 @@ private:
       getUpVoteColName() + " INTEGER NOT NULL, " +
       getPriorityColName() + " INTEGER NOT NULL, " +
       getAdderIdColName() + " INTEGER NOT NULL, " +
+      getAdderUsernameColName() + " TEXT NOT NULL, " +
    	  getTimeAddedColName() + " TEXT DEFAULT CURRENT_TIMESTAMP);";
     return createActivePlaylistQuery;
   }
@@ -978,6 +1024,12 @@ private:
     static const QString deleteRemoveRequestsQuery = 
       "DELETE FROM " + getPlaylistRemoveRequestsTableName() + ";";
     return deleteRemoveRequestsQuery;
+  }
+
+  static const QString& getDeleteEventGoersQuery(){
+    static const QString deleteEventGoersQuery = 
+      "DELETE FROM " + getEventGoersTableName() + ";";
+    return deleteEventGoersQuery;
   }
 
 
@@ -1153,6 +1205,26 @@ private:
     return createPlaylistRemoveRequestsTableQuery;
   }
 
+
+
+
+  static const QString& getCreateEventGoersTableQuery(){
+    static QString createEventGoersTableQuery = 
+      "CREATE TABLE IF NOT EXISTS " + getEventGoersTableName() + 
+      "(" + getEventGoersIdColName() + " INTEGER PRIMARY KEY, " + 
+      getEventGoerUsernameColName() + " TEXT NOT NULL, " +
+      getEventGoerFirstNameColName() + " TEXT NOT NULL, " +
+      getEventGoerLastNameColName() + " TEXT NOT NULL, " +
+      getEventGoerStateColName() + " TEXT NOT NULL " +
+      "CHECK("+
+        getEventGoerStateColName()+"=\""+
+           getEventGoerInEventState() +"\" OR " +
+        getEventGoerStateColName()+"=\""+
+           getEventGoerLeftEventState() +"\"" +
+      "));";
+    return createEventGoersTableQuery;
+  }
+
  //@}
 
 /** @name Private Slots */
@@ -1240,6 +1312,14 @@ private slots:
    */
   void setPlaylistRemoveRequestSynced(const playlist_song_id_t id);
 
+  void processNewEventGoers(QVariantList newEventGoers);
+
+  void alreadyHaveEventGoer(user_id_t id);
+
+  void updateEventGoer(const QVariantMap &eventGoer);
+
+  void insertEventGoer(const QVariantMap &eventGoer);
+  
 //@}
 
 };

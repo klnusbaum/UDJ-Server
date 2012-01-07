@@ -19,14 +19,18 @@
 #include "EventUsersDisplay.hpp"
 #include <QHBoxLayout>
 #include <QLabel>
+#include "EventGoersView.hpp"
 
 
 namespace UDJ{
 
 
-EventUsersDisplay::EventUsersDisplay(QWidget *parent):QWidget(parent){
+EventUsersDisplay::EventUsersDisplay(DataStore *dataStore, QWidget *parent):
+  QWidget(parent),
+  dataStore(dataStore)
+{
   QHBoxLayout *layout = new QHBoxLayout;
-  layout->addWidget(new QLabel("users stuff goes here"));
+  layout->addWidget(new EventGoersView(dataStore, this));
   setLayout(layout);
 }
 
