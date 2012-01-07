@@ -88,6 +88,8 @@ public:
    */
   QSqlDatabase getDatabaseConnection();
 
+  QSqlQuery getSongLists() const;
+
   /** 
    * \brief Gets the name of the current event.
    *
@@ -870,7 +872,7 @@ private:
       "CREATE TABLE IF NOT EXISTS " +
       getSongListTableName() + "(" +
       getSongListIdColName() + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-      getSongListNameColName() + " TEXT NOT NULL);";
+      getSongListNameColName() + " TEXT NOT NULL UNIQUE);";
     return createSongListTableQuery;
   }
 
@@ -1321,6 +1323,7 @@ private slots:
   void updateEventGoer(const QVariantMap &eventGoer);
 
   void insertEventGoer(const QVariantMap &eventGoer);
+
   
 //@}
 

@@ -33,6 +33,8 @@ typedef int avail_music_sync_status_t;
 typedef int playlist_add_sync_status_t;
 typedef int playlist_remove_sync_status_t;
 typedef long client_request_id_t;
+typedef long song_list_id_t;
+typedef long song_list_entry_id_t;
 
 } //end namespace
 

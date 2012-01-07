@@ -875,4 +875,15 @@ void DataStore::insertEventGoer(const QVariantMap &eventGoer){
     user_id_t)
 }
 
+
+QSqlQuery DataStore::getSongLists() const{
+  QSqlQuery songListsQuery(database);
+  songListsQuery.prepare("SELECT * from " + getSongListTableName() +";");
+  EXEC_SQL(
+    "Error retrieving song lists",
+    songListsQuery.exec(),
+    songListsQuery)
+  return songListsQuery; 
+}
+
 } //end namespace

@@ -102,7 +102,7 @@ private:
   }
 
   static const QString& getNewSongListTitle(){
-    static const QString newSongListTitle(tr("New Song List"));
+    static const QString newSongListTitle(tr("Add New Song List"));
     return newSongListTitle;
   }
 
@@ -120,6 +120,9 @@ private:
   QStandardItemModel *model;
 
   QStandardItem *songListRoot;
+  QStandardItem *libraryItem;
+  QStandardItem *eventItem;
+  QStandardItem *newSongListItem;
 
   //@}
 
@@ -136,6 +139,7 @@ private slots:
    */
   void itemClicked(const QModelIndex& index);
 
+  void addNewSongList();
 
   //@}
 };
