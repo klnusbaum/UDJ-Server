@@ -1,3 +1,4 @@
+python createDBFile.py
 python rmdb.py
 python manage.py syncdb
 python manage.py loaddata udj/fixtures/test_fixture.json

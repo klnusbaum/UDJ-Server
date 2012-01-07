@@ -272,7 +272,7 @@ public class PlaylistSyncService extends IntentService{
   }
 
   private void alertAddSongException(){
-
+    //TODO notify in case of failure
   }
 
   private void clearAddNotification(){
