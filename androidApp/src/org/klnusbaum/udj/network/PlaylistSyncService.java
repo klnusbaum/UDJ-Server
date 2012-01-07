@@ -31,10 +31,13 @@ import android.os.RemoteException;
 import android.content.OperationApplicationException;
 import android.util.Log;
 import android.app.IntentService;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.net.Uri;
 import android.content.Intent;
 import android.database.Cursor;
+import android.app.Notification;
+import android.app.NotificationManager;
 
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -51,12 +54,17 @@ import org.apache.http.ParseException;
 
 import org.klnusbaum.udj.Constants;
 import org.klnusbaum.udj.UDJEventProvider;
+import org.klnusbaum.udj.EventActivity;
+import org.klnusbaum.udj.EventSelectorActivity;
+import org.klnusbaum.udj.R;
 
 
 /**
  * Adapter used to sync up with the UDJ server.
  */
 public class PlaylistSyncService extends IntentService{
+  private static final int ADD_SONG_ID = 0;
+  private static final int SONG_ADDED_ID = 1;
 
   private static final String TAG = "PlyalistSyncService";
   private static final String[] addRequestsProjection = new String[] {
@@ -134,6 +142,7 @@ public class PlaylistSyncService extends IntentService{
 
   private void syncAddRequests(Account account, long eventId){
     Log.d(TAG, "Sycning add requests");
+    notifyAddingSongs();
     try{
       ContentResolver cr = getContentResolver();
       Cursor requestsCursor = cr.query(
@@ -164,29 +173,41 @@ public class PlaylistSyncService extends IntentService{
       }
     }
     catch(JSONException e){
+      alertAddSongException();
       Log.e(TAG, "JSON exception when retreiving playist");
     }
     catch(ParseException e){
+      alertAddSongException();
       Log.e(TAG, "Parse exception when retreiving playist");
     }
     catch(IOException e){
+      alertAddSongException();
       Log.e(TAG, "IO exception when retreiving playist");
     }
     catch(AuthenticationException e){
+      alertAddSongException();
       Log.e(TAG, "Authentication exception when retreiving playist");
     }
     catch(AuthenticatorException e){
+      alertAddSongException();
       Log.e(TAG, "Authentication exception when retreiving playist");
     }
     catch(OperationCanceledException e){
+      alertAddSongException();
       Log.e(TAG, "Op Canceled exception when retreiving playist");
     }
     catch(RemoteException e){
+      alertAddSongException();
       Log.e(TAG, "Remote exception when retreiving playist");
     }
     catch(OperationApplicationException e){
+      alertAddSongException();
       Log.e(TAG, "Operation Application exception when retreiving playist");
     }
+    finally{
+      clearAddNotification();
+    }
+    notifySongsAdded();  
     //TODO This point of the app seems very dangerous as there are so many
     // exceptions that could occuer. Need to pay special attention to this.
   }
@@ -234,5 +255,47 @@ public class PlaylistSyncService extends IntentService{
     // exceptions that could occuer. Need to pay special attention to this.
   }
   
+  private void notifyAddingSongs(){
+    Notification addNotification = new Notification(
+      R.drawable.icon, "Adding Song", System.currentTimeMillis());
+    PendingIntent pe = PendingIntent.getActivity(
+      this, 0, null, 0);
+    addNotification.setLatestEventInfo(
+      this, 
+      getString(R.string.add_song_notification_title),
+      getString(R.string.add_song_notification_content),
+      pe);
+    addNotification.flags |= Notification.FLAG_ONGOING_EVENT;
+    NotificationManager nm = 
+      (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+    nm.notify(ADD_SONG_ID, addNotification);
+  }
+
+  private void alertAddSongException(){
+
+  }
+
+  private void clearAddNotification(){
+    NotificationManager nm = 
+      (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+    nm.cancel(ADD_SONG_ID);
+  }
+
+  private void notifySongsAdded(){
+    Notification addNotification = new Notification(
+      R.drawable.icon, "Songs Added", System.currentTimeMillis());
+    PendingIntent pe = PendingIntent.getActivity(
+      this, 0, null, 0);
+    addNotification.setLatestEventInfo(
+      this, 
+      getString(R.string.song_added_notification_title),
+      getString(R.string.song_added_notification_content),
+      pe);
+    addNotification.flags |= Notification.FLAG_AUTO_CANCEL;
+    NotificationManager nm = 
+      (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+    nm.notify(SONG_ADDED_ID, addNotification);
+
+  }
 
 }

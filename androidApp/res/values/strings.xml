@@ -49,6 +49,10 @@
   <string name="no_account_error">No Account Selected</string>
   <string name="added_by">Added By: </string>
   <string name="you">You</string>
+  <string name="add_song_notification_title">Adding Song(s)</string>
+  <string name="add_song_notification_content">Adding Songs(s) to playlist</string>
+  <string name="song_added_notification_title">Song(s) Added</string>
+  <string name="song_added_notification_content">Songs(s) added to playlist</string>
 
 
 
