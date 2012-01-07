@@ -24,6 +24,8 @@
 #include <QHeaderView>
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QStyledItemDelegate>
+#include <QTextEdit>
 
 namespace UDJ{
 
@@ -36,6 +38,11 @@ ActivityList::ActivityList(DataStore *dataStore, QWidget *parent):
     SIGNAL(clicked(const QModelIndex&)),
     this,
     SLOT(itemClicked(const QModelIndex&)));
+  connect(
+    model,
+    SIGNAL(itemChanged(QStandardItem*)),
+    this,
+    SLOT(saveSongListToDb(QStandardItem*)));
 }
 
 void ActivityList::itemClicked(const QModelIndex& index){
@@ -93,6 +100,20 @@ void ActivityList::addNewSongList(){
   edit(newSongList->index());
 }
 
+
+void ActivityList::saveSongListToDb(QStandardItem *toSave){
+  std::cout << "Setting model data\n";
+  QVariant data = toSave->data();
+  QString name = toSave->text();
+  if(data.isValid()){
+    song_list_id_t id = data.value<song_list_id_t>();
+    dataStore->setSongListName(id, name);
+  } 
+  else{
+    song_list_id_t id = dataStore->insertSongList(name);   
+    toSave->setData(QVariant::fromValue(id));
+  }
+}
 
 
 

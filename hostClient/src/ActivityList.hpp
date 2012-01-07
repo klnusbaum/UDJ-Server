@@ -141,6 +141,8 @@ private slots:
 
   void addNewSongList();
 
+  void saveSongListToDb(QStandardItem *toSave);
+
   //@}
 };
 

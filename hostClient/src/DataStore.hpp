@@ -90,6 +90,10 @@ public:
 
   QSqlQuery getSongLists() const;
 
+  void setSongListName(song_list_id_t id, const QString& name);
+
+  song_list_id_t insertSongList(const QString& name);
+
   /** 
    * \brief Gets the name of the current event.
    *

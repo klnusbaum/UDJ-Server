@@ -886,4 +886,35 @@ QSqlQuery DataStore::getSongLists() const{
   return songListsQuery; 
 }
 
+void DataStore::setSongListName(song_list_id_t id, const QString& name){
+  QSqlQuery updateUserQuery(database);
+  updateUserQuery.prepare(
+    "UPDATE " + getSongListTableName() +  
+    " SET " + getSongListNameColName() + " = \"" + name + "\"  where " +
+    getSongListIdColName() + " = " + QString::number(id) +";");
+  EXEC_SQL(
+    "Error updateing song list name " << name.toStdString(),
+    updateUserQuery.exec(),
+    updateUserQuery)
+}
+
+song_list_id_t DataStore::insertSongList(const QString& name){
+  QSqlQuery addQuery(
+    "INSERT INTO "+getSongListTableName()+ 
+    "("+ getSongListNameColName() +")" +
+    "VALUES ( :name );", 
+    database);
+  
+  addQuery.bindValue(":name", name);
+
+  song_list_id_t songListId;
+	EXEC_INSERT(
+		"Error adding song list " << name.toStdString(), 
+		addQuery,
+    songListId,
+    song_list_id_t)
+  return songListId;
+}
+
+
 } //end namespace
