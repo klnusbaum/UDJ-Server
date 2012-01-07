@@ -244,6 +244,6 @@ def setCurrentSong(request, event_id):
 @AcceptsMethods('GET')
 @InParty
 def getEventGoers(request, event_id):
-  eventGoers = EventGoer.objects.filter(event__id=event_id, state=u'IE')
+  eventGoers = EventGoer.objects.filter(event__id=event_id)
   return HttpResponse(getJSONForEventGoers(eventGoers))
 

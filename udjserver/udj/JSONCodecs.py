@@ -78,7 +78,8 @@ def getEventGoerJSON(eventGoer):
     'id' : eventGoer.user.id,
     'username' : eventGoer.user.username,
     'first_name' : eventGoer.user.first_name,
-    'last_name' : eventGoer.user.last_name
+    'last_name' : eventGoer.user.last_name,
+    'logged_in' : True if eventGoer.state == u'IE' else False
   }
 
 def getJSONForEventGoers(eventGoers):
