@@ -916,5 +916,17 @@ song_list_id_t DataStore::insertSongList(const QString& name){
   return songListId;
 }
 
+void DataStore::deleteSongList(song_list_id_t songListId){
+  QSqlQuery removeQuery(
+    "DELETE FROM "+getSongListTableName()+ 
+    " where " + getSongListIdColName() + "=?;",
+    database);
+  removeQuery.addBindValue(QVariant::fromValue<song_list_id_t>(songListId));
+  EXEC_SQL(
+    "Error removing song list: " << songListId,
+    removeQuery.exec(),
+    removeQuery)
+}
+
 
 } //end namespace

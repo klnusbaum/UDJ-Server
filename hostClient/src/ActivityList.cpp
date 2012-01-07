@@ -25,6 +25,8 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QStyledItemDelegate>
+#include <QMenu>
+#include <QAction>
 #include <QTextEdit>
 
 namespace UDJ{
@@ -33,6 +35,7 @@ ActivityList::ActivityList(DataStore *dataStore, QWidget *parent):
   QTreeView(parent), dataStore(dataStore)
 {
   setupUi(); 
+  createActions();
   connect(
     this,
     SIGNAL(clicked(const QModelIndex&)),
@@ -43,6 +46,21 @@ ActivityList::ActivityList(DataStore *dataStore, QWidget *parent):
     SIGNAL(itemChanged(QStandardItem*)),
     this,
     SLOT(saveSongListToDb(QStandardItem*)));
+  setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
+    this, SLOT(handleContextMenuRequest(const QPoint&)));
+}
+
+void ActivityList::handleContextMenuRequest(const QPoint& point){
+  QModelIndexList selected = selectedIndexes();
+  QModelIndex singleSelect = selected[0];
+  if(singleSelect.parent() == songListRoot->index() &&
+    singleSelect != newSongListItem->index())
+  {
+    QMenu contextMenu(this);
+    contextMenu.addAction(deleteSongListAction);
+    contextMenu.exec(QCursor::pos());
+  }
 }
 
 void ActivityList::itemClicked(const QModelIndex& index){
@@ -57,7 +75,17 @@ void ActivityList::itemClicked(const QModelIndex& index){
   }
 }
 
+void ActivityList::createActions(){
+  deleteSongListAction = new QAction(tr("Delete Song List"), this); 
+  connect(
+    deleteSongListAction,
+    SIGNAL(triggered()),
+    this,
+    SLOT(deleteSelectedSongList()));
+}
+
 void ActivityList::setupUi(){
+  setSelectionMode(QAbstractItemView::SingleSelection);
   libraryItem = new QStandardItem(getLibraryTitle());
   libraryItem->setEditable(false);
 
@@ -93,7 +121,6 @@ void ActivityList::setupUi(){
 }
 
 void ActivityList::addNewSongList(){
-  std::cout << "adding new list" << std::endl;
   QStandardItem *newSongList = new QStandardItem(tr("New Song List"));
   songListRoot->insertRow(0, newSongList);
   setCurrentIndex(newSongList->index());
@@ -102,7 +129,6 @@ void ActivityList::addNewSongList(){
 
 
 void ActivityList::saveSongListToDb(QStandardItem *toSave){
-  std::cout << "Setting model data\n";
   QVariant data = toSave->data();
   QString name = toSave->text();
   if(data.isValid()){
@@ -113,6 +139,14 @@ void ActivityList::saveSongListToDb(QStandardItem *toSave){
     song_list_id_t id = dataStore->insertSongList(name);   
     toSave->setData(QVariant::fromValue(id));
   }
+}
+
+void ActivityList::deleteSelectedSongList(){
+  QModelIndexList selected = selectedIndexes();
+  QModelIndex singleSelect = selected[0];
+  QStandardItem *selectedSongList = model->itemFromIndex(singleSelect);
+  dataStore->deleteSongList(selectedSongList->data().value<song_list_id_t>());
+  songListRoot->removeRow(singleSelect.row()); 
 }
 
 

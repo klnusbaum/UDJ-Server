@@ -23,7 +23,7 @@
 
 class QStandardItemModel;
 class QStandardItem;
-
+class QActivity;
 namespace UDJ{
 
 
@@ -75,6 +75,8 @@ private:
    * \brief Does UI initialization.
    */
   void setupUi();
+
+  void createActions();
   
   /** 
    * \brief Gets the name of the library activity.
@@ -123,6 +125,7 @@ private:
   QStandardItem *libraryItem;
   QStandardItem *eventItem;
   QStandardItem *newSongListItem;
+  QAction *deleteSongListAction;
 
   //@}
 
@@ -142,6 +145,10 @@ private slots:
   void addNewSongList();
 
   void saveSongListToDb(QStandardItem *toSave);
+
+  void handleContextMenuRequest(const QPoint& point);
+
+  void deleteSelectedSongList();
 
   //@}
 };

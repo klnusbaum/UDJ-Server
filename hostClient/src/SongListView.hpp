@@ -16,37 +16,38 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef EVENT_GOERS_VIEW_HPP
-#define EVENT_GOERS_VIEW_HPP
-#include <QTableView>
-#include <vector>
+#ifndef SONG_LIST_VIEW_HPP
+#define SONG_LIST_VIEW_HPP
 #include "ConfigDefs.hpp"
+#include <QTableView>
 
-class QSqlRelationalTableModel;
-class QAction;
+class QSqlQueryModel;
 
 namespace UDJ{
 
 class DataStore;
 
 /**
- * \brief Used to dislay the active playlist.
+ * \brief Used to dislay the song list.
  */
-class EventGoersView : public QTableView{
+class SongListView : public QTableView{
 Q_OBJECT
 public:
   /** @name Constructors */
   //@{
 
   /**
-   * \brief Constructs an EventGoersView.
+   * \brief Constructs an SongListView.
    *
    * @param dataStore The DataStore backing this instance of UDJ.
    * @param parent The parent widget.
    */
-  EventGoersView(DataStore *dataStore, QWidget *parent=0);
+  SongListView(DataStore *dataStore, QWidget *parent=0);
 
   //@}
+
+public slots:
+  void setSongListId(song_list_id_t songListId);
 
 private:
   /** @name Private Memeber */
@@ -57,9 +58,12 @@ private:
    * to the playlist.
    */
   DataStore *dataStore;
+
+  song_list_id_t currentSongListId;
  
   /** \brief The model backing this view. */
-  QSqlRelationalTableModel *eventGoersModel;  
+  QSqlQueryModel *songListEntryModel;  
+
 
   //@}
 
@@ -73,7 +77,7 @@ private slots:
   /** 
    * \brief Updates the data being displayed in the view.
    */
-  void updateView();
+  void onSongListEntriesChanged(song_list_id_t updatedSongList);
 
   /**
    * \brief Displays context menus when requested.
@@ -87,5 +91,4 @@ private slots:
 
 
 } //end namespace
-#endif // EVENT_GOERS_VIEW_HPP
-
+#endif //SONG_LIST_VIEW_HPP

@@ -693,6 +693,8 @@ public slots:
    */
   void setCurrentSong(playlist_song_id_t songToPlay);
 
+  void deleteSongList(song_list_id_t songListId);
+
   //@}
 
 signals:
