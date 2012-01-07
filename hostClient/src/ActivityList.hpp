@@ -62,7 +62,13 @@ signals:
    * \brief emited when the event activity is clicked.
    */
   void eventClicked();
-//  void playlistClicked(playlist_id_t playlistId);
+
+  /**
+   * \brief emitted whenever a song list is clicked.
+   *
+   * @param songListId The id of the songList that was clicked.
+   */
+  void songListClicked(song_list_id_t songListId);
 
   //@}
 

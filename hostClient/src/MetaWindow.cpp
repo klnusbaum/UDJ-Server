@@ -17,6 +17,7 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "MetaWindow.hpp"
+#include "SongListView.hpp"
 #include "SettingsWidget.hpp"
 #include "MusicFinder.hpp"
 #include "DataStore.hpp"
@@ -82,11 +83,14 @@ void MetaWindow::setupUi(){
 
   eventWidget = new EventWidget(dataStore, this);
  
+  songListView = new SongListView(dataStore, this);
+ 
   activityList = new ActivityList(dataStore);
 
   contentStack = new QStackedWidget(this);
   contentStack->addWidget(libraryView);
   contentStack->addWidget(eventWidget);
+  contentStack->addWidget(songListView);
   contentStack->setCurrentWidget(libraryView);
  
   QSplitter *content = new QSplitter(Qt::Horizontal, this);
@@ -116,11 +120,11 @@ void MetaWindow::setupUi(){
     this,
     SLOT(displayEventWidget()));
 
-  /*connect(
+  connect(
     activityList,
-    SIGNAL(playlistClicked(playlist_id_t)),
+    SIGNAL(songListClicked(song_list_id_t)),
     this,
-    SLOT(displayPlaylist(playlist_id_t)));*/
+    SLOT(displaySongList(song_list_id_t)));
 
   resize(800,600);
 }
@@ -150,10 +154,11 @@ void MetaWindow::displayEventWidget(){
   contentStack->setCurrentWidget(eventWidget);
 }
 
-/*
-void MetaWindow::displayPlaylist(playlist_id_t playlist){
 
-}*/
+void MetaWindow::displaySongList(song_list_id_t songListId){
+  songListView->setSongListId(songListId);
+  contentStack->setCurrentWidget(songListView);
+}
 
 
 } //end namespace

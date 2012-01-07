@@ -73,6 +73,10 @@ void ActivityList::itemClicked(const QModelIndex& index){
   else if(index == newSongListItem->index()){
     addNewSongList();
   }
+  else if(index.parent() == songListRoot->index()){
+    QStandardItem *selectedList = model->itemFromIndex(index);
+    emit songListClicked(selectedList->data().value<song_list_id_t>());
+  }
 }
 
 void ActivityList::createActions(){

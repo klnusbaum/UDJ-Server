@@ -41,6 +41,7 @@ class LibraryView;
 class ActivityList;
 class EventWidget;
 class DataStore;
+class SongListView;
 
 /**
  * \brief A class that is the main point of interaction with the user. 
@@ -87,7 +88,7 @@ private slots:
    */
   void displayEventWidget();
 
-  //void displayPlaylist(playlist_id_t playlist);
+  void displaySongList(song_list_id_t songListId);
   
   //@}
 
@@ -126,6 +127,8 @@ private:
 
   /** \brief Widget used for displaying event related UI components. */
   EventWidget *eventWidget;
+
+  SongListView *songListView;
 
   /** \brief Stack used to display various UI components. */
   QStackedWidget *contentStack;
