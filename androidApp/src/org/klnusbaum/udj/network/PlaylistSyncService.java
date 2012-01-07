@@ -170,44 +170,44 @@ public class PlaylistSyncService extends IntentService{
         ServerConnection.addSongsToActivePlaylist(
           addRequests, eventId, authToken);
         RESTProcessor.setPlaylistAddRequestsSynced(addRequests.keySet(), this);
+        notifySongsAdded();  
       }
     }
     catch(JSONException e){
-      alertAddSongException();
-      Log.e(TAG, "JSON exception when retreiving playist");
+      alertAddSongException(account);
+      Log.e(TAG, "JSON exception when adding to playist");
     }
     catch(ParseException e){
-      alertAddSongException();
-      Log.e(TAG, "Parse exception when retreiving playist");
+      alertAddSongException(account);
+      Log.e(TAG, "Parse exception when adding to playist");
     }
     catch(IOException e){
-      alertAddSongException();
-      Log.e(TAG, "IO exception when retreiving playist");
+      alertAddSongException(account);
+      Log.e(TAG, "IO exception when adding to playist");
     }
     catch(AuthenticationException e){
-      alertAddSongException();
-      Log.e(TAG, "Authentication exception when retreiving playist");
+      alertAddSongException(account);
+      Log.e(TAG, "Authentication exception when adding to playist");
     }
     catch(AuthenticatorException e){
-      alertAddSongException();
-      Log.e(TAG, "Authentication exception when retreiving playist");
+      alertAddSongException(account);
+      Log.e(TAG, "Authentication exception when adding to playist");
     }
     catch(OperationCanceledException e){
-      alertAddSongException();
-      Log.e(TAG, "Op Canceled exception when retreiving playist");
+      alertAddSongException(account);
+      Log.e(TAG, "Op Canceled exception when adding to playist");
     }
     catch(RemoteException e){
-      alertAddSongException();
-      Log.e(TAG, "Remote exception when retreiving playist");
+      alertAddSongException(account);
+      Log.e(TAG, "Remote exception when adding to playist");
     }
     catch(OperationApplicationException e){
-      alertAddSongException();
-      Log.e(TAG, "Operation Application exception when retreiving playist");
+      alertAddSongException(account);
+      Log.e(TAG, "Operation Application exception when adding to playist");
     }
     finally{
       clearAddNotification();
     }
-    notifySongsAdded();  
     //TODO This point of the app seems very dangerous as there are so many
     // exceptions that could occuer. Need to pay special attention to this.
   }
@@ -257,7 +257,9 @@ public class PlaylistSyncService extends IntentService{
   
   private void notifyAddingSongs(){
     Notification addNotification = new Notification(
-      R.drawable.icon, "Adding Song", System.currentTimeMillis());
+      R.drawable.icon, 
+      getString(R.string.add_song_notification_title), 
+      System.currentTimeMillis());
     PendingIntent pe = PendingIntent.getActivity(
       this, 0, null, 0);
     addNotification.setLatestEventInfo(
@@ -271,8 +273,29 @@ public class PlaylistSyncService extends IntentService{
     nm.notify(ADD_SONG_ID, addNotification);
   }
 
-  private void alertAddSongException(){
-    //TODO notify in case of failure
+  private void alertAddSongException(Account account){
+    Notification addNotification = new Notification(
+      R.drawable.icon, 
+      getString(R.string.song_add_failed_title),
+      System.currentTimeMillis());
+    Intent syncVotes = new Intent(
+      Intent.ACTION_INSERT,
+      UDJEventProvider.PLAYLIST_ADD_REQUEST_URI,
+      this,
+      PlaylistSyncService.class);
+    syncVotes.putExtra(Constants.ACCOUNT_EXTRA, account);
+    PendingIntent pe = PendingIntent.getService(
+      this, 0, syncVotes, 0);
+    addNotification.setLatestEventInfo(
+      this, 
+      getString(R.string.song_add_failed_title),
+      getString(R.string.song_add_failed_content),
+      pe);
+    addNotification.flags |= Notification.FLAG_AUTO_CANCEL;
+    NotificationManager nm = 
+      (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+    nm.notify(SONG_ADDED_ID, addNotification);
+
   }
 
   private void clearAddNotification(){
@@ -283,7 +306,9 @@ public class PlaylistSyncService extends IntentService{
 
   private void notifySongsAdded(){
     Notification addNotification = new Notification(
-      R.drawable.icon, "Songs Added", System.currentTimeMillis());
+      R.drawable.icon, 
+      getString(R.string.song_added_notification_title), 
+      System.currentTimeMillis());
     PendingIntent pe = PendingIntent.getActivity(
       this, 0, null, 0);
     addNotification.setLatestEventInfo(
