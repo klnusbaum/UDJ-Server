@@ -100,8 +100,8 @@ public:
   static const QByteArray getCreateEventJSON(
     const QString& eventName,
     const QString& password="", 
-    float latitude=getInvalidLat(),
-    float longitude=getInvalidLong());
+    double latitude=getInvalidLat(),
+    double longitude=getInvalidLong());
 
   /**
    * \brief Gets the JSON necesary for creating an event.
@@ -117,8 +117,8 @@ public:
   static const QByteArray getCreateEventJSON(
     const QString& eventName,
     const QString& password, 
-    float latitude,
-    float longitude,
+    double latitude,
+    double longitude,
     bool &success);
 
   /**
@@ -250,8 +250,8 @@ public:
    *
    * @return The value indicating and invalid latitude value.
    */
-  static const float& getInvalidLat(){
-    static const float invalidLat = 100;
+  static const double& getInvalidLat(){
+    static const double invalidLat = 100;
     return invalidLat;
   }
 
@@ -260,8 +260,8 @@ public:
    *
    * @return The value indicating and invalid longitude value.
    */
-  static const float& getInvalidLong(){
-    static const float invalidLong = 200;
+  static const double& getInvalidLong(){
+    static const double invalidLong = 200;
     return invalidLong;
   }
 

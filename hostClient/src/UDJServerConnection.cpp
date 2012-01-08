@@ -130,8 +130,8 @@ void UDJServerConnection::endEvent(){
 void UDJServerConnection::createEvent(
   const QString& eventName,
   const QString& password,
-  const float &latitude,
-  const float &longitude)
+  const double &latitude,
+  const double &longitude)
 {
   QNetworkRequest createEventRequest(getCreateEventUrl());
   prepareJSONRequest(createEventRequest);
@@ -475,8 +475,8 @@ void UDJServerConnection::parseLocationResponse(QNetworkReply *reply){
     createEvent(
       eventName,
       eventPassword,
-      outputValues[3].toFloat(),
-      outputValues[4].toFloat()); 
+      outputValues[3].toDouble(),
+      outputValues[4].toDouble()); 
   }
 }
 

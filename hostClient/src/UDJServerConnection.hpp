@@ -166,8 +166,8 @@ public slots:
   void createEvent(
     const QString& eventName,
     const QString& password,
-    const float &latitude,
-    const float &longitude);
+    const double &latitude,
+    const double &longitude);
 
   /**
    * \brief Ends the current event.

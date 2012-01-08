@@ -85,8 +85,8 @@ const std::vector<library_song_id_t> JSONHelper::getUpdatedLibIds(
 const QByteArray JSONHelper::getCreateEventJSON(
   const QString& eventName,
   const QString& password, 
-  float latitude,
-  float longitude)
+  double latitude,
+  double longitude)
 {
   bool success;
   return getCreateEventJSON(eventName, password, latitude, longitude, success);
@@ -95,8 +95,8 @@ const QByteArray JSONHelper::getCreateEventJSON(
 const QByteArray JSONHelper::getCreateEventJSON(
   const QString& eventName,
   const QString& password, 
-  float latitude,
-  float longitude,
+  double latitude,
+  double longitude,
   bool &success)
 {
   QVariantMap eventToCreate;
