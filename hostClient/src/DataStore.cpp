@@ -472,6 +472,24 @@ void DataStore::createNewEvent(
   serverConnection->createEvent(name, password);
 }
 
+void DataStore::createNewEvent(
+  const QString& name, 
+  const QString& password,
+  const QString& streetAddress,
+  const QString& city,
+  const QString& state,
+  const QString& zipcode)
+{
+  eventName = name;
+  serverConnection->createEvent(
+    name, 
+    password,
+    streetAddress,
+    city,
+    state,
+    zipcode);
+}
+
 void DataStore::syncLibrary(){
   QSqlQuery getUnsyncedSongs(database);
   EXEC_SQL(

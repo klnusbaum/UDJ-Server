@@ -21,8 +21,10 @@
 #include <QNetworkReply>
 #include <QBuffer>
 #include <QRegExp>
+#include <QStringList>
 #include "UDJServerConnection.hpp"
 #include "JSONHelper.hpp"
+#include "GeocoderApiKey.hpp"
 
 Q_DECLARE_METATYPE(std::vector<UDJ::client_request_id_t>)
 namespace UDJ{
@@ -103,10 +105,39 @@ void UDJServerConnection::createEvent(
   netAccessManager->put(createEventRequest, eventJSON);
 }
 
+void UDJServerConnection::createEvent(
+  const QString& eventName,
+  const QString& password,
+  const QString& streetAddress,
+  const QString& city,
+  const QString& state,
+  const QString& zipcode)
+{
+  DEBUG_MESSAGE("Doing location request")
+  QNetworkRequest locationRequest(
+    getLocationUrl(streetAddress, city, state, zipcode));
+  QNetworkReply *reply = netAccessManager->get(locationRequest);
+  reply->setProperty(getEventNameProperty(), eventName);
+  reply->setProperty(getEventPasswordProperty(), password);
+}
+
 void UDJServerConnection::endEvent(){
   QNetworkRequest endEventRequest(getEndEventUrl());
   endEventRequest.setRawHeader(getTicketHeaderName(), ticket_hash);
   netAccessManager->deleteResource(endEventRequest);
+}
+
+void UDJServerConnection::createEvent(
+  const QString& eventName,
+  const QString& password,
+  const float &latitude,
+  const float &longitude)
+{
+  QNetworkRequest createEventRequest(getCreateEventUrl());
+  prepareJSONRequest(createEventRequest);
+  const QByteArray eventJSON = JSONHelper::getCreateEventJSON(
+    eventName, password, latitude, longitude);
+  netAccessManager->put(createEventRequest, eventJSON);
 }
 
 void UDJServerConnection::addSongToAvailableSongs(library_song_id_t songToAdd){
@@ -251,6 +282,9 @@ void UDJServerConnection::recievedReply(QNetworkReply *reply){
   }
   else if(reply->request().url().path() == getUsersUrl().path()){
     handleRecievedNewEventGoers(reply);
+  }
+  else if(isLocationUrl(reply->request().url())){
+    handleLocaitonResponse(reply);
   }
   else{
     DEBUG_MESSAGE("Recieved unknown response")
@@ -411,6 +445,41 @@ void UDJServerConnection::handleRecievedNewEventGoers(QNetworkReply *reply){
   } 
 }
 
+void UDJServerConnection::handleLocaitonResponse(QNetworkReply *reply){
+  DEBUG_MESSAGE("Handling location reply response");
+  if(reply->error() == QNetworkReply::NoError){
+    parseLocationResponse(reply);
+  }
+  else{
+    QString locationError = QString(reply->readAll());
+    DEBUG_MESSAGE("Error retreving location" << locationError.toStdString())
+    emit eventCreationFailed("Failed to create event. There was an error" 
+      "verifying your locaiton. Please change it and try again.");
+  }
+
+}
+
+void UDJServerConnection::parseLocationResponse(QNetworkReply *reply){
+  DEBUG_MESSAGE("Parsing location resposne");
+  QString response(reply->readAll());
+  QStringList outputValues = response.split(",");
+  if(outputValues[2] != "200"){
+    DEBUG_MESSAGE("Error retreving location" << outputValues[2].toStdString())
+    emit eventCreationFailed("Failed to create event. There was an error " 
+      "verifying your locaiton. Please change it and try again.");
+  }
+  else{
+    QString eventName = reply->property(getEventNameProperty()).toString();
+    QString eventPassword = reply->property(
+      getEventPasswordProperty()).toString();
+    createEvent(
+      eventName,
+      eventPassword,
+      outputValues[3].toFloat(),
+      outputValues[4].toFloat()); 
+  }
+}
+
 QUrl UDJServerConnection::getLibAddSongUrl() const{
   return QUrl(getServerUrlPath() + "users/" + QString::number(user_id) +
     "/library/songs");
@@ -482,5 +551,24 @@ bool UDJServerConnection::isActivePlaylistRemoveUrl(const QString& path) const{
   return rx.exactMatch(path);
 }
 
+QUrl UDJServerConnection::getLocationUrl(
+  const QString& streetAddress,
+  const QString& city,
+  const QString& state,
+  const QString& zipcode) const
+{
+  QUrl toReturn("https://webgis.usc.edu/Services/"
+    "Geocode/WebService/GeocoderWebServiceHttpNonParsed_V02_96.aspx");
+  toReturn.addQueryItem("apiKey", GEOCODER_API_KEY);
+  toReturn.addQueryItem("version" , "2.96");
+  toReturn.addQueryItem("streetAddress" , streetAddress);
+  toReturn.addQueryItem("state",state);
+  toReturn.addQueryItem("zipcode",zipcode);
+  toReturn.addQueryItem("format", "csv");
+  if(city != ""){
+    toReturn.addQueryItem("city", city);
+  }
+  return toReturn;
+}
 
 }//end namespace

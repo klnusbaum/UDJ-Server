@@ -669,6 +669,14 @@ public slots:
     const QString& name, 
     const QString& password);
 
+  void createNewEvent(
+    const QString& name, 
+    const QString& password,
+    const QString& streetAddress,
+    const QString& city,
+    const QString& state,
+    const QString& zipcode);
+
   /** 
    * \brief Ends the current event.
    */

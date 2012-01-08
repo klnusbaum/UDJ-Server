@@ -63,7 +63,7 @@ QString AddressWidget::getBadInputs() const{
   }
   if(!getZipcodeRegex().exactMatch(zipcode->text())){
     toReturn += QString::number(errorCounter++) + 
-      ". Zipcode invalid.\n";
+      ". Zipcode invalid.";
   }
   return toReturn;
 }

@@ -22,7 +22,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QLabel>
-#include <QVBoxLayout>
+#include <QGridLayout>
 #include <QProgressDialog>
 #include <QMessageBox>
 #include <QCheckBox>
@@ -58,9 +58,14 @@ CreateEventWidget::CreateEventWidget(
 
 void CreateEventWidget::setupUi(){
   eventForm = new QWidget(this);
-  nameEdit = new QLineEdit(tr("Name of event"));
+  nameEdit = new QLineEdit();
+  QLabel *nameLabel = new QLabel(tr("Name of event"));
+  nameLabel->setBuddy(nameEdit);
+  passwordEdit = new QLineEdit();
+  QLabel *passwordLabel = new QLabel(tr("Password (optional)"));
+  passwordLabel->setBuddy(passwordEdit);
+  
   useAddress = new QCheckBox(tr("Provide Address")); 
-  passwordEdit = new QLineEdit(tr("Password (optional)"));
   addressWidget = new AddressWidget(this);
   addressWidget->setEnabled(false);
   connect(
@@ -72,13 +77,15 @@ void CreateEventWidget::setupUi(){
   createEventButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
   createLabel = new QLabel(tr("Create a New Event"));
 
-  QVBoxLayout *mainLayout = new QVBoxLayout;
-  mainLayout->addWidget(createLabel, Qt::AlignCenter);
-  mainLayout->addWidget(nameEdit);
-  mainLayout->addWidget(passwordEdit);
-  mainLayout->addWidget(useAddress);
-  mainLayout->addWidget(addressWidget);
-  mainLayout->addWidget(createEventButton);
+  QGridLayout *mainLayout = new QGridLayout;
+  mainLayout->addWidget(createLabel, 0,0, Qt::AlignCenter);
+  mainLayout->addWidget(nameLabel, 1,0);
+  mainLayout->addWidget(nameEdit, 1,1);
+  mainLayout->addWidget(passwordLabel, 2,0);
+  mainLayout->addWidget(passwordEdit, 2,1);
+  mainLayout->addWidget(useAddress, 3, 0, 1,2);
+  mainLayout->addWidget(addressWidget, 4, 0,1,2);
+  mainLayout->addWidget(createEventButton, 5,0,1,2);
 
   eventForm->setLayout(mainLayout);
   setMainWidget(eventForm);
@@ -87,12 +94,21 @@ void CreateEventWidget::setupUi(){
 
 void CreateEventWidget::doCreation(){
   showLoadingText();
+  if(nameEdit->text() == ""){
+    eventCreateFail("You must provide a name for your event." );
+    return;
+  }
+    
   if(useAddress->isChecked()){
     QString badInputs = addressWidget->getBadInputs();
     if(badInputs == ""){
       dataStore->createNewEvent(
         nameEdit->text(),
-        passwordEdit->text());
+        passwordEdit->text(),
+        addressWidget->getAddress(),
+        addressWidget->getCity(),
+        addressWidget->getState(),
+        addressWidget->getZipcode());
     }
     else{
       eventCreateFail("The address you supplied is invalid. Please correct " 
