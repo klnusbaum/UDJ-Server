@@ -18,12 +18,14 @@
  */
 #include "CreateEventWidget.hpp"
 #include "DataStore.hpp"
+#include "AddressWidget.hpp"
 #include <QLineEdit>
 #include <QPushButton>
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QProgressDialog>
 #include <QMessageBox>
+#include <QCheckBox>
 
 
 namespace UDJ{
@@ -57,8 +59,15 @@ CreateEventWidget::CreateEventWidget(
 void CreateEventWidget::setupUi(){
   eventForm = new QWidget(this);
   nameEdit = new QLineEdit(tr("Name of event"));
+  useAddress = new QCheckBox(tr("Provide Address")); 
   passwordEdit = new QLineEdit(tr("Password (optional)"));
-  locationEdit = new QLineEdit(tr("Location (optional)"));
+  addressWidget = new AddressWidget(this);
+  addressWidget->setEnabled(false);
+  connect(
+    useAddress,
+    SIGNAL(toggled(bool)),
+    addressWidget,
+    SLOT(setEnabled(bool)));
   createEventButton = new QPushButton(tr("Create Event"));
   createEventButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
   createLabel = new QLabel(tr("Create a New Event"));
@@ -67,7 +76,8 @@ void CreateEventWidget::setupUi(){
   mainLayout->addWidget(createLabel, Qt::AlignCenter);
   mainLayout->addWidget(nameEdit);
   mainLayout->addWidget(passwordEdit);
-  mainLayout->addWidget(locationEdit);
+  mainLayout->addWidget(useAddress);
+  mainLayout->addWidget(addressWidget);
   mainLayout->addWidget(createEventButton);
 
   eventForm->setLayout(mainLayout);
@@ -77,9 +87,21 @@ void CreateEventWidget::setupUi(){
 
 void CreateEventWidget::doCreation(){
   showLoadingText();
-  dataStore->createNewEvent(
-    nameEdit->text(),
-    passwordEdit->text());
+  if(useAddress->isChecked()){
+    QString badInputs = addressWidget->getBadInputs();
+    if(badInputs == ""){
+      dataStore->createNewEvent(
+        nameEdit->text(),
+        passwordEdit->text());
+    }
+    else{
+      eventCreateFail("The address you supplied is invalid. Please correct " 
+        "the following errors:\n\n" + badInputs);
+    }
+  }
+  else{
+    dataStore->createNewEvent(nameEdit->text(), passwordEdit->text());
+  }
 }
 
 void CreateEventWidget::eventCreateSuccess(){

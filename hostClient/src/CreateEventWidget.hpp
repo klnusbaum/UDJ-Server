@@ -24,10 +24,11 @@ class QLineEdit;
 class QPushButton;
 class QLabel;
 class QProgressDialog;
+class QCheckBox;
 
 namespace UDJ{
 
-
+class AddressWidget;
 class DataStore;
 
 /** \brief Widget used to create new events. */
@@ -74,8 +75,9 @@ private:
   /** \brief lineedit used to the password of the event */
   QLineEdit *passwordEdit;
 
-  /** \brief lineedit used to the location of the event */
-  QLineEdit *locationEdit;
+  QCheckBox *useAddress;
+
+  AddressWidget *addressWidget;
 
   /** \brief Lable to display instructions */
   QLabel *createLabel;
