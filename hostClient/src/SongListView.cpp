@@ -18,6 +18,7 @@
  */
 #include "SongListView.hpp"
 #include "DataStore.hpp"
+#include "Utils.hpp"
 #include <QSqlQueryModel>
 #include <QSqlQuery>
 #include <QAction>
@@ -36,6 +37,7 @@ SongListView::SongListView(DataStore *dataStore, QWidget *parent):
   currentSongListId(-1)
 {
   setEditTriggers(QAbstractItemView::NoEditTriggers);
+  createActions();
   songListEntryModel = new QSqlQueryModel(this);
   setModel(songListEntryModel);
   horizontalHeader()->setStretchLastSection(true);
@@ -50,10 +52,18 @@ SongListView::SongListView(DataStore *dataStore, QWidget *parent):
 }
 
 void SongListView::handleContextMenuRequest(const QPoint &pos){
-/*  QMenu contextMenu(this);
-  contextMenu.addAction(addToActivePlaylist);
-  contextMenu.addAction(removeFromAvailableMusic);
-  contextMenu.exec(QCursor::pos());*/
+  QMenu contextMenu(this);
+  contextMenu.addAction(removeFromSongList);
+  contextMenu.exec(QCursor::pos());
+}
+
+void SongListView::createActions(){
+  removeFromSongList = new QAction(tr("Remove From Song List"), this);
+  connect(
+    removeFromSongList,
+    SIGNAL(triggered()),
+    this,
+    SLOT(removeSelectedSongsFromList()));
 }
 
 void SongListView::onSongListEntriesChanged(
@@ -79,6 +89,15 @@ void SongListView::onSongListDelete(song_list_id_t deletedId){
   if(deletedId == currentSongListId){
     emit canNoLongerDisplay();
   }
+}
+
+void SongListView::removeSelectedSongsFromList(){
+  dataStore->removeSongsFromSongList(
+    currentSongListId,
+    Utils::getSelectedIds<song_list_entry_id_t>(
+      this,
+      songListEntryModel,
+      DataStore::getSongListEntryIdColName()));
 }
 
 

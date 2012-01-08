@@ -960,6 +960,29 @@ void DataStore::addSongsToSongList(
   emit songListModified(songListId);
 }
 
+void DataStore::removeSongsFromSongList(
+  const song_list_id_t& songListId,
+  const std::vector<song_list_entry_id_t>& songsToDelete
+)
+{
+  QVariantList toDelete;
+  for(
+    std::vector<song_list_entry_id_t>::const_iterator it= songsToDelete.begin();
+    it!=songsToDelete.end();
+    ++it)
+  {
+    toDelete << QVariant::fromValue<song_list_entry_id_t>(*it);
+  }
+  QSqlQuery bulkDelete(database);
+  bulkDelete.prepare("DELETE FROM " + getSongListEntryTableName() +  " "
+    "WHERE " + getSongListEntryIdColName() + "= ?"); 
+  bulkDelete.addBindValue(toDelete);
+  EXEC_BULK_QUERY("Error removing songs from library", 
+    bulkDelete)
+  if(bulkDelete.lastError().type() == QSqlError::NoError){
+    emit songListModified(songListId);
+  }
+}
 
 
 } //end namespace

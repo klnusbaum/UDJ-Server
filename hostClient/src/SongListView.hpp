@@ -22,6 +22,7 @@
 #include <QTableView>
 
 class QSqlQueryModel;
+class QAction;
 
 namespace UDJ{
 
@@ -56,11 +57,15 @@ private:
   /** @name Private Memeber */
   //@{
 
+  void createActions();
+
   /**
    * \brief The data store containing music that could potentially be added
    * to the playlist.
    */
   DataStore *dataStore;
+
+  QAction *removeFromSongList;
 
   song_list_id_t currentSongListId;
  
@@ -90,6 +95,8 @@ private slots:
   void handleContextMenuRequest(const QPoint &pos);
 
   void onSongListDelete(song_list_id_t deletedId);
+
+  void removeSelectedSongsFromList();
 
   //@}
 };
