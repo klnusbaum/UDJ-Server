@@ -20,7 +20,6 @@
 #define ACTIVE_PLAYLIST_VIEW_HPP
 #include "ConfigDefs.hpp"
 #include <QTableView>
-#include <vector>
 
 class QSqlRelationalTableModel;
 class QAction;
@@ -53,13 +52,6 @@ private:
 
   /** @name Private Functions */
   //@{
- 
-  /**
-   * \brief Retrieves the playlist id's of the currently selected songs.
-   *
-   * @return The playlist id's of the currently selected songs.
-   */
-  std::vector<playlist_song_id_t> getSelectedSongs() const;
 
   /**
    * \brief Initializes actions used in the ActivePlaylistView

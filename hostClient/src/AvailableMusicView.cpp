@@ -18,6 +18,7 @@
  */
 #include "AvailableMusicView.hpp"
 #include "DataStore.hpp"
+#include "Utils.hpp"
 #include <QSqlRelationalTableModel>
 #include <QAction>
 #include <QMenu>
@@ -80,37 +81,19 @@ void AvailableMusicView::handleContextMenuRequest(const QPoint &pos){
   contextMenu.exec(QCursor::pos());
 }
 
-std::vector<library_song_id_t> AvailableMusicView::getSelectedSongs() const{
-  QModelIndexList selected = selectedIndexes();
-  std::vector<library_song_id_t> selectedLibs;
-  std::set<int> rows;
-  for(
-    QModelIndexList::const_iterator it = selected.begin();
-    it != selected.end();
-    ++it
-  )
-  {
-    rows.insert(it->row()); 
-  }
-  for(
-    std::set<int>::const_iterator it = rows.begin();
-    it != rows.end();
-    ++it
-  )
-  {
-    QSqlRecord libRecordToAdd = availableMusicModel->record(*it);
-    selectedLibs.push_back(libRecordToAdd.value(
-      DataStore::getActivePlaylistLibIdColName()).value<library_song_id_t>());
-  }
-  return selectedLibs;
-}
-
 void AvailableMusicView::addSongsToActivePlaylist(){
-  dataStore->addSongsToActivePlaylist(getSelectedSongs()); 
+  dataStore->addSongsToActivePlaylist(Utils::getSelectedIds<library_song_id_t>(
+    this,
+    availableMusicModel,
+    DataStore::getActivePlaylistLibIdColName()));
 }
 
 void AvailableMusicView::removeSongsFromAvailableMusic(){
-  dataStore->removeSongsFromAvailableMusic(getSelectedSongs());  
+  dataStore->removeSongsFromAvailableMusic(
+    Utils::getSelectedIds<library_song_id_t>(
+      this,
+      availableMusicModel,
+      DataStore::getActivePlaylistLibIdColName()));
 }
 
 void AvailableMusicView::updateView(){

@@ -18,13 +18,13 @@
  */
 #include "LibraryView.hpp"
 #include "DataStore.hpp"
+#include "Utils.hpp"
 #include <QSqlQueryModel>
 #include <QHeaderView>
 #include <QContextMenuEvent>
 #include <QMenu>
 #include <QSqlRecord>
 #include <QSqlQuery>
-#include <set>
 	
 
 namespace UDJ{
@@ -100,41 +100,29 @@ void LibraryView::handleContextMenuRequest(const QPoint &pos){
   }
 }
 
-std::vector<library_song_id_t> LibraryView::getSelectedSongs(){
-  QModelIndexList selected = selectedIndexes();
-  std::vector<library_song_id_t> selectedIds;
-  std::set<int> rows;
-  for(
-    QModelIndexList::const_iterator it = selected.begin();
-    it != selected.end();
-    ++it
-  )
-  {
-    rows.insert(it->row()); 
-  }
-  for(
-    std::set<int>::const_iterator it = rows.begin();
-    it != rows.end();
-    ++it
-  )
-  {
-    QSqlRecord libRecordToAdd = libraryModel->record(*it);
-    selectedIds.push_back(libRecordToAdd.value(
-      DataStore::getLibIdColName()).value<library_song_id_t>());
-  }
-  return selectedIds;
-}
-
 void LibraryView::addSongToAvailableMusic(){
-  dataStore->addSongsToAvailableSongs(getSelectedSongs());
+  dataStore->addSongsToAvailableSongs(
+    Utils::getSelectedIds<library_song_id_t>(
+      this,
+      libraryModel,
+      DataStore::getLibIdColName()));
 }
 
 void LibraryView::deleteSongs(){
-  dataStore->removeSongsFromLibrary(getSelectedSongs());
+  dataStore->removeSongsFromLibrary(
+    Utils::getSelectedIds<library_song_id_t>(
+      this,
+      libraryModel,
+      DataStore::getLibIdColName()));
 }
 
 void LibraryView::addSongsToSongList(song_list_id_t songListId){
-  dataStore->addSongsToSongList(songListId, getSelectedSongs());
+  dataStore->addSongsToSongList(
+    songListId,
+    Utils::getSelectedIds<library_song_id_t>(
+      this,
+      libraryModel,
+      DataStore::getLibIdColName()));
 }
 
 

@@ -19,7 +19,6 @@
 #ifndef AVAILABLE_MUSIC_VIEW_HPP
 #define AVAILABLE_MUSIC_VIEW_HPP
 #include <QTableView>
-#include <vector>
 #include "ConfigDefs.hpp"
 
 class QSqlRelationalTableModel;
@@ -72,14 +71,6 @@ private:
   /** @name Private Functions */
   //@{
  
-  /** 
-   * \brief Retrieves a list of all the currently selected songs.
-   *
-   * @return A vector of id's corresponding to all the currnetly selected 
-   * songs in the available music.
-   */
-  std::vector<library_song_id_t> getSelectedSongs() const;
-
   /** 
    * \brief Initializes all the actions for this view.
    */

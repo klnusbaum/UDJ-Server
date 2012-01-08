@@ -44,6 +44,7 @@ SET(UDJ_HDRS
   MusicFinder.hpp
 	ConfigDefs.hpp
   JSONHelper.hpp
+  Utils.hpp
   qt-json/json.h
 )
 

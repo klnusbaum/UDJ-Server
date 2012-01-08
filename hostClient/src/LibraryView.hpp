@@ -20,7 +20,6 @@
 #define LIBRARY_VIEW_HPP
 #include "ConfigDefs.hpp"
 #include <QTableView>
-#include <vector>
 
 class QContextMenuEvent;
 class QSqlQueryModel;
@@ -83,13 +82,6 @@ private:
 
   /** \brief Initilaizes actions.  */
   void createActions();
-
-  /** 
-   * \brief Gets the list of songs currently selected.
-   *
-   * @return The ids of the currently selected songs.
-   */
-  std::vector<library_song_id_t> getSelectedSongs();
 
   /**
    * \brief Gets the name used for the delete context menu item.

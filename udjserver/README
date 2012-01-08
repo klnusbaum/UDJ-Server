@@ -6,12 +6,11 @@ sqlite3
 To run this server for testing/debug purposes do the following:
 
 1. First run the resetDebugDB script. First supply a full abosulte file 
-path for where you'd like the the udj database to reside. 
-Then when it asks you if you want to create a 
-super user, just say no. This creates the database that UDJ needs. You only
-need to do this once. (note you can continually run this script to reset the
-database back to it's original state. subsequent runnings will not prompt you
-for the location of the databases though).
+path for where you'd like the the udj database to reside. This creates the 
+database that UDJ needs. You only need to do this once. 
+(note you can continually run this script to reset the database back to it's 
+original state. subsequent runnings will not prompt you for the location of 
+the databases though).
 
 2. To actually start the server up, run the debugRunServer script. The server
 will then be up and you can make http requests to it.
