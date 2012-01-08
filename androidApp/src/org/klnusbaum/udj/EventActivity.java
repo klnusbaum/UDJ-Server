@@ -66,6 +66,13 @@ import org.klnusbaum.udj.network.EventCommService;
 public class EventActivity extends FragmentActivity
   implements LoaderManager.LoaderCallbacks<Cursor>
 {
+  private BroadcastReceiver eventEndedReciever = new BroadcastReceiver(){
+    public void onReceive(Context context, Intent intent){
+      Log.d(TAG, "Recieved event ended");
+      unregisterReceiver(eventEndedReciever);
+    }
+  };
+
 
   private static final String QUIT_DIALOG_TAG = "quit_dialog";
   private static final int CURRENT_SONG_LOADER_ID = 1;
@@ -88,6 +95,14 @@ public class EventActivity extends FragmentActivity
     //TODO hanle if no event
     getPlaylistFromServer();    
     getSupportLoaderManager().initLoader(CURRENT_SONG_LOADER_ID, null, this);
+  }
+
+  protected void onResume(){
+    long eventId = AccountManager.get(this).getUserData(
+      Constants.EVENT_ID_DATA);
+    if(eventId == NO_EVENT_ID){
+      displayEventOverDialog();
+    }
   }
 
   private void getPlaylistFromServer(){

@@ -140,13 +140,19 @@ public class EventListFragment extends ListFragment implements
       Log.d(TAG, "Recieved event broadcats");
       dismissProgress();
       getActivity().unregisterReceiver(eventJoinedReceiver);
+      AccountManager am = AccountManager.get(context);
+      am.setUserData(account, Constants.EVENT_JOIN_STATUS, 
+        Constants.EVENT_JOIN_OK);
       if(intent.getAction().equals(Constants.JOINED_EVENT_ACTION)){
         Intent eventActivityIntent = new Intent(context, EventActivity.class);
         eventActivityIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
         startActivity(eventActivityIntent); 
       }
+      else if(intent.getAction().equals(Constants.EVENT_ENDED_ACTION)){
+        //TODO inform users of event joining failure.
+      }
       else if(intent.getAction().equals(Constants.EVENT_JOIN_FAILED_ACTION)){
-        //TODO inform user of event joining failure
+        //TODO inform user of event joining failure.
       }
     }
   };
@@ -189,7 +195,24 @@ public class EventListFragment extends ListFragment implements
     if(lastSearch == null){
       lastSearch = new LocationEventSearch(lastKnown);
     }
+    //TODO only refresh if the list doesn't have anything in it.
     refreshEventList();
+  }
+
+  public void onResume(){
+    if(account != null){
+      AccountManager am = AccountManager.get(this);
+      long evenId = am.getUserData(account, Constants.EVENT_ID_DATA);
+      if(eventId != NO_EVENT_ID){
+        Intent startEventActivity = 
+          new Intent(getActivity(), EventActivity.class);
+        startActivity(startEventActivity);
+      }
+      int joinStatus = am.getUserData(account, Constants.EVENT_JOIN_STATUS):
+      if(joinStatus == Constants.EVENT_JOIN_FAILED){
+        dismissProgress(); 
+        //TODO inform user joining failed.
+      }
   }
 
   public void setEventSearch(EventSearch newSearch){
@@ -317,6 +340,9 @@ public class EventListFragment extends ListFragment implements
   }
 
   private void showProgress(){
+    getActivity().registerReceiver(
+      eventJoinedReceiver, 
+      new IntentFilter(Constants.EVENT_ENDED_ACTION));
     getActivity().registerReceiver(
       eventJoinedReceiver, 
       new IntentFilter(Constants.JOINED_EVENT_ACTION));

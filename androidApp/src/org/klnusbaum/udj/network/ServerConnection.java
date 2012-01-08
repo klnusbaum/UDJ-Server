@@ -67,6 +67,7 @@ import org.json.JSONException;
 import org.klnusbaum.udj.containers.LibraryEntry;
 import org.klnusbaum.udj.containers.Event;
 import org.klnusbaum.udj.UDJEventProvider;
+import org.klnusbaum.udj.exceptions.EventOverException;
 /**
  * A connection to the UDJ server
  */
@@ -170,29 +171,63 @@ public class ServerConnection{
     }
   }
 
-  public static String doGet(URI uri, String ticketHash)
+  private static basicResponseErrorCheck(HttpResponse response)
     throws AuthenticationException, IOException
   {
-    Log.d(TAG, "Doing get with uri: " + uri);
-    final HttpGet get = new HttpGet(uri);
-    get.addHeader(TICKET_HASH_HEADER, ticketHash);
-    final HttpResponse resp = getHttpClient().execute(get);
-    final String response = EntityUtils.toString(resp.getEntity());
-    Log.d(TAG, "Get response: \"" + response +"\"");
-    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
-      return response;
-    }
-    else if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
+    basicResponseErrorCheck(response, false);
+  }
+
+  private static basicResponseErrorCheck(HttpResponse response, 
+    boolean createdIsOk)
+    throws AuthenticationException, IOException
+  {
+    if(response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
       throw new AuthenticationException();
     }
-    else{
+    else if(
+      response.getStatusLine().getStatusCode() != HttpStatus.SC_OK && 
+      !(
+        createdOk && 
+        response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED)
+      )
+    {
       throw new IOException(response);
     }
   }
 
-  public static String doPut(URI uri, String ticketHash, String payload)
+
+  public static HttpResponse doGet(URI uri, String ticketHash)
+  {
+    Log.d(TAG, "Doing get with uri: " + uri);
+    final HttpGet get = new HttpGet(uri);
+    get.addHeader(TICKET_HASH_HEADER, ticketHash);
+    return getHttpClient().execute(get);
+  }
+
+  public static String doSimpleGet(Uri, String ticketHash)
     throws AuthenticationException, IOException
   {
+    final HttpResponse httpResp = doGet(Uri, ticketHash);
+    basicResponseErrorCheck(httpResp);
+    final String response = EntityUtils.toString(resp.getEntity());
+    Log.d(TAG, "Simple response: \"" + response +"\"");
+    return response;
+  }
+
+  public static String doEventRelatedGet(URI uri, String ticketHash)
+    throws AuthenticationException, IOException, EventOverException
+  {
+    final HttpResponse httpResp = doGet(Uri, ticketHash);
+    final String response = EntityUtils.toString(resp.getEntity());
+    Log.d(TAG, "Event related response: \"" + response +"\"");
+    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_GONE){
+      throw new EventOverException();
+    }
+    basicResponseErrorCheck(httpResp);
+    return response;
+  }
+
+  public static HttpResponse doPut(URI uri, String ticketHash, String payload){
     Log.d(TAG, "Doing put to uri: " + uri);
     Log.d(TAG, "Put payload is: "+ (payload != null ? payload : "no payload"));
     String toReturn = null;
@@ -204,22 +239,31 @@ public class ServerConnection{
       put.addHeader(entity.getContentType());
       put.setEntity(entity);
     }
+    return getHttpClient().execute(put);
+  }
+
+  public static String doSimplePut(URI uri, String ticketHash, String payload)
+    throws AuthenticationException, IOException
+  {
+    final HttpResponse resp = doPut(uri, ticketHash, payload);
+    final String response = EntityUtils.toString(resp.getEntity());
+    Log.d(TAG, "Simple Put response: \"" + response +"\"");
+    basicResponseErrorCheck(resp, true);
+    return response;
+  }
+
+  public static String doEventRelatedPut( 
+    URI uri, String ticketHash, String payload)
+    throws AuthenticationException, IOException, EventOverException
+  {
     final HttpResponse resp = getHttpClient().execute(put);
     final String response = EntityUtils.toString(resp.getEntity());
-    Log.d(TAG, "Put response: \"" + response +"\"");
-    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED){
-      toReturn = response;
-    } 
-    else if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
-      throw new AuthenticationException();
+    Log.d(TAG, "Event related Put response: \"" + response +"\"");
+    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_GONE){
+      throw new EventOverException();
     }
-    else{
-      //TODO probably shouldn't be throwing an IOException as that really 
-      //doesn't describe what went wrong.
-      Log.e(TAG, "Error doing put: " + response);
-      throw new IOException();
-    }
-    return toReturn;
+    basicResponseErrorCheck(resp, true);
+    return response;
   }
 
   public static String doPost(URI uri, String authToken, String payload)
@@ -235,36 +279,62 @@ public class ServerConnection{
       post.setEntity(entity);
     }
     post.addHeader(TICKET_HASH_HEADER, authToken);
-    final HttpResponse resp = getHttpClient().execute(post);
-    final String response = EntityUtils.toString(resp.getEntity());
-    Log.d(TAG, "Post response: \"" + response +"\"");
-    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
-      toReturn = response;
-    } 
-    else if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
-      throw new AuthenticationException();
-    }
-    else{
-      throw new IOException();
-    }
-    return toReturn;
+    return getHttpClient().execute(post);
   }
 
-  public static void doDelete(URI uri, String ticketHash)
+  public static String doSimplePost(URI uri, String authToken, String payload)
+    throws AuthenticationException, IOException
+  {
+    final HttpResponse resp = doPost(uri, authToken, payload);
+    final String response = EntityUtils.toString(resp.getEntity());
+    Log.d(TAG, "Simple Post response: \"" + response +"\"");
+    basicResponseErrorCheck(resp, true);
+    return response;
+  }
+
+  public static String doEventRelatedPost(
+    URI uri, String authToken, String payload)
+    throws AuthenticationException, IOException, EventOverException
+  {
+    final HttpResponse resp = doPut(uri, authToken, payload);
+    final String response = EntityUtils.toString(resp.getEntity());
+    Log.d(TAG, "Event related Post response: \"" + response +"\"");
+    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_GONE){
+      throw new EventOverException();
+    }
+    basicResponseErrorCheck(resp, true);
+    return response;
+
+  }
+   
+  public static HttpResponse doDelete(URI uri, String ticketHash)
     throws IOException, AuthenticationException
   {
     Log.d(TAG, "Doing delete to uri: " + uri);
     final HttpDelete delete = new HttpDelete(uri);
     delete.addHeader(TICKET_HASH_HEADER, ticketHash);
-    final HttpResponse resp = getHttpClient().execute(delete);
+    return getHttpClient().execute(delete);
+  }
+
+  public static void doSimpleDelete(URI uri, String ticketHash)
+    throws IOException, AuthenticationException
+  {
+    final HttpResponse resp = doDelete(uri, ticketHash);
     final String response = EntityUtils.toString(resp.getEntity());
     Log.d(TAG, "Delete response: \"" + response +"\"");
-    if(resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK){
-      //TODO probably shouldn't be throwing an IOException as that really 
-      //doesn't describe what went wrong.
-      throw new IOException("Failed to execute delete got status code of "+
-        resp.getStatusLine().getStatusCode());
+    basicResponseErrorCheck(resp);
+  }
+
+  public static void doEventRelatedDelete(URI uri, String ticketHash)
+    throws IOException, AuthenticationException, EventOverException
+  {
+    final HttpResponse resp = doDelete(uri, ticketHash);
+    final String response = EntityUtils.toString(resp.getEntity());
+    Log.d(TAG, "Delete response: \"" + response +"\"");
+    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_GONE){
+      throw new EventOverException();
     }
+    basicResponseErrorCheck(resp);
   }
 
   public static List<Event> getNearbyEvents(
@@ -278,7 +348,7 @@ public class ServerConnection{
         NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT, 
         "/udj/events/" + location.getLatitude() + "/" + location.getLongitude(),
         null, null);
-      JSONArray events = new JSONArray(doGet(eventsQuery, ticketHash));
+      JSONArray events = new JSONArray(doSimpleGet(eventsQuery, ticketHash));
       return Event.fromJSONArray(events);
     }
     catch(URISyntaxException e){
@@ -297,7 +367,7 @@ public class ServerConnection{
         NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT, 
         "/udj/events",
         PARAME_EVENT_NAME+"="+query, null);
-      JSONArray events = new JSONArray(doGet(eventsQuery, ticketHash));
+      JSONArray events = new JSONArray(doSimpleGet(eventsQuery, ticketHash));
       return Event.fromJSONArray(events);
     }
     catch(URISyntaxException e){
@@ -306,21 +376,19 @@ public class ServerConnection{
     }
   }
 
-  public static boolean joinEvent(long eventId, long userId, String ticketHash)
-    throws IOException, AuthenticationException
+  public static void joinEvent(long eventId, long userId, String ticketHash)
+    throws IOException, AuthenticationException, EventOverException
   {
     try{
       URI uri  = new URI(
         NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT, 
         "/udj/events/" + eventId + "/users/"+userId,
         null, null);
-       doPut(uri, ticketHash, null); 
+       doEventRelatedPut(uri, ticketHash, null); 
     }
     catch(URISyntaxException e){
       Log.e(TAG, "URI syntax error in join event");
-      return false; 
     }
-    return true;
   }
 
   public static void leaveEvent(long eventId, long userId, String authToken)
@@ -331,7 +399,12 @@ public class ServerConnection{
         NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT, 
         "/udj/events/"+eventId+"/users/"+userId,
         null, null);
-      doDelete(uri, authToken);
+      try{
+        doEventRelatedDelete(uri, authToken);
+      }
+      catch(EventOverException e){
+        //If we get here that's fine. no worries.
+      }
     }
     catch(URISyntaxException e){
       //TODO inform caller that theire query is bad 
@@ -340,14 +413,15 @@ public class ServerConnection{
 
   public static JSONObject getActivePlaylist(long eventId, 
     String authToken)
-    throws JSONException, ParseException, IOException, AuthenticationException
+    throws JSONException, ParseException, IOException, AuthenticationException,
+    EventOverException
   {
     try{
       URI uri = new URI(
         NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT, 
         "/udj/events/"+eventId+"/active_playlist",
         null, null);
-      return new JSONObject(doGet(uri, authToken));
+      return new JSONObject(doEventRelatedGet(uri, authToken));
     }
     catch(URISyntaxException e){
       return null;
@@ -358,14 +432,15 @@ public class ServerConnection{
 
   public static List<LibraryEntry> availableMusicQuery(
     String query, long eventId, String authToken)
-    throws JSONException, ParseException, IOException, AuthenticationException
+    throws JSONException, ParseException, IOException, AuthenticationException,
+    EventOverException
   {
     try{
       URI uri = new URI(
         NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT,
         "/udj/events/"+eventId+"/available_music",
         "query="+query, null);
-      JSONArray libEntries = new JSONArray(doGet(uri, authToken));
+      JSONArray libEntries = new JSONArray(doEventRelatedGet(uri, authToken));
       return LibraryEntry.fromJSONArray(libEntries);
     }
     catch(URISyntaxException e){
@@ -376,7 +451,8 @@ public class ServerConnection{
 
   public static void addSongsToActivePlaylist(
     HashMap<Long, Long> requests, long eventId, String authToken)
-    throws JSONException, ParseException, IOException, AuthenticationException
+    throws JSONException, ParseException, IOException, AuthenticationException,
+    EventOverException
   {
     try{
       URI uri = new URI(
@@ -386,7 +462,7 @@ public class ServerConnection{
       String payload = getAddToActivePlaylistJSON(requests).toString();
       Log.d(TAG, "Add songs to active playlist payload");
       Log.d(TAG, payload);
-      doPut(uri, authToken, payload); 
+      doEventRelatedPut(uri, authToken, payload); 
     }
     catch(URISyntaxException e){
       //TODO inform caller that theire query is bad 
@@ -409,7 +485,8 @@ public class ServerConnection{
 
   public static HashMap<Long,Long> getAddRequests(
     long userId, long eventId, String authToken)
-    throws JSONException, ParseException, IOException, AuthenticationException
+    throws JSONException, ParseException, IOException, AuthenticationException,
+    EventOverException
   {
     try{
       URI uri = new URI(
@@ -417,7 +494,8 @@ public class ServerConnection{
         "/udj/events/"+eventId+"/active_playlist/users/"+
           userId + "/add_requests",
         null, null);
-      return getRequestsHashMap(new JSONArray(doGet(uri, authToken)));
+      return getRequestsHashMap(
+        new JSONArray(doEventRelatedGet(uri, authToken)));
     }
     catch(URISyntaxException e){
       //TODO inform caller that theire query is bad 
@@ -438,7 +516,8 @@ public class ServerConnection{
 
   public static JSONObject getVoteRequests(
     long userId, long eventId, String authToken)
-    throws JSONException, ParseException, IOException, AuthenticationException
+    throws JSONException, ParseException, IOException, AuthenticationException,
+    EventOverException
   {
     try{
       URI uri = new URI(
@@ -446,7 +525,7 @@ public class ServerConnection{
         "/udj/events/"+eventId+"/active_playlist/users/"+
           userId + "/votes",
         null, null);
-      return new JSONObject(doGet(uri, authToken));
+      return new JSONObject(doEventRelatedGet(uri, authToken));
     }
     catch(URISyntaxException e){
       //TODO inform caller that theire query is bad 
@@ -456,7 +535,7 @@ public class ServerConnection{
 
   public static void doSongVotes(Cursor voteRequests, 
     long eventId, long userId, String authToken)
-    throws IOException, AuthenticationException
+    throws IOException, AuthenticationException, EventOverException
   {
     if(voteRequests.moveToFirst()){
       int idColumnIndex = voteRequests.getColumnIndex(
@@ -473,7 +552,7 @@ public class ServerConnection{
 
   private static void voteOnSong(
     long eventId, long playlistId, long userId, int voteType, String authToken)
-    throws IOException, AuthenticationException
+    throws IOException, AuthenticationException, EventOverException
   {
     String voteString = null;
     if(voteType == UDJEventProvider.UP_VOTE_TYPE){
@@ -488,7 +567,7 @@ public class ServerConnection{
         "/udj/events/"+eventId+"/active_playlist/" + playlistId + "/users/"+
           userId + "/" + voteString,
         null, null);
-      doPost(uri, authToken, null);
+      doEventRelatedPost(uri, authToken, null);
     }
     catch(URISyntaxException e){
       //TODO inform caller that theire query is bad 

@@ -95,43 +95,54 @@ public class EventCommService extends IntentService{
   private void enterEvent(Account account, long eventId, long userId, 
     String authToken, AccountManager am)
   {
+    am.setUserData(
+      account, Constants.EVENT_JOIN_STATUS, Constants.EVENT_JOIN_OK);
     try{
-      if(ServerConnection.joinEvent(eventId, userId, authToken)){
-        ContentResolver cr = getContentResolver();
-        UDJEventProvider.eventCleanup(cr);          
-        HashMap<Long,Long> previousRequests = ServerConnection.getAddRequests(
-          userId, eventId, authToken);
-        UDJEventProvider.setPreviousAddRequests(cr, previousRequests);
-        JSONObject previousVotes = 
-          ServerConnection.getVoteRequests(userId, eventId, authToken);
-        UDJEventProvider.setPreviousVoteRequests(cr, previousVotes);
-        Intent joinedEventIntent = new Intent(Constants.JOINED_EVENT_ACTION);
-        am.setUserData(
-          account, Constants.EVENT_ID_DATA, String.valueOf(eventId));
-        sendBroadcast(joinedEventIntent);
-        return;
-      }
-      else{
-        Intent eventJoinFailedIntent = 
-          new Intent(Constants.EVENT_JOIN_FAILED_ACTION);
-        sendBroadcast(eventJoinFailedIntent);
-        return;
-      }
+      ServerConnection.joinEvent(eventId, userId, authToken)
+      ContentResolver cr = getContentResolver();
+      UDJEventProvider.eventCleanup(cr);          
+      HashMap<Long,Long> previousRequests = ServerConnection.getAddRequests(
+        userId, eventId, authToken);
+      UDJEventProvider.setPreviousAddRequests(cr, previousRequests);
+      JSONObject previousVotes = 
+        ServerConnection.getVoteRequests(userId, eventId, authToken);
+      UDJEventProvider.setPreviousVoteRequests(cr, previousVotes);
+      Intent joinedEventIntent = new Intent(Constants.JOINED_EVENT_ACTION);
+      am.setUserData(
+        account, Constants.EVENT_ID_DATA, String.valueOf(eventId));
+      sendBroadcast(joinedEventIntent);
+      return;
     }
     catch(IOException e){
       Log.e(TAG, "IO exception when joining event");
+      am.setUserData(
+        account, Constants.EVENT_JOIN_STATUS, Constants.EVENT_JOIN_FAILED);
       //TODO notify the user
     }
     catch(JSONException e){
       Log.e(TAG, 
         "JSON exception when joining event");
+      am.setUserData(
+        account, Constants.EVENT_JOIN_STATUS, Constants.EVENT_JOIN_FAILED);
       //TODO notify user
     }
     catch(AuthenticationException e){
       Log.e(TAG, 
         "Authentication exception when joining event");
+      am.setUserData(
+        account, Constants.EVENT_JOIN_STATUS, Constants.EVENT_JOIN_FAILED);
       //TODO notify user
     }
+    catch(EventOverException e){
+      Log.e(TAG, "Event Over Exception when joining event");
+      Intent eventOverIntent = 
+        new Intent(Constants.EVENT_ENDED_ACTION);
+      Log.d(TAG, "Sending event event ended action");
+      sendBroadcast(eventOverIntent);
+      am.setUserData(
+        account, Constants.EVENT_JOIN_STATUS, Constants.EVENT_JOIN_FAILED);
+    }
+
     Intent eventJoinFailedIntent = 
       new Intent(Constants.EVENT_JOIN_FAILED_ACTION);
     Log.d(TAG, "Sending event join failure broadcast");
@@ -145,11 +156,17 @@ public class EventCommService extends IntentService{
     try{
       long eventId = 
         Long.valueOf(am.getUserData(account, Constants.EVENT_ID_DATA));
-      ServerConnection.leaveEvent(eventId, Long.valueOf(userId), authToken);
-      am.setUserData(account, Constants.EVENT_ID_DATA, 
-        String.valueOf(Constants.NO_EVENT_ID));
-      Intent leftEventIntent = new Intent(Constants.LEFT_EVENT_ACTION);
-      sendBroadcast(leftEventIntent);
+      if(eventId != Constants.EVENT_ID_DATA){
+        ServerConnection.leaveEvent(eventId, Long.valueOf(userId), authToken);
+        setEventLeft(account);
+        Intent leftEventIntent = new Intent(Constants.LEFT_EVENT_ACTION);
+        sendBroadcast(leftEventIntent);
+      }
+    }
+    catch(EventOverException e){
+      setEventLeft(account);
+      Intent eventEndedBroadcast = new Intent(Constants.EVENT_ENDED_ACTION);
+      sendBroadcast(eventEndedBroadcast);
     }
     catch(IOException e){
       Log.e(TAG, "IO exception in EventCommService: " + e.getMessage());
@@ -160,5 +177,10 @@ public class EventCommService extends IntentService{
     //TODO need to implement exponential back off when log out fails.
     // 1. This is just nice to the server
     // 2. If we don't log out, there could be problems on the next event joined
+  }
+
+  private void setEventLeft(Account account){
+    am.setUserData(account, Constants.EVENT_ID_DATA, 
+      String.valueOf(Constants.NO_EVENT_ID));
   }
 }

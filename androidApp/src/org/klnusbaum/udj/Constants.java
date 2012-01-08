@@ -31,10 +31,15 @@ public class Constants{
   public static final String ADD_REQUESTS_SYNCED = 
     "org.klnusbaum.udj.addRequestsSynced";
   public static final String LEFT_EVENT_ACTION = "org.klnusbaum.udj.LeftEvent";
+  public static final String EVENT_ENDED_ACTION = 
+    "org.klnusbaum.udj.EventEnded";
   public static final String JOINED_EVENT_ACTION = 
     "org.klnusbaum.udj.JoinedEvent";
   public static final String EVENT_JOIN_FAILED_ACTION = 
     "org.klnusbaum.udj.EventJoinFailed";
+  public static final String EVENT_JOIN_STATUS = "eventJoinStatus";
+  public static final int EVENT_JOIN_FAILED = -1;
+  public static final int EVENT_JOIN_OK = 0;
 
   public static final Uri EVENT_URI = new Uri.Builder().
     authority(Constants.AUTHORITY).appendPath("event").build();
