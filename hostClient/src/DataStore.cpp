@@ -984,5 +984,24 @@ void DataStore::removeSongsFromSongList(
   }
 }
 
+void DataStore::addSongListToAvailableMusic(song_list_id_t songListId){
+  QSqlQuery songList("SELECT " + getSongListEntrySongIdColName() + " FROM " +
+    getSongListEntryTableName() + " WHERE " + 
+    getSongListEntrySongListIdColName() + "=" + QString::number(songListId) +
+    ";",
+    database);
+  EXEC_SQL(
+    "Error retrieving song list songs for addition to available music",
+    songList.exec(),
+    songList)
+  if(songList.next()){
+    std::vector<library_song_id_t> toAddIds;
+    do{
+      toAddIds.push_back(songList.record().value(0).value<library_song_id_t>());
+    }while(songList.next());
+    addSongsToAvailableSongs(toAddIds);
+  }
+}
+
 
 } //end namespace

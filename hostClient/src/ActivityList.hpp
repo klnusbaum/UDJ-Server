@@ -135,6 +135,7 @@ private:
   QStandardItem *eventItem;
   QStandardItem *newSongListItem;
   QAction *deleteSongListAction;
+  QAction *addSongListAction;
 
   //@}
 
@@ -158,6 +159,8 @@ private slots:
   void handleContextMenuRequest(const QPoint& point);
 
   void deleteSelectedSongList();
+
+  void addSongListToAvailableMusic();
 
   //@}
 };

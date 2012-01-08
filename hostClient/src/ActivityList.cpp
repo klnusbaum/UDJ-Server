@@ -59,6 +59,9 @@ void ActivityList::handleContextMenuRequest(const QPoint& point){
   {
     QMenu contextMenu(this);
     contextMenu.addAction(deleteSongListAction);
+    if(dataStore->isCurrentlyHosting()){
+      contextMenu.addAction(addSongListAction);
+    }
     contextMenu.exec(QCursor::pos());
   }
 }
@@ -81,11 +84,17 @@ void ActivityList::itemClicked(const QModelIndex& index){
 
 void ActivityList::createActions(){
   deleteSongListAction = new QAction(tr("Delete Song List"), this); 
+  addSongListAction = new QAction(tr("Add To Available Music"), this);
   connect(
     deleteSongListAction,
     SIGNAL(triggered()),
     this,
     SLOT(deleteSelectedSongList()));
+  connect(
+    addSongListAction,
+    SIGNAL(triggered()),
+    this,
+    SLOT(addSongListToAvailableMusic()));
 }
 
 void ActivityList::setupUi(){
@@ -153,10 +162,16 @@ void ActivityList::deleteSelectedSongList(){
   songListRoot->removeRow(singleSelect.row()); 
 }
 
-
 void ActivityList::switchToLibrary(){
   setCurrentIndex(libraryItem->index());
   emit libraryClicked();
+}
+
+void ActivityList::addSongListToAvailableMusic(){
+  QStandardItem *selectedSongList = model->itemFromIndex(
+    this->selectedIndexes()[0]);
+  dataStore->addSongListToAvailableMusic(
+    selectedSongList->data().value<song_list_id_t>());
 }
 
 

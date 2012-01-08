@@ -691,6 +691,8 @@ public slots:
     const song_list_id_t &songListId,
     const std::vector<library_song_id_t>& songsToRemove);
 
+  void addSongListToAvailableMusic(song_list_id_t songListId);
+
   //@}
 
 signals:
