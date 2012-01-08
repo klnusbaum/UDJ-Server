@@ -37,6 +37,7 @@ from udj.JSONCodecs import getEventDictionary
 from udj.JSONCodecs import getJSONForEvents
 from udj.JSONCodecs import getJSONForAvailableSongs
 from udj.JSONCodecs import getJSONForEventGoers
+from udj.JSONCodecs import getJSONForEventsByLocation
 from udj.JSONCodecs import getActivePlaylistEntryDictionary
 
 
@@ -58,10 +59,12 @@ def getEvents(request):
 @NeedsAuth
 @AcceptsMethods('GET')
 def getNearbyEvents(request, latitude, longitude):
-  #TODO actually have this only return nearby events
-  events = Event.objects.filter(state=u'AC')
-  events_json = getJSONForEvents(events)
+  #TODO This is super ineeficient. We need to switch over to a geo database
+  locations = EventLocation.objects.filter(event__state=u'AC')
+  events_json = getJSONForEventsByLocation(
+    latitude, longitude, locations)
   return HttpResponse(events_json)  
+  
 
 @NeedsAuth
 @AcceptsMethods('PUT')

@@ -6,6 +6,7 @@ from udj.models import EventPassword
 from udj.models import EventGoer
 from django.contrib.auth.models import User
 from datetime import datetime
+import math
 
 def getLibraryEntryFromJSON(songJson, user_id):
   return LibraryEntry( 
@@ -87,4 +88,29 @@ def getJSONForEventGoers(eventGoers):
   for eventGoer in eventGoers:
     toReturn.append(getEventGoerJSON(eventGoer))
   return json.dumps(toReturn)
+
+def getDistanceToLocation(eventLocation, lat2, lon2 ):
+  lat1 = eventLocation.latitude
+  lon1 = eventLocation.longitude
+  radius = 6371 # km
+  dlat = math.radians(lat2-lat1)
+  dlon = math.radians(lon2-lon1)
+  a = math.sin(dlat/2) * math.sin(dlat/2) + math.cos(math.radians(lat1)) \
+      * math.cos(math.radians(lat2)) * math.sin(dlon/2) * math.sin(dlon/2)
+  c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+  d = radius * c
+  return d
+
+
+def getJSONForEventsByLocation(latitude, longitude, eventLocations):
+  toReturn = []
+  lat2 = float(latitude)
+  lon2 = float(longitude)
+  for eventLocation in eventLocations:
+    distance = getDistanceToLocation(eventLocation, lat2, lon2)
+    if distance < 5:
+      toReturn.append(getEventDictionary(eventLocation.event))
+  return json.dumps(toReturn)
+
+
 

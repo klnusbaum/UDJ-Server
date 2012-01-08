@@ -18,7 +18,7 @@ class GetEventsTest(User5TestCase):
   def testGetNearbyEvents(self):
     #TODO This needs to be more robust, however the location functionality
     # isn't fully working just yet
-    response = self.doGet('/udj/events/48.2222/-88.44454')
+    response = self.doGet('/udj/events/40.11381/-88.224083')
     self.assertEqual(response.status_code, 200)
     events = json.loads(response.content)
     self.assertEqual(len(events), 2)

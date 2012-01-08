@@ -30,12 +30,22 @@
     }
   }, 
   {
+    "pk": 4, 
+    "model": "udj.event", 
+    "fields": {
+      "host": 7, 
+      "state": "AC", 
+      "name": "Minnesota Event", 
+      "time_started": "2012-01-08 20:39:41"
+    }
+  }, 
+  {
     "pk" : 1,
     "model" : "udj.eventlocation",
     "fields":{
       "event" : 1,
-      "longitude": "-88.224006", 
-      "latitude": "40.113523"
+      "longitude": -88.224006, 
+      "latitude": 40.113523
     }
   },
   {
@@ -43,8 +53,8 @@
     "model" : "udj.eventlocation",
     "fields":{
       "event" : 2,
-      "longitude": "-88.224006", 
-      "latitude": "40.113523"
+      "longitude": -88.224006, 
+      "latitude": 40.113523
     }
   },
   {
@@ -52,10 +62,19 @@
     "model" : "udj.eventlocation",
     "fields":{
       "event" : 3,
-      "longitude": "-88.224006", 
-      "latitude": "40.113523"
+      "longitude": -88.224006, 
+      "latitude": 40.113523
     }
   },
+  {
+    "pk": 4, 
+    "model": "udj.eventlocation", 
+    "fields": {
+      "latitude": 45.586393, 
+      "event": 4, 
+      "longitude": -94.395722
+    }
+  }, 
   {
     "pk" : 1,
     "model" : "udj.eventendtime",
@@ -1074,6 +1093,24 @@
       "password": "sha1$3e8fb$867e713230d15a88f3f217db569e2409b688109b", 
       "email": "", 
       "date_joined": "2011-12-28 00:36:55"
+    }
+  },
+  {
+    "pk": 7, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "mnuser", 
+      "first_name": "", 
+      "last_name": "", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "last_login": "2012-01-08 20:39:10", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$5460b$1a7e9aca87bcccfb8903dfb6b9f0f7d58a7abf6d", 
+      "email": "", 
+      "date_joined": "2012-01-08 20:39:10"
     }
   }
 ]
