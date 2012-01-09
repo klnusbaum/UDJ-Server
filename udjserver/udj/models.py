@@ -33,7 +33,7 @@ class EventEndTime(models.Model):
         'End time was inserted for an event that is not yet over')
 
   def __unicode__(self):
-    return self.event.name + " ended at " + time_ended
+    return self.event.name + " ended at " + str(self.time_ended)
 
 class EventPassword(models.Model):
   event = models.ForeignKey(Event, unique=True)
