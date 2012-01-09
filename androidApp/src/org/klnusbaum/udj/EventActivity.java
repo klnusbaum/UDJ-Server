@@ -70,11 +70,13 @@ public class EventActivity extends FragmentActivity
     public void onReceive(Context context, Intent intent){
       Log.d(TAG, "Recieved event ended");
       unregisterReceiver(eventEndedReciever);
+      eventEnded();
     }
   };
 
 
   private static final String QUIT_DIALOG_TAG = "quit_dialog";
+  private static final String EVENT_ENDED_DIALOG = "event_end_dialog";
   private static final int CURRENT_SONG_LOADER_ID = 1;
   private static final String TAG = "EventActivity";
 
@@ -101,8 +103,22 @@ public class EventActivity extends FragmentActivity
     long eventId = AccountManager.get(this).getUserData(
       Constants.EVENT_ID_DATA);
     if(eventId == NO_EVENT_ID){
-      displayEventOverDialog();
+      eventEnded();
     }
+    else{
+      registerReceiver(
+        eventEndedReciever, 
+        new IntentFilter(Constants.EVENT_ENDED_ACTION));
+    }
+  }
+
+  protected void onPause(){
+    unregisterReceiver(eventEndedReciever);
+  }
+
+  private eventEnded(){
+    DialogFragment newFrag = new EventEndedDialog();
+    newFrag.show(getSupportFragmentManager(), EVENT_ENDED_DIALOG);
   }
 
   private void getPlaylistFromServer(){
@@ -229,6 +245,28 @@ public class EventActivity extends FragmentActivity
               ((EventActivity)getActivity()).dismissQuitDialog();
             }
           })
+        .create();
+    }
+  }
+
+  public static class EventEndedDialog extends DialogFragment{
+    
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState){
+      return new AlertDialog.Builder(getActivity())
+        .setTitle(R.string.event_ended_title)
+        .setMessage(R.string.event_ended_message)
+        .setPositiveButton(android.R.string.ok,
+          new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton){
+              getActivity().finish();
+            }
+          })
+        .setOnCancelListener(new DialogInterface.OnCancelListener(){
+          public void onCancel(DialogInterface dialog){
+            getActivity().finish();
+          }
+        })
         .create();
     }
   }

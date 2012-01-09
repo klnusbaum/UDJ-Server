@@ -46,7 +46,7 @@ import org.klnusbaum.udj.UDJEventProvider;
 /**
  * Adapter used to sync up with the UDJ server.
  */
-public class EventCommService extends IntentService{
+public class EventCommService extends UDJService{
 
   private static final String TAG = "EventCommService";
 
@@ -135,12 +135,9 @@ public class EventCommService extends IntentService{
     }
     catch(EventOverException e){
       Log.e(TAG, "Event Over Exception when joining event");
-      Intent eventOverIntent = 
-        new Intent(Constants.EVENT_ENDED_ACTION);
-      Log.d(TAG, "Sending event event ended action");
-      sendBroadcast(eventOverIntent);
       am.setUserData(
         account, Constants.EVENT_JOIN_STATUS, Constants.EVENT_JOIN_FAILED);
+      broadcastEventOver();
     }
 
     Intent eventJoinFailedIntent = 
@@ -158,15 +155,14 @@ public class EventCommService extends IntentService{
         Long.valueOf(am.getUserData(account, Constants.EVENT_ID_DATA));
       if(eventId != Constants.EVENT_ID_DATA){
         ServerConnection.leaveEvent(eventId, Long.valueOf(userId), authToken);
-        setEventLeft(account);
+        setNotInEvent(account)
         Intent leftEventIntent = new Intent(Constants.LEFT_EVENT_ACTION);
         sendBroadcast(leftEventIntent);
       }
     }
     catch(EventOverException e){
-      setEventLeft(account);
-      Intent eventEndedBroadcast = new Intent(Constants.EVENT_ENDED_ACTION);
-      sendBroadcast(eventEndedBroadcast);
+      setNotInEvent(account)
+      broadcastEventOver();
     }
     catch(IOException e){
       Log.e(TAG, "IO exception in EventCommService: " + e.getMessage());
@@ -177,10 +173,5 @@ public class EventCommService extends IntentService{
     //TODO need to implement exponential back off when log out fails.
     // 1. This is just nice to the server
     // 2. If we don't log out, there could be problems on the next event joined
-  }
-
-  private void setEventLeft(Account account){
-    am.setUserData(account, Constants.EVENT_ID_DATA, 
-      String.valueOf(Constants.NO_EVENT_ID));
   }
 }

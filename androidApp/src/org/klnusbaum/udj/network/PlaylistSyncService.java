@@ -62,7 +62,7 @@ import org.klnusbaum.udj.R;
 /**
  * Adapter used to sync up with the UDJ server.
  */
-public class PlaylistSyncService extends IntentService{
+public class PlaylistSyncService extends UDJService{
   private static final int ADD_SONG_ID = 0;
   private static final int SONG_ADDED_ID = 1;
 
@@ -136,6 +136,11 @@ public class PlaylistSyncService extends IntentService{
     catch(OperationApplicationException e){
       Log.e(TAG, "Operation Application exception when retreiving playist");
     }
+    catch(EventOverException e){
+      Log.e(TAG, "Event over exceptoin when retreiving playlist");
+      setNotInEvent(account);
+      broadcastEventOver();
+    }
     //TODO This point of the app seems very dangerous as there are so many
     // exceptions that could occuer. Need to pay special attention to this.
   }
@@ -205,6 +210,11 @@ public class PlaylistSyncService extends IntentService{
       alertAddSongException(account);
       Log.e(TAG, "Operation Application exception when adding to playist");
     }
+    catch(EventOverException e){
+      Log.e(TAG, "Event over exceptoin when retreiving playlist");
+      setNotInEvent(account);
+      broadcastEventOver();
+    }
     finally{
       clearAddNotification();
     }
@@ -247,6 +257,11 @@ public class PlaylistSyncService extends IntentService{
     }
     catch(OperationCanceledException e){
       Log.e(TAG, "Op Canceled exception when retreiving playist");
+    }
+    catch(EventOverException e){
+      Log.e(TAG, "Event over exceptoin when retreiving playlist");
+      setNotInEvent(account);
+      broadcastEventOver();
     }
     finally{
       requestsCursor.close();

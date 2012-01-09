@@ -141,8 +141,6 @@ public class EventListFragment extends ListFragment implements
       dismissProgress();
       getActivity().unregisterReceiver(eventJoinedReceiver);
       AccountManager am = AccountManager.get(context);
-      am.setUserData(account, Constants.EVENT_JOIN_STATUS, 
-        Constants.EVENT_JOIN_OK);
       if(intent.getAction().equals(Constants.JOINED_EVENT_ACTION)){
         Intent eventActivityIntent = new Intent(context, EventActivity.class);
         eventActivityIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
@@ -202,17 +200,35 @@ public class EventListFragment extends ListFragment implements
   public void onResume(){
     if(account != null){
       AccountManager am = AccountManager.get(this);
+      if(isShowingProgress()){
+        int joinStatus = am.getUserData(account, Constants.EVENT_JOIN_STATUS);
+        if(joinStatus == Constants.EVENT_JOIN_FAILED && isShowingProgress()){
+          dismissProgress();
+          //TODO inform user joining failed.
+        }
+        else{
+          registerEventListener();
+        }
+      }
       long evenId = am.getUserData(account, Constants.EVENT_ID_DATA);
       if(eventId != NO_EVENT_ID){
         Intent startEventActivity = 
           new Intent(getActivity(), EventActivity.class);
         startActivity(startEventActivity);
       }
-      int joinStatus = am.getUserData(account, Constants.EVENT_JOIN_STATUS):
-      if(joinStatus == Constants.EVENT_JOIN_FAILED){
-        dismissProgress(); 
-        //TODO inform user joining failed.
-      }
+    }
+  }
+
+  private boolean isShowingProgress(){
+    return 
+      getActivity().getSupportFragmentManager().findFragmentByTag(
+        PROG_DIALOG_TAG)
+      != 
+      null;
+  }
+
+  public void onPause(){
+    getActivity().unregisterReceiver(eventJoinedReceiver);
   }
 
   public void setEventSearch(EventSearch newSearch){
@@ -340,6 +356,13 @@ public class EventListFragment extends ListFragment implements
   }
 
   private void showProgress(){
+    registerEventListener();
+    ProgressFragment progFragment = new ProgressFragment();
+    progFragment.show(
+      getActivity().getSupportFragmentManager(), PROG_DIALOG_TAG);
+  }
+
+  private void registerEventListener(){
     getActivity().registerReceiver(
       eventJoinedReceiver, 
       new IntentFilter(Constants.EVENT_ENDED_ACTION));
@@ -349,9 +372,6 @@ public class EventListFragment extends ListFragment implements
     getActivity().registerReceiver(
       eventJoinedReceiver, 
       new IntentFilter(Constants.EVENT_JOIN_FAILED_ACTION));
-    ProgressFragment progFragment = new ProgressFragment();
-    progFragment.show(
-      getActivity().getSupportFragmentManager(), PROG_DIALOG_TAG);
   }
 
   private void dismissProgress(){
