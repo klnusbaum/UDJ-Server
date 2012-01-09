@@ -67,6 +67,7 @@ def InParty(function):
       return function(*args, **kwargs)
   return wrapper
 
+
 #TODO actually implement this fucntion. i.e. check for password compliance
 def CanLoginToEvent(function):
   def wrapper(*args, **kwargs):

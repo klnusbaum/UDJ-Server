@@ -448,6 +448,16 @@
     "pk": 2, 
     "model": "udj.eventgoer", 
     "fields": {
+      "user": 8, 
+      "time_joined": "2011-12-28 01:34:25", 
+      "event": 1,
+      "state" : "IE"
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "udj.eventgoer", 
+    "fields": {
       "user": 2, 
       "time_joined": "2011-12-28 01:34:25", 
       "event": 2,
@@ -455,7 +465,7 @@
     }
   }, 
   {
-    "pk": 3, 
+    "pk": 4, 
     "model": "udj.eventgoer", 
     "fields": {
       "user": 3, 
@@ -465,7 +475,7 @@
     }
   }, 
   {
-    "pk": 4, 
+    "pk": 5, 
     "model": "udj.eventgoer", 
     "fields": {
       "user": 4, 
@@ -1111,6 +1121,24 @@
       "password": "sha1$5460b$1a7e9aca87bcccfb8903dfb6b9f0f7d58a7abf6d", 
       "email": "", 
       "date_joined": "2012-01-08 20:39:10"
+    }
+  },
+  {
+    "pk": 8, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "test8", 
+      "first_name": "", 
+      "last_name": "", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "last_login": "2012-01-09 05:13:39", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$c6f72$c9f98c19073e5a87d67fb16c82216bdae8a5cc5d", 
+      "email": "", 
+      "date_joined": "2012-01-09 05:13:39"
     }
   }
 ]

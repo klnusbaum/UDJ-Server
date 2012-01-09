@@ -4,6 +4,7 @@ from udj.tests.testcases import User2TestCase
 from udj.tests.testcases import User3TestCase
 from udj.tests.testcases import User4TestCase
 from udj.tests.testcases import User5TestCase
+from udj.tests.testcases import User8TestCase
 from udj.models import Event
 from udj.models import EventEndTime
 from udj.models import LibraryEntry
@@ -94,6 +95,12 @@ class JoinEventTest(User5TestCase):
     self.assertEqual(response.status_code, 201)
     inevent_goer = EventGoer.objects.get(
       event__id=4, user__id=5, state=u'IE')
+
+  def testJoinEndedEvent(self):
+    response = self.doPut('/udj/events/1/users/5')
+    self.assertEqual(response.status_code, 410)
+    shouldntBeThere = EventGoer.objects.filter(event__id=1, user__id=5)
+    self.assertFalse(shouldntBeThere.exists())
     
 class LeaveEventTest(User3TestCase):
   def testLeaveEvent(self):
@@ -101,6 +108,15 @@ class LeaveEventTest(User3TestCase):
     self.assertEqual(response.status_code, 200, response.content)
     event_goer_entries = EventGoer.objects.get(
       event__id=2, user__id=3, state=u'LE')
+
+class LeaveEndedEventTest(User8TestCase):
+  def testLeaveEndedEvent(self):
+    response = self.doDelete('/udj/events/1/users/8')
+    self.assertEqual(response.status_code, 200, response.content)
+    event_goer_entries = EventGoer.objects.get(
+      event__id=1, user__id=8, state=u'LE')
+  
+    
 
 
 #Disabling this for now. We'll come back to it later.

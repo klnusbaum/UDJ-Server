@@ -130,8 +130,12 @@ def joinOrLeaveEvent(request, event_id, user_id):
 
 @IsntInOtherEvent
 def joinEvent(request, event_id, user_id):
-  joining_user = User.objects.get(pk=user_id)
+
   event_to_join = Event.objects.get(pk=event_id)
+  if event_to_join.state == u'FN':
+    return HttpResponse(status=410)
+
+  joining_user = User.objects.get(pk=user_id)
   event_goer , created = EventGoer.objects.get_or_create(
     user=joining_user, event=event_to_join)
   
@@ -142,12 +146,17 @@ def joinEvent(request, event_id, user_id):
 
   return HttpResponse("joined event", status=201)
 
-@InParty
 def leaveEvent(request, event_id, user_id):
-  event_goer = EventGoer.objects.get(event__id=event_id, user__id=user_id)
-  event_goer.state=u'LE';
-  event_goer.save()
-  return HttpResponse("left event")
+  requestingUser = getUserForTicket(request)
+  try:
+    event_goer = EventGoer.objects.get(
+      user=requestingUser, event__id=event_id)
+    event_goer.state=u'LE';
+    event_goer.save()
+    return HttpResponse("left event")
+  except ObjectDoesNotExist:
+    return HttpResponseForbidden(
+      "You must be logged into the party to do that")
 
 @NeedsAuth
 @AcceptsMethods(['GET', 'PUT'])

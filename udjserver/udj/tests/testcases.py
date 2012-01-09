@@ -73,3 +73,7 @@ class User4TestCase(DoesServerOpsTestCase):
 class User5TestCase(DoesServerOpsTestCase):
   username = "test5"
   userpass = "fivetest"
+
+class User8TestCase(DoesServerOpsTestCase):
+  username = "test8"
+  userpass = "eighttest"
