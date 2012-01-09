@@ -67,7 +67,12 @@ public abstract class EventEndedListenerActivity extends FragmentActivity{
 
   protected void onPause(){
     super.onPause();
-    unregisterReceiver(eventEndedReciever);
+    try{
+      unregisterReceiver(eventEndedReciever);
+    }
+    catch(IllegalArgumentException e){
+
+    }
   }
 
   private void eventEnded(){

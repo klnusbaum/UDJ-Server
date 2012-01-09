@@ -171,28 +171,31 @@ public class ServerConnection{
     }
   }
 
-  private static void basicResponseErrorCheck(HttpResponse response)
+  private static void basicResponseErrorCheck(
+    HttpResponse resp, String response)
     throws AuthenticationException, IOException
   {
-    basicResponseErrorCheck(response, false);
+    basicResponseErrorCheck(resp, response, false);
   }
 
-  private static void basicResponseErrorCheck(HttpResponse response, 
-    boolean createdIsOk)
+  private static void basicResponseErrorCheck(
+    HttpResponse resp, 
+    String response,
+    boolean createdIsOk
+  )
     throws AuthenticationException, IOException
   {
-    if(response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
+    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
       throw new AuthenticationException();
     }
     else if(
-      response.getStatusLine().getStatusCode() != HttpStatus.SC_OK && 
+      resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK && 
       !(
         createdIsOk && 
-        response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED)
+        resp.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED)
       )
     {
-      final String stringResp = EntityUtils.toString(response.getEntity());
-      throw new IOException(stringResp);
+      throw new IOException(response);
     }
   }
 
@@ -212,7 +215,7 @@ public class ServerConnection{
     final HttpResponse resp = doGet(uri, ticketHash);
     final String response = EntityUtils.toString(resp.getEntity());
     Log.d(TAG, "Simple get response: \"" + response +"\"");
-    basicResponseErrorCheck(resp);
+    basicResponseErrorCheck(resp, response);
     return response;
   }
 
@@ -225,7 +228,7 @@ public class ServerConnection{
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_GONE){
       throw new EventOverException();
     }
-    basicResponseErrorCheck(resp);
+    basicResponseErrorCheck(resp, response);
     return response;
   }
 
@@ -252,7 +255,7 @@ public class ServerConnection{
     final HttpResponse resp = doPut(uri, ticketHash, payload);
     final String response = EntityUtils.toString(resp.getEntity());
     Log.d(TAG, "Simple Put response: \"" + response +"\"");
-    basicResponseErrorCheck(resp, true);
+    basicResponseErrorCheck(resp, response, true);
     return response;
   }
 
@@ -266,7 +269,7 @@ public class ServerConnection{
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_GONE){
       throw new EventOverException();
     }
-    basicResponseErrorCheck(resp, true);
+    basicResponseErrorCheck(resp, response, true);
     return response;
   }
 
@@ -292,7 +295,7 @@ public class ServerConnection{
     final HttpResponse resp = doPost(uri, authToken, payload);
     final String response = EntityUtils.toString(resp.getEntity());
     Log.d(TAG, "Simple Post response: \"" + response +"\"");
-    basicResponseErrorCheck(resp, true);
+    basicResponseErrorCheck(resp, response, true);
     return response;
   }
 
@@ -306,7 +309,7 @@ public class ServerConnection{
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_GONE){
       throw new EventOverException();
     }
-    basicResponseErrorCheck(resp, true);
+    basicResponseErrorCheck(resp, response, true);
     return response;
 
   }
@@ -326,7 +329,7 @@ public class ServerConnection{
     final HttpResponse resp = doDelete(uri, ticketHash);
     final String response = EntityUtils.toString(resp.getEntity());
     Log.d(TAG, "Delete response: \"" + response +"\"");
-    basicResponseErrorCheck(resp);
+    basicResponseErrorCheck(resp, response);
   }
 
   public static void doEventRelatedDelete(URI uri, String ticketHash)
@@ -338,7 +341,7 @@ public class ServerConnection{
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_GONE){
       throw new EventOverException();
     }
-    basicResponseErrorCheck(resp);
+    basicResponseErrorCheck(resp, response);
   }
 
   public static List<Event> getNearbyEvents(

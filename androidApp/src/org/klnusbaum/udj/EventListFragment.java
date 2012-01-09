@@ -219,6 +219,7 @@ public class EventListFragment extends ListFragment implements
         startActivity(startEventActivity);
       }
     }
+    super.onResume();
   }
 
   private boolean isShowingProgress(){
@@ -230,7 +231,13 @@ public class EventListFragment extends ListFragment implements
   }
 
   public void onPause(){
-    getActivity().unregisterReceiver(eventJoinedReceiver);
+    super.onPause();
+    try{
+      getActivity().unregisterReceiver(eventJoinedReceiver);
+    }
+    catch(IllegalArgumentException e){
+
+    }
   }
 
   public void setEventSearch(EventSearch newSearch){

@@ -118,16 +118,19 @@ public class EventCommService extends UDJService{
     }
     catch(IOException e){
       Log.e(TAG, "IO exception when joining event");
+      Log.e(TAG, e.getMessage());
       setEventLoginFailed(am, account);
     }
     catch(JSONException e){
       Log.e(TAG, 
         "JSON exception when joining event");
+      Log.e(TAG, e.getMessage());
       setEventLoginFailed(am, account);
     }
     catch(AuthenticationException e){
       Log.e(TAG, 
         "Authentication exception when joining event");
+      Log.e(TAG, e.getMessage());
       setEventLoginFailed(am, account);
     }
     catch(EventOverException e){

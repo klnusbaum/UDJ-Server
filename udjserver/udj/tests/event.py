@@ -80,6 +80,20 @@ class JoinEventTest(User5TestCase):
     self.assertEqual(response.status_code, 201)
     inevent_goer = EventGoer.objects.get(
       event__id=2, user__id=5, state=u'IE')
+
+  def testJoinLeaveJoinEvent(self):
+    response = self.doPut('/udj/events/2/users/5')
+    self.assertEqual(response.status_code, 201)
+    inevent_goer = EventGoer.objects.get(
+      event__id=2, user__id=5, state=u'IE')
+    response = self.doDelete('/udj/events/2/users/5')
+    self.assertEqual(response.status_code, 200)
+    leftevent_goer = EventGoer.objects.get(
+      event__id=2, user__id=5, state=u'LE')
+    response = self.doPut('/udj/events/4/users/5')
+    self.assertEqual(response.status_code, 201)
+    inevent_goer = EventGoer.objects.get(
+      event__id=4, user__id=5, state=u'IE')
     
 class LeaveEventTest(User3TestCase):
   def testLeaveEvent(self):

@@ -50,6 +50,7 @@ public class PlaylistFragment extends ListFragment
   private static final String TAG = "PlaylistFragment";
   private static final int PLAYLIST_LOADER_ID = 0;
   private Account account;
+  private long userId;
 
   /**
    * Adapter used to help display the contents of the playlist.
@@ -61,8 +62,10 @@ public class PlaylistFragment extends ListFragment
     super.onActivityCreated(savedInstanceState);
     account = 
       getActivity().getIntent().getParcelableExtra(Constants.ACCOUNT_EXTRA);
+    AccountManager am = AccountManager.get(getActivity());
+    userId = Long.valueOf(am.getUserData(account, Constants.USER_ID_DATA));
     setEmptyText(getActivity().getString(R.string.no_playlist_items));
-    playlistAdapter = new PlaylistAdapter(getActivity(), null);
+    playlistAdapter = new PlaylistAdapter(getActivity(), null, userId);
     setListAdapter(playlistAdapter);
     setListShown(false);
     getLoaderManager().initLoader(PLAYLIST_LOADER_ID, null, this);
@@ -104,10 +107,9 @@ public class PlaylistFragment extends ListFragment
   private class PlaylistAdapter extends CursorAdapter{
     private long userId;
     private static final String PLAYLIST_ADAPTER_TAG = "PlaylistAdapter";
-    public PlaylistAdapter(Context context, Cursor c){
+    public PlaylistAdapter(Context context, Cursor c, long userId){
       super(context, c);
-      userId = Long.valueOf(AccountManager.get(context).getUserData(
-        account, Constants.USER_ID_DATA));
+      this.userId = userId;
     }
 
     @Override
