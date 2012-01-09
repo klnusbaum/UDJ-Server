@@ -199,9 +199,10 @@ public class EventListFragment extends ListFragment implements
 
   public void onResume(){
     if(account != null){
-      AccountManager am = AccountManager.get(this);
+      AccountManager am = AccountManager.get(getActivity());
       if(isShowingProgress()){
-        int joinStatus = am.getUserData(account, Constants.EVENT_JOIN_STATUS);
+        int joinStatus = Integer.valueOf(
+          am.getUserData(account, Constants.EVENT_JOIN_STATUS));
         if(joinStatus == Constants.EVENT_JOIN_FAILED && isShowingProgress()){
           dismissProgress();
           //TODO inform user joining failed.
@@ -210,8 +211,9 @@ public class EventListFragment extends ListFragment implements
           registerEventListener();
         }
       }
-      long evenId = am.getUserData(account, Constants.EVENT_ID_DATA);
-      if(eventId != NO_EVENT_ID){
+      long eventId = Long.valueOf(
+        am.getUserData(account, Constants.EVENT_ID_DATA));
+      if(eventId != Constants.NO_EVENT_ID){
         Intent startEventActivity = 
           new Intent(getActivity(), EventActivity.class);
         startActivity(startEventActivity);

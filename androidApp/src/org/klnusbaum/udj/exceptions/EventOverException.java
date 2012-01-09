@@ -18,20 +18,21 @@
  */
 package org.klnusbaum.udj.exceptions;
 
-public EventOverException extends Exception{
-  EventOverException(){
-    super()
+public class EventOverException extends Exception{
+
+  public EventOverException(){
+    super();
   }
 
-  EventOverException(String message){
+  public EventOverException(String message){
     super(message);
   }
 
-  EventOverException(String message, Throwable cause){
+  public EventOverException(String message, Throwable cause){
     super(message, cause);
   }
 
-  EventOverException(Throwable cause){
+  public EventOverException(Throwable cause){
     super(cause);
   }
 }

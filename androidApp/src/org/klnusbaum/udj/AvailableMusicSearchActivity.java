@@ -53,13 +53,11 @@ import org.klnusbaum.udj.network.PlaylistSyncService;
 /**
  * An Activity which displays the results of a library search.
  */
-public class AvailableMusicSearchActivity extends FragmentActivity{
+public class AvailableMusicSearchActivity extends EventEndedListenerActivity{
 
   public static final String SEARCH_QUERY_EXTRA = "search_query";
   private static final int LIB_SEARCH_LOADER_TAG = 0;
   private String searchQuery;
-  private Account account;
-
   
   @Override
   public void onCreate(Bundle savedInstanceState){

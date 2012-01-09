@@ -41,6 +41,7 @@ import org.apache.http.auth.AuthenticationException;
 
 import org.klnusbaum.udj.Constants;
 import org.klnusbaum.udj.UDJEventProvider;
+import org.klnusbaum.udj.exceptions.EventOverException;
 
 
 /**
@@ -96,9 +97,11 @@ public class EventCommService extends UDJService{
     String authToken, AccountManager am)
   {
     am.setUserData(
-      account, Constants.EVENT_JOIN_STATUS, Constants.EVENT_JOIN_OK);
+      account, 
+      Constants.EVENT_JOIN_STATUS, 
+      String.valueOf(Constants.EVENT_JOIN_OK));
     try{
-      ServerConnection.joinEvent(eventId, userId, authToken)
+      ServerConnection.joinEvent(eventId, userId, authToken);
       ContentResolver cr = getContentResolver();
       UDJEventProvider.eventCleanup(cr);          
       HashMap<Long,Long> previousRequests = ServerConnection.getAddRequests(
@@ -115,28 +118,21 @@ public class EventCommService extends UDJService{
     }
     catch(IOException e){
       Log.e(TAG, "IO exception when joining event");
-      am.setUserData(
-        account, Constants.EVENT_JOIN_STATUS, Constants.EVENT_JOIN_FAILED);
-      //TODO notify the user
+      setEventLoginFailed(am, account);
     }
     catch(JSONException e){
       Log.e(TAG, 
         "JSON exception when joining event");
-      am.setUserData(
-        account, Constants.EVENT_JOIN_STATUS, Constants.EVENT_JOIN_FAILED);
-      //TODO notify user
+      setEventLoginFailed(am, account);
     }
     catch(AuthenticationException e){
       Log.e(TAG, 
         "Authentication exception when joining event");
-      am.setUserData(
-        account, Constants.EVENT_JOIN_STATUS, Constants.EVENT_JOIN_FAILED);
-      //TODO notify user
+      setEventLoginFailed(am, account);
     }
     catch(EventOverException e){
       Log.e(TAG, "Event Over Exception when joining event");
-      am.setUserData(
-        account, Constants.EVENT_JOIN_STATUS, Constants.EVENT_JOIN_FAILED);
+      setEventLoginFailed(am, account);
       broadcastEventOver();
     }
 
@@ -146,6 +142,13 @@ public class EventCommService extends UDJService{
     sendBroadcast(eventJoinFailedIntent);
   }
 
+  private void setEventLoginFailed(AccountManager am, Account account){
+    am.setUserData(
+      account, 
+      Constants.EVENT_JOIN_STATUS, 
+      String.valueOf(Constants.EVENT_JOIN_FAILED));
+  }
+
   private void leaveEvent(Account account, long userId, String authToken, 
     AccountManager am)
   {
@@ -153,17 +156,17 @@ public class EventCommService extends UDJService{
     try{
       long eventId = 
         Long.valueOf(am.getUserData(account, Constants.EVENT_ID_DATA));
-      if(eventId != Constants.EVENT_ID_DATA){
+      if(eventId != Constants.NO_EVENT_ID){
         ServerConnection.leaveEvent(eventId, Long.valueOf(userId), authToken);
-        setNotInEvent(account)
+        setNotInEvent(account);
         Intent leftEventIntent = new Intent(Constants.LEFT_EVENT_ACTION);
         sendBroadcast(leftEventIntent);
       }
     }
-    catch(EventOverException e){
-      setNotInEvent(account)
+    /*catch(EventOverException e){
+      setNotInEvent(account);
       broadcastEventOver();
-    }
+    }*/
     catch(IOException e){
       Log.e(TAG, "IO exception in EventCommService: " + e.getMessage());
     }

@@ -21,6 +21,7 @@ package org.klnusbaum.udj;
 import android.app.Activity;
 import android.os.Bundle;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.widget.TabHost;
 import android.widget.Toast;
 import android.view.Menu;
@@ -36,12 +37,12 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.util.Log;
-import android.app.Dialog;
 import android.app.SearchManager;
 import android.net.Uri;
 import android.database.Cursor;
 import android.view.Window;
 import android.os.Build;
+import android.content.BroadcastReceiver;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -63,25 +64,13 @@ import org.klnusbaum.udj.network.EventCommService;
 /**
  * The main activity display class.
  */
-public class EventActivity extends FragmentActivity
+public class EventActivity extends EventEndedListenerActivity
   implements LoaderManager.LoaderCallbacks<Cursor>
 {
-  private BroadcastReceiver eventEndedReciever = new BroadcastReceiver(){
-    public void onReceive(Context context, Intent intent){
-      Log.d(TAG, "Recieved event ended");
-      unregisterReceiver(eventEndedReciever);
-      eventEnded();
-    }
-  };
-
-
   private static final String QUIT_DIALOG_TAG = "quit_dialog";
-  private static final String EVENT_ENDED_DIALOG = "event_end_dialog";
   private static final int CURRENT_SONG_LOADER_ID = 1;
   private static final String TAG = "EventActivity";
 
-
-  private Account account;
   private TextView currentSong;
 
   @Override
@@ -97,28 +86,6 @@ public class EventActivity extends FragmentActivity
     //TODO hanle if no event
     getPlaylistFromServer();    
     getSupportLoaderManager().initLoader(CURRENT_SONG_LOADER_ID, null, this);
-  }
-
-  protected void onResume(){
-    long eventId = AccountManager.get(this).getUserData(
-      Constants.EVENT_ID_DATA);
-    if(eventId == NO_EVENT_ID){
-      eventEnded();
-    }
-    else{
-      registerReceiver(
-        eventEndedReciever, 
-        new IntentFilter(Constants.EVENT_ENDED_ACTION));
-    }
-  }
-
-  protected void onPause(){
-    unregisterReceiver(eventEndedReciever);
-  }
-
-  private eventEnded(){
-    DialogFragment newFrag = new EventEndedDialog();
-    newFrag.show(getSupportFragmentManager(), EVENT_ENDED_DIALOG);
   }
 
   private void getPlaylistFromServer(){
@@ -197,7 +164,7 @@ public class EventActivity extends FragmentActivity
     if(Intent.ACTION_SEARCH.equals(intent.getAction())){
       intent.setClass(this, AvailableMusicSearchActivity.class);
       intent.putExtra(Constants.ACCOUNT_EXTRA, account);
-      startActivity(intent);
+      startActivityForResult(intent, 0);
     }
   }
 
@@ -248,27 +215,4 @@ public class EventActivity extends FragmentActivity
         .create();
     }
   }
-
-  public static class EventEndedDialog extends DialogFragment{
-    
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState){
-      return new AlertDialog.Builder(getActivity())
-        .setTitle(R.string.event_ended_title)
-        .setMessage(R.string.event_ended_message)
-        .setPositiveButton(android.R.string.ok,
-          new DialogInterface.OnClickListener(){
-            public void onClick(DialogInterface dialog, int whichButton){
-              getActivity().finish();
-            }
-          })
-        .setOnCancelListener(new DialogInterface.OnCancelListener(){
-          public void onCancel(DialogInterface dialog){
-            getActivity().finish();
-          }
-        })
-        .create();
-    }
-  }
 }
-

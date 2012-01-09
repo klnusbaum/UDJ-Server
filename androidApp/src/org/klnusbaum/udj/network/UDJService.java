@@ -18,10 +18,23 @@
  */
 package org.klnusbaum.udj.network;
 
+import android.util.Log;
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.content.Intent;
+import android.app.IntentService;
+
+import org.klnusbaum.udj.Constants;
+
 public abstract class UDJService extends IntentService{
 
+  private static final String TAG = "UDJ Service";
+  UDJService(String name){
+    super(name);
+  }
 
   protected void setNotInEvent(Account account){
+    AccountManager am = AccountManager.get(this);
     am.setUserData(account, Constants.EVENT_ID_DATA, 
       String.valueOf(Constants.NO_EVENT_ID));
   }

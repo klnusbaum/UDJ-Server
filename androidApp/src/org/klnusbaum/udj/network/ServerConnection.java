@@ -171,13 +171,13 @@ public class ServerConnection{
     }
   }
 
-  private static basicResponseErrorCheck(HttpResponse response)
+  private static void basicResponseErrorCheck(HttpResponse response)
     throws AuthenticationException, IOException
   {
     basicResponseErrorCheck(response, false);
   }
 
-  private static basicResponseErrorCheck(HttpResponse response, 
+  private static void basicResponseErrorCheck(HttpResponse response, 
     boolean createdIsOk)
     throws AuthenticationException, IOException
   {
@@ -187,16 +187,18 @@ public class ServerConnection{
     else if(
       response.getStatusLine().getStatusCode() != HttpStatus.SC_OK && 
       !(
-        createdOk && 
+        createdIsOk && 
         response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED)
       )
     {
-      throw new IOException(response);
+      final String stringResp = EntityUtils.toString(response.getEntity());
+      throw new IOException(stringResp);
     }
   }
 
 
   public static HttpResponse doGet(URI uri, String ticketHash)
+    throws IOException
   {
     Log.d(TAG, "Doing get with uri: " + uri);
     final HttpGet get = new HttpGet(uri);
@@ -204,30 +206,32 @@ public class ServerConnection{
     return getHttpClient().execute(get);
   }
 
-  public static String doSimpleGet(Uri, String ticketHash)
+  public static String doSimpleGet(URI uri, String ticketHash)
     throws AuthenticationException, IOException
   {
-    final HttpResponse httpResp = doGet(Uri, ticketHash);
-    basicResponseErrorCheck(httpResp);
+    final HttpResponse resp = doGet(uri, ticketHash);
     final String response = EntityUtils.toString(resp.getEntity());
-    Log.d(TAG, "Simple response: \"" + response +"\"");
+    Log.d(TAG, "Simple get response: \"" + response +"\"");
+    basicResponseErrorCheck(resp);
     return response;
   }
 
   public static String doEventRelatedGet(URI uri, String ticketHash)
     throws AuthenticationException, IOException, EventOverException
   {
-    final HttpResponse httpResp = doGet(Uri, ticketHash);
+    final HttpResponse resp = doGet(uri, ticketHash);
     final String response = EntityUtils.toString(resp.getEntity());
     Log.d(TAG, "Event related response: \"" + response +"\"");
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_GONE){
       throw new EventOverException();
     }
-    basicResponseErrorCheck(httpResp);
+    basicResponseErrorCheck(resp);
     return response;
   }
 
-  public static HttpResponse doPut(URI uri, String ticketHash, String payload){
+  public static HttpResponse doPut(URI uri, String ticketHash, String payload)
+    throws IOException
+  {
     Log.d(TAG, "Doing put to uri: " + uri);
     Log.d(TAG, "Put payload is: "+ (payload != null ? payload : "no payload"));
     String toReturn = null;
@@ -256,7 +260,7 @@ public class ServerConnection{
     URI uri, String ticketHash, String payload)
     throws AuthenticationException, IOException, EventOverException
   {
-    final HttpResponse resp = getHttpClient().execute(put);
+    final HttpResponse resp = doPut(uri, ticketHash, payload);
     final String response = EntityUtils.toString(resp.getEntity());
     Log.d(TAG, "Event related Put response: \"" + response +"\"");
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_GONE){
@@ -266,7 +270,7 @@ public class ServerConnection{
     return response;
   }
 
-  public static String doPost(URI uri, String authToken, String payload)
+  public static HttpResponse doPost(URI uri, String authToken, String payload)
     throws AuthenticationException, IOException
   {
     Log.d(TAG, "Doing post to uri: " + uri);

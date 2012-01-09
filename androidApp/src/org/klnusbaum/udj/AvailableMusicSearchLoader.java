@@ -37,6 +37,7 @@ import org.apache.http.ParseException;
 
 import org.klnusbaum.udj.network.ServerConnection;
 import org.klnusbaum.udj.containers.LibraryEntry;
+import org.klnusbaum.udj.exceptions.EventOverException;
 
 public class AvailableMusicSearchLoader 
   extends AsyncTaskLoader<List<LibraryEntry>>
@@ -63,22 +64,25 @@ public class AvailableMusicSearchLoader
         //TODO do something to the potential errors
       }
       catch(JSONException e){
-
+        //TODO notify the user
       }
       catch(ParseException e){
-
+        //TODO notify the user
       }
       catch(IOException e){
-
+        //TODO notify the user
       }
       catch(AuthenticationException e){
-
+        //TODO notify the user
       }
       catch(AuthenticatorException e){
         //TODO notify the user
       }
       catch(OperationCanceledException e){
         //TODO notify user
+      }
+      catch(EventOverException e){
+        //Let acitivyt take care of things at this point
       }
       return null;
     }
