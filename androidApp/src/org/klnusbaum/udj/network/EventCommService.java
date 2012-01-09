@@ -47,7 +47,7 @@ import org.klnusbaum.udj.exceptions.EventOverException;
 /**
  * Adapter used to sync up with the UDJ server.
  */
-public class EventCommService extends UDJService{
+public class EventCommService extends IntentService{
 
   private static final String TAG = "EventCommService";
 
@@ -112,7 +112,10 @@ public class EventCommService extends UDJService{
       UDJEventProvider.setPreviousVoteRequests(cr, previousVotes);
       Intent joinedEventIntent = new Intent(Constants.JOINED_EVENT_ACTION);
       am.setUserData(
-        account, Constants.EVENT_ID_DATA, String.valueOf(eventId));
+        account, Constants.LAST_EVENT_ID_DATA, String.valueOf(eventId));
+      am.setUserData(
+        account, Constants.IN_EVENT_DATA, 
+        String.valueOf(Constants.IN_EVENT_FLAG));
       sendBroadcast(joinedEventIntent);
       return;
     }
@@ -135,8 +138,8 @@ public class EventCommService extends UDJService{
     }
     catch(EventOverException e){
       Log.e(TAG, "Event Over Exception when joining event");
+      Log.e(TAG, e.getMessage());
       setEventLoginFailed(am, account);
-      broadcastEventOver();
     }
 
     Intent eventJoinFailedIntent = 
@@ -158,7 +161,7 @@ public class EventCommService extends UDJService{
     Log.d(TAG, "In leave event"); 
     try{
       long eventId = 
-        Long.valueOf(am.getUserData(account, Constants.EVENT_ID_DATA));
+        Long.valueOf(am.getUserData(account, Constants.LAST_EVENT_ID_DATA));
       if(eventId != Constants.NO_EVENT_ID){
         ServerConnection.leaveEvent(eventId, Long.valueOf(userId), authToken);
         setNotInEvent(account);
@@ -166,10 +169,6 @@ public class EventCommService extends UDJService{
         sendBroadcast(leftEventIntent);
       }
     }
-    /*catch(EventOverException e){
-      setNotInEvent(account);
-      broadcastEventOver();
-    }*/
     catch(IOException e){
       Log.e(TAG, "IO exception in EventCommService: " + e.getMessage());
     }
@@ -180,4 +179,13 @@ public class EventCommService extends UDJService{
     // 1. This is just nice to the server
     // 2. If we don't log out, there could be problems on the next event joined
   }
+
+  private void setNotInEvent(Account account){
+    AccountManager am = AccountManager.get(this);
+    am.setUserData(account, Constants.LAST_EVENT_ID_DATA, 
+      String.valueOf(Constants.NO_EVENT_ID));
+    am.setUserData(account, Constants.IN_EVENT_DATA, 
+      String.valueOf(Constants.NOT_IN_EVENT_FLAG));
+  }
+
 }

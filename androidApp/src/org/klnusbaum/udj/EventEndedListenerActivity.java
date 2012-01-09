@@ -36,6 +36,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.DialogFragment;
 
+import org.klnusbaum.udj.network.EventCommService;
+
 public abstract class EventEndedListenerActivity extends FragmentActivity{
 
   private static final String EVENT_ENDED_DIALOG = "event_end_dialog";
@@ -52,9 +54,9 @@ public abstract class EventEndedListenerActivity extends FragmentActivity{
   };
 
   protected void onResume(){
-    long eventId = Long.valueOf(
-      AccountManager.get(this).getUserData(account, Constants.EVENT_ID_DATA));
-    if(eventId == Constants.NO_EVENT_ID){
+    int inEvent = Integer.valueOf(
+      AccountManager.get(this).getUserData(account, Constants.IN_EVENT_DATA));
+    if(inEvent == Constants.NOT_IN_EVENT_FLAG){
       eventEnded();
     }
     else{
@@ -76,6 +78,13 @@ public abstract class EventEndedListenerActivity extends FragmentActivity{
   }
 
   private void eventEnded(){
+    Intent leaveEvent = new Intent(
+      Intent.ACTION_DELETE,
+      Constants.EVENT_URI,
+      this,
+      EventCommService.class);
+    leaveEvent.putExtra(Constants.ACCOUNT_EXTRA, account);
+    startService(leaveEvent);
     DialogFragment newFrag = new EventEndedDialog();
     newFrag.show(getSupportFragmentManager(), EVENT_ENDED_DIALOG);
   }
@@ -109,5 +118,4 @@ public abstract class EventEndedListenerActivity extends FragmentActivity{
         .create();
     }
   }
-
 }

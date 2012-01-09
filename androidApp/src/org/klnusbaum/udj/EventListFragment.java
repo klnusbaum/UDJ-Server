@@ -146,9 +146,6 @@ public class EventListFragment extends ListFragment implements
         eventActivityIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
         startActivity(eventActivityIntent); 
       }
-      else if(intent.getAction().equals(Constants.EVENT_ENDED_ACTION)){
-        //TODO inform users of event joining failure.
-      }
       else if(intent.getAction().equals(Constants.EVENT_JOIN_FAILED_ACTION)){
         //TODO inform user of event joining failure.
       }
@@ -211,9 +208,11 @@ public class EventListFragment extends ListFragment implements
           registerEventListener();
         }
       }
-      long eventId = Long.valueOf(
-        am.getUserData(account, Constants.EVENT_ID_DATA));
-      if(eventId != Constants.NO_EVENT_ID){
+      int inEvent = Integer.valueOf(
+        am.getUserData(account, Constants.IN_EVENT_DATA));
+      if(inEvent == Constants.IN_EVENT_FLAG){
+        long eventId = Long.valueOf(
+          am.getUserData(account, Constants.LAST_EVENT_ID_DATA));
         Intent startEventActivity = 
           new Intent(getActivity(), EventActivity.class);
         startActivity(startEventActivity);
@@ -372,9 +371,6 @@ public class EventListFragment extends ListFragment implements
   }
 
   private void registerEventListener(){
-    getActivity().registerReceiver(
-      eventJoinedReceiver, 
-      new IntentFilter(Constants.EVENT_ENDED_ACTION));
     getActivity().registerReceiver(
       eventJoinedReceiver, 
       new IntentFilter(Constants.JOINED_EVENT_ACTION));

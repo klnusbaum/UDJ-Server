@@ -59,7 +59,7 @@ public class AvailableMusicSearchLoader
         AccountManager am = AccountManager.get(getContext());
         String authToken = am.blockingGetAuthToken(account, "", true);
         long eventId = 
-          Long.valueOf(am.getUserData(account, Constants.EVENT_ID_DATA));
+          Long.valueOf(am.getUserData(account, Constants.LAST_EVENT_ID_DATA));
         return ServerConnection.availableMusicQuery(query, eventId, authToken);
         //TODO do something to the potential errors
       }

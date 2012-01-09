@@ -24,10 +24,13 @@ public class Constants{
   public static final String ACCOUNT_TYPE = "org.klnusbaum.udj";
   public static final String AUTHORITY = "org.klnusbaum.udj";
   public static final String USER_ID_DATA = "org.klnusbaum.udj.userid";
-  public static final String EVENT_ID_DATA = "org.klnusbaum.udj.EventId";
+  public static final String LAST_EVENT_ID_DATA = "org.klnusbaum.udj.EventId";
+  public static final String IN_EVENT_DATA = "org.klnusbaum.udj.InEvent";
   public static final String ACCOUNT_EXTRA = "org.klnusbaum.udj.account";
   public static final String EVENT_ID_EXTRA = "org.klnusbaum.udj.EventId";
   public static final long NO_EVENT_ID = -1;
+  public static final int IN_EVENT_FLAG = 1;
+  public static final int NOT_IN_EVENT_FLAG = 0;
   public static final String ADD_REQUESTS_SYNCED = 
     "org.klnusbaum.udj.addRequestsSynced";
   public static final String LEFT_EVENT_ACTION = "org.klnusbaum.udj.LeftEvent";

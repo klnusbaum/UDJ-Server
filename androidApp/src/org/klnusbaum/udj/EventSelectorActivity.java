@@ -77,8 +77,8 @@ public class EventSelectorActivity extends FragmentActivity{
   }
 
   private void showEventUI(){
-    if(Long.valueOf(am.getUserData(account, Constants.EVENT_ID_DATA)) !=
-      Constants.NO_EVENT_ID)
+    if(Integer.valueOf(am.getUserData(account, Constants.IN_EVENT_DATA)) ==
+      Constants.IN_EVENT_FLAG)
     {
       Intent eventActivityIntent = new Intent(this, EventActivity.class);
       eventActivityIntent.putExtra(Constants.ACCOUNT_EXTRA, account);

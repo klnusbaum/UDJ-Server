@@ -63,7 +63,7 @@ import org.klnusbaum.udj.exceptions.EventOverException;
 /**
  * Adapter used to sync up with the UDJ server.
  */
-public class PlaylistSyncService extends UDJService{
+public class PlaylistSyncService extends IntentService{
   private static final int ADD_SONG_ID = 0;
   private static final int SONG_ADDED_ID = 1;
 
@@ -87,7 +87,7 @@ public class PlaylistSyncService extends UDJService{
       (Account)intent.getParcelableExtra(Constants.ACCOUNT_EXTRA);
     //TODO handle error if no account provider
     long eventId = Long.valueOf(AccountManager.get(this).getUserData(
-      account, Constants.EVENT_ID_DATA));
+      account, Constants.LAST_EVENT_ID_DATA));
     //TODO hanle error if eventId is bad
     if(intent.getAction().equals(Intent.ACTION_INSERT)){
       if(intent.getData().equals(UDJEventProvider.PLAYLIST_ADD_REQUEST_URI)){
@@ -139,8 +139,7 @@ public class PlaylistSyncService extends UDJService{
     }
     catch(EventOverException e){
       Log.e(TAG, "Event over exceptoin when retreiving playlist");
-      setNotInEvent(account);
-      broadcastEventOver();
+      handleEventOver(account);
     }
     //TODO This point of the app seems very dangerous as there are so many
     // exceptions that could occuer. Need to pay special attention to this.
@@ -213,8 +212,7 @@ public class PlaylistSyncService extends UDJService{
     }
     catch(EventOverException e){
       Log.e(TAG, "Event over exceptoin when retreiving playlist");
-      setNotInEvent(account);
-      broadcastEventOver();
+      handleEventOver(account);
     }
     finally{
       clearAddNotification();
@@ -261,8 +259,7 @@ public class PlaylistSyncService extends UDJService{
     }
     catch(EventOverException e){
       Log.e(TAG, "Event over exceptoin when retreiving playlist");
-      setNotInEvent(account);
-      broadcastEventOver();
+      handleEventOver(account);
     }
     finally{
       requestsCursor.close();
@@ -338,5 +335,15 @@ public class PlaylistSyncService extends UDJService{
     nm.notify(SONG_ADDED_ID, addNotification);
 
   }
+
+  private void handleEventOver(Account account){
+    Log.d(TAG, "Handling event over exception");
+    AccountManager am = AccountManager.get(this);
+    am.setUserData(account, Constants.IN_EVENT_DATA, 
+      String.valueOf(Constants.NOT_IN_EVENT_FLAG));
+    Intent eventEndedBroadcast = new Intent(Constants.EVENT_ENDED_ACTION);
+    sendBroadcast(eventEndedBroadcast);
+  }
+
 
 }
