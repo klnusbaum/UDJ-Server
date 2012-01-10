@@ -56,7 +56,7 @@
   <string name="song_add_failed_title">Adding Song(s) Failed</string>
   <string name="song_add_failed_content">Adding song(s) failed. Tap here to retry.</string>
   <string name="event_ended_title">Event Ended</string>
-  <string name="event_ended_message">Bummer, looks like this event is over</string>
+  <string name="event_ended_message">Bummer, looks like this event you're in is over. We're just gonna go ahead and log you out.</string>
 
 
 
