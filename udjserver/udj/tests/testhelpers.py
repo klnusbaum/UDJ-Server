@@ -14,21 +14,6 @@ from udj.headers import getDjangoTicketHeader
 from udj.headers import getUserIdHeader
 from udj.models import Ticket
 
-class AuthTest(TestCase):
-  fixtures = ['test_fixture.json']
-
-  def testAuth(self):
-    client = Client()
-    response = client.post('/udj/auth', {'username': 'test2', 'password' : 'twotest'})
-    self.assertEqual(response.status_code, 200)
-    self.assertTrue(response.has_header(getTicketHeader()))
-    self.assertTrue(response.has_header(getUserIdHeader()))
-    testUser = User.objects.filter(username='test2')
-    self.assertEqual(
-      int(response.__getitem__(getUserIdHeader())), testUser[0].id)
-    ticket = Ticket.objects.filter(user=testUser)
-    self.assertEqual(response.__getitem__(getTicketHeader()), ticket[0].ticket_hash)
-
 class DoesServerOpsTestCase(TestCase):
   fixtures = ['test_fixture.json']
   client = Client()
@@ -57,6 +42,9 @@ class DoesServerOpsTestCase(TestCase):
 
   def doPost(self, url, args):
     return self.client.post(url, args, **{getDjangoTicketHeader() : self.ticket_hash})
+  
+  def verifyJSONResponse(self, response):
+    self.assertEqual(response['Content-Type'], 'text/json')
 
 class User2TestCase(DoesServerOpsTestCase):
   username = "test2"
@@ -77,3 +65,4 @@ class User5TestCase(DoesServerOpsTestCase):
 class User8TestCase(DoesServerOpsTestCase):
   username = "test8"
   userpass = "eighttest"
+

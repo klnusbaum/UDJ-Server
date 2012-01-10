@@ -1,7 +1,7 @@
 import json
-from udj.tests.testcases import User2TestCase
-from udj.tests.testcases import User3TestCase
-from udj.tests.testcases import User4TestCase
+from udj.tests.testhelpers import User2TestCase
+from udj.tests.testhelpers import User3TestCase
+from udj.tests.testhelpers import User4TestCase
 from udj.models import LibraryEntry
 
 def verifySongAdded(testObject, lib_id, ids, title, artist, album):
@@ -38,6 +38,7 @@ class LibAddTestCase(User2TestCase):
     response = self.doJSONPut(
       '/udj/users/' + self.user_id + '/library/songs', json.dumps(payload))
     self.assertEqual(response.status_code, 201)
+    self.verifyJSONResponse(response)
     ids = json.loads(response.content)
     verifySongAdded(self, lib_id, ids, title, artist, album)
 
@@ -76,6 +77,7 @@ class LibAddTestCase(User2TestCase):
       '/udj/users/' + self.user_id + '/library/songs', json.dumps(payload))
 
     self.assertEqual(response.status_code, 201, msg=response.content)
+    self.verifyJSONResponse(response)
     ids = json.loads(response.content)
     verifySongAdded(self, lib_id1, ids, title1, artist1, album1)
     verifySongAdded(self, lib_id2, ids, title2, artist2, album2)
@@ -95,6 +97,7 @@ class LibAddTestCase(User2TestCase):
       '/udj/users/' + self.user_id + '/library/songs', json.dumps(payload))
 
     self.assertEqual(response.status_code, 201, msg=response.content)
+    self.verifyJSONResponse(response)
     ids = json.loads(response.content)
     self.assertEqual(ids[0], dup_lib_id)
     onlyOneSong = LibraryEntry.objects.get(

@@ -22,6 +22,7 @@ from udj.models import Vote
 from udj.JSONCodecs import getActivePlaylistArray
 from udj.JSONCodecs import getActivePlaylistEntryDictionary
 from udj.auth import getUserForTicket
+from udj.utils import getJSONResponse
 
 @NeedsAuth
 @InParty
@@ -42,7 +43,7 @@ def getActivePlaylist(request, event_id):
   except ObjectDoesNotExist:
     pass
 
-  return HttpResponse(json.dumps(
+  return getJSONResponse(json.dumps(
     {
       "current_song" : currentSongDict,
       "active_playlist" : activePlaylist
@@ -129,7 +130,7 @@ def getAddRequests(request, event_id, user_id):
    {'client_request_id' : add_request.client_request_id,
    'lib_id' : add_request.song.host_lib_song_id}
    for add_request in addRequests]
-  return HttpResponse(json.dumps(requestIds))
+  return getJSONResponse(json.dumps(requestIds))
 
 @NeedsAuth
 @InParty
@@ -141,6 +142,6 @@ def getVotes(request, event_id, user_id):
     user__id=user_id, playlist_entry__state=u'QE')
   upvoteIds = [vote.playlist_entry.id for vote in votes if vote.weight==1]
   downvoteIds = [vote.playlist_entry.id for vote in votes if vote.weight==-1]
-  return HttpResponse(json.dumps(
+  return getJSONResponse(json.dumps(
     {'up_vote_ids' : upvoteIds, 'down_vote_ids' : downvoteIds}))
   

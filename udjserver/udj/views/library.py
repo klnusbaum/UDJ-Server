@@ -10,6 +10,7 @@ from udj.decorators import AcceptsMethods
 from udj.decorators import NeedsJSON
 from udj.JSONCodecs import getLibraryEntryFromJSON
 from udj.models import LibraryEntry
+from udj.utils import getJSONResponse
 
 def addSongToLibrary(songJson, user_id):
   preivouslyAdded = LibraryEntry.objects.filter(
@@ -35,7 +36,7 @@ def addSongsToLibrary(request, user_id):
     addedSong = addSongToLibrary(libEntry, user_id)
     toReturn.append(addedSong.host_lib_song_id)
 
-  return HttpResponse(json.dumps(toReturn), status=201)
+  return getJSONResponse(json.dumps(toReturn), status=201)
 
 @AcceptsMethods('DELETE')
 @TicketUserMatch

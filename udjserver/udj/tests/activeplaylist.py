@@ -13,6 +13,7 @@ class GetActivePlaylistTest(User3TestCase):
   def testGetPlaylist(self):
     response = self.doGet('/udj/events/2/active_playlist')
     self.assertEqual(response.status_code, 200)
+    self.verifyJSONResponse(response)
 
     responseContent = json.loads(response.content)
 
@@ -63,6 +64,7 @@ class TestGetEmptyPlaylist(User4TestCase):
   def testGetEmptyPlaylist(self):
     response = self.doGet('/udj/events/3/active_playlist')
     self.assertEqual(response.status_code, 200, response.content)
+    self.verifyJSONResponse(response)
     responseContent = json.loads(response.content)
     currentSong = responseContent['current_song']
     activePlaylist = responseContent['active_playlist']
@@ -233,6 +235,7 @@ class TestGetAddRequests(User2TestCase):
   def testGetAddRequests(self):
     response = self.doGet('/udj/events/2/active_playlist/users/2/add_requests')
     self.assertEqual(response.status_code, 200)
+    self.verifyJSONResponse(response)
     #TODO make this test more rigerous
     returnedRequests = json.loads(response.content)
     self.assertEqual(len(returnedRequests),5) 
@@ -241,6 +244,7 @@ class TestGetVotes(User2TestCase):
   def testGetVotes(self):
     response = self.doGet('/udj/events/2/active_playlist/users/2/votes')
     self.assertEqual(response.status_code, 200)
+    self.verifyJSONResponse(response)
     jsonResponse = json.loads(response.content)
     upvotes = jsonResponse['up_vote_ids']
     downvotes = jsonResponse['down_vote_ids']
@@ -254,6 +258,7 @@ class TestGetVotes2(User3TestCase):
   def testGetVotes2(self):
     response = self.doGet('/udj/events/2/active_playlist/users/3/votes')
     self.assertEqual(response.status_code, 200)
+    self.verifyJSONResponse(response)
     jsonResponse = json.loads(response.content)
     upvotes = jsonResponse['up_vote_ids']
     downvotes = jsonResponse['down_vote_ids']
