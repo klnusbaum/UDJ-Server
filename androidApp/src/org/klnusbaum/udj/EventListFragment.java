@@ -58,6 +58,7 @@ import org.json.JSONObject;
 
 import org.klnusbaum.udj.network.EventCommService;
 import org.klnusbaum.udj.containers.Event;
+import org.klnusbaum.udj.auth.AuthActivity;
 
 
 public class EventListFragment extends ListFragment implements 
@@ -75,6 +76,7 @@ public class EventListFragment extends ListFragment implements
     "org.klnusbaum.udj.LastKnownLocation";
   private static final String LAST_SEARCH_TYPE_EXTRA = 
     "org.klnusbaum.udj.LastSearchType";
+  private static final int ACCOUNT_CREATION = 0;
 
   private interface EventSearch{
     public abstract Bundle getLoaderArgs();
@@ -134,6 +136,7 @@ public class EventListFragment extends ListFragment implements
   private Location lastKnown = null;
   private Account account = null;
   private EventSearch lastSearch = null;
+  private AccountManager am;
 
   private BroadcastReceiver eventJoinedReceiver = new BroadcastReceiver(){
     public void onReceive(Context context, Intent intent){
@@ -152,10 +155,22 @@ public class EventListFragment extends ListFragment implements
     }
   };
 
-  public void onActivityCreate(Bundle icicle){
-    super.onCreate(icicle);
-    //TODO we shouldn't just assume the arguements are there...
-    //that said it always should be.
+  public void onActivityCreated(Bundle icicle){
+    super.onActivityCreated(icicle);
+    am = AccountManager.get(getActivity());
+    Account[] udjAccounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
+    Log.d(TAG, "Accounts length was " + udjAccounts.length);
+    if(udjAccounts.length < 1){
+      Intent getAccountIntent = new Intent(getActivity(), AuthActivity.class);
+      startActivityForResult(getAccountIntent, ACCOUNT_CREATION);
+    }
+    else if(udjAccounts.length == 1){
+      account=udjAccounts[0];
+    }
+    else{
+      account=udjAccounts[0];
+      //TODO implement if there are more than 1 account
+    }
     if(icicle != null){
       if(icicle.containsKey(LOCATION_STATE_EXTRA)){
         lastKnown = (Location)icicle.getParcelable(LOCATION_STATE_EXTRA);
@@ -164,7 +179,7 @@ public class EventListFragment extends ListFragment implements
         restoreLastSearch(icicle);
       }
     }
-    setEmptyText(getActivity().getString(R.string.no_party_items));
+    setEmptyText(getActivity().getString(R.string.no_event_items));
     eventAdapter = new EventListAdapter(getActivity());
     setListAdapter(eventAdapter);
     setListShown(false);
@@ -190,13 +205,26 @@ public class EventListFragment extends ListFragment implements
     if(lastSearch == null){
       lastSearch = new LocationEventSearch(lastKnown);
     }
-    //TODO only refresh if the list doesn't have anything in it.
-    refreshEventList();
+  }
+
+  public void onActivityResult(
+    int requestCode, int resultCode, Intent data)
+  {
+    switch(requestCode){
+    case ACCOUNT_CREATION:
+      if(resultCode == Activity.RESULT_OK){
+        account = (Account)data.getParcelableExtra(Constants.ACCOUNT_EXTRA);
+      }
+      else{
+        getActivity().setResult(Activity.RESULT_CANCELED);
+        getActivity().finish();
+      }
+      break;
+    }
   }
 
   public void onResume(){
     if(account != null){
-      AccountManager am = AccountManager.get(getActivity());
       if(isShowingProgress()){
         int joinStatus = Integer.valueOf(
           am.getUserData(account, Constants.EVENT_JOIN_STATUS));
@@ -217,6 +245,8 @@ public class EventListFragment extends ListFragment implements
           new Intent(getActivity(), EventActivity.class);
         startActivity(startEventActivity);
       }
+      //TODO only refresh if the list doesn't have anything in it.
+      refreshEventList();
     }
     super.onResume();
   }
@@ -237,11 +267,6 @@ public class EventListFragment extends ListFragment implements
     catch(IllegalArgumentException e){
 
     }
-  }
-
-  public void setEventSearch(EventSearch newSearch){
-    lastSearch = newSearch;
-    refreshEventList();
   }
 
   public void onStop(){
@@ -272,6 +297,11 @@ public class EventListFragment extends ListFragment implements
     } 
   }
 
+  public void setEventSearch(EventSearch newSearch){
+    lastSearch = newSearch;
+    refreshEventList();
+  }
+
   public void onLocationChanged(Location location){
     lastKnown = location;
     if(lastSearch.getSearchType() == LocationEventSearch.SEARCH_TYPE){
@@ -287,13 +317,6 @@ public class EventListFragment extends ListFragment implements
     getLoaderManager().restartLoader(0, lastSearch.getLoaderArgs(), this);
   }
 
-  public void setAccount(Account account){
-    this.account = account;
-    if(isAdded()){
-      refreshEventList();
-    }
-  }
-  
   @Override
   public void onListItemClick(ListView l, View v, int position, long id){
     showProgress();
@@ -344,7 +367,7 @@ public class EventListFragment extends ListFragment implements
       setEmptyText(getString(R.string.no_location_error));
       break;
     case SERVER_ERROR:
-      setEmptyText(getString(R.string.party_load_error));
+      setEmptyText(getString(R.string.events_load_error));
       break;
     case NO_ACCOUNT:
       setEmptyText(getString(R.string.no_account_error));

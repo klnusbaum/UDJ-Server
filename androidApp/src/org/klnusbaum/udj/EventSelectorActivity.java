@@ -35,16 +35,14 @@ import android.app.SearchManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuInflater;
+import android.os.Build;
 
-import org.klnusbaum.udj.auth.AuthActivity;
-import org.klnusbaum.udj.actionbar.ActionBarActivity;
 
 /**
  * Class used for displaying the contents of the Playlist.
  */
 public class EventSelectorActivity extends FragmentActivity{
 
-  private static final int ACCOUNT_CREATION = 0;
   private Account account;
   private AccountManager am;
   private EventListFragment list;
@@ -52,53 +50,15 @@ public class EventSelectorActivity extends FragmentActivity{
   @Override
   public void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
-    requestWindowFeature(Window.FEATURE_NO_TITLE);
-    am = AccountManager.get(this);
-    Account[] udjAccounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
+
+    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){ 
+      requestWindowFeature(Window.FEATURE_NO_TITLE);
+    }
 
     FragmentManager fm = getSupportFragmentManager();
     if(fm.findFragmentById(android.R.id.content) == null){
       list = new EventListFragment();
       fm.beginTransaction().add(android.R.id.content, list).commit();
-    }
-    if(udjAccounts.length < 1){
-      Intent getAccountIntent = new Intent(this, AuthActivity.class);
-      startActivityForResult(getAccountIntent, ACCOUNT_CREATION);
-    }
-    else if(udjAccounts.length == 1){
-      account=udjAccounts[0];
-      showEventUI();
-    }
-    else{
-      account=udjAccounts[0];
-      showEventUI();
-      //TODO implement if there are more than 1 account
-    }
-  }
-
-  private void showEventUI(){
-    if(Integer.valueOf(am.getUserData(account, Constants.IN_EVENT_DATA)) ==
-      Constants.IN_EVENT_FLAG)
-    {
-      Intent eventActivityIntent = new Intent(this, EventActivity.class);
-      eventActivityIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
-      startActivity(eventActivityIntent); 
-    }
-    else{
-      list.setAccount(account);
-    }
-  }
-
-  protected void onActivityResult(
-    int requestCode, int resultCode, Intent data)
-  {
-    if(resultCode == Activity.RESULT_OK){
-      account = (Account)data.getParcelableExtra(Constants.ACCOUNT_EXTRA);
-      showEventUI();
-    }
-    else{
-      setResult(Activity.RESULT_CANCELED);
-      finish();
     }
   }
 
