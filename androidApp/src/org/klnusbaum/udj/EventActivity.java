@@ -76,13 +76,20 @@ public class EventActivity extends EventEndedListenerActivity
   @Override
   protected void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
+    account = (Account)getIntent().getParcelableExtra(Constants.ACCOUNT_EXTRA);
+    if(account == null){
+      //TODO we should never get here
+      Log.e(TAG, "Had a null account in the EventActivity");
+      setResult(Activity.RESULT_CANCELED);
+      finish();
+      return;
+    }
     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){ 
       requestWindowFeature(Window.FEATURE_NO_TITLE);
     }
     setContentView(R.layout.event);
     currentSong = (TextView)findViewById(R.id.current_song_title);
     setCurrentSongDisplay(null);
-    account = (Account)getIntent().getParcelableExtra(Constants.ACCOUNT_EXTRA);
     //TODO hanle if no event
     getPlaylistFromServer();    
     getSupportLoaderManager().initLoader(CURRENT_SONG_LOADER_ID, null, this);
