@@ -27,7 +27,7 @@ public class Constants{
   public static final String USER_ID_DATA = "org.klnusbaum.udj.userid";
   public static final String LAST_EVENT_ID_DATA = "org.klnusbaum.udj.EventId";
   public static final String IN_EVENT_DATA = "org.klnusbaum.udj.InEvent";
-  public static final String EVENT_JOIN_STATUS = "eventJoinStatus";
+  public static final String EVENT_JOIN_ERROR = "eventJoinError";
   public static final int EVENT_JOIN_FAILED = -1;
   public static final int EVENT_JOIN_OK = 0;
   public static final long NO_EVENT_ID = -1;

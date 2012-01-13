@@ -55,8 +55,13 @@
   <string name="song_add_failed_content">Adding song(s) failed. Tap here to retry.</string>
   <string name="event_ended_title">Event Ended</string>
   <string name="event_ended_message">Bummer, looks like this event you\'re in is over. We\'re just gonna go ahead and log you out.</string>
-
-
+  <string name="no_network_connection">No network connection available.</string>
+  <string name="event_join_fail_title">Joining Event Failed</string>
+  <string name="unknown_error_message">Unknown error. Please contact developers.</string>
+  <string name="server_join_fail_message">We had a little hiccup while trying communicate with our server. We're deeply sorry. How about trying to join the event again?</string>
+  <string name="auth_join_fail_message">Looks like your username and password aren't working. Try reentering them.</string>
+  <string name="event_over_join_fail_message">Sorry, looks like that event is actually over now. Maybe try another event?</string>
+  <string name="no_network_join_fail_message">We couldn't connect to the internet. Would you mind checking your network connectivity, and then trying again?</string>
 
 
 <!-- Stuff for action bar compatibility -->

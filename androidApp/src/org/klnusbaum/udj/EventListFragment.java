@@ -59,6 +59,7 @@ import org.json.JSONObject;
 import org.klnusbaum.udj.network.EventCommService;
 import org.klnusbaum.udj.containers.Event;
 import org.klnusbaum.udj.auth.AuthActivity;
+import org.klnusbaum.udj.EventCommService.EventJoinError;
 
 
 public class EventListFragment extends ListFragment implements 
@@ -67,6 +68,7 @@ public class EventListFragment extends ListFragment implements
 {
   private static final String TAG = "EventListFragment";
   private static final String PROG_DIALOG_TAG = "prog_dialog";
+  private static final String EVENT_JOIN_FAIL_TAG = "prog_dialog";
   private static final String LOCATION_EXTRA = "location";
   private static final String EVENT_SEARCH_QUERY = 
     "org.klnusbaum.udj.EventSearchQuery";
@@ -150,7 +152,7 @@ public class EventListFragment extends ListFragment implements
         startActivity(eventActivityIntent); 
       }
       else if(intent.getAction().equals(Constants.EVENT_JOIN_FAILED_ACTION)){
-        //TODO inform user of event joining failure.
+        displayEventJoinFail();
       }
     }
   };
@@ -163,6 +165,7 @@ public class EventListFragment extends ListFragment implements
     if(udjAccounts.length < 1){
       Intent getAccountIntent = new Intent(getActivity(), AuthActivity.class);
       startActivityForResult(getAccountIntent, ACCOUNT_CREATION);
+      return;
     }
     else if(udjAccounts.length == 1){
       account=udjAccounts[0];
@@ -226,10 +229,11 @@ public class EventListFragment extends ListFragment implements
   public void onResume(){
     if(account != null){
       if(isShowingProgress()){
-        int joinStatus = Integer.valueOf(
-          am.getUserData(account, Constants.EVENT_JOIN_STATUS));
-        if(joinStatus == Constants.EVENT_JOIN_FAILED && isShowingProgress()){
+        EventJoinError joinError = EventJoinError.valueOf(
+          am.getUserData(account, Constants.EVENT_JOIN_ERROR));
+        if(joinStatus != EventJoinError.NO_ERROR && isShowingProgress()){
           dismissProgress();
+          displayEventJoinFail(joinError);
           //TODO inform user joining failed.
         }
         else{
@@ -369,6 +373,9 @@ public class EventListFragment extends ListFragment implements
     case SERVER_ERROR:
       setEmptyText(getString(R.string.events_load_error));
       break;
+    case NO_CONNECTION:
+      setEmptyText(getString(R.string.no_network_connection));
+      break;
     case NO_ACCOUNT:
       setEmptyText(getString(R.string.no_account_error));
       break;
@@ -419,6 +426,47 @@ public class EventListFragment extends ListFragment implements
         }
       });
       return dialog;
+    }
+  }
+
+  private void displayEventJoinFail(){
+    DialogFragment newFrag = new EventJoinFailDialog();
+    newFrag.show(getSupportFragmentManager(), EVENT_JOIN_FAIL_TAG);
+  }
+
+  public static class EventJoinFailDialog extends DialogFragment{
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState){
+      EventJoinError joinError = EventJoinError.valueOf(
+        am.getUserData(account, Constants.EVENT_JOIN_ERROR));
+      String message; 
+      switch(joinError){
+      case SERVER_ERROR:
+        message = getString(R.string.server_join_fail_message); 
+        break;
+      case AUTHENTICATION_ERROR:
+        message = getString(R.string.auth_join_fail_message); 
+        break;
+      case EVENT_OVER_ERROR:
+        message = getString(R.string.event_over_join_fail_message); 
+        break;
+      case NO_NETWORK_ERROR:
+        message = getString(R.string.no_networ_join_fail_message); 
+        break;
+      default:
+        message = getString(R.string.under_error_message);
+      }
+      return new AlertDialog.Builder(getActivity())
+        .setTitle(R.string.event_join_fail_title)
+        .setMessage(message)
+        .setPositiveButton(
+          android.R.string.ok,
+          new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton){
+              dismiss();
+            }
+          })
+        .create();
     }
   }
 } 

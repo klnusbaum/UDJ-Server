@@ -45,7 +45,7 @@ public class EventsLoader extends
   AsyncTaskLoader<EventsLoader.EventsLoaderResult>
 {
   public enum EventLoaderError{
-    NO_ERROR, SERVER_ERROR, NO_LOCATION, 
+    NO_ERROR, NO_CONNECTION, SERVER_ERROR, NO_LOCATION, 
     AUTHENTICATION_ERROR, NO_ACCOUNT};
 
   public static class EventsLoaderResult{
@@ -108,6 +108,9 @@ public class EventsLoader extends
     }
     else if(location == null && locationSearch){
       return new EventsLoaderResult(null, EventLoaderError.NO_LOCATION);
+    }
+    else if(!Utils.isNetworkAvailable(getContext())){
+      return new EventsLoaderResult(null, EventLoaderError.NO_CONNECTION);
     }
     else{
       try{

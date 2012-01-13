@@ -49,6 +49,14 @@ import org.klnusbaum.udj.exceptions.EventOverException;
  */
 public class EventCommService extends IntentService{
 
+  public enum EventJoinError{
+    NO_ERROR,
+    AUTHENTICATION_ERROR,
+    SERVER_ERROR,
+    EVENT_OVER_ERROR,
+    NO_NETWORK_ERROR 
+  }
+
   private static final String TAG = "EventCommService";
 
   public EventCommService(){
@@ -59,47 +67,60 @@ public class EventCommService extends IntentService{
   public void onHandleIntent(Intent intent){
     Log.d(TAG, "In Event Comm Service");
     AccountManager am = AccountManager.get(this);
+    final Account account = 
+      (Account)intent.getParcelableExtra(Constants.ACCOUNT_EXTRA);
+    if(intent.getAction().equals(Intent.ACTION_INSERT)){
+      enterEvent(intent, am, account);
+    }
+    else if(intent.getAction().equals(Intent.ACTION_DELETE)){
+      //TODO handle if userId is null shouldn't ever be, but hey...
+      leaveEvent(am, account);
+    }
+    else{
+      Log.d(TAG, "ACTION wasn't delete or insert, it was " + 
+        intent.getAction());
+    } 
+  }
+
+  private void enterEvent(Intent intent, AccountManager am, Account account){
+    am.setUserData(
+      account, 
+      Constants.EVENT_JOIN_ERROR, 
+      String.valueOf(EventJoinError.NO_ERROR));
+
+    if(!Utils.isNetworkAvailable(this)){
+      doLoginFail(am, account, EventJoinError.NO_NETWORK_ERROR);
+      return;
+    }
+
+    long userId, eventId;
+    String authToken;
+    //TODO hanle error if account isn't provided
     try{
-      final Account account = 
-        (Account)intent.getParcelableExtra(Constants.ACCOUNT_EXTRA);
-      //TODO hanle error if account isn't provided
-      long userId = 
+      userId = 
         Long.valueOf(am.getUserData(account, Constants.USER_ID_DATA));
       //TODO handle if event id isn't provided
-      String authToken = am.blockingGetAuthToken(account, "", true);  
-      if(intent.getAction().equals(Intent.ACTION_INSERT)){
-        long eventId = intent.getLongExtra(
-          Constants.EVENT_ID_EXTRA, 
-          Constants.NO_EVENT_ID);
-        enterEvent(account, eventId, userId, authToken, am);
-      }
-      else if(intent.getAction().equals(Intent.ACTION_DELETE)){
-        //TODO handle if userId is null shouldn't ever be, but hey...
-        leaveEvent(account, userId, authToken, am);
-      }
-      else{
-        Log.d(TAG, "ACTION wasn't delete or insert, it was " + 
-          intent.getAction());
-      } 
+      authToken = am.blockingGetAuthToken(account, "", true);  
+      eventId = intent.getLongExtra(
+        Constants.EVENT_ID_EXTRA, 
+        Constants.NO_EVENT_ID);
     }
     catch(OperationCanceledException e){
       Log.e(TAG, "Operation canceled exception in EventCommService" );
+      doLoginFail(am, account, EventJoinError.AUTHENTICATION_ERROR);
+      return;
     }
     catch(AuthenticatorException e){
       Log.e(TAG, "Authenticator exception in EventCommService" );
+      doLoginFail(am, account, EventJoinError.AUTHENTICATION_ERROR);
+      return;
     }
     catch(IOException e){
       Log.e(TAG, "IO exception in EventCommService" );
+      doLoginFail(am, account);
+      return;
     }
-  }
 
-  private void enterEvent(Account account, long eventId, long userId, 
-    String authToken, AccountManager am)
-  {
-    am.setUserData(
-      account, 
-      Constants.EVENT_JOIN_STATUS, 
-      String.valueOf(Constants.EVENT_JOIN_OK));
     try{
       ServerConnection.joinEvent(eventId, userId, authToken);
       ContentResolver cr = getContentResolver();
@@ -122,43 +143,71 @@ public class EventCommService extends IntentService{
     catch(IOException e){
       Log.e(TAG, "IO exception when joining event");
       Log.e(TAG, e.getMessage());
-      setEventLoginFailed(am, account);
+      doLoginFail(am, account, EventJoinError.SERVER_ERROR);
     }
     catch(JSONException e){
       Log.e(TAG, 
         "JSON exception when joining event");
       Log.e(TAG, e.getMessage());
-      setEventLoginFailed(am, account);
+      doLoginFail(am, account, EventJoinError.SERVER_ERROR);
     }
     catch(AuthenticationException e){
       Log.e(TAG, 
         "Authentication exception when joining event");
       Log.e(TAG, e.getMessage());
-      setEventLoginFailed(am, account);
+      doLoginFail(am, account, EventJoinError.AUTHENTICATION_ERROR);
     }
     catch(EventOverException e){
       Log.e(TAG, "Event Over Exception when joining event");
       Log.e(TAG, e.getMessage());
-      setEventLoginFailed(am, account);
+      doLoginFail(am, account, EventJoinError.EVENT_OVER_ERROR);
     }
+  }
 
+  private void doLoginFail(
+    AccountManager am, 
+    Account account, 
+    EventJoinError error)
+  {
+    am.setUserData(
+      account, 
+      Constants.EVENT_JOIN_ERROR, 
+      error.toString());
     Intent eventJoinFailedIntent = 
       new Intent(Constants.EVENT_JOIN_FAILED_ACTION);
     Log.d(TAG, "Sending event join failure broadcast");
     sendBroadcast(eventJoinFailedIntent);
   }
 
-  private void setEventLoginFailed(AccountManager am, Account account){
-    am.setUserData(
-      account, 
-      Constants.EVENT_JOIN_STATUS, 
-      String.valueOf(Constants.EVENT_JOIN_FAILED));
-  }
-
-  private void leaveEvent(Account account, long userId, String authToken, 
-    AccountManager am)
-  {
+  private void leaveEvent(AccountManager am, Account account){
     Log.d(TAG, "In leave event"); 
+    
+    if(account == null){
+      //TODO handle error
+      return;
+    }
+
+    long userId;
+    String authToken; 
+    try{
+      userId = 
+        Long.valueOf(am.getUserData(account, Constants.USER_ID_DATA));
+      //TODO handle if event id isn't provided
+      authToken = am.blockingGetAuthToken(account, "", true);  
+    }
+    catch(OperationCanceledException e){
+      Log.e(TAG, "Operation canceled exception in EventCommService" );
+      return;
+    }
+    catch(AuthenticatorException e){
+      Log.e(TAG, "Authenticator exception in EventCommService" );
+      return;
+    }
+    catch(IOException e){
+      Log.e(TAG, "IO exception in EventCommService" );
+      return;
+    }
+
     try{
       long eventId = 
         Long.valueOf(am.getUserData(account, Constants.LAST_EVENT_ID_DATA));
