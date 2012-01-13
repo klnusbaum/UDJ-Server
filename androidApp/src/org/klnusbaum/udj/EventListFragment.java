@@ -36,7 +36,7 @@ import android.view.View;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
-import android.widget.Toast;
+import android.app.AlertDialog;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -59,7 +59,7 @@ import org.json.JSONObject;
 import org.klnusbaum.udj.network.EventCommService;
 import org.klnusbaum.udj.containers.Event;
 import org.klnusbaum.udj.auth.AuthActivity;
-import org.klnusbaum.udj.EventCommService.EventJoinError;
+import org.klnusbaum.udj.network.EventCommService.EventJoinError;
 
 
 public class EventListFragment extends ListFragment implements 
@@ -227,13 +227,14 @@ public class EventListFragment extends ListFragment implements
   }
 
   public void onResume(){
+    Log.d(TAG, "Hit on resume");
     if(account != null){
       if(isShowingProgress()){
         EventJoinError joinError = EventJoinError.valueOf(
           am.getUserData(account, Constants.EVENT_JOIN_ERROR));
-        if(joinStatus != EventJoinError.NO_ERROR && isShowingProgress()){
+        if(joinError != EventJoinError.NO_ERROR && isShowingProgress()){
           dismissProgress();
-          displayEventJoinFail(joinError);
+          displayEventJoinFail();
           //TODO inform user joining failed.
         }
         else{
@@ -248,9 +249,13 @@ public class EventListFragment extends ListFragment implements
         Intent startEventActivity = 
           new Intent(getActivity(), EventActivity.class);
         startActivity(startEventActivity);
+        return;
       }
-      //TODO only refresh if the list doesn't have anything in it.
-      refreshEventList();
+
+      if(eventAdapter == null || eventAdapter.getCount() ==0){
+        refreshEventList();
+      }
+      
     }
     super.onResume();
   }
@@ -430,13 +435,22 @@ public class EventListFragment extends ListFragment implements
   }
 
   private void displayEventJoinFail(){
-    DialogFragment newFrag = new EventJoinFailDialog();
-    newFrag.show(getSupportFragmentManager(), EVENT_JOIN_FAIL_TAG);
+    DialogFragment newFrag = new EventJoinFailDialog(account);
+    newFrag.show(
+      getActivity().getSupportFragmentManager(), EVENT_JOIN_FAIL_TAG);
   }
 
   public static class EventJoinFailDialog extends DialogFragment{
+    private Account account;
+
+    public EventJoinFailDialog(Account account){
+      super();
+      this.account = account;
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
+      AccountManager am = AccountManager.get(getActivity());
       EventJoinError joinError = EventJoinError.valueOf(
         am.getUserData(account, Constants.EVENT_JOIN_ERROR));
       String message; 
@@ -451,10 +465,10 @@ public class EventListFragment extends ListFragment implements
         message = getString(R.string.event_over_join_fail_message); 
         break;
       case NO_NETWORK_ERROR:
-        message = getString(R.string.no_networ_join_fail_message); 
+        message = getString(R.string.no_network_join_fail_message); 
         break;
       default:
-        message = getString(R.string.under_error_message);
+        message = getString(R.string.unknown_error_message);
       }
       return new AlertDialog.Builder(getActivity())
         .setTitle(R.string.event_join_fail_title)

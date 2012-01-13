@@ -40,6 +40,7 @@ import org.json.JSONObject;
 import org.apache.http.auth.AuthenticationException;
 
 import org.klnusbaum.udj.Constants;
+import org.klnusbaum.udj.Utils;
 import org.klnusbaum.udj.UDJEventProvider;
 import org.klnusbaum.udj.exceptions.EventOverException;
 
@@ -117,7 +118,7 @@ public class EventCommService extends IntentService{
     }
     catch(IOException e){
       Log.e(TAG, "IO exception in EventCommService" );
-      doLoginFail(am, account);
+      doLoginFail(am, account, EventJoinError.AUTHENTICATION_ERROR);
       return;
     }
 
