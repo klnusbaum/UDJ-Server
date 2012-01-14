@@ -39,13 +39,13 @@ import org.klnusbaum.udj.network.ServerConnection;
 import org.klnusbaum.udj.containers.LibraryEntry;
 import org.klnusbaum.udj.exceptions.EventOverException;
 
-public class AvailableMusicSearchLoader 
+public class MusicSearchLoader 
   extends AsyncTaskLoader<List<LibraryEntry>>
 {
   private String query;
   private Account account;
 
-  public AvailableMusicSearchLoader(
+  public MusicSearchLoader(
     Context context, String query, Account account)
   {
     super(context);

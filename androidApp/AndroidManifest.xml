@@ -74,7 +74,7 @@
           />
         </activity>
         <activity 
-          android:name="AvailableMusicSearchActivity"
+          android:name="MusicSearchActivity"
           android:launchMode="singleTop"
         >
           <intent-filter>

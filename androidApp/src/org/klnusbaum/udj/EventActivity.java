@@ -155,7 +155,7 @@ public class EventActivity extends EventEndedListenerActivity
   protected void onNewIntent(Intent intent){
     Log.d(TAG, "In on new intent");
     if(Intent.ACTION_SEARCH.equals(intent.getAction())){
-      intent.setClass(this, AvailableMusicSearchActivity.class);
+      intent.setClass(this, MusicSearchActivity.class);
       startActivityForResult(intent, 0);
     }
   }

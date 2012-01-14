@@ -21,9 +21,10 @@ package org.klnusbaum.udj;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.accounts.AccountManager;
+import android.accounts.Account;
 
 public class Utils{
-
 
   public static boolean isNetworkAvailable(Context context){
     ConnectivityManager cm = ((ConnectivityManager)context.getSystemService(
@@ -35,6 +36,10 @@ public class Utils{
     return false;
   }
 
-
+  public static Account basicGetUdjAccount(Context context){
+    AccountManager am = AccountManager.get(context);
+    Account[] udjAccounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
+    return udjAccounts[0];
+  }
 
 }

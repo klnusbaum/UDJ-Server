@@ -57,9 +57,7 @@ public abstract class EventEndedListenerActivity extends FragmentActivity{
 
   protected void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
-    AccountManager am = AccountManager.get(this);
-    Account[] udjAccounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
-    account = udjAccounts[0];
+    account = Utils.basicGetUdjAccount(this);
     int eventStatus = Integer.valueOf(AccountManager.get(this).getUserData(
       account, Constants.IN_EVENT_DATA));
     if(eventStatus == Constants.NOT_IN_EVENT_FLAG){

@@ -31,20 +31,20 @@ import java.util.List;
 
 import org.klnusbaum.udj.containers.LibraryEntry;
 
-public class AvailableMusicSearchAdapter implements ListAdapter{
+public class MusicSearchAdapter implements ListAdapter{
 
   private List<LibraryEntry> entries;
   private Context context;
   private View.OnClickListener addClickListener;
   public static final int LIB_ENTRY_VIEW_TYPE = 0;
 
-  public AvailableMusicSearchAdapter(Context context){
+  public MusicSearchAdapter(Context context){
     this.entries = null;
     this.addClickListener = null;
     this.context = context;
   }
 
-  public AvailableMusicSearchAdapter(
+  public MusicSearchAdapter(
     Context context, 
     List<LibraryEntry> entries,
     View.OnClickListener addClickListener
