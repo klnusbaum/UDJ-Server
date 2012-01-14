@@ -37,6 +37,9 @@ public class Constants{
   /** Constants use for passing account related info in intents */
   public static final String ACCOUNT_EXTRA = "org.klnusbaum.udj.account";
   public static final String EVENT_ID_EXTRA = "org.klnusbaum.udj.EventId";
+  public static final String VOTE_TYPE_EXTRA = "org.klnusbaum.udj.VoteType";
+  public static final String PLAYLIST_ID_EXTRA = "org.klnusbaum.udj.PlaylistId";
+
 
   /** Constants for actions used throughout */
   public static final String ADD_REQUESTS_SYNCED = 
@@ -48,6 +51,7 @@ public class Constants{
     "org.klnusbaum.udj.JoinedEvent";
   public static final String EVENT_JOIN_FAILED_ACTION = 
     "org.klnusbaum.udj.EventJoinFailed";
+  public static final String SHOW_TOAST_ACTION = "org.klnusbaum.udj.ShowToast";
 
   /** URI constants */
   public static final Uri EVENT_URI = new Uri.Builder().

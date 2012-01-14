@@ -141,6 +141,7 @@ public class UDJEventProvider extends ContentProvider{
    public static final int VOTE_SYNCED = 0;
 
    /** Constants use for vote types */
+   public static final int INVALID_VOTE_TYPE = -1;
    public static final int UP_VOTE_TYPE = 1;
    public static final int DOWN_VOTE_TYPE = 2;
 

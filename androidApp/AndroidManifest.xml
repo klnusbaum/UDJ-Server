@@ -92,22 +92,22 @@
       
         <service
             android:name=".auth.AuthService"
-            android:exported="true">
-            <intent-filter>
-                <action
-                    android:name="android.accounts.AccountAuthenticator" />
-            </intent-filter>
-            <meta-data
-                android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/authenticator" />
+            android:exported="true"
+        >
+          <intent-filter>
+              <action android:name="android.accounts.AccountAuthenticator" />
+          </intent-filter>
+          <meta-data
+            android:name="android.accounts.AccountAuthenticator"
+            android:resource="@xml/authenticator"
+          />
         </service>
 
         <service
             android:name=".network.SyncService"
             android:exported="true">
             <intent-filter>
-                <action
-                    android:name="android.content.SyncAdapter" />
+                <action android:name="android.content.SyncAdapter" />
             </intent-filter>
             <meta-data
                 android:name="android.content.SyncAdapter"
@@ -116,13 +116,19 @@
 
         <service
             android:name=".network.PlaylistSyncService"
-            android:exported="true">
-        </service>
+            android:exported="true"
+        />
 
         <service
             android:name=".network.EventCommService"
-            android:exported="true">
-        </service>
+            android:exported="true"
+        />
+
+        <receiver android:name="Toaster">
+          <intent-filter>
+            <action android:name="org.klnusbaum.udj.ShowToast"/>
+          </intent-filter>
+        </receiver>
 
         <provider android:name="org.klnusbaum.udj.UDJEventProvider"
           android:authorities="org.klnusbaum.udj"

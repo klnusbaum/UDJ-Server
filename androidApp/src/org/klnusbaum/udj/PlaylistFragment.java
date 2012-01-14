@@ -227,66 +227,15 @@ public class PlaylistFragment extends ListFragment
     private void voteOnSong(View view, int voteType){
       view.setEnabled(false);
       String playlistId = view.getTag().toString();
-      ContentResolver cr = getActivity().getContentResolver();
-      Cursor alreadyThere = cr.query(
-        UDJEventProvider.VOTES_URI, 
-        null,
-        UDJEventProvider.VOTE_PLAYLIST_ENTRY_ID_COLUMN+"="+playlistId, 
-        null, 
-        null);
-      if(alreadyThere.moveToFirst()){
-        ContentValues toUpdate = new ContentValues();
-        toUpdate.put(UDJEventProvider.VOTE_TYPE_COLUMN, voteType);
-        toUpdate.put(UDJEventProvider.VOTE_SYNC_STATUS_COLUMN, 
-          UDJEventProvider.VOTE_NEEDS_SYNC);
-        cr.update(
-          UDJEventProvider.VOTES_URI, 
-          toUpdate, 
-          UDJEventProvider.VOTE_PLAYLIST_ENTRY_ID_COLUMN+"="+playlistId, 
-          null);
-      }
-      else{
-        ContentValues toInsert = new ContentValues();
-        toInsert.put(UDJEventProvider.VOTE_TYPE_COLUMN, voteType);
-        toInsert.put(
-          UDJEventProvider.VOTE_PLAYLIST_ENTRY_ID_COLUMN, 
-          Long.valueOf(playlistId));
-        cr.insert(UDJEventProvider.VOTES_URI, toInsert);
-      }
-      alreadyThere.close();
-      Intent syncVotes = new Intent(
+      Intent voteIntent = new Intent(
         Intent.ACTION_INSERT,
         UDJEventProvider.VOTES_URI,
         getActivity(),
         PlaylistSyncService.class);
-      syncVotes.putExtra(Constants.ACCOUNT_EXTRA, account);
-      getActivity().startService(syncVotes);
-      showVoteToast(playlistId, voteType);
-    }
-
-    private void showVoteToast(String playlistId, int voteType){
-      Context context = getActivity();
-      ContentResolver cr = context.getContentResolver();
-      Cursor song = cr.query(
-        UDJEventProvider.PLAYLIST_URI, 
-        new String[] {UDJEventProvider.TITLE_COLUMN},
-        UDJEventProvider.PLAYLIST_ID_COLUMN + "=" + playlistId,
-        null,
-        null);
-      song.moveToFirst();
-      String songName = song.getString(0);
-      String voteMessage = "";
-      if(voteType == UDJEventProvider.UP_VOTE_TYPE){
-        voteMessage += context.getString(R.string.voting_up_message);
-      }
-      else if(voteType == UDJEventProvider.DOWN_VOTE_TYPE){
-        voteMessage += context.getString(R.string.voting_down_message);
-      }
-      Toast voteToast = Toast.makeText(
-        context, 
-        voteMessage + " " + songName,
-        Toast.LENGTH_SHORT);
-      voteToast.show();
+      voteIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
+      voteIntent.putExtra(Constants.VOTE_TYPE_EXTRA, voteType);
+      voteIntent.putExtra(Constants.PLAYLIST_ID_EXTRA, playlistId);
+      getActivity().startService(voteIntent);
     }
   }
 }

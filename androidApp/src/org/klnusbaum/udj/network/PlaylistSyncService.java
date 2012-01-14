@@ -67,7 +67,7 @@ public class PlaylistSyncService extends IntentService{
   private static final int ADD_SONG_ID = 0;
   private static final int SONG_ADDED_ID = 1;
 
-  private static final String TAG = "PlyalistSyncService";
+  private static final String TAG = "PlaylistSyncService";
   private static final String[] addRequestsProjection = new String[] {
     UDJEventProvider.ADD_REQUEST_ID_COLUMN,
     UDJEventProvider.ADD_REQUEST_LIB_ID_COLUMN};
@@ -98,6 +98,11 @@ public class PlaylistSyncService extends IntentService{
         syncAddRequests(account, eventId);
       }
       else if(intent.getData().equals(UDJEventProvider.VOTES_URI)){
+        String playlistId = intent.getStringExtra(Constants.PLAYLIST_ID_EXTRA);
+        int voteType = intent.getIntExtra(
+          Constants.VOTE_TYPE_EXTRA, 
+          UDJEventProvider.INVALID_VOTE_TYPE);
+        addVoteRequest(playlistId, voteType);
         syncVoteRequests(account, eventId); 
       }
       updateActivePlaylist(account, eventId); 
@@ -350,4 +355,59 @@ public class PlaylistSyncService extends IntentService{
   }
 
 
+  private void addVoteRequest(String playlistId, int voteType){
+    ContentResolver cr = getContentResolver();
+    Cursor alreadyThere = cr.query(
+      UDJEventProvider.VOTES_URI, 
+      null,
+      UDJEventProvider.VOTE_PLAYLIST_ENTRY_ID_COLUMN+"="+playlistId, 
+      null, 
+      null);
+    if(alreadyThere.moveToFirst()){
+      ContentValues toUpdate = new ContentValues();
+      toUpdate.put(UDJEventProvider.VOTE_TYPE_COLUMN, voteType);
+      toUpdate.put(UDJEventProvider.VOTE_SYNC_STATUS_COLUMN, 
+        UDJEventProvider.VOTE_NEEDS_SYNC);
+      cr.update(
+        UDJEventProvider.VOTES_URI, 
+        toUpdate, 
+        UDJEventProvider.VOTE_PLAYLIST_ENTRY_ID_COLUMN+"="+playlistId, 
+        null);
+    }
+    else{
+      ContentValues toInsert = new ContentValues();
+      toInsert.put(UDJEventProvider.VOTE_TYPE_COLUMN, voteType);
+      toInsert.put(
+        UDJEventProvider.VOTE_PLAYLIST_ENTRY_ID_COLUMN, 
+        Long.valueOf(playlistId));
+      cr.insert(UDJEventProvider.VOTES_URI, toInsert);
+    }
+    alreadyThere.close();
+    showVoteToast(playlistId, voteType, cr);
+  }
+
+  private void showVoteToast(
+    String playlistId, int voteType, ContentResolver cr)
+  {
+    String voteMessage = "";
+    if(voteType == UDJEventProvider.UP_VOTE_TYPE){
+      voteMessage += getString(R.string.voting_up_message);
+    }
+    else if(voteType == UDJEventProvider.DOWN_VOTE_TYPE){
+      voteMessage += getString(R.string.voting_down_message);
+    }
+    Cursor song = cr.query(
+      UDJEventProvider.PLAYLIST_URI, 
+      new String[] {UDJEventProvider.TITLE_COLUMN},
+      UDJEventProvider.PLAYLIST_ID_COLUMN + "=" + playlistId,
+      null,
+      null);
+    song.moveToFirst();
+    voteMessage += " " + song.getString(0);
+    song.close();
+
+    Intent showToast = new Intent(Constants.SHOW_TOAST_ACTION);
+    showToast.putExtra(Intent.EXTRA_TEXT, voteMessage);
+    sendBroadcast(showToast);
+  }
 }
