@@ -61,7 +61,10 @@
             android:resource="@xml/event_searchable"
           />
         </activity>
-        <activity android:name="EventActivity"> 
+        <activity 
+          android:name="EventActivity"
+          android:launchMode="singleTop"
+        >
           <intent-filter>
             <action android:name="android.intent.action.SEARCH"/> 
           </intent-filter>
@@ -72,7 +75,7 @@
         </activity>
         <activity 
           android:name="AvailableMusicSearchActivity"
-          launchMode="singleTop"
+          android:launchMode="singleTop"
         >
           <intent-filter>
             <action android:name="android.intent.action.SEARCH"/> 

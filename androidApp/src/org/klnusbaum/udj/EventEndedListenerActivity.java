@@ -60,6 +60,12 @@ public abstract class EventEndedListenerActivity extends FragmentActivity{
     AccountManager am = AccountManager.get(this);
     Account[] udjAccounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
     account = udjAccounts[0];
+    int eventStatus = Integer.valueOf(AccountManager.get(this).getUserData(
+      account, Constants.IN_EVENT_DATA));
+    if(eventStatus == Constants.NOT_IN_EVENT_FLAG){
+      finish();
+      return;
+    }
   }
 
   protected void onResume(){

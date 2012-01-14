@@ -87,6 +87,7 @@ public class EventActivity extends EventEndedListenerActivity
     getSupportLoaderManager().initLoader(CURRENT_SONG_LOADER_ID, null, this);
   }
 
+
   private void getPlaylistFromServer(){
     Intent getPlaylist = new Intent(
       Intent.ACTION_VIEW,
@@ -142,15 +143,7 @@ public class EventActivity extends EventEndedListenerActivity
     switch (item.getItemId()) {
     case R.id.menu_refresh:
       getPlaylistFromServer();
-      /*getActionBarHelper().setRefreshActionItemState(true);
-      getWindow().getDecorView().postDelayed(
-        new Runnable() {
-          @Override
-          public void run() {
-            getActionBarHelper().setRefreshActionItemState(false);
-          }
-       }, 1000);*/
-       return true;
+      return true;
     case R.id.menu_search:
       startSearch(null, false, null, false);
       return true;  
@@ -159,11 +152,12 @@ public class EventActivity extends EventEndedListenerActivity
     }
   }
 
-  public boolean onSearchRequested(){
-    Intent searchIntent = new Intent(
-      this, AvailableMusicSearchActivity.class);
-    startActivityForResult(searchIntent, 0);
-    return true;
+  protected void onNewIntent(Intent intent){
+    Log.d(TAG, "In on new intent");
+    if(Intent.ACTION_SEARCH.equals(intent.getAction())){
+      intent.setClass(this, AvailableMusicSearchActivity.class);
+      startActivityForResult(intent, 0);
+    }
   }
 
   @Override 

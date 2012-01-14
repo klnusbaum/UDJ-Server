@@ -85,9 +85,13 @@ public class PlaylistSyncService extends IntentService{
     Log.i(TAG, "In playlist sync service");
     final Account account = 
       (Account)intent.getParcelableExtra(Constants.ACCOUNT_EXTRA);
-    //TODO handle error if no account provider
     long eventId = Long.valueOf(AccountManager.get(this).getUserData(
       account, Constants.LAST_EVENT_ID_DATA));
+    //TODO this is hack. We should never get here but event activity sometimes
+    // calls sync playlist after a party is over. need to fix that.
+    if(eventId == Constants.NO_EVENT_ID){
+      return;
+    }
     //TODO hanle error if eventId is bad
     if(intent.getAction().equals(Intent.ACTION_INSERT)){
       if(intent.getData().equals(UDJEventProvider.PLAYLIST_ADD_REQUEST_URI)){

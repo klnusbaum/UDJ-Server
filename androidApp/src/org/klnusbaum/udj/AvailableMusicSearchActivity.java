@@ -59,27 +59,12 @@ public class AvailableMusicSearchActivity extends EventEndedListenerActivity{
   public static final String SEARCH_QUERY_EXTRA = "search_query";
   private static final int LIB_SEARCH_LOADER_TAG = 0;
   private String searchQuery;
+  private AvailableMusicSearchFragment searchFrag;
   
   @Override
   public void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
-    if(account == null){
-      Log.d(TAG, "Account was null. What?");
-      finish();
-      return;
-    }
-    searchQuery = null; 
-    if(savedInstanceState != null){
-      searchQuery = savedInstanceState.getString(SEARCH_QUERY_EXTRA);
-    }
-    else{
-      searchQuery = getIntent().getStringExtra(SearchManager.QUERY);
-    }
-
-
-    if(searchQuery == null){
-      startSearch(null, false, null, false);
-    }
+    searchQuery = getIntent().getStringExtra(SearchManager.QUERY);
 
     //TODO before calling fragment, to get ID and give that to it.
     FragmentManager fm = getSupportFragmentManager();
@@ -87,23 +72,21 @@ public class AvailableMusicSearchActivity extends EventEndedListenerActivity{
       Bundle queryBundle = new Bundle();
       queryBundle.putString(SEARCH_QUERY_EXTRA, searchQuery);
       queryBundle.putParcelable(Constants.ACCOUNT_EXTRA, account);
-      AvailableMusicSearchFragment list = new AvailableMusicSearchFragment();
-      list.setArguments(queryBundle);
-      fm.beginTransaction().add(android.R.id.content, list).commit();
+      searchFrag = new AvailableMusicSearchFragment();
+      searchFrag.setArguments(queryBundle);
+      fm.beginTransaction().add(android.R.id.content, searchFrag).commit();
     }
   }
 
   protected void onNewIntent(Intent intent){
+    Log.d(TAG, "In on new intent");
     if(Intent.ACTION_SEARCH.equals(intent.getAction())){
       searchQuery = intent.getStringExtra(SearchManager.QUERY);
       getIntent().putExtra(SearchManager.QUERY, searchQuery);
-      FragmentManager fm = getSupportFragmentManager();
-      AvailableMusicSearchFragment searchFrag = 
-        (AvailableMusicSearchFragment)fm.findFragmentById(android.R.id.content);
       searchFrag.setSearchQuery(searchQuery);
     }
   }
-
+  
   public static class AvailableMusicSearchFragment extends ListFragment
     implements LoaderManager.LoaderCallbacks<List<LibraryEntry>>
   {
@@ -156,7 +139,6 @@ public class AvailableMusicSearchActivity extends EventEndedListenerActivity{
 
     public void setSearchQuery(String newQuery){
       searchQuery = newQuery;
-      getLoaderManager().initLoader(LIB_SEARCH_LOADER_TAG, null, this);
       getLoaderManager().restartLoader(LIB_SEARCH_LOADER_TAG, null, this);
     }
       
