@@ -55,6 +55,7 @@ import org.klnusbaum.udj.network.PlaylistSyncService;
  */
 public class AvailableMusicSearchActivity extends EventEndedListenerActivity{
 
+  private static final String TAG = "AvailableMusicActivity";
   public static final String SEARCH_QUERY_EXTRA = "search_query";
   private static final int LIB_SEARCH_LOADER_TAG = 0;
   private String searchQuery;
@@ -62,6 +63,11 @@ public class AvailableMusicSearchActivity extends EventEndedListenerActivity{
   @Override
   public void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
+    if(account == null){
+      Log.d(TAG, "Account was null. What?");
+      finish();
+      return;
+    }
     searchQuery = null; 
     if(savedInstanceState != null){
       searchQuery = savedInstanceState.getString(SEARCH_QUERY_EXTRA);
@@ -70,11 +76,9 @@ public class AvailableMusicSearchActivity extends EventEndedListenerActivity{
       searchQuery = getIntent().getStringExtra(SearchManager.QUERY);
     }
 
-    account = getIntent().getParcelableExtra(Constants.ACCOUNT_EXTRA);
-    //TODO Hanle null account or bad event id.
 
     if(searchQuery == null){
-      //TODO throw some sort of error.
+      startSearch(null, false, null, false);
     }
 
     //TODO before calling fragment, to get ID and give that to it.
@@ -86,6 +90,17 @@ public class AvailableMusicSearchActivity extends EventEndedListenerActivity{
       AvailableMusicSearchFragment list = new AvailableMusicSearchFragment();
       list.setArguments(queryBundle);
       fm.beginTransaction().add(android.R.id.content, list).commit();
+    }
+  }
+
+  protected void onNewIntent(Intent intent){
+    if(Intent.ACTION_SEARCH.equals(intent.getAction())){
+      searchQuery = intent.getStringExtra(SearchManager.QUERY);
+      getIntent().putExtra(SearchManager.QUERY, searchQuery);
+      FragmentManager fm = getSupportFragmentManager();
+      AvailableMusicSearchFragment searchFrag = 
+        (AvailableMusicSearchFragment)fm.findFragmentById(android.R.id.content);
+      searchFrag.setSearchQuery(searchQuery);
     }
   }
 
@@ -138,6 +153,14 @@ public class AvailableMusicSearchActivity extends EventEndedListenerActivity{
       setListShown(false);
       getLoaderManager().initLoader(LIB_SEARCH_LOADER_TAG, null, this);
     }
+
+    public void setSearchQuery(String newQuery){
+      searchQuery = newQuery;
+      getLoaderManager().initLoader(LIB_SEARCH_LOADER_TAG, null, this);
+      getLoaderManager().restartLoader(LIB_SEARCH_LOADER_TAG, null, this);
+    }
+      
+      
 
     public Loader<List<LibraryEntry>> onCreateLoader(int id, Bundle args){
       if(id == LIB_SEARCH_LOADER_TAG){

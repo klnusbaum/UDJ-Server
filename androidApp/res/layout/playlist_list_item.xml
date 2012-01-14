@@ -21,6 +21,7 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
   android:layout_height="fill_parent"
+  android:padding="2dp"
 >
   <TextView 
     android:id="@+id/playlistSongName"
@@ -30,64 +31,69 @@
     android:textStyle="bold"
     android:singleLine="true"
     android:ellipsize="marquee"
-    android:layout_marginBottom="2dip" 
     android:layout_alignParentLeft="true"
+    android:padding="2dp"
   />
   <TextView 
     android:id="@+id/playlistArtistName"
-    android:layout_marginTop="-4dip"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:textAppearance="?android:attr/textAppearanceSmall"
     android:layout_below="@id/playlistSongName"
+    android:padding="2dp"
   />
   <TextView 
     android:id="@+id/playlistAddedByLabel"
-    android:layout_marginTop="-4dip"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:textAppearance="?android:attr/textAppearanceSmall"
     android:layout_below="@id/playlistArtistName"
     android:text="@string/added_by"
+    android:padding="2dp"
   />
   <TextView 
     android:id="@+id/playlistAddedByName"
-    android:layout_marginTop="-4dip"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:textAppearance="?android:attr/textAppearanceSmall"
     android:layout_toRightOf="@id/playlistAddedByLabel"
     android:layout_below="@id/playlistArtistName"
+    android:padding="2dp"
   />
   <LinearLayout
-    android:orientation="vertical"
-    android:id="@+id/votingButtons"
-    android:layout_alignParentRight="true"
+    android:id="@+id/voteButtons"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_alignParentRight="true"
+    android:layout_centerVertical="true"
+    android:orientation="vertical"
   >
     <ImageButton
       android:id="@+id/up_vote_button"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:src="@android:drawable/arrow_up_float"
+      android:minHeight="40dp"
+      android:minWidth="40dp"
     />
     <ImageButton
       android:id="@+id/down_vote_button"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:src="@android:drawable/arrow_down_float"
+      android:minHeight="40dp"
+      android:minWidth="40dp"
     />
   </LinearLayout>
   <TextView 
     android:id="@+id/playlistVotes"
-    android:layout_marginTop="-4dip"
-    android:layout_gravity="right"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:textAppearance="?android:attr/textAppearanceMedium"
-    android:layout_toLeftOf="@id/votingButtons"
+    android:layout_toLeftOf="@id/voteButtons"
     android:layout_centerVertical="true"
+    android:gravity="right"
+    android:padding="4dp"
   />
 </RelativeLayout>
 	

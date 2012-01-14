@@ -76,14 +76,6 @@ public class EventActivity extends EventEndedListenerActivity
   @Override
   protected void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
-    account = (Account)getIntent().getParcelableExtra(Constants.ACCOUNT_EXTRA);
-    if(account == null){
-      //TODO we should never get here
-      Log.e(TAG, "Had a null account in the EventActivity");
-      setResult(Activity.RESULT_CANCELED);
-      finish();
-      return;
-    }
     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){ 
       requestWindowFeature(Window.FEATURE_NO_TITLE);
     }
@@ -158,21 +150,20 @@ public class EventActivity extends EventEndedListenerActivity
             getActionBarHelper().setRefreshActionItemState(false);
           }
        }, 1000);*/
-       break;
-     case R.id.menu_search:
-       startSearch(null, false, null, false);
-       break;
+       return true;
+    case R.id.menu_search:
+      startSearch(null, false, null, false);
+      return true;  
+    default:
+      return super.onOptionsItemSelected(item);
     }
-    return super.onOptionsItemSelected(item);
   }
 
-
-  protected void onNewIntent(Intent intent){
-    if(Intent.ACTION_SEARCH.equals(intent.getAction())){
-      intent.setClass(this, AvailableMusicSearchActivity.class);
-      intent.putExtra(Constants.ACCOUNT_EXTRA, account);
-      startActivityForResult(intent, 0);
-    }
+  public boolean onSearchRequested(){
+    Intent searchIntent = new Intent(
+      this, AvailableMusicSearchActivity.class);
+    startActivityForResult(searchIntent, 0);
+    return true;
   }
 
   @Override 

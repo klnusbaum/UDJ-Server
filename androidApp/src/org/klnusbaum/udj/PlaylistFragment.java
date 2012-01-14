@@ -60,9 +60,9 @@ public class PlaylistFragment extends ListFragment
   @Override
   public void onActivityCreated(Bundle savedInstanceState){
     super.onActivityCreated(savedInstanceState);
-    account = 
-      getActivity().getIntent().getParcelableExtra(Constants.ACCOUNT_EXTRA);
     AccountManager am = AccountManager.get(getActivity());
+    Account[] udjAccounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
+    account = udjAccounts[0];
     userId = Long.valueOf(am.getUserData(account, Constants.USER_ID_DATA));
     setEmptyText(getActivity().getString(R.string.no_playlist_items));
     playlistAdapter = new PlaylistAdapter(getActivity(), null, userId);

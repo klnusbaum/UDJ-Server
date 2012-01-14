@@ -82,20 +82,13 @@ public class EventSelectorActivity extends FragmentActivity{
     switch (item.getItemId()) {
     case R.id.menu_refresh:
       list.refreshEventList();
-      /*getActionBarHelper().setRefreshActionItemState(true);
-      getWindow().getDecorView().postDelayed(
-        new Runnable() {
-          @Override
-          public void run() {
-            getActionBarHelper().setRefreshActionItemState(false);
-          }
-       }, 1000);*/
-       break;
-     case R.id.menu_search:
-       startSearch(null, false, null, false);
-       break;
+       return true;
+    case R.id.menu_search:
+      startSearch(null, false, null, false);
+      return true;
+    default:  
+      return super.onOptionsItemSelected(item);
     }
-    return super.onOptionsItemSelected(item);
   }
 
 }

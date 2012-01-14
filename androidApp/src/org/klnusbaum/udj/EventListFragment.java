@@ -148,7 +148,6 @@ public class EventListFragment extends ListFragment implements
       AccountManager am = AccountManager.get(context);
       if(intent.getAction().equals(Constants.JOINED_EVENT_ACTION)){
         Intent eventActivityIntent = new Intent(context, EventActivity.class);
-        eventActivityIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
         startActivity(eventActivityIntent); 
       }
       else if(intent.getAction().equals(Constants.EVENT_JOIN_FAILED_ACTION)){
@@ -227,7 +226,7 @@ public class EventListFragment extends ListFragment implements
   }
 
   public void onResume(){
-    Log.d(TAG, "Hit on resume");
+    super.onResume();
     if(account != null){
       if(isShowingProgress()){
         EventJoinError joinError = EventJoinError.valueOf(
@@ -257,7 +256,6 @@ public class EventListFragment extends ListFragment implements
       }
       
     }
-    super.onResume();
   }
 
   private boolean isShowingProgress(){

@@ -18,11 +18,11 @@
   along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<LinearLayout
+<RelativeLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
   android:layout_height="fill_parent"
-  android:orientation="vertical"
+  android:padding="4dp"
 >
   <TextView  
     android:id="@+id/event_item_name"
@@ -32,14 +32,30 @@
     android:textStyle="bold"
     android:singleLine="true"
     android:ellipsize="marquee"
+    android:padding="2dp"
   />
-  <TextView  
-    android:id="@+id/event_host_name"
+  <TextView
+    android:id="@+id/event_host_label"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:textAppearance="?android:attr/textAppearanceSmall"
     android:textStyle="bold"
     android:singleLine="true"
     android:ellipsize="marquee"
+    android:text="@string/event_host_label"
+    android:layout_below="@id/event_item_name"
+    android:padding="2dp"
   />
-</LinearLayout>
+  <TextView  
+    android:id="@+id/event_host_name"
+    android:padding="2dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceSmall"
+    android:singleLine="true"
+    android:textStyle="bold"
+    android:ellipsize="marquee"
+    android:layout_below="@id/event_item_name"
+    android:layout_toRightOf="@id/event_host_label"
+  />
+</RelativeLayout>
