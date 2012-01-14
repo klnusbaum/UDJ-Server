@@ -303,7 +303,7 @@ public class ServerConnection{
     URI uri, String authToken, String payload)
     throws AuthenticationException, IOException, EventOverException
   {
-    final HttpResponse resp = doPut(uri, authToken, payload);
+    final HttpResponse resp = doPost(uri, authToken, payload);
     final String response = EntityUtils.toString(resp.getEntity());
     Log.d(TAG, "Event related Post response: \"" + response +"\"");
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_GONE){

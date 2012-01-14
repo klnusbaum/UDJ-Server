@@ -38,6 +38,7 @@ import android.util.Log;
 import android.content.ContentValues;
 import android.accounts.AccountManager;
 import android.accounts.Account;
+import android.widget.Toast;
 
 import org.klnusbaum.udj.network.PlaylistSyncService;
 
@@ -225,6 +226,7 @@ public class PlaylistFragment extends ListFragment
     }
 
     private void voteOnSong(View view, int voteType){
+      view.setEnabled(false);
       String playlistId = view.getTag().toString();
       ContentResolver cr = getActivity().getContentResolver();
       Cursor alreadyThere = cr.query(
@@ -260,6 +262,32 @@ public class PlaylistFragment extends ListFragment
         PlaylistSyncService.class);
       syncVotes.putExtra(Constants.ACCOUNT_EXTRA, account);
       getActivity().startService(syncVotes);
+      showVoteToast(playlistId, voteType);
+    }
+
+    private void showVoteToast(String playlistId, int voteType){
+      Context context = getActivity();
+      ContentResolver cr = context.getContentResolver();
+      Cursor song = cr.query(
+        UDJEventProvider.PLAYLIST_URI, 
+        new String[] {UDJEventProvider.TITLE_COLUMN},
+        UDJEventProvider.PLAYLIST_ID_COLUMN + "=" + playlistId,
+        null,
+        null);
+      song.moveToFirst();
+      String songName = song.getString(0);
+      String voteMessage = "";
+      if(voteType == UDJEventProvider.UP_VOTE_TYPE){
+        voteMessage += context.getString(R.string.voting_up_message);
+      }
+      else if(voteType == UDJEventProvider.DOWN_VOTE_TYPE){
+        voteMessage += context.getString(R.string.voting_down_message);
+      }
+      Toast voteToast = Toast.makeText(
+        context, 
+        voteMessage + " " + songName,
+        Toast.LENGTH_SHORT);
+      voteToast.show();
     }
   }
 }

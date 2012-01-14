@@ -63,6 +63,8 @@
   <string name="event_over_join_fail_message">That event has ended</string>
   <string name="no_network_join_fail_message">No internet connection</string>
   <string name="event_host_label">Host:</string>
+  <string name="voting_up_message">Voting up</string>
+  <string name="voting_down_message">Voting down</string>
 
 
 <!-- Stuff for action bar compatibility -->
