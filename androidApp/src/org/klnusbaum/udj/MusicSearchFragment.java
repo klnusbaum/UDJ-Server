@@ -57,21 +57,13 @@ public class MusicSearchFragment extends ListFragment
       public void onClick(View v){
         LibraryEntry songToAdd = 
           (LibraryEntry)v.getTag(R.id.LIB_ENTRY_VIEW_TAG);
-        ContentValues toInsert = new ContentValues();
-        toInsert.put(
-          UDJEventProvider.ADD_REQUEST_LIB_ID_COLUMN, songToAdd.getLibId());
-        ContentResolver cr = getActivity().getContentResolver();
-        //TODO move this stuff off to a differnt thread to make things
-        // go faster
-        cr.insert(
-          UDJEventProvider.PLAYLIST_ADD_REQUEST_URI, 
-          toInsert);
         Intent addSongIntent = new Intent(
           Intent.ACTION_INSERT,
           UDJEventProvider.PLAYLIST_ADD_REQUEST_URI,
           getActivity(),
           PlaylistSyncService.class);
         addSongIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
+        addSongIntent.putExtra(Constants.LIB_ID_EXTRA, songToAdd.getLibId());
         getActivity().startService(addSongIntent);
       }
     };
@@ -99,8 +91,6 @@ public class MusicSearchFragment extends ListFragment
     getLoaderManager().restartLoader(LIB_SEARCH_LOADER_TAG, null, this);
   }
     
-    
-
   public Loader<List<LibraryEntry>> onCreateLoader(int id, Bundle args){
     if(id == LIB_SEARCH_LOADER_TAG){
       return new MusicSearchLoader(

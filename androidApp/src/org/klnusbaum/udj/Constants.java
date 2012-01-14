@@ -39,6 +39,7 @@ public class Constants{
   public static final String EVENT_ID_EXTRA = "org.klnusbaum.udj.EventId";
   public static final String VOTE_TYPE_EXTRA = "org.klnusbaum.udj.VoteType";
   public static final String PLAYLIST_ID_EXTRA = "org.klnusbaum.udj.PlaylistId";
+  public static final String LIB_ID_EXTRA = "org.klnusbaum.udj.LibId";
 
 
   /** Constants for actions used throughout */

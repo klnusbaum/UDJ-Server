@@ -50,7 +50,7 @@
   <string name="add_song_notification_title">Adding Song(s)</string>
   <string name="add_song_notification_content">Adding Songs(s) to playlist</string>
   <string name="song_added_notification_title">Song(s) Added</string>
-  <string name="song_added_notification_content">Songs(s) added to playlist</string>
+  <string name="song_added_notification_content">Tap to dismiss</string>
   <string name="song_add_failed_title">Adding Song(s) Failed</string>
   <string name="song_add_failed_content">Tap here to retry</string>
   <string name="event_ended_title">Event Ended</string>

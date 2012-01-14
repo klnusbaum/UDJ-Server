@@ -95,6 +95,10 @@ public class PlaylistSyncService extends IntentService{
     //TODO hanle error if eventId is bad
     if(intent.getAction().equals(Intent.ACTION_INSERT)){
       if(intent.getData().equals(UDJEventProvider.PLAYLIST_ADD_REQUEST_URI)){
+        long libId = intent.getLongExtra(
+          Constants.LIB_ID_EXTRA, 
+          UDJEventProvider.INVALID_LIB_ID);
+        insertAddSongRequest(libId);
         syncAddRequests(account, eventId);
       }
       else if(intent.getData().equals(UDJEventProvider.VOTES_URI)){
@@ -283,7 +287,10 @@ public class PlaylistSyncService extends IntentService{
       getString(R.string.add_song_notification_title), 
       System.currentTimeMillis());
     PendingIntent pe = PendingIntent.getActivity(
-      this, 0, null, 0);
+      getApplicationContext(), 
+      0, 
+      new Intent(), 
+      PendingIntent.FLAG_UPDATE_CURRENT);
     addNotification.setLatestEventInfo(
       this, 
       getString(R.string.add_song_notification_title),
@@ -332,7 +339,10 @@ public class PlaylistSyncService extends IntentService{
       getString(R.string.song_added_notification_title), 
       System.currentTimeMillis());
     PendingIntent pe = PendingIntent.getActivity(
-      this, 0, null, 0);
+      getApplicationContext(), 
+      0, 
+      new Intent(), 
+      PendingIntent.FLAG_UPDATE_CURRENT);
     addNotification.setLatestEventInfo(
       this, 
       getString(R.string.song_added_notification_title),
@@ -409,5 +419,15 @@ public class PlaylistSyncService extends IntentService{
     Intent showToast = new Intent(Constants.SHOW_TOAST_ACTION);
     showToast.putExtra(Intent.EXTRA_TEXT, voteMessage);
     sendBroadcast(showToast);
+  }
+
+  private void insertAddSongRequest(long libId){
+    ContentValues toInsert = new ContentValues();
+    toInsert.put(
+      UDJEventProvider.ADD_REQUEST_LIB_ID_COLUMN, libId);
+    ContentResolver cr = getContentResolver();
+    cr.insert(
+      UDJEventProvider.PLAYLIST_ADD_REQUEST_URI, 
+      toInsert);
   }
 }
