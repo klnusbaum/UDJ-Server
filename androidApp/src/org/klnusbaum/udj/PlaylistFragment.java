@@ -44,7 +44,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.ContextMenu;
 import android.widget.ListView;
-import android.widget.Toast;
 import android.widget.RelativeLayout;
 
 import org.klnusbaum.udj.network.PlaylistSyncService;
@@ -83,7 +82,6 @@ public class PlaylistFragment extends ListFragment
   public void onListItemClick(ListView l, View v, int position, long id){
     l.showContextMenuForChild(v);
   }
-
 
   @Override
 	public void onCreateContextMenu(ContextMenu menu, View v, 
@@ -127,8 +125,8 @@ public class PlaylistFragment extends ListFragment
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item){
-      AdapterView.AdapterContextMenuInfo info = 
-        (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+    AdapterView.AdapterContextMenuInfo info = 
+      (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
     switch(item.getItemId()){
     case R.id.share:
       shareSong(info.position);
@@ -171,7 +169,6 @@ public class PlaylistFragment extends ListFragment
   }
 
   private void voteOnSong(long playlistId, int voteType){
-    //view.setEnabled(false);
     Intent voteIntent = new Intent(
       Intent.ACTION_INSERT,
       UDJEventProvider.VOTES_URI,
@@ -229,21 +226,10 @@ public class PlaylistFragment extends ListFragment
       int playlistId = cursor.getInt(cursor.getColumnIndex(
         UDJEventProvider.PLAYLIST_ID_COLUMN));
 
-      /*RelativeLayout songInfo = 
-        (RelativeLayout)view.findViewById(R.id.info_content);
-      songInfo.setOnClickListener(new View.OnClickListener(){
-        public void onClick(View v){
-          Toast toast = Toast.makeText(
-            getActivity(), "toaies", Toast.LENGTH_SHORT);
-          toast.show();
-        }
-      });*/
-
       TextView songName = 
         (TextView)view.findViewById(R.id.playlistSongName);
       songName.setText(cursor.getString(cursor.getColumnIndex(
         UDJEventProvider.TITLE_COLUMN)));
-          
 
       TextView artist = 
         (TextView)view.findViewById(R.id.playlistArtistName);
@@ -268,27 +254,6 @@ public class PlaylistFragment extends ListFragment
       artist.setText(cursor.getString(cursor.getColumnIndex(
         UDJEventProvider.ARTIST_COLUMN)));
 
-/*      ImageButton upVote = 
-        (ImageButton)view.findViewById(R.id.up_vote_button);
-      upVote.setTag(String.valueOf(playlistId));
-      upVote.setOnClickListener(new View.OnClickListener(){
-        public void onClick(View v){
-          upVoteClick(v);
-        }
-      });
-
-      ImageButton downVote = 
-        (ImageButton)view.findViewById(R.id.down_vote_button);
-      downVote.setTag(String.valueOf(playlistId));
-      downVote.setOnClickListener(new View.OnClickListener(){
-        public void onClick(View v){
-          downVoteClick(v);
-        }
-      });
-
-      setVoteButtonStates(upVote, downVote, cursor);*/
-
-
       TextView votes = 
         (TextView)view.findViewById(R.id.playlistVotes);
       int totalVotes = 
@@ -299,38 +264,6 @@ public class PlaylistFragment extends ListFragment
       
     }
 
-    /*private void setVoteButtonStates(
-      ImageButton upVote, ImageButton downVote, Cursor cursor)
-    {
-      if(
-        cursor.getLong(cursor.getColumnIndex(UDJEventProvider.ADDER_ID_COLUMN))
-        ==
-        userId 
-      )
-      {
-        upVote.setEnabled(false); 
-        downVote.setEnabled(false); 
-      }
-      else if(!cursor.isNull(
-        cursor.getColumnIndex(UDJEventProvider.VOTE_TYPE_COLUMN)))
-      {
-        int voteType = cursor.getInt(
-            cursor.getColumnIndex(UDJEventProvider.VOTE_TYPE_COLUMN));
-        if(voteType == UDJEventProvider.UP_VOTE_TYPE){
-          upVote.setEnabled(false); 
-          downVote.setEnabled(true); 
-        }
-        else{
-          upVote.setEnabled(true); 
-          downVote.setEnabled(false); 
-        }
-      }
-      else{
-        upVote.setEnabled(true); 
-        downVote.setEnabled(true); 
-      }
-    }*/
-
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent){
       LayoutInflater inflater = (LayoutInflater)context.getSystemService(
@@ -338,6 +271,7 @@ public class PlaylistFragment extends ListFragment
       View itemView = inflater.inflate(R.layout.playlist_list_item, null);
       return itemView;
     }
-  
+
   }
+
 }
