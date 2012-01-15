@@ -27,6 +27,12 @@ public class Constants{
   public static final String USER_ID_DATA = "org.klnusbaum.udj.userid";
   public static final String LAST_EVENT_ID_DATA = "org.klnusbaum.udj.EventId";
   public static final String IN_EVENT_DATA = "org.klnusbaum.udj.InEvent";
+  public static final String EVENT_NAME_DATA = "org.klnusbaum.udj.EventName";
+  public static final String EVENT_HOSTNAME_DATA = 
+    "org.klnusbaum.udj.EventHostName";
+  public static final String EVENT_HOST_ID_DATA = "org.klnusbaum.udj.EventHostId";
+  public static final String EVENT_LAT_DATA = "org.klnusbaum.udj.EventLat";
+  public static final String EVENT_LONG_DATA = "org.klnusbaum.udj.EventLong";
   public static final String EVENT_JOIN_ERROR = "eventJoinError";
   public static final int EVENT_JOIN_FAILED = -1;
   public static final int EVENT_JOIN_OK = 0;
@@ -40,6 +46,12 @@ public class Constants{
   public static final String VOTE_TYPE_EXTRA = "org.klnusbaum.udj.VoteType";
   public static final String PLAYLIST_ID_EXTRA = "org.klnusbaum.udj.PlaylistId";
   public static final String LIB_ID_EXTRA = "org.klnusbaum.udj.LibId";
+  public static final String EVENT_NAME_EXTRA = "org.klnusbaum.udj.EventName";
+  public static final String EVENT_HOSTNAME_EXTRA = 
+    "org.klnusbaum.udj.EventHostName";
+  public static final String EVENT_HOST_ID_EXTRA = "org.klnusbaum.udj.EventHostId";
+  public static final String EVENT_LAT_EXTRA = "org.klnusbaum.udj.EventLat";
+  public static final String EVENT_LONG_EXTRA = "org.klnusbaum.udj.EventLong";
 
 
   /** Constants for actions used throughout */

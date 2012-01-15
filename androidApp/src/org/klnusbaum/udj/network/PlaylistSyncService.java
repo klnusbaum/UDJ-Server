@@ -102,7 +102,8 @@ public class PlaylistSyncService extends IntentService{
         syncAddRequests(account, eventId);
       }
       else if(intent.getData().equals(UDJEventProvider.VOTES_URI)){
-        String playlistId = intent.getStringExtra(Constants.PLAYLIST_ID_EXTRA);
+        long playlistId = 
+          intent.getLongExtra(Constants.PLAYLIST_ID_EXTRA, -1);
         int voteType = intent.getIntExtra(
           Constants.VOTE_TYPE_EXTRA, 
           UDJEventProvider.INVALID_VOTE_TYPE);
@@ -365,7 +366,7 @@ public class PlaylistSyncService extends IntentService{
   }
 
 
-  private void addVoteRequest(String playlistId, int voteType){
+  private void addVoteRequest(long playlistId, int voteType){
     ContentResolver cr = getContentResolver();
     Cursor alreadyThere = cr.query(
       UDJEventProvider.VOTES_URI, 
@@ -397,7 +398,7 @@ public class PlaylistSyncService extends IntentService{
   }
 
   private void showVoteToast(
-    String playlistId, int voteType, ContentResolver cr)
+    long playlistId, int voteType, ContentResolver cr)
   {
     String voteMessage = "";
     if(voteType == UDJEventProvider.UP_VOTE_TYPE){

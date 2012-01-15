@@ -332,9 +332,25 @@ public class EventListFragment extends ListFragment implements
       Constants.EVENT_URI, 
       getActivity(), 
       EventCommService.class);
+    Event toJoin = (Event)eventAdapter.getItem(position);
     joinEventIntent.putExtra(
       Constants.EVENT_ID_EXTRA, 
-      eventAdapter.getItemId(position));
+      toJoin.getEventId());
+    joinEventIntent.putExtra(
+      Constants.EVENT_NAME_EXTRA, 
+      toJoin.getName());
+    joinEventIntent.putExtra(
+      Constants.EVENT_HOSTNAME_EXTRA, 
+      toJoin.getHostName());
+    joinEventIntent.putExtra(
+      Constants.EVENT_HOST_ID_EXTRA, 
+      toJoin.getHostId());
+    joinEventIntent.putExtra(
+      Constants.EVENT_LAT_EXTRA,
+      toJoin.getLatitude());
+    joinEventIntent.putExtra(
+      Constants.EVENT_LONG_EXTRA, 
+      toJoin.getLongitude());
     joinEventIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
     getActivity().startService(joinEventIntent);
   }

@@ -38,9 +38,17 @@ import android.util.Log;
 import android.content.ContentValues;
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.widget.AdapterView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.ContextMenu;
+import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.RelativeLayout;
 
 import org.klnusbaum.udj.network.PlaylistSyncService;
+import org.klnusbaum.udj.containers.Event;
 
 /**
  * Class used for displaying the contents of the Playlist.
@@ -52,7 +60,7 @@ public class PlaylistFragment extends ListFragment
   private static final int PLAYLIST_LOADER_ID = 0;
   private Account account;
   private long userId;
-
+  private AccountManager am;
   /**
    * Adapter used to help display the contents of the playlist.
    */
@@ -62,13 +70,117 @@ public class PlaylistFragment extends ListFragment
   public void onActivityCreated(Bundle savedInstanceState){
     super.onActivityCreated(savedInstanceState);
     account = Utils.basicGetUdjAccount(getActivity());
-    AccountManager am = AccountManager.get(getActivity());
+    am = AccountManager.get(getActivity());
     userId = Long.valueOf(am.getUserData(account, Constants.USER_ID_DATA));
     setEmptyText(getActivity().getString(R.string.no_playlist_items));
     playlistAdapter = new PlaylistAdapter(getActivity(), null, userId);
     setListAdapter(playlistAdapter);
     setListShown(false);
     getLoaderManager().initLoader(PLAYLIST_LOADER_ID, null, this);
+    registerForContextMenu(getListView());
+  }
+
+  public void onListItemClick(ListView l, View v, int position, long id){
+    l.showContextMenuForChild(v);
+  }
+
+
+  @Override
+	public void onCreateContextMenu(ContextMenu menu, View v, 
+		ContextMenu.ContextMenuInfo menuInfo)
+  {
+    AdapterView.AdapterContextMenuInfo info = 
+      (AdapterView.AdapterContextMenuInfo)menuInfo;
+    Cursor song = (Cursor)playlistAdapter.getItem(info.position); 
+    MenuInflater inflater = getActivity().getMenuInflater();
+    inflater.inflate(R.menu.playlist_context, menu);
+    if(
+      song.getLong(song.getColumnIndex(UDJEventProvider.ADDER_ID_COLUMN))
+      ==
+      userId 
+    )
+    {
+      menu.findItem(R.id.vote_up).setEnabled(false);
+      menu.findItem(R.id.vote_down).setEnabled(false);
+    }
+    else if(!song.isNull(
+      song.getColumnIndex(UDJEventProvider.VOTE_TYPE_COLUMN)))
+    {
+      int voteType = song.getInt(
+          song.getColumnIndex(UDJEventProvider.VOTE_TYPE_COLUMN));
+      if(voteType == UDJEventProvider.UP_VOTE_TYPE){
+        menu.findItem(R.id.vote_up).setEnabled(false);
+        menu.findItem(R.id.remove_song).setEnabled(false);
+      }
+      else{
+        menu.findItem(R.id.vote_down).setEnabled(false);
+        menu.findItem(R.id.remove_song).setEnabled(false);
+      }
+    }
+    else{
+      menu.findItem(R.id.remove_song).setEnabled(false);
+    }
+    int titleIndex = 
+      song.getColumnIndex(UDJEventProvider.TITLE_COLUMN);
+    menu.setHeaderTitle(song.getString(titleIndex));
+  }
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item){
+      AdapterView.AdapterContextMenuInfo info = 
+        (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+    switch(item.getItemId()){
+    case R.id.share:
+      shareSong(info.position);
+			return true;
+    case R.id.vote_up:
+      upVoteSong(info.position); 
+      return true;
+    case R.id.vote_down:
+      downVoteSong(info.position); 
+      return true;
+		default:
+			return super.onContextItemSelected(item);
+		}
+	}
+
+  private void shareSong(int position){
+    Cursor toShare = (Cursor)playlistAdapter.getItem(position); 
+    int titleIndex = 
+      toShare.getColumnIndex(UDJEventProvider.TITLE_COLUMN);
+    String songTitle = toShare.getString(titleIndex);
+    String eventName = am.getUserData(account, Constants.EVENT_NAME_DATA);
+    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+		shareIntent.setType("text/plain");
+		shareIntent.putExtra(
+			android.content.Intent.EXTRA_TEXT, 
+			getString(R.string.song_share_1) + " " + 
+			songTitle + " " +
+			getString(R.string.song_share_2) + " " + eventName + ".");
+		startActivity(
+			Intent.createChooser(shareIntent, getString(R.string.share_via)));
+
+  }
+
+  private void upVoteSong(long playlistId){
+    voteOnSong(playlistId, UDJEventProvider.UP_VOTE_TYPE);
+  }
+  
+  private void downVoteSong(long playlistId){
+    voteOnSong(playlistId, UDJEventProvider.DOWN_VOTE_TYPE);
+  }
+
+  private void voteOnSong(long playlistId, int voteType){
+    //view.setEnabled(false);
+    Intent voteIntent = new Intent(
+      Intent.ACTION_INSERT,
+      UDJEventProvider.VOTES_URI,
+      getActivity(),
+      PlaylistSyncService.class);
+    voteIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
+    voteIntent.putExtra(Constants.VOTE_TYPE_EXTRA, voteType);
+    voteIntent.putExtra(Constants.PLAYLIST_ID_EXTRA, playlistId);
+    getActivity().startService(voteIntent);
   }
 
   public Loader<Cursor> onCreateLoader(int id, Bundle args){
@@ -117,10 +229,21 @@ public class PlaylistFragment extends ListFragment
       int playlistId = cursor.getInt(cursor.getColumnIndex(
         UDJEventProvider.PLAYLIST_ID_COLUMN));
 
+      /*RelativeLayout songInfo = 
+        (RelativeLayout)view.findViewById(R.id.info_content);
+      songInfo.setOnClickListener(new View.OnClickListener(){
+        public void onClick(View v){
+          Toast toast = Toast.makeText(
+            getActivity(), "toaies", Toast.LENGTH_SHORT);
+          toast.show();
+        }
+      });*/
+
       TextView songName = 
         (TextView)view.findViewById(R.id.playlistSongName);
       songName.setText(cursor.getString(cursor.getColumnIndex(
         UDJEventProvider.TITLE_COLUMN)));
+          
 
       TextView artist = 
         (TextView)view.findViewById(R.id.playlistArtistName);
@@ -145,7 +268,7 @@ public class PlaylistFragment extends ListFragment
       artist.setText(cursor.getString(cursor.getColumnIndex(
         UDJEventProvider.ARTIST_COLUMN)));
 
-      ImageButton upVote = 
+/*      ImageButton upVote = 
         (ImageButton)view.findViewById(R.id.up_vote_button);
       upVote.setTag(String.valueOf(playlistId));
       upVote.setOnClickListener(new View.OnClickListener(){
@@ -163,7 +286,7 @@ public class PlaylistFragment extends ListFragment
         }
       });
 
-      setVoteButtonStates(upVote, downVote, cursor);
+      setVoteButtonStates(upVote, downVote, cursor);*/
 
 
       TextView votes = 
@@ -176,7 +299,7 @@ public class PlaylistFragment extends ListFragment
       
     }
 
-    private void setVoteButtonStates(
+    /*private void setVoteButtonStates(
       ImageButton upVote, ImageButton downVote, Cursor cursor)
     {
       if(
@@ -206,7 +329,7 @@ public class PlaylistFragment extends ListFragment
         upVote.setEnabled(true); 
         downVote.setEnabled(true); 
       }
-    }
+    }*/
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent){
@@ -216,28 +339,5 @@ public class PlaylistFragment extends ListFragment
       return itemView;
     }
   
-    private void upVoteClick(View view){
-      voteOnSong(view, UDJEventProvider.UP_VOTE_TYPE);
-    }
-    
-    private void downVoteClick(View view){
-      voteOnSong(view, UDJEventProvider.DOWN_VOTE_TYPE);
-    }
-
-    private void voteOnSong(View view, int voteType){
-      view.setEnabled(false);
-      String playlistId = view.getTag().toString();
-      Intent voteIntent = new Intent(
-        Intent.ACTION_INSERT,
-        UDJEventProvider.VOTES_URI,
-        getActivity(),
-        PlaylistSyncService.class);
-      voteIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
-      voteIntent.putExtra(Constants.VOTE_TYPE_EXTRA, voteType);
-      voteIntent.putExtra(Constants.PLAYLIST_ID_EXTRA, playlistId);
-      getActivity().startService(voteIntent);
-    }
   }
 }
-
-

@@ -65,6 +65,12 @@
   <string name="event_host_label">Host:</string>
   <string name="voting_up_message">Voting up</string>
   <string name="voting_down_message">Voting down</string>
+  <string name="share_via">Share via</string>
+  <string name="song_share_1">We\'re listening to</string>
+  <string name="song_share_2">at</string>
+  <string name="vote_up">Vote up</string>
+  <string name="vote_down">Vote down</string>
+  <string name="remove_song">Remove from playlist</string>
 
 
 <!-- Stuff for action bar compatibility -->

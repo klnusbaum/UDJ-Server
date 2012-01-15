@@ -124,6 +124,7 @@ public class EventCommService extends IntentService{
 
     try{
       ServerConnection.joinEvent(eventId, userId, authToken);
+      setEventData(intent, am, account);
       ContentResolver cr = getContentResolver();
       UDJEventProvider.eventCleanup(cr);          
       HashMap<Long,Long> previousRequests = ServerConnection.getAddRequests(
@@ -178,6 +179,31 @@ public class EventCommService extends IntentService{
       new Intent(Constants.EVENT_JOIN_FAILED_ACTION);
     Log.d(TAG, "Sending event join failure broadcast");
     sendBroadcast(eventJoinFailedIntent);
+  }
+
+  private void setEventData(Intent intent, AccountManager am, Account account){
+    am.setUserData(
+      account, 
+      Constants.EVENT_NAME_DATA, 
+      intent.getStringExtra(Constants.EVENT_NAME_EXTRA));
+    am.setUserData(
+      account, 
+      Constants.EVENT_HOSTNAME_DATA, 
+      intent.getStringExtra(Constants.EVENT_HOSTNAME_EXTRA));
+    am.setUserData(
+      account, 
+      Constants.EVENT_HOST_ID_DATA, 
+      String.valueOf(intent.getLongExtra(Constants.EVENT_HOST_ID_EXTRA,-1)));
+    am.setUserData(
+      account, 
+      Constants.EVENT_LAT_DATA, 
+      String.valueOf(intent.getDoubleExtra(Constants.EVENT_LAT_EXTRA, -100.0))
+    );
+    am.setUserData(
+      account, 
+      Constants.EVENT_LONG_DATA, 
+      String.valueOf(intent.getDoubleExtra(Constants.EVENT_LONG_EXTRA, -100.0))
+    );
   }
 
   private void leaveEvent(AccountManager am, Account account){

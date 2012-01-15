@@ -60,6 +60,8 @@
     android:layout_below="@id/playlistArtistName"
     android:padding="2dp"
   />
+
+<!--
   <LinearLayout
     android:id="@+id/voteButtons"
     android:layout_width="wrap_content"
@@ -85,12 +87,13 @@
       android:minWidth="40dp"
     />
   </LinearLayout>
+-->
   <TextView 
     android:id="@+id/playlistVotes"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:textAppearance="?android:attr/textAppearanceMedium"
-    android:layout_toLeftOf="@id/voteButtons"
+    android:layout_alignParentRight="true"
     android:layout_centerVertical="true"
     android:gravity="right"
     android:padding="4dp"
