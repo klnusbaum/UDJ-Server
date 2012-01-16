@@ -223,45 +223,42 @@ public class PlaylistFragment extends ListFragment
 
     @Override
     public void bindView(View view, Context context, Cursor cursor){
-      int playlistId = cursor.getInt(cursor.getColumnIndex(
-        UDJEventProvider.PLAYLIST_ID_COLUMN));
+      int playlistIdIndex = 
+        cursor.getColumnIndex(UDJEventProvider.PLAYLIST_ID_COLUMN);
+      int playlistId = cursor.getInt(playlistIdIndex);
 
-      TextView songName = 
-        (TextView)view.findViewById(R.id.playlistSongName);
-      songName.setText(cursor.getString(cursor.getColumnIndex(
-        UDJEventProvider.TITLE_COLUMN)));
+      TextView songName = (TextView)view.findViewById(R.id.playlistSongName);
+      int titleIndex = cursor.getColumnIndex(UDJEventProvider.TITLE_COLUMN);
+      songName.setText(cursor.getString(titleIndex));
 
-      TextView artist = 
-        (TextView)view.findViewById(R.id.playlistArtistName);
-      artist.setText(cursor.getString(cursor.getColumnIndex(
-        UDJEventProvider.ARTIST_COLUMN)));
+      TextView artist = (TextView)view.findViewById(R.id.playlistArtistName);
+      int artistIndex = cursor.getColumnIndex(UDJEventProvider.ARTIST_COLUMN);
+      artist.setText(
+        getString(R.string.by) + " " + cursor.getString(artistIndex));
 
       TextView addByUser = 
-        (TextView)view.findViewById(R.id.playlistAddedByName);
-      if(
-        cursor.getLong(cursor.getColumnIndex(UDJEventProvider.ADDER_ID_COLUMN))
-        ==
-        userId 
-      )
-      {
-        addByUser.setText(getString(R.string.you)); 
+        (TextView)view.findViewById(R.id.playlistAddedBy);
+      int adderIdIndex = 
+        cursor.getColumnIndex(UDJEventProvider.ADDER_ID_COLUMN);
+      if( cursor.getLong(adderIdIndex) == userId){
+        addByUser.setText(
+          getString(R.string.added_by) + " " + getString(R.string.you)); 
       }
       else{
-        addByUser.setText(cursor.getString(
-          cursor.getColumnIndex(UDJEventProvider.ADDER_USERNAME_COLUMN)));
+        int adderUserNameIndex = 
+          cursor.getColumnIndex(UDJEventProvider.ADDER_USERNAME_COLUMN);
+        addByUser.setText(
+          getString(R.string.added_by) + " " +
+          cursor.getString(adderUserNameIndex));
       }
 
-      artist.setText(cursor.getString(cursor.getColumnIndex(
-        UDJEventProvider.ARTIST_COLUMN)));
-
-      TextView votes = 
-        (TextView)view.findViewById(R.id.playlistVotes);
+      TextView votes = (TextView)view.findViewById(R.id.playlistVotes);
+      int upVoteIndex = cursor.getColumnIndex(UDJEventProvider.UP_VOTES_COLUMN);
+      int downVoteIndex =
+        cursor.getColumnIndex(UDJEventProvider.DOWN_VOTES_COLUMN);
       int totalVotes = 
-        cursor.getInt(cursor.getColumnIndex(UDJEventProvider.UP_VOTES_COLUMN))
-        -
-        cursor.getInt(cursor.getColumnIndex(UDJEventProvider.DOWN_VOTES_COLUMN));
+        cursor.getInt(upVoteIndex) - cursor.getInt(downVoteIndex);
       votes.setText(String.valueOf(totalVotes));
-      
     }
 
     @Override

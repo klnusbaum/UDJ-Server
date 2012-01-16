@@ -400,6 +400,7 @@ public class PlaylistSyncService extends IntentService{
   private void showVoteToast(
     long playlistId, int voteType, ContentResolver cr)
   {
+    Log.d(TAG, "Showing toast for id: " + String.valueOf(playlistId));
     String voteMessage = "";
     if(voteType == UDJEventProvider.UP_VOTE_TYPE){
       voteMessage += getString(R.string.voting_up_message);
@@ -410,7 +411,7 @@ public class PlaylistSyncService extends IntentService{
     Cursor song = cr.query(
       UDJEventProvider.PLAYLIST_URI, 
       new String[] {UDJEventProvider.TITLE_COLUMN},
-      UDJEventProvider.PLAYLIST_ID_COLUMN + "=" + playlistId,
+      UDJEventProvider.PLAYLIST_ID_COLUMN + "=" + String.valueOf(playlistId),
       null,
       null);
     song.moveToFirst();

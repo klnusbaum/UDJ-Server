@@ -45,7 +45,8 @@
   <string name="no_location_error">Could not retrieve location</string>
   <string name="no_current_song">No Current Song</string>
   <string name="no_account_error">No Account Selected</string>
-  <string name="added_by">Added By:</string>
+  <string name="added_by">Added by</string>
+  <string name="by">By</string>
   <string name="you">You</string>
   <string name="add_song_notification_title">Adding Song(s)</string>
   <string name="add_song_notification_content">Adding Songs(s) to playlist</string>
