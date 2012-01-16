@@ -9,6 +9,24 @@ class EventGoerAdmin(admin.ModelAdmin):
   list_display = ('user', 'event', 'time_joined', 'state')
   list_filter = ('event', 'state')
 
+class LibraryAdmin(admin.ModelAdmin):
+  list_display = (
+    'host_lib_song_id', 
+    'title', 
+    'artist', 
+    'album', 
+    'owning_user', 
+    'is_deleted')
+  list_filter = ('owning_user', 'is_deleted')
+
+class EventAdmin(admin.ModelAdmin):
+  list_display = ('name', 'host', 'time_started', 'state')
+  list_filter = ('host', 'state') 
+
+class VoteAdmin(admin.ModelAdmin):
+  list_display = ('playlist_entry', 'user', 'weight')
+  list_filter = ('playlist_entry', 'user', 'weight')
+
 admin.site.register(Ticket)
 admin.site.register(Event)
 admin.site.register(EventEndTime)
