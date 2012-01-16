@@ -255,13 +255,15 @@ public class PlaylistFragment extends ListFragment
           cursor.getString(adderUserNameIndex));
       }
 
-      TextView votes = (TextView)view.findViewById(R.id.playlistVotes);
+      TextView upvotes = (TextView)view.findViewById(R.id.up_votes);
+      TextView downvotes = (TextView)view.findViewById(R.id.down_votes);
       int upVoteIndex = cursor.getColumnIndex(UDJEventProvider.UP_VOTES_COLUMN);
       int downVoteIndex =
         cursor.getColumnIndex(UDJEventProvider.DOWN_VOTES_COLUMN);
-      int totalVotes = 
-        cursor.getInt(upVoteIndex) - cursor.getInt(downVoteIndex);
-      votes.setText(String.valueOf(totalVotes));
+      int numUpvotes = cursor.getInt(upVoteIndex);
+      int numDownvotes = cursor.getInt(downVoteIndex);
+      upvotes.setText(String.valueOf(numUpvotes) + " \u2191");
+      downvotes.setText(String.valueOf(numDownvotes) + " \u2193");
     }
 
     @Override
