@@ -153,14 +153,6 @@ public class EventsLoader extends
     }
     catch(IOException e){
       Log.e(TAG, "Io eception");
-      try{
-        FileOutputStream fos = 
-          getContext().openFileOutput("error.html", Context.MODE_PRIVATE);
-        fos.write(e.getMessage().getBytes());
-        fos.close();
-      }catch(Exception f){
-
-      }
       //TODO notify the user
     }
     catch(AuthenticationException e){
