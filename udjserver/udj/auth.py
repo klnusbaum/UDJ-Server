@@ -55,13 +55,12 @@ def getUniqueRandHash():
 
 
 def getTicketForUser(userRequestingTicket):
-  currentTickets = Ticket.objects.filter(user=userRequestingTicket)
-  if currentTickets:
-    for ticket in currentTickets:
-      ticket.delete()
-  toReturn = Ticket(user=userRequestingTicket, ticket_hash=getUniqueRandHash())
-  toReturn.save()
-  return toReturn 
+  ticket , created = Ticket.objects.get_or_create(
+    user=userRequestingTicket
+    defaults={'ticket_hash' : getUniqueRandHash()})
+  if not added:
+    ticket.ticket_hash=getUniqueRandHash()
+  return ticket
 
 
 @csrf_exempt
