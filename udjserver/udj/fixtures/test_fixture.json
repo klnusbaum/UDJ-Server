@@ -1140,5 +1140,41 @@
       "email": "", 
       "date_joined": "2012-01-09 05:13:39"
     }
+  },
+  {
+    "pk": 9, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "matt", 
+      "first_name": "", 
+      "last_name": "", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "last_login": "2012-01-16 05:08:26", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$663b1$700f6a232aee11bee0a2b6f58d1a56152a2e59dc", 
+      "email": "", 
+      "date_joined": "2012-01-16 05:08:26"
+    }
+  }, 
+  {
+    "pk": 10, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "lee", 
+      "first_name": "", 
+      "last_name": "", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "last_login": "2012-01-16 05:08:37", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$d5ff2$eb66ce3c2cc022a5fdc5747a9b2800a444e9d443", 
+      "email": "", 
+      "date_joined": "2012-01-16 05:08:37"
+    }
   }
 ]
