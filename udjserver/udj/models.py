@@ -83,7 +83,7 @@ class AvailableSong(models.Model):
     unique_together = ("song", "event")
 
   def __unicode__(self):
-    return str(self.song.title) + " for " + self.event.name
+    return self.song.title + " for " + self.event.name
 
 class ActivePlaylistEntry(models.Model):
   STATE_CHOICES = (
