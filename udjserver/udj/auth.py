@@ -56,9 +56,9 @@ def getUniqueRandHash():
 
 def getTicketForUser(userRequestingTicket):
   ticket , created = Ticket.objects.get_or_create(
-    user=userRequestingTicket
+    user=userRequestingTicket,
     defaults={'ticket_hash' : getUniqueRandHash()})
-  if not added:
+  if not created:
     ticket.ticket_hash=getUniqueRandHash()
   return ticket
 
