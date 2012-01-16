@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ObjectDoesNotExist
 import random
 from udj.models import Ticket
 from datetime import datetime
@@ -28,7 +29,7 @@ def ticketMatchesUser(request, provided_user_id):
 def isValidTicket(provided_hash):
   try:
     matchingTicket = Ticket.objects.get(ticket_hash=provided_hash)
-  except DoesNotExist:
+  except ObjectDoesNotExist:
     return False
   if(datetime.now() - matchingTicket.time_issued).days < 1:
     return True

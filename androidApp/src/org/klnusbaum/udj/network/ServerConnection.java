@@ -96,7 +96,7 @@ public class ServerConnection{
 
   private static final String NETWORK_PROTOCOL = "http";
  
-  private static final String SERVER_HOST = "10.0.2.2";
+  private static final String SERVER_HOST = "udjevents.com";
 
  
   private static final String TICKET_HASH_HEADER = "X-Udj-Ticket-Hash";

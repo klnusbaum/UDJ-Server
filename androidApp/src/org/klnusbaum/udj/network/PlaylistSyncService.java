@@ -42,6 +42,7 @@ import android.app.NotificationManager;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.io.IOException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -135,6 +136,14 @@ public class PlaylistSyncService extends IntentService{
     }
     catch(IOException e){
       Log.e(TAG, "IO exception when retreiving playist");
+      try{
+        FileOutputStream fos = openFileOutput("error.html", Context.MODE_PRIVATE);
+        fos.write(e.getMessage().getBytes());
+        fos.close();
+      }
+      catch(Exception f){
+    
+      }
     }
     catch(AuthenticationException e){
       Log.e(TAG, "Authentication exception when retreiving playist");
@@ -261,6 +270,12 @@ public class PlaylistSyncService extends IntentService{
     }
     catch(IOException e){
       Log.e(TAG, "IO exception when retreiving playist");
+      try{
+      FileOutputStream fos = openFileOutput("error.html", Context.MODE_PRIVATE);
+      fos.write(e.getMessage().getBytes());
+      fos.close();
+      }
+      catch(Exception f){}
     }
     catch(AuthenticationException e){
       Log.e(TAG, "Authentication exception when retreiving playist");
@@ -415,6 +430,7 @@ public class PlaylistSyncService extends IntentService{
       null,
       null);
     song.moveToFirst();
+    Log.d(TAG, "number of values returned " + String.valueOf(song.getCount()));
     voteMessage += " " + song.getString(0);
     song.close();
 

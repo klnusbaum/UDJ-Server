@@ -57,16 +57,30 @@
     android:paddingLeft="4dp"
   />
 
-  <TextView 
-    android:id="@+id/playlistVotes"
+  <RelativeLayout
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:textAppearance="?android:attr/textAppearanceMedium"
     android:layout_alignParentRight="true"
-    android:layout_centerVertical="true"
-    android:gravity="right"
-    android:padding="4dp"
-  />
+    android:orientation="vertical"
+  >
+    <TextView 
+      android:id="@+id/playlistVotes"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:padding="4dp"
+      android:layout_centerHorizontal="true"
+    />
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:padding="4dp"
+      android:text="@string/total_votes"
+      android:layout_centerHorizontal="true"
+      android:layout_below="@id/playlistVotes"
+    />
+  </RelativeLayout>
 
 </RelativeLayout>
 	

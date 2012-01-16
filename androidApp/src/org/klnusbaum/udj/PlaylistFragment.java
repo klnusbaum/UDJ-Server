@@ -160,15 +160,18 @@ public class PlaylistFragment extends ListFragment
 
   }
 
-  private void upVoteSong(long playlistId){
-    voteOnSong(playlistId, UDJEventProvider.UP_VOTE_TYPE);
+  private void upVoteSong(int position){
+    voteOnSong(position, UDJEventProvider.UP_VOTE_TYPE);
   }
   
-  private void downVoteSong(long playlistId){
-    voteOnSong(playlistId, UDJEventProvider.DOWN_VOTE_TYPE);
+  private void downVoteSong(int position){
+    voteOnSong(position, UDJEventProvider.DOWN_VOTE_TYPE);
   }
 
-  private void voteOnSong(long playlistId, int voteType){
+  private void voteOnSong(int position, int voteType){
+    Cursor song = (Cursor)playlistAdapter.getItem(position);
+    int idIndex = song.getColumnIndex(UDJEventProvider.PLAYLIST_ID_COLUMN);
+    long playlistId = song.getLong(idIndex);
     Intent voteIntent = new Intent(
       Intent.ACTION_INSERT,
       UDJEventProvider.VOTES_URI,

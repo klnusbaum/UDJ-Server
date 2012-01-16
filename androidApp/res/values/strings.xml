@@ -72,6 +72,7 @@
   <string name="vote_up">Vote up</string>
   <string name="vote_down">Vote down</string>
   <string name="remove_song">Remove from playlist</string>
+  <string name="total_votes">Rank</string>
 
 
 <!-- Stuff for action bar compatibility -->
