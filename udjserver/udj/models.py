@@ -28,7 +28,7 @@ class EventEndTime(models.Model):
 
   def clean(self):
     from django.core.exceptions import ValidationError
-    if self.event.status != u'FN':
+    if self.event.state != u'FN':
       raise ValidationError(
         'End time was inserted for an event that is not yet over')
 
