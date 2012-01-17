@@ -31,10 +31,13 @@ class AuthTest(TestCase):
       int(response.__getitem__(getUserIdHeader())), testUser[0].id)
     ticket = Ticket.objects.get(user=testUser)
     firstTicket = response[getTicketHeader()]
+    firstTime = ticket.time_issued
     self.assertEqual(firstTicket, ticket.ticket_hash)
     response = client.post(
       '/udj/auth', {'username': 'test2', 'password' : 'twotest'})
-    secondTicket = response[getTicketHeader()]
     ticket = Ticket.objects.get(user=testUser)
+    secondTicket = response[getTicketHeader()]
+    secondTime = ticket.time_issued
     self.assertNotEqual(firstTicket, secondTicket)
     self.assertEqual(secondTicket, ticket.ticket_hash)
+    self.assertTrue(secondTime > firstTime)
