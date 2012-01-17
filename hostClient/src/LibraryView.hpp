@@ -128,6 +128,8 @@ private slots:
 
   void addSongsToSongList(song_list_id_t songListId);
 
+  void hideColumns();
+
   //@}
 };
 

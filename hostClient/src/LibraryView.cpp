@@ -45,7 +45,19 @@ LibraryView::LibraryView(DataStore *dataStore, QWidget* parent):
     this, SLOT(handleContextMenuRequest(const QPoint&)));
   connect(dataStore, SIGNAL(libSongsModified()), this, SLOT(refresh()));
   refresh();
+  hideColumns();
 }
+
+void LibraryView::hideColumns(){
+  QSqlRecord record = libraryModel->record();
+  int idIndex = record.indexOf(DataStore::getLibIdColName());
+  int isDeletedIndex = record.indexOf(DataStore::getLibIsDeletedColName());
+  int syncStatusIndex = record.indexOf(DataStore::getLibSyncStatusColName());
+  setColumnHidden(idIndex, true);
+  setColumnHidden(isDeletedIndex, true); 
+  setColumnHidden(syncStatusIndex, true); 
+}
+
 
 void LibraryView::refresh(){
   libraryModel->setQuery(

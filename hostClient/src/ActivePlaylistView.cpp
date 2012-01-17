@@ -43,6 +43,7 @@ ActivePlaylistView::ActivePlaylistView(DataStore* dataStore, QWidget* parent):
   createActions();
   setModel(model);
   setSelectionBehavior(QAbstractItemView::SelectRows);
+  configureHeaders();
   connect(
     dataStore,
     SIGNAL(activePlaylistModified()),
@@ -55,6 +56,32 @@ ActivePlaylistView::ActivePlaylistView(DataStore* dataStore, QWidget* parent):
     SLOT(setCurrentSong(const QModelIndex&)));
   connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
     this, SLOT(handleContextMenuRequest(const QPoint&)));
+}
+
+void ActivePlaylistView::configureHeaders(){
+  QSqlRecord record = model->record();
+  int idIndex = record.indexOf(DataStore::getActivePlaylistIdColName());
+  int libIdIndex = record.indexOf(DataStore::getActivePlaylistLibIdColName());
+  int libIdAliasIndex = record.indexOf(DataStore::getLibIdAlias());
+  int priorityIndex = record.indexOf(DataStore::getPriorityColName());
+  int adderIdIndex = record.indexOf(DataStore::getAdderIdColName());
+  int downVoteIndex = record.indexOf(DataStore::getDownVoteColName());
+  int upVoteIndex = record.indexOf(DataStore::getUpVoteColName());
+  int adderNameIndex = record.indexOf(DataStore::getAdderUsernameColName());
+  int timeAddedIndex = record.indexOf(DataStore::getTimeAddedColName());
+  setColumnHidden(idIndex, true);
+  setColumnHidden(libIdIndex, true);
+  setColumnHidden(priorityIndex, true); 
+  setColumnHidden(adderIdIndex, true); 
+  setColumnHidden(libIdAliasIndex, true); 
+  model->setHeaderData(
+    downVoteIndex, Qt::Horizontal, tr("Down Votes"), Qt::DisplayRole);
+  model->setHeaderData(
+    upVoteIndex, Qt::Horizontal, tr("Up Votes"), Qt::DisplayRole);
+  model->setHeaderData(
+    adderNameIndex, Qt::Horizontal, tr("Adder"), Qt::DisplayRole);
+  model->setHeaderData(
+    timeAddedIndex, Qt::Horizontal, tr("Time Added"), Qt::DisplayRole);
 }
   
 void ActivePlaylistView::refreshDisplay(){

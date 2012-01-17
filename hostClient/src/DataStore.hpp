@@ -296,7 +296,7 @@ public:
    * @return The name of the song column in the library table.
    */
   static const QString& getLibSongColName(){
-    static const QString libSongColName = "song";
+    static const QString libSongColName = "Song";
     return libSongColName;
   }
 
@@ -306,7 +306,7 @@ public:
    * @return The name of the artist column in the library table.
    */
   static const QString& getLibArtistColName(){
-    static const QString libArtistColName = "artist";
+    static const QString libArtistColName = "Artist";
     return libArtistColName;
   }
   
@@ -316,7 +316,7 @@ public:
    * @return The name of the album column in the library table.
    */
   static const QString& getLibAlbumColName(){
-    static const QString libAlbumColName = "album";
+    static const QString libAlbumColName = "Album";
     return libAlbumColName;
   }
 
@@ -326,7 +326,7 @@ public:
    * @return The name of the file column in the library table.
    */
   static const QString& getLibFileColName(){
-    static const QString libFileColName = "file_path";
+    static const QString libFileColName = "File";
     return libFileColName;
   }
 
@@ -336,7 +336,7 @@ public:
    * @return The name of the duration column in the library table.
    */
   static const QString& getLibDurationColName(){
-    static const QString libDurationColName = "duration";
+    static const QString libDurationColName = "Length";
     return libDurationColName;
   }
 
@@ -588,6 +588,11 @@ public:
   static const QString& getEventGoerLeftEventState(){
     static const QString leftEventState = "LE";
     return leftEventState;
+  }
+
+  static const QString& getLibIdAlias(){
+    static const QString libIdAlias = "libIdAlias";
+    return libIdAlias;
   }
 
 
@@ -965,8 +970,22 @@ private:
   static const QString& getCreateActivePlaylistViewQuery(){
     static const QString createActivePlaylistViewQuery = 
       "CREATE VIEW IF NOT EXISTS "+getActivePlaylistViewName() + " " + 
-      "AS SELECT * , (" + getUpVoteColName() + " - " + getDownVoteColName() +
-      ") AS " + getVoteCountColName() + " FROM " + getActivePlaylistTableName()
+      "AS SELECT " +
+      getActivePlaylistTableName() + "." + getActivePlaylistIdColName() + "," +
+      getActivePlaylistTableName() + "." + 
+        getActivePlaylistLibIdColName() + "," +
+      getLibraryTableName() + "." + getLibSongColName() + "," +
+      getLibraryTableName() + "." + getLibArtistColName() + "," +
+      getLibraryTableName() + "." + getLibAlbumColName() + "," +
+      getActivePlaylistTableName() + "." + getUpVoteColName() + "," +
+      getActivePlaylistTableName() + "." + getDownVoteColName() + "," +
+      getLibraryTableName() + "." + getLibDurationColName() + "," +
+      getActivePlaylistTableName() + "." + getAdderIdColName() + "," +
+      getActivePlaylistTableName() + "." + getAdderUsernameColName() + "," +
+      getActivePlaylistTableName() + "." + getTimeAddedColName() + "," +
+      getLibraryTableName() + "." + getLibIdColName() + 
+        " AS " + getLibIdAlias() + " " +
+      "FROM " + getActivePlaylistTableName()
        + " INNER JOIN " +
       getLibraryTableName() + " ON " + getActivePlaylistTableName() + "." +
       getActivePlaylistLibIdColName() + "=" + getLibraryTableName() + "." +

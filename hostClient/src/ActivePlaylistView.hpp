@@ -107,6 +107,8 @@ private slots:
    */
   void removeSongs();
   
+  void configureHeaders();
+
   //@}
 
 };
