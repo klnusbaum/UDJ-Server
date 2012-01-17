@@ -25,10 +25,10 @@ class QPushButton;
 class QLabel;
 class QProgressDialog;
 class QCheckBox;
+class QComboBox;
 
 namespace UDJ{
 
-class AddressWidget;
 class DataStore;
 
 /** \brief Widget used to create new events. */
@@ -64,6 +64,15 @@ private:
   /** \brief Initilizes the UI */
   void setupUi();
 
+  void setupStateCombo();
+
+  QString getAddressBadInputs() const;
+
+  static const QRegExp& getZipcodeRegex(){
+    static const QRegExp zipcodeRegex("^\\d{5}(-\\d{4})?$");
+    return zipcodeRegex;
+  }
+
   //@}
 
   /** @name Private Memeber */
@@ -76,8 +85,6 @@ private:
   QLineEdit *passwordEdit;
 
   QCheckBox *useAddress;
-
-  AddressWidget *addressWidget;
 
   /** \brief Lable to display instructions */
   QLabel *createLabel;
@@ -96,6 +103,12 @@ private:
    * to the playlist.
    */
   DataStore *dataStore;
+
+  QLineEdit *streetAddress;
+  QLineEdit *city;
+  QComboBox *state;
+  QLineEdit *zipcode;
+
 
   //@}
 
@@ -116,6 +129,8 @@ private slots:
    */
   void eventCreateFail(const QString& errMessage);
 
+  void enableAddressInputs(bool enable);
+  
   //@}
 
 };

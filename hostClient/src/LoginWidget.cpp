@@ -81,13 +81,6 @@ void LoginWidget::setupUi(){
   showMainWidget(); 
 }
 
-void LoginWidget::keyReleaseEvent(QKeyEvent *event){
-  if(event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return){
-    loginButton->click(); 
-  }
-  WidgetWithLoader::keyReleaseEvent(event); 
-}
-
 void LoginWidget::doLogin(){
   showLoadingText();
   serverConnection->startConnection(usernameBox->text(), passwordBox->text());

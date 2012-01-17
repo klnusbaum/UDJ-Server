@@ -82,20 +82,25 @@ void MetaWindow::setupUi(){
   libraryView = new LibraryView(dataStore, this);
 
   eventWidget = new EventWidget(dataStore, this);
+  
  
   songListView = new SongListView(dataStore, this);
  
   activityList = new ActivityList(dataStore);
 
+  QWidget* contentStackContainer = new QWidget(this);
   contentStack = new QStackedWidget(this);
   contentStack->addWidget(libraryView);
   contentStack->addWidget(eventWidget);
   contentStack->addWidget(songListView);
   contentStack->setCurrentWidget(libraryView);
+  QVBoxLayout *contentStackLayout = new QVBoxLayout;
+  contentStackLayout->addWidget(contentStack, Qt::AlignCenter);
+  contentStackContainer->setLayout(contentStackLayout);
  
   QSplitter *content = new QSplitter(Qt::Horizontal, this);
   content->addWidget(activityList);
-  content->addWidget(contentStack);
+  content->addWidget(contentStackContainer);
   content->setStretchFactor(1, 10);
   
   QVBoxLayout *mainLayout = new QVBoxLayout;

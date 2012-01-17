@@ -44,10 +44,6 @@ public:
 
   //@}
 
-protected:
-
-  virtual void keyReleaseEvent(QKeyEvent *event);
-
 private:
   
   /** @name Private Memeber */
@@ -74,6 +70,8 @@ private:
   QLabel *usernameLabel;
  
   QLabel *passwordLabel;
+
+  bool showingDialog;
 
 
   //@}

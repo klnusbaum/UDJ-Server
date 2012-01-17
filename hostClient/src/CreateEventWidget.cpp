@@ -18,14 +18,15 @@
  */
 #include "CreateEventWidget.hpp"
 #include "DataStore.hpp"
-#include "AddressWidget.hpp"
 #include <QLineEdit>
 #include <QPushButton>
 #include <QLabel>
-#include <QGridLayout>
+#include <QHBoxLayout>
 #include <QProgressDialog>
 #include <QMessageBox>
 #include <QCheckBox>
+#include <QFormLayout>
+#include <QComboBox>
 
 
 namespace UDJ{
@@ -58,38 +59,44 @@ CreateEventWidget::CreateEventWidget(
 
 void CreateEventWidget::setupUi(){
   eventForm = new QWidget(this);
+
   nameEdit = new QLineEdit();
-  QLabel *nameLabel = new QLabel(tr("Name of event"));
-  nameLabel->setBuddy(nameEdit);
   passwordEdit = new QLineEdit();
-  QLabel *passwordLabel = new QLabel(tr("Password (optional)"));
-  passwordLabel->setBuddy(passwordEdit);
-  
+  streetAddress = new QLineEdit();
+  city = new QLineEdit();
+  setupStateCombo();
+  zipcode = new QLineEdit();
   useAddress = new QCheckBox(tr("Provide Address")); 
-  addressWidget = new AddressWidget(this);
-  addressWidget->setEnabled(false);
+  createEventButton = new QPushButton(tr("Create Event"));
+
+  QFormLayout *layout = new QFormLayout;
+  layout->addRow(tr("Name of event"), nameEdit);
+  layout->addRow(tr("Password (optional)"), passwordEdit);
+  layout->addRow(useAddress);
+  layout->addRow(tr("Address:"), streetAddress);
+  layout->addRow(tr("City:"), city);
+  layout->addRow(tr("State:"), state);
+  layout->addRow(tr("Zipcode:"), zipcode);
+  layout->addRow(createEventButton);
+  
   connect(
     useAddress,
     SIGNAL(toggled(bool)),
-    addressWidget,
-    SLOT(setEnabled(bool)));
-  createEventButton = new QPushButton(tr("Create Event"));
-  createEventButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-  createLabel = new QLabel(tr("Create a New Event"));
+    this,
+    SLOT(enableAddressInputs(bool)));
+  enableAddressInputs(false);
+  
 
-  QGridLayout *mainLayout = new QGridLayout;
-  mainLayout->addWidget(createLabel, 0,0, Qt::AlignCenter);
-  mainLayout->addWidget(nameLabel, 1,0);
-  mainLayout->addWidget(nameEdit, 1,1);
-  mainLayout->addWidget(passwordLabel, 2,0);
-  mainLayout->addWidget(passwordEdit, 2,1);
-  mainLayout->addWidget(useAddress, 3, 0, 1,2);
-  mainLayout->addWidget(addressWidget, 4, 0,1,2);
-  mainLayout->addWidget(createEventButton, 5,0,1,2);
-
-  eventForm->setLayout(mainLayout);
+  eventForm->setLayout(layout);
   setMainWidget(eventForm);
   showMainWidget();
+}
+
+void CreateEventWidget::enableAddressInputs(bool enable){
+  streetAddress->setEnabled(enable);
+  city->setEnabled(enable);
+  state->setEnabled(enable);
+  zipcode->setEnabled(enable);
 }
 
 void CreateEventWidget::doCreation(){
@@ -100,15 +107,15 @@ void CreateEventWidget::doCreation(){
   }
     
   if(useAddress->isChecked()){
-    QString badInputs = addressWidget->getBadInputs();
+    QString badInputs = getAddressBadInputs();
     if(badInputs == ""){
       dataStore->createNewEvent(
         nameEdit->text(),
         passwordEdit->text(),
-        addressWidget->getAddress(),
-        addressWidget->getCity(),
-        addressWidget->getState(),
-        addressWidget->getZipcode());
+        streetAddress->text(),
+        city->text(),
+        state->currentText(),
+        zipcode->text());
     }
     else{
       eventCreateFail("The address you supplied is invalid. Please correct " 
@@ -119,6 +126,21 @@ void CreateEventWidget::doCreation(){
     dataStore->createNewEvent(nameEdit->text(), passwordEdit->text());
   }
 }
+
+QString CreateEventWidget::getAddressBadInputs() const{
+  QString toReturn ="";
+  int errorCounter = 1;
+  if(streetAddress->text() == ""){
+    toReturn += QString::number(errorCounter++) + 
+      ". You did not enter a street address.\n";
+  }
+  if(!getZipcodeRegex().exactMatch(zipcode->text())){
+    toReturn += QString::number(errorCounter++) + 
+      ". Zipcode invalid.";
+  }
+  return toReturn;
+}
+
 
 void CreateEventWidget::eventCreateSuccess(){
   showMainWidget();
@@ -133,5 +155,60 @@ void CreateEventWidget::eventCreateFail(const QString& errMessage){
     errMessage);
 }
 
+
+void CreateEventWidget::setupStateCombo(){
+  state = new QComboBox();
+  state->addItem("AL");
+  state->addItem("AK");
+  state->addItem("AZ");
+  state->addItem("AR");
+  state->addItem("CA");
+  state->addItem("CO");
+  state->addItem("CT");
+  state->addItem("DE");
+  state->addItem("DC");
+  state->addItem("FL");
+  state->addItem("GA");
+  state->addItem("HI");
+  state->addItem("ID");
+  state->addItem("IL");
+  state->addItem("IN");
+  state->addItem("IA");
+  state->addItem("KS");
+  state->addItem("KY");
+  state->addItem("LA");
+  state->addItem("ME");
+  state->addItem("MT");
+  state->addItem("NE");
+  state->addItem("NV");
+  state->addItem("NH");
+  state->addItem("NJ");
+  state->addItem("NM");
+  state->addItem("NY");
+  state->addItem("NC");
+  state->addItem("ND");
+  state->addItem("OH");
+  state->addItem("OK");
+  state->addItem("OR");
+  state->addItem("MD");
+  state->addItem("MA");
+  state->addItem("MI");
+  state->addItem("MN");
+  state->addItem("MS");
+  state->addItem("MO");
+  state->addItem("PA");
+  state->addItem("RI");
+  state->addItem("SC");
+  state->addItem("SD");
+  state->addItem("TN");
+  state->addItem("TX");
+  state->addItem("UT");
+  state->addItem("VT");
+  state->addItem("VA");
+  state->addItem("WA");
+  state->addItem("WV");
+  state->addItem("WI");
+  state->addItem("WY");
+}
 
 }//end namespace UDJ
