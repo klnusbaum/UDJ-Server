@@ -27,6 +27,10 @@ class VoteAdmin(admin.ModelAdmin):
   list_display = ('playlist_entry', 'user', 'weight')
   list_filter = ('playlist_entry', 'user', 'weight')
 
+class TicketAdmin(admin.ModelAdmin):
+  list_display = ('user', 'ticket_hash', 'time_issued')
+  
+
 admin.site.register(Ticket)
 admin.site.register(Event, EventAdmin)
 admin.site.register(EventEndTime)
