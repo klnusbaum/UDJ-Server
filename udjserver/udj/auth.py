@@ -60,7 +60,6 @@ def getTicketForUser(userRequestingTicket):
     defaults={'ticket_hash' : getUniqueRandHash()})
   if not created:
     ticket.ticket_hash=getUniqueRandHash()
-    ticket.time_issued = datetime.now() 
     ticket.save()
   return ticket
 
