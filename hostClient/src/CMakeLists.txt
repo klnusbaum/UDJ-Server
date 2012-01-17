@@ -37,6 +37,7 @@ SET(UDJ_SRCS
   AvailableMusicView.cpp
   EventGoersView.cpp
   SongListView.cpp
+  LibraryModel.cpp
 )
 
 SET(UDJ_HDRS 
@@ -66,6 +67,7 @@ SET(UDJ_MOC_HDRS
   AvailableMusicView.hpp
   EventGoersView.hpp
   SongListView.hpp
+  LibraryModel.hpp
 )
 
 

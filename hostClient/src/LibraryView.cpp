@@ -19,13 +19,12 @@
 #include "LibraryView.hpp"
 #include "DataStore.hpp"
 #include "Utils.hpp"
-#include <QSqlQueryModel>
+#include "LibraryModel.hpp"
 #include <QHeaderView>
 #include <QContextMenuEvent>
 #include <QMenu>
-#include <QSqlRecord>
 #include <QSqlQuery>
-	
+#include <QSqlRecord>
 
 namespace UDJ{
 
@@ -34,21 +33,19 @@ LibraryView::LibraryView(DataStore *dataStore, QWidget* parent):
   QTableView(parent),
   dataStore(dataStore)
 {
-  libraryModel = new QSqlQueryModel(this);
+  libraryModel = new LibraryModel(dataStore, this);
   verticalHeader()->hide();
   horizontalHeader()->setStretchLastSection(true);
   setModel(libraryModel);
   setSelectionBehavior(QAbstractItemView::SelectRows);
   setContextMenuPolicy(Qt::CustomContextMenu);
+  configureColumns();
   createActions();
   connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
     this, SLOT(handleContextMenuRequest(const QPoint&)));
-  connect(dataStore, SIGNAL(libSongsModified()), this, SLOT(refresh()));
-  refresh();
-  hideColumns();
 }
 
-void LibraryView::hideColumns(){
+void LibraryView::configureColumns(){
   QSqlRecord record = libraryModel->record();
   int idIndex = record.indexOf(DataStore::getLibIdColName());
   int isDeletedIndex = record.indexOf(DataStore::getLibIsDeletedColName());
@@ -58,15 +55,6 @@ void LibraryView::hideColumns(){
   setColumnHidden(syncStatusIndex, true); 
 }
 
-
-void LibraryView::refresh(){
-  libraryModel->setQuery(
-    "SELECT * FROM " + DataStore::getLibraryTableName() + " WHERE " +
-    DataStore::getLibIsDeletedColName() + "=0 AND " +
-    DataStore::getLibSyncStatusColName() + " != " +
-    QString::number(DataStore::getLibNeedsAddSyncStatus()) + ";", 
-    dataStore->getDatabaseConnection());
-}
 
 void LibraryView::createActions(){
   deleteSongAction = new QAction(getDeleteContextMenuItemName(), this);

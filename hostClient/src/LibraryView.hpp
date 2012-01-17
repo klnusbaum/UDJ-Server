@@ -22,11 +22,11 @@
 #include <QTableView>
 
 class QContextMenuEvent;
-class QSqlQueryModel;
 
 namespace UDJ{
 
 class DataStore;
+class LibraryModel;
 
 /** 
  *\brief A class for viewing the current contents of the users music library.
@@ -67,7 +67,7 @@ private:
   DataStore *dataStore;
 
   /** \brief The model backing LibraryView.  */
-  QSqlQueryModel *libraryModel;
+  LibraryModel *libraryModel;
 
   /** \brief Action used for deleting songs from the library. */
   QAction *deleteSongAction;
@@ -82,6 +82,8 @@ private:
 
   /** \brief Initilaizes actions.  */
   void createActions();
+
+  void configureColumns();
 
   /**
    * \brief Gets the name used for the delete context menu item.
@@ -121,14 +123,7 @@ private slots:
    */
   void deleteSongs();
 
-  /**
-   * \brief Refreshes the display of the library.
-   */
-  void refresh();
-
   void addSongsToSongList(song_list_id_t songListId);
-
-  void hideColumns();
 
   //@}
 };
