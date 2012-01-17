@@ -49,6 +49,10 @@ void LibraryModel::refresh(){
 }
 
 QVariant LibraryModel::data(const QModelIndex& item, int role) const{
+  if(role == Qt::TextAlignmentRole){
+    return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
+  }
+
   int durationColIndex = record().indexOf(DataStore::getLibDurationColName());
   QVariant actualData = QSqlQueryModel::data(item, role);
   if(item.column() == durationColIndex && role == Qt::DisplayRole){
