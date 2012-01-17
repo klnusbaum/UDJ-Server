@@ -94,8 +94,8 @@ def NeedsAuth(function):
       responseString = "Must provide the " + getTicketHeader() + " header. "
       return HttpResponseBadRequest(responseString)
     elif not isValidTicket(request.META[getDjangoTicketHeader()]):
-      return HttpResponseForbidden("Invalid ticket. " + 
-        request.META[getDjangoTicketHeader()])
+      return HttpResponseForbidden("Invalid ticket: \"" + 
+        request.META[getDjangoTicketHeader()] + "\"")
     else:
       return function(*args, **kwargs)
   return wrapper
@@ -125,11 +125,12 @@ def TicketUserMatch(function):
       responseString = "Must provide the " + getTicketHeader() + " header. "
       return HttpResponseBadRequest(responseString)
     elif not isValidTicket(request.META[getDjangoTicketHeader()]):
-      return HttpResponseForbidden("Invalid ticket")
+      return HttpResponseForbidden("Invalid ticket: \"" + 
+        request.META[getDjangoTicketHeader()] + "\"")
     elif not ticketMatchesUser(request, user_id):
       return HttpResponseForbidden("The ticket doesn't match the given user\n" +
-        "Give Ticket: " + request.META[getDjangoTicketHeader()] + "\n" +
-        "Given User id: " + user_id)
+        "Give Ticket: \"" + request.META[getDjangoTicketHeader()] + "\"\n" +
+        "Given User id: \"" + user_id + "\"")
     else:
       return function(*args, **kwargs)
   return wrapper
