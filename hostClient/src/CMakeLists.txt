@@ -33,7 +33,6 @@ SET(UDJ_SRCS
   CreateEventWidget.cpp
   EventDashboard.cpp
   WidgetWithLoader.cpp
-  EventMusicDisplay.cpp
   EventUsersDisplay.cpp
   AvailableMusicView.cpp
   EventGoersView.cpp
@@ -64,7 +63,6 @@ SET(UDJ_MOC_HDRS
   CreateEventWidget.hpp
   EventDashboard.hpp
   WidgetWithLoader.hpp
-  EventMusicDisplay.hpp
   EventUsersDisplay.hpp
   AvailableMusicView.hpp
   EventGoersView.hpp
