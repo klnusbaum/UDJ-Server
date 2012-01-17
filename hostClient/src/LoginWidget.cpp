@@ -25,6 +25,10 @@
 #include <QLabel>
 #include <QGridLayout>
 #include <QMessageBox>
+#include <QCheckBox>
+#include <QKeyEvent>
+
+class QKeyEvent;
 
 
 namespace UDJ{
@@ -47,22 +51,41 @@ LoginWidget::LoginWidget():WidgetWithLoader(tr("Logging in...")){
 
 void LoginWidget::setupUi(){
   loginDisplay = new QWidget(this);
+
   logo = new QLabel("UDJ", this);
-  usernameBox = new QLineEdit(getUsernameHint(), this);
-  passwordBox = new QLineEdit(getPasswordHint(), this);
+
+  usernameBox = new QLineEdit(this);
+  usernameLabel = new QLabel(tr("Username"));
+  usernameLabel->setBuddy(usernameBox);
+
+  passwordBox = new QLineEdit(this);
   passwordBox->setEchoMode(QLineEdit::Password);
+  passwordLabel = new QLabel(tr("Password"));
+  passwordLabel->setBuddy(passwordBox);
+
   loginButton = new QPushButton(tr("Login"), this);
+
   QGridLayout *layout = new QGridLayout;
   layout->addWidget(logo,0,0,1,2, Qt::AlignCenter);
-  layout->addWidget(usernameBox,1,0,1,2);
-  layout->addWidget(passwordBox,2,0,1,2);
-  layout->addWidget(loginButton,3,1,1,1);
+  layout->addWidget(usernameLabel,1,0);
+  layout->addWidget(usernameBox,1,1);
+  layout->addWidget(passwordLabel,2,0);
+  layout->addWidget(passwordBox,2,1);
+  layout->addWidget(loginButton,3,0,1,2, Qt::AlignCenter);
+   
   
   connect(loginButton, SIGNAL(clicked(bool)), this, SLOT(doLogin()));
   loginDisplay->setLayout(layout);
 
   setMainWidget(loginDisplay);
   showMainWidget(); 
+}
+
+void LoginWidget::keyReleaseEvent(QKeyEvent *event){
+  if(event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return){
+    loginButton->click(); 
+  }
+  WidgetWithLoader::keyReleaseEvent(event); 
 }
 
 void LoginWidget::doLogin(){

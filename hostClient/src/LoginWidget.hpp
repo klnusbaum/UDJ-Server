@@ -24,6 +24,7 @@
 class QLabel;
 class QLineEdit;
 class QPushButton;
+class QCheckBox;
 
 namespace UDJ{
 
@@ -42,6 +43,10 @@ public:
   LoginWidget();
 
   //@}
+
+protected:
+
+  virtual void keyReleaseEvent(QKeyEvent *event);
 
 private:
   
@@ -65,6 +70,11 @@ private:
 
   /** \brief Connection to the server. */
   UDJServerConnection *serverConnection;
+
+  QLabel *usernameLabel;
+ 
+  QLabel *passwordLabel;
+
 
   //@}
 
