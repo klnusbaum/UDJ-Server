@@ -31,7 +31,7 @@ class TicketAdmin(admin.ModelAdmin):
   list_display = ('user', 'ticket_hash', 'time_issued')
   
 
-admin.site.register(Ticket)
+admin.site.register(Ticket, TicketAdmin)
 admin.site.register(Event, EventAdmin)
 admin.site.register(EventEndTime)
 admin.site.register(EventPassword)
