@@ -19,7 +19,7 @@
 #include "SongListView.hpp"
 #include "DataStore.hpp"
 #include "Utils.hpp"
-#include <QSqlQueryModel>
+#include "MusicModel.hpp"
 #include <QSqlQuery>
 #include <QAction>
 #include <QMenu>
@@ -38,7 +38,8 @@ SongListView::SongListView(DataStore *dataStore, QWidget *parent):
 {
   setEditTriggers(QAbstractItemView::NoEditTriggers);
   createActions();
-  songListEntryModel = new QSqlQueryModel(this);
+  songListEntryModel = 
+    new MusicModel(getQuery(currentSongListId), dataStore, this);
   setModel(songListEntryModel);
   horizontalHeader()->setStretchLastSection(true);
   setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -49,6 +50,19 @@ SongListView::SongListView(DataStore *dataStore, QWidget *parent):
     this, SLOT(onSongListEntriesChanged(song_list_id_t)));
   connect(dataStore, SIGNAL(songListDeleted(song_list_id_t)),
     this, SLOT(onSongListDelete(song_list_id_t)));
+  songListEntryModel->refresh();
+  configHeaders();
+}
+
+void SongListView::configHeaders(){
+  QSqlRecord record = songListEntryModel->record();
+  int libIdIndex = record.indexOf(DataStore::getLibIdAlias());
+  int idIndex = record.indexOf(DataStore::getSongListEntryIdColName());
+  int durationIndex = record.indexOf(DataStore::getLibDurationColName());
+  setColumnHidden(libIdIndex, true);
+  setColumnHidden(idIndex, true);
+  resizeColumnToContents(durationIndex);
+
 }
 
 void SongListView::handleContextMenuRequest(const QPoint &pos){
@@ -70,19 +84,21 @@ void SongListView::onSongListEntriesChanged(
   song_list_id_t updatedSongList)
 {
   if(updatedSongList==currentSongListId){ 
-    QSqlQuery query("SELECT * FROM " +
+    /*QSqlQuery query("SELECT * FROM " +
     DataStore::getSongListEntryTableName() + " where " + 
     DataStore::getSongListEntrySongListIdColName() + "=?;",
     dataStore->getDatabaseConnection());
     query.addBindValue(QVariant::fromValue(currentSongListId));
     query.exec();
-    songListEntryModel->setQuery(query);
+    songListEntryModel->setQuery(query);*/
+    songListEntryModel->refresh();
   }
 }
 
 void SongListView::setSongListId(song_list_id_t songListId){
   currentSongListId = songListId;
-  onSongListEntriesChanged(currentSongListId);
+  //onSongListEntriesChanged(currentSongListId);
+  songListEntryModel->refresh(getQuery(currentSongListId));
 }
 
 void SongListView::onSongListDelete(song_list_id_t deletedId){

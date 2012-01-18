@@ -20,13 +20,15 @@
 #define SONG_LIST_VIEW_HPP
 #include "ConfigDefs.hpp"
 #include <QTableView>
+#include "DataStore.hpp"
 
-class QSqlQueryModel;
 class QAction;
+
 
 namespace UDJ{
 
 class DataStore;
+class MusicModel;
 
 /**
  * \brief Used to dislay the song list.
@@ -70,7 +72,7 @@ private:
   song_list_id_t currentSongListId;
  
   /** \brief The model backing this view. */
-  QSqlQueryModel *songListEntryModel;  
+  MusicModel *songListEntryModel;  
 
 
   //@}
@@ -98,6 +100,35 @@ private slots:
 
   void removeSelectedSongsFromList();
 
+  static QString getQuery(song_list_id_t songList){
+    return 
+      "SELECT "+
+      DataStore::getLibraryTableName() + "." + 
+        DataStore::getLibIdColName() + " AS " +
+        DataStore::getLibIdAlias() +", " +
+      DataStore::getLibraryTableName() + "." + 
+        DataStore::getLibSongColName() + ", " +
+      DataStore::getLibraryTableName() + "." + 
+        DataStore::getLibArtistColName() + ", " +
+      DataStore::getLibraryTableName() + "." + 
+        DataStore::getLibAlbumColName() + ", " +
+      DataStore::getLibraryTableName() + "." + 
+        DataStore::getLibDurationColName() + ", " +
+      DataStore::getSongListEntryTableName() + "." + 
+        DataStore::getSongListEntryIdColName() + " " +
+      "FROM " + DataStore::getSongListEntryTableName() + 
+      " INNER JOIN " + DataStore::getLibraryTableName() + 
+      " ON " + 
+      DataStore::getSongListEntryTableName() + "." + 
+         DataStore::getSongListEntrySongIdColName() + "=" +
+      DataStore::getLibraryTableName() + "." + DataStore::getLibIdColName() + 
+      " WHERE " + 
+      DataStore::getSongListEntryTableName() + "." + 
+        DataStore::getSongListEntrySongListIdColName() + 
+      "=" + QString::number(songList) + ";";
+  }
+
+  void configHeaders();
   //@}
 };
 

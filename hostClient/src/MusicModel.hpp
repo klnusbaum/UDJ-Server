@@ -36,6 +36,8 @@ public slots:
 
   void refresh();
 
+  void refresh(QString query);
+
 private:
 
   DataStore *dataStore;
