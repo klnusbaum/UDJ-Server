@@ -975,6 +975,7 @@ private:
       getActivePlaylistTableName() + "." + 
         getActivePlaylistLibIdColName() + "," +
       getLibraryTableName() + "." + getLibSongColName() + "," +
+      getLibraryTableName() + "." + getLibFileColName() + "," +
       getLibraryTableName() + "." + getLibArtistColName() + "," +
       getLibraryTableName() + "." + getLibAlbumColName() + "," +
       getActivePlaylistTableName() + "." + getUpVoteColName() + "," +

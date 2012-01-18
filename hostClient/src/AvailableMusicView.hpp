@@ -137,6 +137,8 @@ private slots:
       DataStore::getLibraryTableName() + "." + 
         DataStore::getLibDurationColName() + ", " +
       DataStore::getAvailableMusicTableName() + "." + 
+        DataStore::getAvailableEntryLibIdColName() + ", " +
+      DataStore::getAvailableMusicTableName() + "." + 
         DataStore::getAvailableEntrySyncStatusColName() + " " +
 
       " FROM " + DataStore::getAvailableMusicTableName() + 

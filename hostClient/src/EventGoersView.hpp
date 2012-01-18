@@ -19,10 +19,9 @@
 #ifndef EVENT_GOERS_VIEW_HPP
 #define EVENT_GOERS_VIEW_HPP
 #include <QTableView>
-#include <vector>
 #include "ConfigDefs.hpp"
 
-class QSqlRelationalTableModel;
+class QSqlQueryModel;
 class QAction;
 
 namespace UDJ{
@@ -59,7 +58,7 @@ private:
   DataStore *dataStore;
  
   /** \brief The model backing this view. */
-  QSqlRelationalTableModel *eventGoersModel;  
+  QSqlQueryModel *eventGoersModel;  
 
   //@}
 
@@ -73,7 +72,7 @@ private slots:
   /** 
    * \brief Updates the data being displayed in the view.
    */
-  void updateView();
+  void refresh();
 
   /**
    * \brief Displays context menus when requested.
@@ -81,6 +80,8 @@ private slots:
    * @param pos The position where the context menu should be displayed.
    */ 
   void handleContextMenuRequest(const QPoint &pos);
+
+  void configHeaders();
 
   //@}
 };

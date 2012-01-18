@@ -65,7 +65,9 @@ void ActivePlaylistView::configureHeaders(){
   int upVoteIndex = record.indexOf(DataStore::getUpVoteColName());
   int adderNameIndex = record.indexOf(DataStore::getAdderUsernameColName());
   int timeAddedIndex = record.indexOf(DataStore::getTimeAddedColName());
+  int fileIndex = record.indexOf(DataStore::getLibFileColName());
   setColumnHidden(idIndex, true);
+  setColumnHidden(fileIndex, true);
   setColumnHidden(libIdIndex, true);
   setColumnHidden(priorityIndex, true); 
   setColumnHidden(adderIdIndex, true); 

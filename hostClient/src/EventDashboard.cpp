@@ -19,9 +19,9 @@
 #include "EventWidget.hpp"
 #include "EventDashboard.hpp"
 #include "DataStore.hpp"
-#include "EventUsersDisplay.hpp"
 #include "ActivePlaylistView.hpp"
 #include "AvailableMusicView.hpp"
+#include "EventGoersView.hpp"
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -73,7 +73,7 @@ void EventDashboard::setupUi(){
     new ActivePlaylistView(dataStore, this), tr("Playlist"));
   eventControls->addTab(
     new AvailableMusicView(dataStore, this), tr("Available Music"));
-  eventControls->addTab(new EventUsersDisplay(dataStore), tr("Users"));
+  eventControls->addTab(new EventGoersView(dataStore, this), tr("Users"));
  
   layout->addLayout(header);
   layout->addWidget(eventControls);

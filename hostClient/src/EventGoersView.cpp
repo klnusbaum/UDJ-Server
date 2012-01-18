@@ -18,13 +18,12 @@
  */
 #include "EventGoersView.hpp"
 #include "DataStore.hpp"
-#include <QSqlRelationalTableModel>
+#include <QSqlQueryModel>
 #include <QAction>
 #include <QMenu>
 #include <QModelIndex>
 #include <QSqlRecord>
 #include <QHeaderView>
-#include <set>
 
 
 namespace UDJ{
@@ -35,17 +34,26 @@ EventGoersView::EventGoersView(DataStore *dataStore, QWidget *parent):
   dataStore(dataStore)
 {
   setEditTriggers(QAbstractItemView::NoEditTriggers);
-  eventGoersModel = 
-    new QSqlRelationalTableModel(this, dataStore->getDatabaseConnection());
+  eventGoersModel = new QSqlQueryModel(this);
   setModel(eventGoersModel);
-  eventGoersModel->setTable(DataStore::getEventGoersTableName());
-  eventGoersModel->select();
+  verticalHeader()->hide();
   horizontalHeader()->setStretchLastSection(true);
   setSelectionBehavior(QAbstractItemView::SelectRows);
   setContextMenuPolicy(Qt::CustomContextMenu);
-  connect(dataStore, SIGNAL(eventGoersModified()), this, SLOT(updateView()));
+  connect(dataStore, SIGNAL(eventGoersModified()), this, SLOT(refresh()));
   connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
     this, SLOT(handleContextMenuRequest(const QPoint&)));
+  refresh();
+  configHeaders();
+}
+
+void EventGoersView::configHeaders(){
+  QSqlRecord record = eventGoersModel->record();
+  int usernameIndex = record.indexOf(DataStore::getEventGoerUsernameColName());
+  int idIndex = record.indexOf(DataStore::getEventGoersIdColName());
+  setColumnHidden(idIndex, true);
+  eventGoersModel->setHeaderData(
+    usernameIndex, Qt::Horizontal, tr("User"), Qt::DisplayRole);
 }
 
 void EventGoersView::handleContextMenuRequest(const QPoint &pos){
@@ -55,8 +63,18 @@ void EventGoersView::handleContextMenuRequest(const QPoint &pos){
   contextMenu.exec(QCursor::pos());*/
 }
 
-void EventGoersView::updateView(){
-  eventGoersModel->select();
+void EventGoersView::refresh(){
+  eventGoersModel->setQuery(
+    "SELECT " + 
+    DataStore::getEventGoerUsernameColName() + ", " +
+    DataStore::getEventGoersIdColName() +
+    " FROM " + DataStore::getEventGoersTableName() + 
+    " WHERE " + DataStore::getEventGoerStateColName() + 
+    "=\"" + DataStore::getEventGoerInEventState() + "\";",
+    dataStore->getDatabaseConnection());
+  if(eventGoersModel->lastError().type() != QSqlError::NoError){
+    DEBUG_MESSAGE("Event goeres error: " <<eventGoersModel->lastError().text().toStdString())
+  }
 }
 
 } //end namespace
