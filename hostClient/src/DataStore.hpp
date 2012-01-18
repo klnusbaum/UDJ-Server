@@ -994,22 +994,6 @@ private:
     return createActivePlaylistViewQuery;
   }
 
-  /** 
-   * \brief Gets the query used to create the available music view (a join
-   * between the available music table and the library table).
-   *
-   * @return The query used to create the available music view.
-   */
-  static const QString& getCreateAvailableMusicViewQuery(){
-    static const QString createAvailableMusicViewQuery = 
-      "CREATE VIEW IF NOT EXISTS "+getAvailableMusicViewName() + " " + 
-      "AS SELECT * FROM " + getAvailableMusicTableName() + " INNER JOIN " +
-      getLibraryTableName() + " ON " + getAvailableMusicTableName() + "." +
-      getAvailableEntryLibIdColName() + "=" + getLibraryTableName() + "." +
-      getLibIdColName() +";";
-    return createAvailableMusicViewQuery;
-  }
-
   /**
    * \brief Gets the query used to delete all entries in the available music
    * table.

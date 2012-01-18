@@ -24,22 +24,23 @@ namespace UDJ{
 
 class DataStore;
 
-class LibraryModel : public QSqlQueryModel{
+class MusicModel : public QSqlQueryModel{
 Q_OBJECT
 public:
 
-  LibraryModel(DataStore *dataStore, QObject *parent);
+  MusicModel(const QString& query, DataStore *dataStore, QObject *parent);
 
   virtual QVariant data(const QModelIndex& item, int role) const;
+
+public slots:
+
+  void refresh();
 
 private:
 
   DataStore *dataStore;
 
-private slots:
-
-  void refresh();
-
+  QString query;
 
 };
 

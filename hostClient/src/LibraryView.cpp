@@ -17,9 +17,8 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "LibraryView.hpp"
-#include "DataStore.hpp"
 #include "Utils.hpp"
-#include "LibraryModel.hpp"
+#include "MusicModel.hpp"
 #include <QHeaderView>
 #include <QContextMenuEvent>
 #include <QMenu>
@@ -33,7 +32,7 @@ LibraryView::LibraryView(DataStore *dataStore, QWidget* parent):
   QTableView(parent),
   dataStore(dataStore)
 {
-  libraryModel = new LibraryModel(dataStore, this);
+  libraryModel = new MusicModel(getDataQuery(), dataStore, this);
   verticalHeader()->hide();
   horizontalHeader()->setStretchLastSection(true);
   setModel(libraryModel);
@@ -41,6 +40,7 @@ LibraryView::LibraryView(DataStore *dataStore, QWidget* parent):
   setContextMenuPolicy(Qt::CustomContextMenu);
   configureColumns();
   createActions();
+  connect(dataStore, SIGNAL(libSongsModified()), libraryModel, SLOT(refresh()));
   connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
     this, SLOT(handleContextMenuRequest(const QPoint&)));
 }
@@ -50,9 +50,11 @@ void LibraryView::configureColumns(){
   int idIndex = record.indexOf(DataStore::getLibIdColName());
   int isDeletedIndex = record.indexOf(DataStore::getLibIsDeletedColName());
   int syncStatusIndex = record.indexOf(DataStore::getLibSyncStatusColName());
+  int durationIndex = record.indexOf(DataStore::getLibDurationColName());
   setColumnHidden(idIndex, true);
   setColumnHidden(isDeletedIndex, true); 
   setColumnHidden(syncStatusIndex, true); 
+  resizeColumnToContents(durationIndex);
 }
 
 

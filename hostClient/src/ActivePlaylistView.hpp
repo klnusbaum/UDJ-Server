@@ -20,13 +20,13 @@
 #define ACTIVE_PLAYLIST_VIEW_HPP
 #include "ConfigDefs.hpp"
 #include <QTableView>
+#include "DataStore.hpp"
 
-class QSqlRelationalTableModel;
 class QAction;
 
 namespace UDJ{
 
-class DataStore;
+class MusicModel;
 
 /**
  * \brief Used to dislay the active playlist.
@@ -70,7 +70,7 @@ private:
   /**
    * \brief The model backing the view
    */
-  QSqlRelationalTableModel *model;
+  MusicModel *model;
 
   /**
    * \brief Action used to remove songs from the active playlist.
@@ -82,11 +82,6 @@ private:
    /** @name Private Slots */
    //@{
 private slots:
-
-  /**
-   * \brief Refreshes the data to be displayed.
-   */
-  void refreshDisplay(); 
 
   /**
    * \brief Takes the given index, identifies the song it corresponds to,
@@ -108,6 +103,12 @@ private slots:
   void removeSongs();
   
   void configureHeaders();
+
+  static const QString& getDataQuery(){
+    static const QString dataQuery = 
+      "SELECT * FROM " + DataStore::getActivePlaylistViewName() + ";";
+    return dataQuery;
+  }
 
   //@}
 

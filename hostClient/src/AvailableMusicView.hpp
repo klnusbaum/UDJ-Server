@@ -19,14 +19,14 @@
 #ifndef AVAILABLE_MUSIC_VIEW_HPP
 #define AVAILABLE_MUSIC_VIEW_HPP
 #include <QTableView>
+#include "DataStore.hpp"
 #include "ConfigDefs.hpp"
 
-class QSqlRelationalTableModel;
 class QAction;
 
 namespace UDJ{
 
-class DataStore;
+class MusicModel;
 
 /**
  * \brief Used to dislay the active playlist.
@@ -58,7 +58,7 @@ private:
   DataStore *dataStore;
  
   /** \brief The model backing this view. */
-  QSqlRelationalTableModel *availableMusicModel;  
+  MusicModel *availableMusicModel;  
 
   /** \brief Action for removing songs from the available music */
   QAction *removeFromAvailableMusic;
@@ -101,11 +101,6 @@ private slots:
   /** @name Private Slots */
   //@{
 
-  /** 
-   * \brief Updates the data being displayed in the view.
-   */
-  void updateView();
-
   /**
    * \brief Displays context menus when requested.
    *
@@ -129,6 +124,18 @@ private slots:
    * @param index Index of the song to be added to the active playlist.
    */
   void addSongToActivePlaylist(const QModelIndex& index);
+
+  static const QString& getDataQuery(){
+    static const QString dataQuery = 
+      "SELECT * FROM " + DataStore::getAvailableMusicTableName() + 
+      " INNER JOIN " + DataStore::getLibraryTableName() +
+      " ON " + DataStore::getAvailableMusicTableName() + "." +
+      DataStore::getAvailableEntryLibIdColName() + "=" + 
+      DataStore::getLibraryTableName() + "." + DataStore::getLibIdColName() +
+      " AND " + DataStore::getAvailableMusicTableName() + "." + 
+      DataStore::getAvailableEntryIsDeletedColName() + "=0;";
+    return dataQuery;
+  }
 
   //@}
 };

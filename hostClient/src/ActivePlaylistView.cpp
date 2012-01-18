@@ -17,10 +17,9 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "ActivePlaylistView.hpp"
-#include "DataStore.hpp"
+#include "MusicModel.hpp"
 #include "Utils.hpp"
 #include <QHeaderView>
-#include <QSqlRelationalTableModel>
 #include <QSqlRecord>
 #include <QAction>
 #include <QMenu>
@@ -34,10 +33,7 @@ ActivePlaylistView::ActivePlaylistView(DataStore* dataStore, QWidget* parent):
 {
   setContextMenuPolicy(Qt::CustomContextMenu);
   setEditTriggers(QAbstractItemView::NoEditTriggers);
-  model = 
-    new QSqlRelationalTableModel(this, dataStore->getDatabaseConnection());
-  model->setTable(DataStore::getActivePlaylistViewName());
-  model->select();
+  model = new MusicModel(getDataQuery(), dataStore, this);
   verticalHeader()->hide();
   horizontalHeader()->setStretchLastSection(true);
   createActions();
@@ -47,8 +43,8 @@ ActivePlaylistView::ActivePlaylistView(DataStore* dataStore, QWidget* parent):
   connect(
     dataStore,
     SIGNAL(activePlaylistModified()),
-    this, 
-    SLOT(refreshDisplay()));
+    model, 
+    SLOT(refresh()));
   connect(
     this,
     SIGNAL(activated(const QModelIndex&)),
@@ -84,10 +80,6 @@ void ActivePlaylistView::configureHeaders(){
     timeAddedIndex, Qt::Horizontal, tr("Time Added"), Qt::DisplayRole);
 }
   
-void ActivePlaylistView::refreshDisplay(){
-  model->select();
-}
-
 void ActivePlaylistView::setCurrentSong(const QModelIndex& index){
   QSqlRecord songToPlayRecord = model->record(index.row());
   QVariant data = 

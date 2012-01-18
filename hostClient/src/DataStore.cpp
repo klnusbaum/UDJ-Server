@@ -204,10 +204,6 @@ void DataStore::setupDB(){
   	setupQuery.exec(getCreateAvailableMusicQuery()),
 		setupQuery)
 	EXEC_SQL(
-		"Error creating available music view",
-  	setupQuery.exec(getCreateAvailableMusicViewQuery()),
-		setupQuery)
-	EXEC_SQL(
 		"Error creating add reqeusts table",
   	setupQuery.exec(getCreatePlaylistAddRequestsTableQuery()),
 		setupQuery)

@@ -17,9 +17,8 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "AvailableMusicView.hpp"
-#include "DataStore.hpp"
+#include "MusicModel.hpp"
 #include "Utils.hpp"
-#include <QSqlRelationalTableModel>
 #include <QAction>
 #include <QMenu>
 #include <QModelIndex>
@@ -36,11 +35,8 @@ AvailableMusicView::AvailableMusicView(DataStore *dataStore, QWidget *parent):
   dataStore(dataStore)
 {
   setEditTriggers(QAbstractItemView::NoEditTriggers);
-  availableMusicModel = 
-    new QSqlRelationalTableModel(this, dataStore->getDatabaseConnection());
+  availableMusicModel = new MusicModel(getDataQuery(), dataStore, this);
   setModel(availableMusicModel);
-  availableMusicModel->setTable(DataStore::getAvailableMusicViewName());
-  availableMusicModel->select();
   horizontalHeader()->setStretchLastSection(true);
   setSelectionBehavior(QAbstractItemView::SelectRows);
   setContextMenuPolicy(Qt::CustomContextMenu);
@@ -48,15 +44,15 @@ AvailableMusicView::AvailableMusicView(DataStore *dataStore, QWidget *parent):
   connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
     this, SLOT(handleContextMenuRequest(const QPoint&)));
   connect(
-    dataStore,
-    SIGNAL(availableSongsModified()),
-    this,
-    SLOT(updateView()));
-  connect(
     this,
     SIGNAL(activated(const QModelIndex&)),
     this,
     SLOT(addSongToActivePlaylist(const QModelIndex&)));
+  connect(
+    dataStore,
+    SIGNAL(availableSongsModified()),
+    availableMusicModel,
+    SLOT(refresh()));
 }
 
 void AvailableMusicView::createActions(){
@@ -94,10 +90,6 @@ void AvailableMusicView::removeSongsFromAvailableMusic(){
       this,
       availableMusicModel,
       DataStore::getActivePlaylistLibIdColName()));
-}
-
-void AvailableMusicView::updateView(){
-  availableMusicModel->select();
 }
 
 void AvailableMusicView::addSongToActivePlaylist(const QModelIndex& index){
