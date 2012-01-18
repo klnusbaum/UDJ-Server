@@ -40,8 +40,35 @@ import org.klnusbaum.udj.containers.LibraryEntry;
 import org.klnusbaum.udj.exceptions.EventOverException;
 
 public class MusicSearchLoader 
-  extends AsyncTaskLoader<List<LibraryEntry>>
+  extends AsyncTaskLoader<MusicSearchLoader.MusicSearchResult>
 {
+ 
+  public enum MusicSearchError{NO_ERROR, EVENT_ENDED_ERROR};
+  
+  public static class MusicSearchResult{
+    private List<LibraryEntry> res;
+    private MusicSearchError error;
+  
+    public MusicSearchResult(List<LibraryEntry> res){
+      this.res = res;
+      this.error = MusicSearchError.NO_ERROR;
+    }
+
+    public MusicSearchResult(List<LibraryEntry> res, MusicSearchError error){
+      this.res = res;
+      this.error = error;
+    }
+
+    public List<LibraryEntry> getResults(){
+      return res;
+    }
+
+    public MusicSearchError getError(){
+      return error;
+    }
+  }
+
+
   private String query;
   private Account account;
 
@@ -53,14 +80,16 @@ public class MusicSearchLoader
     this.account = account;
   }
 
-  public List<LibraryEntry> loadInBackground(){
+  public MusicSearchResult loadInBackground(){
     if(query != null){
       try{
         AccountManager am = AccountManager.get(getContext());
         String authToken = am.blockingGetAuthToken(account, "", true);
         long eventId = 
           Long.valueOf(am.getUserData(account, Constants.LAST_EVENT_ID_DATA));
-        return ServerConnection.availableMusicQuery(query, eventId, authToken);
+        List<LibraryEntry> list = 
+          ServerConnection.availableMusicQuery(query, eventId, authToken);
+        return new MusicSearchResult(list);
         //TODO do something to the potential errors
       }
       catch(JSONException e){
@@ -82,6 +111,7 @@ public class MusicSearchLoader
         //TODO notify user
       }
       catch(EventOverException e){
+        return new MusicSearchResult(null, MusicSearchError.EVENT_ENDED_ERROR);
         //Let acitivyt take care of things at this point
       }
       return null;

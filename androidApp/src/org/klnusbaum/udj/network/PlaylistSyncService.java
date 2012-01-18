@@ -59,6 +59,7 @@ import org.klnusbaum.udj.EventActivity;
 import org.klnusbaum.udj.EventSelectorActivity;
 import org.klnusbaum.udj.R;
 import org.klnusbaum.udj.exceptions.EventOverException;
+import org.klnusbaum.udj.Utils;
 
 
 /**
@@ -149,7 +150,7 @@ public class PlaylistSyncService extends IntentService{
     }
     catch(EventOverException e){
       Log.e(TAG, "Event over exceptoin when retreiving playlist");
-      handleEventOver(account);
+      Utils.handleEventOver(this, account);
     }
     //TODO This point of the app seems very dangerous as there are so many
     // exceptions that could occuer. Need to pay special attention to this.
@@ -220,7 +221,7 @@ public class PlaylistSyncService extends IntentService{
     }
     catch(EventOverException e){
       Log.e(TAG, "Event over exceptoin when retreiving playlist");
-      handleEventOver(account);
+      Utils.handleEventOver(this, account);
     }
     //TODO This point of the app seems very dangerous as there are so many
     // exceptions that could occuer. Need to pay special attention to this.
@@ -270,7 +271,7 @@ public class PlaylistSyncService extends IntentService{
     }
     catch(EventOverException e){
       Log.e(TAG, "Event over exceptoin when retreiving playlist");
-      handleEventOver(account);
+      Utils.handleEventOver(this, account);
     }
     finally{
       requestsCursor.close();
@@ -303,16 +304,6 @@ public class PlaylistSyncService extends IntentService{
     nm.notify(SONG_ADDED_ID, addNotification);
 
   }
-
-  private void handleEventOver(Account account){
-    Log.d(TAG, "Handling event over exception");
-    AccountManager am = AccountManager.get(this);
-    am.setUserData(account, Constants.EVENT_STATE_DATA, 
-      String.valueOf(Constants.EVENT_ENDED));
-    Intent eventEndedBroadcast = new Intent(Constants.EVENT_ENDED_ACTION);
-    sendBroadcast(eventEndedBroadcast);
-  }
-
 
   private void addVoteRequest(long playlistId, int voteType){
     ContentResolver cr = getContentResolver();

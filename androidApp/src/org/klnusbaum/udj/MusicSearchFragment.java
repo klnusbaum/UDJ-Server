@@ -30,6 +30,7 @@ import android.content.Intent;
 import android.content.ContentValues;
 import android.content.ContentResolver;
 import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -42,7 +43,7 @@ import org.klnusbaum.udj.network.PlaylistSyncService;
 import org.klnusbaum.udj.containers.LibraryEntry;
 
 public class MusicSearchFragment extends ListFragment
-  implements LoaderManager.LoaderCallbacks<List<LibraryEntry>>
+  implements LoaderManager.LoaderCallbacks<MusicSearchLoader.MusicSearchResult>
 {
   public static final String SEARCH_QUERY_EXTRA = "search_query";
   private static final int LIB_SEARCH_LOADER_TAG = 0;
@@ -91,7 +92,9 @@ public class MusicSearchFragment extends ListFragment
     getLoaderManager().restartLoader(LIB_SEARCH_LOADER_TAG, null, this);
   }
     
-  public Loader<List<LibraryEntry>> onCreateLoader(int id, Bundle args){
+  public Loader<MusicSearchLoader.MusicSearchResult> onCreateLoader(
+    int id, Bundle args)
+  {
     if(id == LIB_SEARCH_LOADER_TAG){
       return new MusicSearchLoader(
         getActivity(), searchQuery, account);
@@ -100,14 +103,22 @@ public class MusicSearchFragment extends ListFragment
   }
 
   public void onLoadFinished(
-    Loader<List<LibraryEntry>> loader,
-    List<LibraryEntry> data)
+    Loader<MusicSearchLoader.MusicSearchResult> loader,
+    MusicSearchLoader.MusicSearchResult data)
   {
-    searchAdapter = new MusicSearchAdapter(
-      getActivity(), 
-      data,
-      addSongToPlaylistListener);
-    setListAdapter(searchAdapter);
+    if(data.getError() == MusicSearchLoader.MusicSearchError.NO_ERROR){
+      searchAdapter = new MusicSearchAdapter(
+        getActivity(), 
+        data.getResults(),
+        addSongToPlaylistListener);
+      setListAdapter(searchAdapter);
+    }
+    else if(data.getError() == 
+      MusicSearchLoader.MusicSearchError.EVENT_ENDED_ERROR)
+    {
+      Utils.handleEventOver(getActivity(), account);
+    }
+
     if(isResumed()){
       setListShown(true);
     }
@@ -116,7 +127,7 @@ public class MusicSearchFragment extends ListFragment
     }
   }
 
-  public void onLoaderReset(Loader<List<LibraryEntry>> loader){
+  public void onLoaderReset(Loader<MusicSearchLoader.MusicSearchResult> loader){
     searchAdapter = new MusicSearchAdapter(getActivity());
   }
 }
