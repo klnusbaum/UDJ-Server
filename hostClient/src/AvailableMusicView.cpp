@@ -38,6 +38,7 @@ AvailableMusicView::AvailableMusicView(DataStore *dataStore, QWidget *parent):
   availableMusicModel = new MusicModel(getDataQuery(), dataStore, this);
   setModel(availableMusicModel);
   horizontalHeader()->setStretchLastSection(true);
+  configHeaders();
   setSelectionBehavior(QAbstractItemView::SelectRows);
   setContextMenuPolicy(Qt::CustomContextMenu);
   createActions();
@@ -53,6 +54,15 @@ AvailableMusicView::AvailableMusicView(DataStore *dataStore, QWidget *parent):
     SIGNAL(availableSongsModified()),
     availableMusicModel,
     SLOT(refresh()));
+}
+
+void AvailableMusicView::configHeaders(){
+  QSqlRecord record = availableMusicModel->record();
+  int syncIndex =   
+    record.indexOf(DataStore::getAvailableEntrySyncStatusColName());
+  int durationIndex = record.indexOf(DataStore::getLibDurationColName());
+  setColumnHidden(syncIndex, true);
+  resizeColumnToContents(durationIndex);
 }
 
 void AvailableMusicView::createActions(){

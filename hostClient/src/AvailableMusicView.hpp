@@ -127,7 +127,19 @@ private slots:
 
   static const QString& getDataQuery(){
     static const QString dataQuery = 
-      "SELECT * FROM " + DataStore::getAvailableMusicTableName() + 
+      "SELECT " +
+      DataStore::getLibraryTableName() + "." + 
+        DataStore::getLibSongColName() + ", " +
+      DataStore::getLibraryTableName() + "." + 
+        DataStore::getLibArtistColName() + ", " +
+      DataStore::getLibraryTableName() + "." + 
+        DataStore::getLibAlbumColName() + ", " +
+      DataStore::getLibraryTableName() + "." + 
+        DataStore::getLibDurationColName() + ", " +
+      DataStore::getAvailableMusicTableName() + "." + 
+        DataStore::getAvailableEntrySyncStatusColName() + " " +
+
+      " FROM " + DataStore::getAvailableMusicTableName() + 
       " INNER JOIN " + DataStore::getLibraryTableName() +
       " ON " + DataStore::getAvailableMusicTableName() + "." +
       DataStore::getAvailableEntryLibIdColName() + "=" + 
@@ -136,6 +148,8 @@ private slots:
       DataStore::getAvailableEntryIsDeletedColName() + "=0;";
     return dataQuery;
   }
+
+  void configHeaders();
 
   //@}
 };
