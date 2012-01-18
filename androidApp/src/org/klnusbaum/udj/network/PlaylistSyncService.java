@@ -299,7 +299,7 @@ public class PlaylistSyncService extends IntentService{
   
   private void notifyAddingSongs(){
     Notification addNotification = new Notification(
-      R.drawable.icon, 
+      R.drawable.udjlauncher, 
       getString(R.string.add_song_notification_title), 
       System.currentTimeMillis());
     PendingIntent pe = PendingIntent.getActivity(
@@ -320,7 +320,7 @@ public class PlaylistSyncService extends IntentService{
 
   private void alertAddSongException(Account account){
     Notification addNotification = new Notification(
-      R.drawable.icon, 
+      R.drawable.udjlauncher, 
       getString(R.string.song_add_failed_title),
       System.currentTimeMillis());
     Intent syncVotes = new Intent(
@@ -351,7 +351,7 @@ public class PlaylistSyncService extends IntentService{
 
   private void notifySongsAdded(){
     Notification addNotification = new Notification(
-      R.drawable.icon, 
+      R.drawable.udjlauncher, 
       getString(R.string.song_added_notification_title), 
       System.currentTimeMillis());
     PendingIntent pe = PendingIntent.getActivity(
