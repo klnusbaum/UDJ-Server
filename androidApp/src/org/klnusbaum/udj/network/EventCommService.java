@@ -84,11 +84,6 @@ public class EventCommService extends IntentService{
   }
 
   private void enterEvent(Intent intent, AccountManager am, Account account){
-    am.setUserData(
-      account, 
-      Constants.EVENT_JOIN_ERROR, 
-      String.valueOf(EventJoinError.NO_ERROR));
-
     if(!Utils.isNetworkAvailable(this)){
       doLoginFail(am, account, EventJoinError.NO_NETWORK_ERROR);
       return;
@@ -137,8 +132,9 @@ public class EventCommService extends IntentService{
       am.setUserData(
         account, Constants.LAST_EVENT_ID_DATA, String.valueOf(eventId));
       am.setUserData(
-        account, Constants.IN_EVENT_DATA, 
-        String.valueOf(Constants.IN_EVENT_FLAG));
+        account, 
+        Constants.EVENT_STATE_DATA, 
+        String.valueOf(Constants.IN_EVENT));
       sendBroadcast(joinedEventIntent);
       return;
     }
@@ -161,7 +157,7 @@ public class EventCommService extends IntentService{
     }
     catch(EventOverException e){
       Log.e(TAG, "Event Over Exception when joining event");
-      Log.e(TAG, e.getMessage());
+      //Log.e(TAG, e.getMessage());
       doLoginFail(am, account, EventJoinError.EVENT_OVER_ERROR);
     }
   }
@@ -251,6 +247,11 @@ public class EventCommService extends IntentService{
     catch(AuthenticationException e){
       Log.e(TAG, "Authentication exception in EventCommService" );
     }
+    finally{
+      //TODO potential this get's repeated because it's already called once
+      //above. I'll deal with that fact later.
+      setNotInEvent(account);
+    }
     //TODO need to implement exponential back off when log out fails.
     // 1. This is just nice to the server
     // 2. If we don't log out, there could be problems on the next event joined
@@ -260,8 +261,8 @@ public class EventCommService extends IntentService{
     AccountManager am = AccountManager.get(this);
     am.setUserData(account, Constants.LAST_EVENT_ID_DATA, 
       String.valueOf(Constants.NO_EVENT_ID));
-    am.setUserData(account, Constants.IN_EVENT_DATA, 
-      String.valueOf(Constants.NOT_IN_EVENT_FLAG));
+    am.setUserData(account, Constants.EVENT_STATE_DATA, 
+      String.valueOf(Constants.NOT_IN_EVENT));
   }
 
 }

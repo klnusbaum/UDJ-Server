@@ -26,19 +26,24 @@ public class Constants{
   public static final String AUTHORITY = "org.klnusbaum.udj";
   public static final String USER_ID_DATA = "org.klnusbaum.udj.userid";
   public static final String LAST_EVENT_ID_DATA = "org.klnusbaum.udj.EventId";
-  public static final String IN_EVENT_DATA = "org.klnusbaum.udj.InEvent";
   public static final String EVENT_NAME_DATA = "org.klnusbaum.udj.EventName";
   public static final String EVENT_HOSTNAME_DATA = 
     "org.klnusbaum.udj.EventHostName";
-  public static final String EVENT_HOST_ID_DATA = "org.klnusbaum.udj.EventHostId";
   public static final String EVENT_LAT_DATA = "org.klnusbaum.udj.EventLat";
   public static final String EVENT_LONG_DATA = "org.klnusbaum.udj.EventLong";
-  public static final String EVENT_JOIN_ERROR = "eventJoinError";
-  public static final int EVENT_JOIN_FAILED = -1;
-  public static final int EVENT_JOIN_OK = 0;
+  public static final String EVENT_JOIN_ERROR = "org.klnusbaum.udj.EventJoinError";
+
+
+  public static final String EVENT_HOST_ID_DATA = "org.klnusbaum.udj.EventHostId";
   public static final long NO_EVENT_ID = -1;
-  public static final int IN_EVENT_FLAG = 1;
-  public static final int NOT_IN_EVENT_FLAG = 0;
+
+  public static final String EVENT_STATE_DATA = "org.klusbaum.udj.EventState";
+  public static final int EVENT_JOIN_FAILED = -1;
+  public static final int NOT_IN_EVENT = 0;
+  public static final int JOINING_EVENT = 1;
+  public static final int IN_EVENT = 2;
+  public static final int LEAVING_EVENT = 3;
+  public static final int EVENT_ENDED = 4;
 
   /** Constants use for passing account related info in intents */
   public static final String ACCOUNT_EXTRA = "org.klnusbaum.udj.account";

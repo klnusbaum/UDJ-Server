@@ -89,13 +89,16 @@ public class EventActivity extends EventEndedListenerActivity
 
 
   private void getPlaylistFromServer(){
-    Intent getPlaylist = new Intent(
-      Intent.ACTION_VIEW,
-      UDJEventProvider.PLAYLIST_URI,
-      this,
-      PlaylistSyncService.class);
-    getPlaylist.putExtra(Constants.ACCOUNT_EXTRA, account);
-    startService(getPlaylist);
+    int eventState = Utils.getEventState(this, account);
+    if(eventState == Constants.IN_EVENT){
+      Intent getPlaylist = new Intent(
+        Intent.ACTION_VIEW,
+        UDJEventProvider.PLAYLIST_URI,
+        this,
+        PlaylistSyncService.class);
+      getPlaylist.putExtra(Constants.ACCOUNT_EXTRA, account);
+      startService(getPlaylist);
+    }
   } 
 
   public Loader<Cursor> onCreateLoader(int id, Bundle args){
@@ -167,7 +170,11 @@ public class EventActivity extends EventEndedListenerActivity
   }
 
   private void doQuit(){
-    dismissQuitDialog();
+    AccountManager am = AccountManager.get(this);
+    am.setUserData(
+      account, 
+      Constants.EVENT_STATE_DATA, 
+      String.valueOf(Constants.LEAVING_EVENT));
     Intent leaveEvent = new Intent(
       Intent.ACTION_DELETE,
       Constants.EVENT_URI,
@@ -177,12 +184,6 @@ public class EventActivity extends EventEndedListenerActivity
     startService(leaveEvent);
     setResult(Activity.RESULT_OK);
     finish();
-  }
-
-  private void dismissQuitDialog(){
-    QuitDialogFragment qd = 
-      (QuitDialogFragment)getSupportFragmentManager().findFragmentByTag(QUIT_DIALOG_TAG);
-    qd.dismiss();
   }
 
   public static class QuitDialogFragment extends DialogFragment{
@@ -195,13 +196,14 @@ public class EventActivity extends EventEndedListenerActivity
         .setPositiveButton(android.R.string.ok,
           new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton){
+              dismiss();
               ((EventActivity)getActivity()).doQuit();
             }
           })
         .setNegativeButton(android.R.string.cancel,
           new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton){
-              ((EventActivity)getActivity()).dismissQuitDialog();
+              dismiss();
             }
           })
         .create();

@@ -151,6 +151,11 @@ public class EventListFragment extends ListFragment implements
         startActivity(eventActivityIntent); 
       }
       else if(intent.getAction().equals(Constants.EVENT_JOIN_FAILED_ACTION)){
+        EventJoinError joinError = EventJoinError.valueOf(
+          am.getUserData(account, Constants.EVENT_JOIN_ERROR));
+        if(joinError == EventJoinError.EVENT_OVER_ERROR){
+          refreshEventList();
+        }
         displayEventJoinFail();
       }
     }
@@ -228,10 +233,9 @@ public class EventListFragment extends ListFragment implements
   public void onResume(){
     super.onResume();
     if(account != null){
+      int eventState = Utils.getEventState(getActivity(), account);
       if(isShowingProgress()){
-        EventJoinError joinError = EventJoinError.valueOf(
-          am.getUserData(account, Constants.EVENT_JOIN_ERROR));
-        if(joinError != EventJoinError.NO_ERROR && isShowingProgress()){
+        if(eventState == Constants.EVENT_JOIN_FAILED){
           dismissProgress();
           displayEventJoinFail();
           //TODO inform user joining failed.
@@ -240,9 +244,7 @@ public class EventListFragment extends ListFragment implements
           registerEventListener();
         }
       }
-      int inEvent = Integer.valueOf(
-        am.getUserData(account, Constants.IN_EVENT_DATA));
-      if(inEvent == Constants.IN_EVENT_FLAG){
+      else if(eventState == Constants.IN_EVENT){
         long eventId = Long.valueOf(
           am.getUserData(account, Constants.LAST_EVENT_ID_DATA));
         Intent startEventActivity = 
@@ -250,11 +252,9 @@ public class EventListFragment extends ListFragment implements
         startActivity(startEventActivity);
         return;
       }
-
-      if(eventAdapter == null || eventAdapter.getCount() ==0){
+      else if(eventAdapter == null || eventAdapter.getCount() ==0){
         refreshEventList();
       }
-      
     }
   }
 
@@ -268,11 +268,8 @@ public class EventListFragment extends ListFragment implements
 
   public void onPause(){
     super.onPause();
-    try{
+    if(isShowingProgress()){
       getActivity().unregisterReceiver(eventJoinedReceiver);
-    }
-    catch(IllegalArgumentException e){
-
     }
   }
 
@@ -326,6 +323,10 @@ public class EventListFragment extends ListFragment implements
 
   @Override
   public void onListItemClick(ListView l, View v, int position, long id){
+    am.setUserData(
+      account, 
+      Constants.EVENT_STATE_DATA, 
+      String.valueOf(Constants.JOINING_EVENT));
     showProgress();
     Intent joinEventIntent = new Intent(
       Intent.ACTION_INSERT, 

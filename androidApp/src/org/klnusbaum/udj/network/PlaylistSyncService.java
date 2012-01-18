@@ -88,11 +88,6 @@ public class PlaylistSyncService extends IntentService{
       (Account)intent.getParcelableExtra(Constants.ACCOUNT_EXTRA);
     long eventId = Long.valueOf(AccountManager.get(this).getUserData(
       account, Constants.LAST_EVENT_ID_DATA));
-    //TODO this is hack. We should never get here but event activity sometimes
-    // calls sync playlist after a party is over. need to fix that.
-    if(eventId == Constants.NO_EVENT_ID){
-      return;
-    }
     //TODO hanle error if eventId is bad
     if(intent.getAction().equals(Intent.ACTION_INSERT)){
       if(intent.getData().equals(UDJEventProvider.PLAYLIST_ADD_REQUEST_URI)){
@@ -312,8 +307,8 @@ public class PlaylistSyncService extends IntentService{
   private void handleEventOver(Account account){
     Log.d(TAG, "Handling event over exception");
     AccountManager am = AccountManager.get(this);
-    am.setUserData(account, Constants.IN_EVENT_DATA, 
-      String.valueOf(Constants.NOT_IN_EVENT_FLAG));
+    am.setUserData(account, Constants.EVENT_STATE_DATA, 
+      String.valueOf(Constants.EVENT_ENDED));
     Intent eventEndedBroadcast = new Intent(Constants.EVENT_ENDED_ACTION);
     sendBroadcast(eventEndedBroadcast);
   }

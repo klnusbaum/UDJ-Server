@@ -42,4 +42,9 @@ public class Utils{
     return udjAccounts[0];
   }
 
+  public static int getEventState(Context context, Account account){
+    AccountManager am = AccountManager.get(context);
+    return Integer.valueOf(am.getUserData(account, Constants.EVENT_STATE_DATA));
+  }
+
 }

@@ -58,18 +58,19 @@ public abstract class EventEndedListenerActivity extends FragmentActivity{
   protected void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
     account = Utils.basicGetUdjAccount(this);
-    int eventStatus = Integer.valueOf(AccountManager.get(this).getUserData(
-      account, Constants.IN_EVENT_DATA));
-    if(eventStatus == Constants.NOT_IN_EVENT_FLAG){
-      finish();
-      return;
-    }
   }
 
+  @Override
   protected void onResume(){
-    int inEvent = Integer.valueOf(
-      AccountManager.get(this).getUserData(account, Constants.IN_EVENT_DATA));
-    if(inEvent == Constants.NOT_IN_EVENT_FLAG){
+    super.onResume();
+    int eventState = Utils.getEventState(this, account);
+    if(eventState == Constants.LEAVING_EVENT || 
+      eventState == Constants. NOT_IN_EVENT)
+    {
+      setResult(Activity.RESULT_OK);
+      finish();
+    }
+    else if(eventState == Constants.EVENT_ENDED){
       eventEnded();
     }
     else{
@@ -77,9 +78,9 @@ public abstract class EventEndedListenerActivity extends FragmentActivity{
         eventEndedReciever, 
         new IntentFilter(Constants.EVENT_ENDED_ACTION));
     }
-    super.onResume();
   }
 
+  @Override
   protected void onPause(){
     super.onPause();
     try{
@@ -91,25 +92,11 @@ public abstract class EventEndedListenerActivity extends FragmentActivity{
   }
 
   private void eventEnded(){
-    Intent leaveEvent = new Intent(
-      Intent.ACTION_DELETE,
-      Constants.EVENT_URI,
-      this,
-      EventCommService.class);
-    leaveEvent.putExtra(Constants.ACCOUNT_EXTRA, account);
-    startService(leaveEvent);
     DialogFragment newFrag = new EventEndedDialog();
     newFrag.show(getSupportFragmentManager(), EVENT_ENDED_DIALOG);
   }
 
-  protected void onActivityResult(int requestCode, int resultCode, Intent data){
-    if(resultCode == HANDLED_EVENT_END_CODE){
-      setResult(HANDLED_EVENT_END_CODE);
-      finish();
-    }
-  }
-
-  public static class EventEndedDialog extends DialogFragment{
+  public class EventEndedDialog extends DialogFragment{
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
       return new AlertDialog.Builder(getActivity())
@@ -118,17 +105,32 @@ public abstract class EventEndedListenerActivity extends FragmentActivity{
         .setPositiveButton(android.R.string.ok,
           new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog, int whichButton){
-              getActivity().setResult(HANDLED_EVENT_END_CODE);
-              getActivity().finish();
+              finalizeEventEnd();
             }
           })
         .setOnCancelListener(new DialogInterface.OnCancelListener(){
           public void onCancel(DialogInterface dialog){
-            getActivity().setResult(HANDLED_EVENT_END_CODE);
-            getActivity().finish();
+            finalizeEventEnd(); 
           }
         })
         .create();
+    }
+
+    private void finalizeEventEnd(){
+      AccountManager am = AccountManager.get(getActivity());
+      am.setUserData(
+        account, 
+        Constants.EVENT_STATE_DATA, 
+        String.valueOf(Constants.LEAVING_EVENT));
+      Intent leaveEvent = new Intent(
+        Intent.ACTION_DELETE,
+        Constants.EVENT_URI,
+        getActivity(),
+        EventCommService.class);
+      leaveEvent.putExtra(Constants.ACCOUNT_EXTRA, account);
+      getActivity().startService(leaveEvent);
+      getActivity().setResult(Activity.RESULT_OK);
+      getActivity().finish();
     }
   }
 }
