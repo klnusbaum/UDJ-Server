@@ -44,10 +44,6 @@ public class Authenticator extends AbstractAccountAuthenticator{
 
   private Context context;
  
-  private static final String tokenPrefsName = "tokenPrefs";
-  private static final String tokenPrefKey = "token";
-  private static final String lastModifiedPrefKey = "lastModified";
-  
   /**
    * Constructs an Authenticator
    *
@@ -91,18 +87,6 @@ public class Authenticator extends AbstractAccountAuthenticator{
   public Bundle getAuthToken(AccountAuthenticatorResponse response,
     Account account, String authTokenType, Bundle loginOptions)
   {
-    //First, check if we've already got the shiznit in our persistent storage
-    SharedPreferences prefs = context.getSharedPreferences(
-      tokenPrefsName, Context.MODE_PRIVATE);
-    if(prefs.contains(tokenPrefKey) && prefs.contains(lastModifiedPrefKey)){
-      long lastModified = prefs.getLong(lastModifiedPrefKey, 0);
-      if(lessThan12HoursAgo(lastModified)){
-        return bundleUpAuthToken(account, prefs.getString(tokenPrefKey, ""));
-      }
-    }
-
-    //Ok, fine! Not in persistent storage, well we'll just get it from the 
-    // server then.
     final AccountManager am = AccountManager.get(context);
     final String password = am.getPassword(account);
     if(password != null){
@@ -110,7 +94,6 @@ public class Authenticator extends AbstractAccountAuthenticator{
         final ServerConnection.AuthResult authResult= 
           ServerConnection.authenticate(account.name, password);
         if(!TextUtils.isEmpty(authResult.ticketHash)) {
-          writeTokenToPersistentStorage(authResult.ticketHash);
           am.setUserData(
             account, Constants.USER_ID_DATA, Long.toString(authResult.userId));
           return bundleUpAuthToken(account, authResult.ticketHash);
@@ -144,21 +127,6 @@ public class Authenticator extends AbstractAccountAuthenticator{
     return result;
   }
 
-  private void writeTokenToPersistentStorage(String token){
-    SharedPreferences.Editor prefs = context.getSharedPreferences(
-      tokenPrefsName, Context.MODE_PRIVATE).edit();
-    long now = Calendar.getInstance().getTimeInMillis();
-    prefs.putLong(lastModifiedPrefKey, now);
-    prefs.putString(tokenPrefKey, token);
-    prefs.commit();
-  }
-
-  private boolean lessThan12HoursAgo(long time){
-    long now = Calendar.getInstance().getTimeInMillis();
-    return  now-time < 43200;
-  }
-
-
   @Override
   public String getAuthTokenLabel(String authTokenType){
     // null means we don't support multiple authToken types
@@ -178,13 +146,6 @@ public class Authenticator extends AbstractAccountAuthenticator{
   public Bundle updateCredentials(AccountAuthenticatorResponse response,
     Account account, String authTokenType, Bundle loginOptions)
   {
-    /*final Intent updateIntent = new Intent(context, AuthActivity.class);
-    updateIntent.putExtra(AccountManager.KEY_ACCOUNT_NAME, account.name);
-    updateIntent.putExtra(AuthActivity.AUTHTOKEN_TYPE_EXTRA, authTokenType);
-    updateIntent.putExtra(AuthActivity.UPDATE_CREDS_EXTRA, true);
-    final Bundle updateBundle = new Bundle();
-    updateBundle.putParcelable(AccountManager.KEY_INTENT, updateIntent);
-    return updateBundle;*/
     return null;
   }
 }
