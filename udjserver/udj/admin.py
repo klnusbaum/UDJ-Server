@@ -35,7 +35,7 @@ class VoteAdmin(admin.ModelAdmin):
 
 class TicketAdmin(admin.ModelAdmin):
   list_display = ('user', 'ticket_hash', 'time_issued', 'source_ip_addr')
-  list_filter = ('user')
+  list_filter = ('user',)
   
 
 admin.site.register(Ticket, TicketAdmin)
