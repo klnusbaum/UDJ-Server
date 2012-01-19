@@ -75,11 +75,10 @@ public class MusicSearchFragment extends ListFragment
     super.onActivityCreated(savedInstanceState);
 
     setEmptyText(getActivity().getString(R.string.no_library_songs));
-    //setHasOptionsMenu(true);
     Bundle args = getArguments();
     searchQuery = args.getString(SEARCH_QUERY_EXTRA);
     account = Utils.basicGetUdjAccount(getActivity());
-    //TODO Hanle null account.
+    //TODO Handle null account.
 
     searchAdapter = new MusicSearchAdapter(getActivity());
     setListAdapter(searchAdapter);
@@ -129,5 +128,6 @@ public class MusicSearchFragment extends ListFragment
 
   public void onLoaderReset(Loader<MusicSearchLoader.MusicSearchResult> loader){
     searchAdapter = new MusicSearchAdapter(getActivity());
+    setListShown(false);
   }
 }
