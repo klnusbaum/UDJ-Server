@@ -4,6 +4,8 @@ And what's more, songs should fade into one another. Like a real dj would.
 Sync the beat of the new song to the beat of the the one that is currently
 playing, fade into new song, then gradual return beat of new song to normal.
 -Import iTunes library capability
+-Need to be able to handle the current song being changed from another client.
+-Need to be able to handle the event being ended from another client.
 *Handle song not being added to the server correctly.
 *If a song is removed from the library mid event, need to make sure that
 the available music, active playlist, and anything else that references the
@@ -14,9 +16,7 @@ music entry is successfully and completely added with the server before any
 potential delete operations is started. need to enforce this work flow some
 how. For instance, don't even allow a syncstatus to change unless it's set to
 isSynched. Should be a simple trigger on the database.
-*detect double adds of songs
-*detect readding of previously deleted song
-*disable play button until party is started.
+* make the enable/disable of the playback widget more reasonable.
 
 ANDROID APP
 *IMPORTANT: SWITCH TO HttpsURLConnection. This will give us automatic caching
