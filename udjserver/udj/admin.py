@@ -34,7 +34,7 @@ class VoteAdmin(admin.ModelAdmin):
   list_filter = ('playlist_entry', 'user', 'weight')
 
 class TicketAdmin(admin.ModelAdmin):
-  list_display = ('user', 'ticket_hash', 'time_issued', 'source_ip')
+  list_display = ('user', 'ticket_hash', 'time_issued', 'source_ip_addr')
   list_filter = ('user')
   
 

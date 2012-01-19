@@ -306,6 +306,9 @@ void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
     emit connectionEstablished();
   }
   else{
+    QByteArray responseData = reply->readAll();
+    QString responseString = QString::fromUtf8(responseData);
+    DEBUG_MESSAGE(responseString.toStdString())
     QString error = tr("Unable to connect to server: error ") + 
      QString::number(reply->error());
     emit unableToConnect(error);
