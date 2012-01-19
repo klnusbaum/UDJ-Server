@@ -26,9 +26,10 @@ def ticketMatchesUser(request, provided_user_id):
   return len(matchingTickets) > 0
   
 
-def isValidTicket(provided_hash):
+def isValidTicket(provided_hash, ip_address):
   try:
-    matchingTicket = Ticket.objects.get(ticket_hash=provided_hash)
+    matchingTicket = Ticket.objects.get(ticket_hash=provided_hash,
+      source_ip_addr=ip_address) 
   except ObjectDoesNotExist:
     return False
   if(datetime.now() - matchingTicket.time_issued).days < 1:
@@ -54,9 +55,10 @@ def getUniqueRandHash():
   return rand_hash
 
 
-def getTicketForUser(userRequestingTicket):
+def getTicketForUser(userRequestingTicket, givenIpAddress):
   ticket , created = Ticket.objects.get_or_create(
     user=userRequestingTicket,
+    source_ip_addr=givenIpAddress, 
     defaults={'ticket_hash' : getUniqueRandHash()})
   if not created:
     ticket.ticket_hash=getUniqueRandHash()
@@ -71,7 +73,7 @@ def authenticate(request):
 
   userToAuth = get_object_or_404(User, username=request.POST['username'])
   if userToAuth.check_password(request.POST['password']):
-    ticket = getTicketForUser(userToAuth)
+    ticket = getTicketForUser(userToAuth, request.META['REMOTE_ADDR'])
     response = HttpResponse()
     response[getTicketHeader()] = ticket.ticket_hash
     response[getUserIdHeader()] = userToAuth.id

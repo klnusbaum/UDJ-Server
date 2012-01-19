@@ -93,7 +93,9 @@ def NeedsAuth(function):
     if getDjangoTicketHeader() not in request.META:
       responseString = "Must provide the " + getTicketHeader() + " header. "
       return HttpResponseBadRequest(responseString)
-    elif not isValidTicket(request.META[getDjangoTicketHeader()]):
+    elif not isValidTicket(
+      request.META[getDjangoTicketHeader()], 
+      request.META['REMOTE_ADDR']):
       return HttpResponseForbidden("Invalid ticket: \"" + 
         request.META[getDjangoTicketHeader()] + "\"")
     else:
@@ -124,7 +126,9 @@ def TicketUserMatch(function):
     if getDjangoTicketHeader() not in request.META:
       responseString = "Must provide the " + getTicketHeader() + " header. "
       return HttpResponseBadRequest(responseString)
-    elif not isValidTicket(request.META[getDjangoTicketHeader()]):
+    elif not isValidTicket(
+      request.META[getDjangoTicketHeader()],
+      request.META['REMOTE_ADDR']):
       return HttpResponseForbidden("Invalid ticket: \"" + 
         request.META[getDjangoTicketHeader()] + "\"")
     elif not ticketMatchesUser(request, user_id):
