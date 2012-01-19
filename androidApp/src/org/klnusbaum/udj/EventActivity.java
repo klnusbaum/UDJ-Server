@@ -76,9 +76,6 @@ public class EventActivity extends EventEndedListenerActivity
   @Override
   protected void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
-    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){ 
-      requestWindowFeature(Window.FEATURE_NO_TITLE);
-    }
     setContentView(R.layout.event);
     currentSong = (TextView)findViewById(R.id.current_song_title);
     setCurrentSongDisplay(null);

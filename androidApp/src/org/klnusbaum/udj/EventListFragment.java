@@ -154,12 +154,17 @@ public class EventListFragment extends ListFragment implements
         EventJoinError joinError = EventJoinError.valueOf(
           am.getUserData(account, Constants.EVENT_JOIN_ERROR));
         if(joinError == EventJoinError.EVENT_OVER_ERROR){
-          refreshEventList();
+          refreshList();
         }
         displayEventJoinFail();
       }
     }
   };
+
+  public void onCreate(Bundle icicle){
+    super.onCreate(icicle);
+    setHasOptionsMenu(true);
+  }
 
   public void onActivityCreated(Bundle icicle){
     super.onActivityCreated(icicle);
@@ -253,7 +258,7 @@ public class EventListFragment extends ListFragment implements
         return;
       }
       else if(eventAdapter == null || eventAdapter.getCount() ==0){
-        refreshEventList();
+        refreshList();
       }
     }
   }
@@ -303,7 +308,7 @@ public class EventListFragment extends ListFragment implements
 
   public void setEventSearch(EventSearch newSearch){
     lastSearch = newSearch;
-    refreshEventList();
+    refreshList();
   }
 
   public void onLocationChanged(Location location){
@@ -316,10 +321,6 @@ public class EventListFragment extends ListFragment implements
   public void onProviderDisabled(String provider){}
   public void onProviderEnabled(String provider){}
   public void onStatusChanged(String provider, int status, Bundle extras){}
-
-  public void refreshEventList(){
-    getLoaderManager().restartLoader(0, lastSearch.getLoaderArgs(), this);
-  }
 
   @Override
   public void onListItemClick(ListView l, View v, int position, long id){
@@ -410,7 +411,11 @@ public class EventListFragment extends ListFragment implements
   }
 
   public void onLoaderReset(Loader<EventsLoader.EventsLoaderResult> loader){
-    eventAdapter = new EventListAdapter(getActivity());
+    setListAdapter(null);
+  }
+
+  public void refreshList(){
+    getLoaderManager().restartLoader(0, lastSearch.getLoaderArgs(), this);
   }
 
   private void showProgress(){

@@ -43,8 +43,14 @@ public class MusicSearchLoader
   extends AsyncTaskLoader<MusicSearchLoader.MusicSearchResult>
 {
  
-  public enum MusicSearchError{NO_ERROR, EVENT_ENDED_ERROR};
-  
+  public enum MusicSearchError{
+    NO_ERROR, 
+    EVENT_ENDED_ERROR,
+    NO_SEARCH_ERROR,
+    SERVER_ERROR,
+    AUTHENTICATION_ERROR};
+  private static final String TAG = "MusicSearchLoader";
+
   public static class MusicSearchResult{
     private List<LibraryEntry> res;
     private MusicSearchError error;
@@ -81,42 +87,66 @@ public class MusicSearchLoader
   }
 
   public MusicSearchResult loadInBackground(){
+    return doSearch(true);
+  }
+
+  private MusicSearchResult doSearch(boolean attemptReauth){
     if(query != null){
+      AccountManager am = AccountManager.get(getContext());
+      String authToken = "";
       try{
-        AccountManager am = AccountManager.get(getContext());
-        String authToken = am.blockingGetAuthToken(account, "", true);
+        authToken = am.blockingGetAuthToken(account, "", true);
+      }
+      catch(IOException e){
+        //TODO this might actually be an auth error
+        return new MusicSearchResult(null, 
+          MusicSearchError.AUTHENTICATION_ERROR);
+      }
+      catch(AuthenticatorException e){
+        return new MusicSearchResult(null, 
+          MusicSearchError.AUTHENTICATION_ERROR);
+      }
+      catch(OperationCanceledException e){
+        return new MusicSearchResult(null, 
+          MusicSearchError.AUTHENTICATION_ERROR);
+      }
+
+      try{
         long eventId = 
           Long.valueOf(am.getUserData(account, Constants.LAST_EVENT_ID_DATA));
         List<LibraryEntry> list = 
           ServerConnection.availableMusicQuery(query, eventId, authToken);
         return new MusicSearchResult(list);
-        //TODO do something to the potential errors
       }
       catch(JSONException e){
-        //TODO notify the user
+        return new MusicSearchResult(null, 
+          MusicSearchError.SERVER_ERROR);
       }
       catch(ParseException e){
-        //TODO notify the user
+        return new MusicSearchResult(null, 
+          MusicSearchError.SERVER_ERROR);
       }
       catch(IOException e){
-        //TODO notify the user
+        return new MusicSearchResult(null, 
+          MusicSearchError.SERVER_ERROR);
       }
       catch(AuthenticationException e){
-        //TODO notify the user
-      }
-      catch(AuthenticatorException e){
-        //TODO notify the user
-      }
-      catch(OperationCanceledException e){
-        //TODO notify user
+        if(attemptReauth){
+          Log.d(TAG, "soft auth failure");
+          am.invalidateAuthToken(Constants.ACCOUNT_TYPE, authToken);
+          return doSearch(false);
+        }
+        else{
+          Log.d(TAG, "hard auth failure");
+          return new MusicSearchResult(null, 
+            MusicSearchError.AUTHENTICATION_ERROR);
+        }
       }
       catch(EventOverException e){
         return new MusicSearchResult(null, MusicSearchError.EVENT_ENDED_ERROR);
-        //Let acitivyt take care of things at this point
       }
-      return null;
     }
-    return null;
+    return new MusicSearchResult(null, MusicSearchError.NO_SEARCH_ERROR);
   }
 
   @Override

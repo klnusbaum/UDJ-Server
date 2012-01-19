@@ -113,73 +113,67 @@ public class EventsLoader extends
       return new EventsLoaderResult(null, EventLoaderError.NO_CONNECTION);
     }
     else{
-      try{
-        String authToken = am.blockingGetAuthToken(account, "", true); 
-        if(locationSearch){
-          Log.d(TAG, "Doing location search");
-          return doLocationSearch(authToken);
-        }
-        else{
-          Log.d(TAG, "Doing name search");
-          return doNameSearch(authToken);
-        }
-      }
-      catch(IOException e){
-        Log.e(TAG, "IO exception");
-      }
-      catch(AuthenticatorException e){
-        Log.e(TAG, "Authenticator exception");
-        //TODO notify the user
-      }
-      catch(OperationCanceledException e){
-        Log.e(TAG, "Operation cancelced exception");
-        //TODO notify user
-      }
-      return new EventsLoaderResult(
-        null, EventLoaderError.AUTHENTICATION_ERROR);
+      return doSearch(true);
     }
   }
-        
-  private EventsLoaderResult doLocationSearch(String authToken){
+
+  private EventsLoaderResult doSearch(boolean attemptReauth){
+    String authToken = "";
     try{
-      List<Event> events = 
-        ServerConnection.getNearbyEvents(location, authToken);
-      return new EventsLoaderResult(events, EventLoaderError.NO_ERROR);
+      authToken = am.blockingGetAuthToken(account, "", true); 
+      if(locationSearch){
+        Log.d(TAG, "Doing location search");
+        return doLocationSearch(authToken);
+      }
+      else{
+        Log.d(TAG, "Doing name search");
+        return doNameSearch(authToken);
+      }
+    }
+    catch(IOException e){
+      Log.e(TAG, "IO exception");
+    }
+    catch(AuthenticatorException e){
+      Log.e(TAG, "Authenticator exception");
+      //TODO notify the user
+    }
+    catch(OperationCanceledException e){
+      Log.e(TAG, "Operation cancelced exception");
+      //TODO notify user
     }
     catch(JSONException e){
       Log.e(TAG, "Json exception");
       Log.e(TAG, e.getMessage());
       //TODO notify the user
     }
-    catch(IOException e){
-      Log.e(TAG, "Io eception");
-      //TODO notify the user
-    }
     catch(AuthenticationException e){
-      Log.e(TAG, "Authentication exception");
-      //TODO notify the user
+      if(attemptReauth){
+        Log.e(TAG, "Soft auth fail");
+        am.invalidateAuthToken(Constants.ACCOUNT_TYPE, authToken);
+        return doSearch(false);
+      }
+      else{
+        //TODO notify user
+        Log.e(TAG, "Hard auth fail");
+      }
     }
-    return new EventsLoaderResult(null, EventLoaderError.SERVER_ERROR);
+    return new EventsLoaderResult(
+      null, EventLoaderError.AUTHENTICATION_ERROR);
+  }
+        
+  private EventsLoaderResult doLocationSearch(String authToken)
+    throws AuthenticationException, JSONException, IOException
+  {
+    List<Event> events = 
+      ServerConnection.getNearbyEvents(location, authToken);
+    return new EventsLoaderResult(events, EventLoaderError.NO_ERROR);
   }
 
-  private EventsLoaderResult doNameSearch(String authToken){
-    try{
-      List<Event> events = 
-        ServerConnection.searchForEvents(searchQuery, authToken);
-      return new EventsLoaderResult(events, EventLoaderError.NO_ERROR);
-    }
-    catch(JSONException e){
-      Log.e(TAG, "Json exception");
-      //TODO notify the user
-    }
-    catch(IOException e){
-      Log.e(TAG, "Io eception");
-      //TODO notify the user
-    }
-    catch(AuthenticationException e){
-      Log.e(TAG, "Authentication exception");
-      //TODO notify the user
-    }
-    return new EventsLoaderResult(null, EventLoaderError.SERVER_ERROR);
+  private EventsLoaderResult doNameSearch(String authToken)
+    throws AuthenticationException, JSONException, IOException
+  {
+    List<Event> events = 
+      ServerConnection.searchForEvents(searchQuery, authToken);
+    return new EventsLoaderResult(events, EventLoaderError.NO_ERROR);
   }
 }

@@ -35,7 +35,6 @@ import android.app.SearchManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuInflater;
-import android.os.Build;
 
 
 /**
@@ -50,10 +49,6 @@ public class EventSelectorActivity extends FragmentActivity{
   @Override
   public void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
-
-    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){ 
-      requestWindowFeature(Window.FEATURE_NO_TITLE);
-    }
 
     FragmentManager fm = getSupportFragmentManager();
     if(fm.findFragmentById(android.R.id.content) == null){
@@ -81,8 +76,8 @@ public class EventSelectorActivity extends FragmentActivity{
   public boolean onOptionsItemSelected(MenuItem item){
     switch (item.getItemId()) {
     case R.id.menu_refresh:
-      list.refreshEventList();
-       return true;
+      list.refreshList();
+      return true;
     case R.id.menu_search:
       startSearch(null, false, null, false);
       return true;

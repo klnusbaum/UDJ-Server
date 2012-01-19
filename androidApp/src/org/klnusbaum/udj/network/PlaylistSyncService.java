@@ -96,7 +96,7 @@ public class PlaylistSyncService extends IntentService{
           Constants.LIB_ID_EXTRA, 
           UDJEventProvider.INVALID_LIB_ID);
         insertAddSongRequest(libId);
-        syncAddRequests(account, eventId);
+        syncAddRequests(account, eventId, true);
       }
       else if(intent.getData().equals(UDJEventProvider.VOTES_URI)){
         long playlistId = 
@@ -105,20 +105,36 @@ public class PlaylistSyncService extends IntentService{
           Constants.VOTE_TYPE_EXTRA, 
           UDJEventProvider.INVALID_VOTE_TYPE);
         addVoteRequest(playlistId, voteType);
-        syncVoteRequests(account, eventId); 
+        syncVoteRequests(account, eventId, true); 
       }
-      updateActivePlaylist(account, eventId); 
+      updateActivePlaylist(account, eventId, true); 
     }
     else if(intent.getAction().equals(Intent.ACTION_VIEW)){
-      updateActivePlaylist(account, eventId); 
+      updateActivePlaylist(account, eventId, true); 
     }
   }
 
-  private void updateActivePlaylist(Account account, long eventId){
+  private void updateActivePlaylist(
+    Account account, long eventId, boolean attemptReauth)
+  {
     Log.d(TAG, "updating active playlist");
+    AccountManager am = AccountManager.get(this);
+    String authToken = "";
     try{
-      String authToken = 
-        AccountManager.get(this).blockingGetAuthToken(account, "", true);
+      authToken = am.blockingGetAuthToken(account, "", true);
+    }
+    catch(IOException e){
+      Log.e(TAG, "IO exception when retreiving playist");
+    }
+    catch(OperationCanceledException e){
+      Log.e(TAG, "Op Canceled exception when retreiving playist");
+    }
+    catch(AuthenticatorException e){
+      Log.e(TAG, "Authentication exception when retreiving playist");
+    }
+
+
+    try{
       JSONObject activePlaylist =
         ServerConnection.getActivePlaylist(eventId, authToken);
       RESTProcessor.setActivePlaylist(activePlaylist, this);
@@ -134,13 +150,14 @@ public class PlaylistSyncService extends IntentService{
       Log.e(TAG, "IO exception when retreiving playist");
     }
     catch(AuthenticationException e){
-      Log.e(TAG, "Authentication exception when retreiving playist");
-    }
-    catch(AuthenticatorException e){
-      Log.e(TAG, "Authentication exception when retreiving playist");
-    }
-    catch(OperationCanceledException e){
-      Log.e(TAG, "Op Canceled exception when retreiving playist");
+      if(attemptReauth){
+        Log.e(TAG, "Soft Authentication exception when retreiving playist");
+        am.invalidateAuthToken(Constants.ACCOUNT_TYPE, authToken); 
+        updateActivePlaylist(account, eventId, false);
+      }
+      else{
+        Log.e(TAG, "Hard Authentication exception when retreiving playist");
+      } 
     }
     catch(RemoteException e){
       Log.e(TAG, "Remote exception when retreiving playist");
@@ -156,78 +173,98 @@ public class PlaylistSyncService extends IntentService{
     // exceptions that could occuer. Need to pay special attention to this.
   }
 
-  private void syncAddRequests(Account account, long eventId){
+  private void syncAddRequests(
+    Account account, long eventId, boolean attemptReauth)
+  {
     Log.d(TAG, "Sycning add requests");
-    try{
-      ContentResolver cr = getContentResolver();
-      Cursor requestsCursor = cr.query(
-        UDJEventProvider.PLAYLIST_ADD_REQUEST_URI,
-        addRequestsProjection,
-        addRequestSeleciton,
-        null,
-        null);
-      HashMap<Long, Long> addRequests = new HashMap<Long, Long>();
-      if(requestsCursor.moveToFirst()){
-        int requestIdColumn = requestsCursor.getColumnIndex(
-          UDJEventProvider.ADD_REQUEST_ID_COLUMN);
-        int libIdColumn = requestsCursor.getColumnIndex(
-          UDJEventProvider.ADD_REQUEST_LIB_ID_COLUMN);
-        do{
-          addRequests.put(
-            requestsCursor.getLong(requestIdColumn),
-            requestsCursor.getLong(libIdColumn)); 
-        }while(requestsCursor.moveToNext());
+    ContentResolver cr = getContentResolver();
+    Cursor requestsCursor = cr.query(
+      UDJEventProvider.PLAYLIST_ADD_REQUEST_URI,
+      addRequestsProjection,
+      addRequestSeleciton,
+      null,
+      null);
+    HashMap<Long, Long> addRequests = new HashMap<Long, Long>();
+    if(requestsCursor.moveToFirst()){
+      int requestIdColumn = requestsCursor.getColumnIndex(
+        UDJEventProvider.ADD_REQUEST_ID_COLUMN);
+      int libIdColumn = requestsCursor.getColumnIndex(
+        UDJEventProvider.ADD_REQUEST_LIB_ID_COLUMN);
+      do{
+        addRequests.put(
+          requestsCursor.getLong(requestIdColumn),
+          requestsCursor.getLong(libIdColumn)); 
+      }while(requestsCursor.moveToNext());
+    }
+    requestsCursor.close();
+
+    if(addRequests.size() >0){
+      String authToken = "";
+      AccountManager am = AccountManager.get(this);
+      try{
+        authToken = am.blockingGetAuthToken(account, "", true);
       }
-      requestsCursor.close();
-      if(addRequests.size() >0){
-        String authToken = 
-          AccountManager.get(this).blockingGetAuthToken(account, "", true);
+      catch(AuthenticatorException e){
+        alertAddSongException(account);
+        Log.e(TAG, "Authentication exception when adding to playist");
+      }
+      catch(OperationCanceledException e){
+        alertAddSongException(account);
+        Log.e(TAG, "Op Canceled exception when adding to playist");
+      }
+      catch(IOException e){
+        alertAddSongException(account);
+        Log.e(TAG, "IO exception when adding to playist");
+      }
+
+      try{
         ServerConnection.addSongsToActivePlaylist(
           addRequests, eventId, authToken);
         RESTProcessor.setPlaylistAddRequestsSynced(addRequests.keySet(), this);
       }
-    }
-    catch(JSONException e){
-      alertAddSongException(account);
-      Log.e(TAG, "JSON exception when adding to playist");
-    }
-    catch(ParseException e){
-      alertAddSongException(account);
-      Log.e(TAG, "Parse exception when adding to playist");
-    }
-    catch(IOException e){
-      alertAddSongException(account);
-      Log.e(TAG, "IO exception when adding to playist");
-    }
-    catch(AuthenticationException e){
-      alertAddSongException(account);
-      Log.e(TAG, "Authentication exception when adding to playist");
-    }
-    catch(AuthenticatorException e){
-      alertAddSongException(account);
-      Log.e(TAG, "Authentication exception when adding to playist");
-    }
-    catch(OperationCanceledException e){
-      alertAddSongException(account);
-      Log.e(TAG, "Op Canceled exception when adding to playist");
-    }
-    catch(RemoteException e){
-      alertAddSongException(account);
-      Log.e(TAG, "Remote exception when adding to playist");
-    }
-    catch(OperationApplicationException e){
-      alertAddSongException(account);
-      Log.e(TAG, "Operation Application exception when adding to playist");
-    }
-    catch(EventOverException e){
-      Log.e(TAG, "Event over exceptoin when retreiving playlist");
-      Utils.handleEventOver(this, account);
+      catch(JSONException e){
+        alertAddSongException(account);
+        Log.e(TAG, "JSON exception when adding to playist");
+      }
+      catch(ParseException e){
+        alertAddSongException(account);
+        Log.e(TAG, "Parse exception when adding to playist");
+      }
+      catch(IOException e){
+        alertAddSongException(account);
+        Log.e(TAG, "IO exception when adding to playist");
+      }
+      catch(AuthenticationException e){
+        if(attemptReauth){
+          am.invalidateAuthToken(Constants.ACCOUNT_TYPE, authToken); 
+          syncAddRequests(account, eventId, false);
+          Log.e(TAG, "Soft Authentication exception when adding to playist");
+        }
+        else{
+          alertAddSongException(account);
+          Log.e(TAG, "Hard Authentication exception when adding to playist");
+        }
+      }
+      catch(RemoteException e){
+        alertAddSongException(account);
+        Log.e(TAG, "Remote exception when adding to playist");
+      }
+      catch(OperationApplicationException e){
+        alertAddSongException(account);
+        Log.e(TAG, "Operation Application exception when adding to playist");
+      }
+      catch(EventOverException e){
+        Log.e(TAG, "Event over exceptoin when retreiving playlist");
+        Utils.handleEventOver(this, account);
+      }
     }
     //TODO This point of the app seems very dangerous as there are so many
     // exceptions that could occuer. Need to pay special attention to this.
   }
 
-  private void syncVoteRequests(Account account, long eventId){
+  private void syncVoteRequests(
+    Account account, long eventId, boolean attemptReauth)
+  {
     Log.d(TAG, "Sycning vote requests");
     ContentResolver cr = getContentResolver();
     Cursor requestsCursor = cr.query(
@@ -237,47 +274,55 @@ public class PlaylistSyncService extends IntentService{
         UDJEventProvider.VOTE_NEEDS_SYNC,
       null,
       null);
-    try{
-      if(requestsCursor.getCount() >0){
-        AccountManager am = AccountManager.get(this);
-        String authToken = am.blockingGetAuthToken(account, "", true);
+    if(requestsCursor.getCount() >0){
+      AccountManager am = AccountManager.get(this);
+      String authToken = "";
+      try{
+        authToken = am.blockingGetAuthToken(account, "", true);
+      }
+      catch(IOException e){
+        Log.e(TAG, "IO exception when retreiving playist");
+      }
+      catch(AuthenticatorException e){
+        Log.e(TAG, "Authentication exception when retreiving playist");
+      }
+      catch(OperationCanceledException e){
+        Log.e(TAG, "Op Canceled exception when retreiving playist");
+      }
+
+      try{
         Long userId = 
           Long.valueOf(am.getUserData(account, Constants.USER_ID_DATA));
         ServerConnection.doSongVotes(
           requestsCursor, eventId, userId, authToken);
         RESTProcessor.setVoteRequestsSynced(requestsCursor, this);
       }
-    }
-    catch(ParseException e){
-      Log.e(TAG, "Parse exception when retreiving playist");
-    }
-    catch(IOException e){
-      Log.e(TAG, "IO exception when retreiving playist");
-      try{
-      FileOutputStream fos = openFileOutput("error.html", Context.MODE_PRIVATE);
-      fos.write(e.getMessage().getBytes());
-      fos.close();
+      catch(ParseException e){
+        Log.e(TAG, "Parse exception when retreiving playist");
       }
-      catch(Exception f){}
+      catch(IOException e){
+        Log.e(TAG, "IO exception when retreiving playist");
+      }
+      catch(AuthenticationException e){
+        if(attemptReauth){
+          Log.e(TAG, "Soft Authentication exception when retreiving playist");
+          am.invalidateAuthToken(Constants.ACCOUNT_TYPE, authToken); 
+          syncVoteRequests(account, eventId, false);
+        }
+        else{
+          Log.e(TAG, "Hard Authentication exception when retreiving playist");
+        }
+      }
+      catch(EventOverException e){
+        Log.e(TAG, "Event over exceptoin when retreiving playlist");
+        Utils.handleEventOver(this, account);
+      }
+      finally{
+        requestsCursor.close();
+      }
     }
-    catch(AuthenticationException e){
-      Log.e(TAG, "Authentication exception when retreiving playist");
-    }
-    catch(AuthenticatorException e){
-      Log.e(TAG, "Authentication exception when retreiving playist");
-    }
-    catch(OperationCanceledException e){
-      Log.e(TAG, "Op Canceled exception when retreiving playist");
-    }
-    catch(EventOverException e){
-      Log.e(TAG, "Event over exceptoin when retreiving playlist");
-      Utils.handleEventOver(this, account);
-    }
-    finally{
-      requestsCursor.close();
-    }
-    //TODO This point of the app seems very dangerous as there are so many
-    // exceptions that could occuer. Need to pay special attention to this.
+      //TODO This point of the app seems very dangerous as there are so many
+      // exceptions that could occuer. Need to pay special attention to this.
   }
   
   private void alertAddSongException(Account account){

@@ -43,9 +43,6 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import org.apache.http.auth.AuthenticationException;
-
-
 
 public class RESTProcessor{
 

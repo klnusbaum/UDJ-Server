@@ -185,7 +185,7 @@ public class ServerConnection{
   )
     throws AuthenticationException, IOException
   {
-    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
+    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_FORBIDDEN){
       throw new AuthenticationException();
     }
     else if(
