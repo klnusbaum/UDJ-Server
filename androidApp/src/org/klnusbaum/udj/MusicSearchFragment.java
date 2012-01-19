@@ -127,7 +127,6 @@ public class MusicSearchFragment extends ListFragment
   }
 
   public void onLoaderReset(Loader<MusicSearchLoader.MusicSearchResult> loader){
-    searchAdapter = new MusicSearchAdapter(getActivity());
-    setListShown(false);
+    setListAdapter(null);
   }
 }
