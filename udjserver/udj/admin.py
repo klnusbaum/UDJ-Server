@@ -1,9 +1,15 @@
 from udj.models import *
 from django.contrib import admin
 
+def removeSongFromActivePlaylist(modeladmin, request, queryset):
+  queryset.update(state='RM')
+
+removeSongFromActivePlaylist.short_description = "Remove songs from playlist"
+
 class ActivePlaylistEntryAdmin(admin.ModelAdmin):
   list_display = ('song', 'time_added', 'adder', 'event', 'state')
   list_filter = ('state','event',)
+  actions = [removeSongFromActivePlaylist]
 
 class EventGoerAdmin(admin.ModelAdmin):
   list_display = ('user', 'event', 'time_joined', 'state')
