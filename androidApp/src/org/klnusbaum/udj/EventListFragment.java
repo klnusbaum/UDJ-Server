@@ -411,8 +411,7 @@ public class EventListFragment extends ListFragment implements
   }
 
   public void onLoaderReset(Loader<EventsLoader.EventsLoaderResult> loader){
-    setListShownNoAnimation(false);
-    setListShown(false);
+    setListAdapter(null);
   }
 
   public void refreshList(){

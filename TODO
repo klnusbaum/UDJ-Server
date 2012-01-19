@@ -3,7 +3,6 @@ HOST CLIENT
 And what's more, songs should fade into one another. Like a real dj would.
 Sync the beat of the new song to the beat of the the one that is currently
 playing, fade into new song, then gradual return beat of new song to normal.
--Emit signal from UDJServerConnection is conneciotn is lost or something...
 -Import iTunes library capability
 *Handle song not being added to the server correctly.
 *If a song is removed from the library mid event, need to make sure that
@@ -25,26 +24,13 @@ compression. Also security. Also, this is what the android team is throwing
 themselves behind so it will be getting the most attention.
 -Users should be able to remove songs they added form the playlist
 (You know, say they accidentally double added a song)
--Indicator on playlist of songs you've added
--Parties without passwords
--Get nearby parties
--Be able to refresh near by parties
-*Handle responses from server indicating that the party is over.
-*Ditch the tab layout for tablets. We can display both the playlist and the
-library in that case.
--Switch all the dialogs to fragments and stop using the 
-depercated onCreateDialogs and what not.
--Grey out playlist items that haven't been succesfully added to the server yet.
--Once library search results have been obtained, we should save them if the
-activity get's paused, that way when it's resumed we can just load 'em right
-back up again without having to requery the server!!!!!! I'm so smart....
--Improve the LibrarySearchLoader to cache results for searches. The AsyncTaskLoader documentation has an example of this.
+-Parties with passwords
+-Switch auth dialog to dialog fragment
 
 SERVER
--If two users add the same song within a certain threshold of oneanother (e.g.
+-Maybe If two users add the same song within a certain threshold of oneanother (e.g.
 the same song was added by two different users within 10 seconds of one another)
 just merge the song requests
-*If requests are made for a party that is over, notify client
 -Test exception cases. 
 -Test for commands that are being issued to a party that is over.
 *Test events with passwords

@@ -71,7 +71,7 @@ public class EventCommService extends IntentService{
     final Account account = 
       (Account)intent.getParcelableExtra(Constants.ACCOUNT_EXTRA);
     if(intent.getAction().equals(Intent.ACTION_INSERT)){
-      enterEvent(intent, am, account);
+      enterEvent(intent, am, account, true);
     }
     else if(intent.getAction().equals(Intent.ACTION_DELETE)){
       //TODO handle if userId is null shouldn't ever be, but hey...
@@ -83,7 +83,8 @@ public class EventCommService extends IntentService{
     } 
   }
 
-  private void enterEvent(Intent intent, AccountManager am, Account account){
+  private void enterEvent(
+    Intent intent, AccountManager am, Account account, boolean attemptReauth){
     if(!Utils.isNetworkAvailable(this)){
       doLoginFail(am, account, EventJoinError.NO_NETWORK_ERROR);
       return;
@@ -150,10 +151,18 @@ public class EventCommService extends IntentService{
       doLoginFail(am, account, EventJoinError.SERVER_ERROR);
     }
     catch(AuthenticationException e){
-      Log.e(TAG, 
-        "Authentication exception when joining event");
-      Log.e(TAG, e.getMessage());
-      doLoginFail(am, account, EventJoinError.AUTHENTICATION_ERROR);
+      if(attemptReauth){
+        Log.d(TAG, 
+          "Soft Authentication exception when joining event");
+        am.invalidateAuthToken(Constants.ACCOUNT_TYPE, authToken);
+        enterEvent(intent, am, account, false);
+      }
+      else{
+        Log.e(TAG, 
+          "Hard Authentication exception when joining event");
+        Log.e(TAG, e.getMessage());
+        doLoginFail(am, account, EventJoinError.AUTHENTICATION_ERROR);
+      }
     }
     catch(EventOverException e){
       Log.e(TAG, "Event Over Exception when joining event");
