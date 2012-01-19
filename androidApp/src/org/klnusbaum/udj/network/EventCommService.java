@@ -43,6 +43,7 @@ import org.klnusbaum.udj.Constants;
 import org.klnusbaum.udj.Utils;
 import org.klnusbaum.udj.UDJEventProvider;
 import org.klnusbaum.udj.exceptions.EventOverException;
+import org.klnusbaum.udj.exceptions.AlreadyInEventException;
 
 
 /**
@@ -55,7 +56,8 @@ public class EventCommService extends IntentService{
     AUTHENTICATION_ERROR,
     SERVER_ERROR,
     EVENT_OVER_ERROR,
-    NO_NETWORK_ERROR 
+    NO_NETWORK_ERROR,
+    ALREADY_IN_EVENT_ERROR
   }
 
   private static final String TAG = "EventCommService";
@@ -84,7 +86,8 @@ public class EventCommService extends IntentService{
   }
 
   private void enterEvent(
-    Intent intent, AccountManager am, Account account, boolean attemptReauth){
+    Intent intent, AccountManager am, Account account, boolean attemptReauth)
+  {
     if(!Utils.isNetworkAvailable(this)){
       doLoginFail(am, account, EventJoinError.NO_NETWORK_ERROR);
       return;
@@ -137,7 +140,6 @@ public class EventCommService extends IntentService{
         Constants.EVENT_STATE_DATA, 
         String.valueOf(Constants.IN_EVENT));
       sendBroadcast(joinedEventIntent);
-      return;
     }
     catch(IOException e){
       Log.e(TAG, "IO exception when joining event");
@@ -151,23 +153,45 @@ public class EventCommService extends IntentService{
       doLoginFail(am, account, EventJoinError.SERVER_ERROR);
     }
     catch(AuthenticationException e){
-      if(attemptReauth){
-        Log.d(TAG, 
-          "Soft Authentication exception when joining event");
-        am.invalidateAuthToken(Constants.ACCOUNT_TYPE, authToken);
-        enterEvent(intent, am, account, false);
-      }
-      else{
-        Log.e(TAG, 
-          "Hard Authentication exception when joining event");
-        Log.e(TAG, e.getMessage());
-        doLoginFail(am, account, EventJoinError.AUTHENTICATION_ERROR);
-      }
+      handleLoginAuthException(intent, am, account, authToken, attemptReauth);
     }
     catch(EventOverException e){
       Log.e(TAG, "Event Over Exception when joining event");
       //Log.e(TAG, e.getMessage());
       doLoginFail(am, account, EventJoinError.EVENT_OVER_ERROR);
+    }
+    catch(AlreadyInEventException e){
+      Log.e(TAG, "Already In Event Exception when joining event");
+      try{
+        ServerConnection.leaveEvent(e.getEventId(), userId, authToken);
+        enterEvent(intent, am, account, true);
+      } 
+      catch(AuthenticationException f){
+        handleLoginAuthException(intent, am, account, authToken, attemptReauth);
+      }
+      catch(IOException f){
+        Log.e(TAG, "IO exception when attempting to leave one event before "+ 
+          "joining another");
+        Log.e(TAG, f.getMessage());
+        doLoginFail(am, account, EventJoinError.SERVER_ERROR);
+      }
+    }
+  }
+
+  private void handleLoginAuthException(
+    Intent intent, AccountManager am, Account account, 
+    String authToken, boolean attemptReauth)
+  {
+    if(attemptReauth){
+      Log.d(TAG, 
+        "Soft Authentication exception when joining event");
+      am.invalidateAuthToken(Constants.ACCOUNT_TYPE, authToken);
+      enterEvent(intent, am, account, false);
+    }
+    else{
+      Log.e(TAG, 
+        "Hard Authentication exception when joining event");
+      doLoginFail(am, account, EventJoinError.AUTHENTICATION_ERROR);
     }
   }
 

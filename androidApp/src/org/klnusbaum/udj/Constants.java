@@ -45,6 +45,7 @@ public class Constants{
   public static final int LEAVING_EVENT = 3;
   public static final int EVENT_ENDED = 4;
 
+
   /** Constants use for passing account related info in intents */
   public static final String ACCOUNT_EXTRA = "org.klnusbaum.udj.account";
   public static final String EVENT_ID_EXTRA = "org.klnusbaum.udj.EventId";

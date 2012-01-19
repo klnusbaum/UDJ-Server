@@ -68,6 +68,7 @@ import org.klnusbaum.udj.containers.LibraryEntry;
 import org.klnusbaum.udj.containers.Event;
 import org.klnusbaum.udj.UDJEventProvider;
 import org.klnusbaum.udj.exceptions.EventOverException;
+import org.klnusbaum.udj.exceptions.AlreadyInEventException;
 /**
  * A connection to the UDJ server
  */
@@ -199,6 +200,14 @@ public class ServerConnection{
     }
   }
 
+  private static void eventOverErrorCheck(HttpResponse resp)
+    throws EventOverException
+  {
+    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_GONE){
+      throw new EventOverException();
+    }
+  } 
+
 
   public static HttpResponse doGet(URI uri, String ticketHash)
     throws IOException
@@ -225,9 +234,7 @@ public class ServerConnection{
     final HttpResponse resp = doGet(uri, ticketHash);
     final String response = EntityUtils.toString(resp.getEntity());
     Log.d(TAG, "Event related response: \"" + response +"\"");
-    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_GONE){
-      throw new EventOverException();
-    }
+    eventOverErrorCheck(resp);
     basicResponseErrorCheck(resp, response);
     return response;
   }
@@ -266,9 +273,7 @@ public class ServerConnection{
     final HttpResponse resp = doPut(uri, ticketHash, payload);
     final String response = EntityUtils.toString(resp.getEntity());
     Log.d(TAG, "Event related Put response: \"" + response +"\"");
-    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_GONE){
-      throw new EventOverException();
-    }
+    eventOverErrorCheck(resp);
     basicResponseErrorCheck(resp, response, true);
     return response;
   }
@@ -306,9 +311,7 @@ public class ServerConnection{
     final HttpResponse resp = doPost(uri, authToken, payload);
     final String response = EntityUtils.toString(resp.getEntity());
     Log.d(TAG, "Event related Post response: \"" + response +"\"");
-    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_GONE){
-      throw new EventOverException();
-    }
+    eventOverErrorCheck(resp);
     basicResponseErrorCheck(resp, response, true);
     return response;
 
@@ -338,9 +341,7 @@ public class ServerConnection{
     final HttpResponse resp = doDelete(uri, ticketHash);
     final String response = EntityUtils.toString(resp.getEntity());
     Log.d(TAG, "Delete response: \"" + response +"\"");
-    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_GONE){
-      throw new EventOverException();
-    }
+    eventOverErrorCheck(resp);
     basicResponseErrorCheck(resp, response);
   }
 
@@ -383,15 +384,39 @@ public class ServerConnection{
     }
   }
 
+  private static void evenJoinConflictCheck(
+    HttpResponse resp,
+    String response,
+    long userId)
+    throws JSONException, ParseException, AlreadyInEventException
+  {
+    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_CONFLICT){
+      JSONObject event = new JSONObject(response);
+      if(userId == event.getLong("host_id")){
+        //TODO throw already hosting exception
+      }
+      else{
+        throw new AlreadyInEventException(
+          event.getLong("id"), event.getString("name"));
+      }
+    }
+  }
+
   public static void joinEvent(long eventId, long userId, String ticketHash)
-    throws IOException, AuthenticationException, EventOverException
+    throws IOException, AuthenticationException, EventOverException, 
+    AlreadyInEventException, JSONException, ParseException
   {
     try{
       URI uri  = new URI(
         NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT, 
         "/udj/events/" + eventId + "/users/"+userId,
         null, null);
-       doEventRelatedPut(uri, ticketHash, null); 
+      final HttpResponse resp = doPut(uri, ticketHash, "");
+      final String response = EntityUtils.toString(resp.getEntity());
+      Log.d(TAG, "Event join Put response: \"" + response +"\"");
+      evenJoinConflictCheck(resp, response, userId);
+      eventOverErrorCheck(resp);
+      basicResponseErrorCheck(resp, response, true);
     }
     catch(URISyntaxException e){
       Log.e(TAG, "URI syntax error in join event");

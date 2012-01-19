@@ -151,12 +151,7 @@ public class EventListFragment extends ListFragment implements
         startActivity(eventActivityIntent); 
       }
       else if(intent.getAction().equals(Constants.EVENT_JOIN_FAILED_ACTION)){
-        EventJoinError joinError = EventJoinError.valueOf(
-          am.getUserData(account, Constants.EVENT_JOIN_ERROR));
-        if(joinError == EventJoinError.EVENT_OVER_ERROR){
-          refreshList();
-        }
-        displayEventJoinFail();
+        handleEventJoinFail();
       }
     }
   };
@@ -242,7 +237,7 @@ public class EventListFragment extends ListFragment implements
       if(isShowingProgress()){
         if(eventState == Constants.EVENT_JOIN_FAILED){
           dismissProgress();
-          displayEventJoinFail();
+          handleEventJoinFail();
           //TODO inform user joining failed.
         }
         else{
@@ -454,13 +449,13 @@ public class EventListFragment extends ListFragment implements
     }
   }
 
-  private void displayEventJoinFail(){
+  private void handleEventJoinFail(){
     DialogFragment newFrag = new EventJoinFailDialog(account);
     newFrag.show(
       getActivity().getSupportFragmentManager(), EVENT_JOIN_FAIL_TAG);
   }
 
-  public static class EventJoinFailDialog extends DialogFragment{
+  public class EventJoinFailDialog extends DialogFragment{
     private Account account;
 
     public EventJoinFailDialog(Account account){
@@ -473,6 +468,8 @@ public class EventListFragment extends ListFragment implements
       AccountManager am = AccountManager.get(getActivity());
       EventJoinError joinError = EventJoinError.valueOf(
         am.getUserData(account, Constants.EVENT_JOIN_ERROR));
+      AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+        .setTitle(R.string.event_join_fail_title);
       String message; 
       switch(joinError){
       case SERVER_ERROR:
@@ -482,6 +479,7 @@ public class EventListFragment extends ListFragment implements
         message = getString(R.string.auth_join_fail_message); 
         break;
       case EVENT_OVER_ERROR:
+        refreshList();
         message = getString(R.string.event_over_join_fail_message); 
         break;
       case NO_NETWORK_ERROR:
@@ -490,8 +488,7 @@ public class EventListFragment extends ListFragment implements
       default:
         message = getString(R.string.unknown_error_message);
       }
-      return new AlertDialog.Builder(getActivity())
-        .setTitle(R.string.event_join_fail_title)
+      return builder
         .setMessage(message)
         .setPositiveButton(
           android.R.string.ok,
