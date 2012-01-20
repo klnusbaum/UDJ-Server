@@ -550,7 +550,7 @@ bool UDJServerConnection::isAvailableMusicDeleteUrl(const QString& path) const{
 
 bool UDJServerConnection::isActivePlaylistRemoveUrl(const QString& path) const{
   QRegExp rx("^/udj/events/" + QString::number(eventId) + 
-    "/active_playlist/\\d+$");
+    "/active_playlist/songs/\\d+$");
   return rx.exactMatch(path);
 }
 

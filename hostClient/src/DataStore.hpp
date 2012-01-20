@@ -595,6 +595,75 @@ public:
     return libIdAlias;
   }
 
+  /**
+   * Gets the name of the active playlist remove request table.
+   *
+   * @return the name of the active playlist remove request table.
+   */
+  static const QString& getPlaylistRemoveRequestsTableName(){
+    static const QString playlistRemoveRequestsTableName = 
+      "playlist_remove_requests";
+    return playlistRemoveRequestsTableName;
+  }
+ 
+  /** 
+   * \brief Get the name for the lib id column in the playlist remove request 
+   * table.
+   *
+   * @return The name fo the lib id column in the playlist remove request table.
+   */
+  static const QString& getPlaylistRemoveIdColName(){
+    static const QString playlistRemoveRequestIdColName = "id";
+    return playlistRemoveRequestIdColName;
+  }
+  
+  /** 
+   * \brief Get the name for the lib id column in the playlist remove request 
+   * table.
+   *
+   * @return The name fo the lib id column in the playlist remove request table.
+   */
+  static const QString& getPlaylistRemoveEntryIdColName(){
+    static const QString playlistRemoveLibIdColName = "playlist_id";
+    return playlistRemoveLibIdColName;
+  }
+
+  /** 
+   * \brief Get the name fo the sync status column in the playlist remove 
+   * request table.
+   *
+   * @return The name fo the lib sync status column in the playlist remove 
+   * request table.
+   */
+  static const QString& getPlaylistRemoveSycnStatusColName(){
+    static const QString playlistRemoveSycnStatusColName = "sync_status";
+    return playlistRemoveSycnStatusColName;
+  }
+
+  /** 
+   * \brief Gets the sync status used in the playlist edd request table to 
+   * indicate that an remove is synced.
+   *
+   * @return The sync status used in the playlist remove request table to 
+   * indicate that an remove is synced.
+   */
+  static const playlist_remove_sync_status_t& getPlaylistRemoveNeedsSync(){
+    static const playlist_remove_sync_status_t needs_sync = 1;
+    return needs_sync;
+  }
+
+  /** 
+   * \brief Gets the sync status used in the playlist remove request table to 
+   * indicate that an remove is synced.
+   *
+   * @return The sync status used in the playlist remove request table to 
+   * indicate that an remove is synced.
+   */
+  static const playlist_remove_sync_status_t& getPlaylistRemoveIsSynced(){
+    static const playlist_remove_sync_status_t isSynced = 0;
+    return isSynced;
+  }
+
 
  //@}
 
@@ -1138,75 +1207,6 @@ private:
         QString::number(getPlaylistAddNeedsSync()) + 
       ");";
     return createPlaylistAddRequestsTableQuery;
-  }
-
-  /**
-   * Gets the name of the active playlist remove request table.
-   *
-   * @return the name of the active playlist remove request table.
-   */
-  static const QString& getPlaylistRemoveRequestsTableName(){
-    static const QString playlistRemoveRequestsTableName = 
-      "playlist_remove_requests";
-    return playlistRemoveRequestsTableName;
-  }
- 
-  /** 
-   * \brief Get the name for the lib id column in the playlist remove request 
-   * table.
-   *
-   * @return The name fo the lib id column in the playlist remove request table.
-   */
-  static const QString& getPlaylistRemoveIdColName(){
-    static const QString playlistRemoveRequestIdColName = "id";
-    return playlistRemoveRequestIdColName;
-  }
-  
-  /** 
-   * \brief Get the name for the lib id column in the playlist remove request 
-   * table.
-   *
-   * @return The name fo the lib id column in the playlist remove request table.
-   */
-  static const QString& getPlaylistRemoveEntryIdColName(){
-    static const QString playlistRemoveLibIdColName = "playlist_id";
-    return playlistRemoveLibIdColName;
-  }
-
-  /** 
-   * \brief Get the name fo the sync status column in the playlist remove 
-   * request table.
-   *
-   * @return The name fo the lib sync status column in the playlist remove 
-   * request table.
-   */
-  static const QString& getPlaylistRemoveSycnStatusColName(){
-    static const QString playlistRemoveSycnStatusColName = "sync_status";
-    return playlistRemoveSycnStatusColName;
-  }
-
-  /** 
-   * \brief Gets the sync status used in the playlist edd request table to 
-   * indicate that an remove is synced.
-   *
-   * @return The sync status used in the playlist remove request table to 
-   * indicate that an remove is synced.
-   */
-  static const playlist_remove_sync_status_t& getPlaylistRemoveNeedsSync(){
-    static const playlist_remove_sync_status_t needs_sync = 1;
-    return needs_sync;
-  }
-
-  /** 
-   * \brief Gets the sync status used in the playlist remove request table to 
-   * indicate that an remove is synced.
-   *
-   * @return The sync status used in the playlist remove request table to 
-   * indicate that an remove is synced.
-   */
-  static const playlist_remove_sync_status_t& getPlaylistRemoveIsSynced(){
-    static const playlist_remove_sync_status_t isSynced = 0;
-    return isSynced;
   }
 
   /**

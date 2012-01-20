@@ -768,6 +768,7 @@ void DataStore::removeSongsFromActivePlaylist(
     "Error setting active playlist add requests as synced" << std::endl <<
     "vector size was: " << toRemove.size(),
     needsInsertQuery)
+  emit activePlaylistModified();
   syncPlaylistRemoveRequests();
 }
 

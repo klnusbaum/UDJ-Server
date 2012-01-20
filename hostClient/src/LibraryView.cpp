@@ -96,9 +96,11 @@ void LibraryView::handleContextMenuRequest(const QPoint &pos){
   }
   contextMenu.addAction(deleteSongAction);
   QAction *selected = contextMenu.exec(QCursor::pos());
-  QVariant data = selected->data();
-  if(data.isValid()){
-    addSongsToSongList(data.value<song_list_id_t>()); 
+  if(selected != NULL){
+    QVariant data = selected->data();
+    if(data.isValid()){
+      addSongsToSongList(data.value<song_list_id_t>()); 
+    }
   }
 }
 

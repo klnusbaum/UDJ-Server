@@ -106,7 +106,15 @@ private slots:
 
   static const QString& getDataQuery(){
     static const QString dataQuery = 
-      "SELECT * FROM " + DataStore::getActivePlaylistViewName() + ";";
+      "SELECT * FROM " + DataStore::getActivePlaylistViewName() + 
+      " LEFT JOIN " + DataStore::getPlaylistRemoveRequestsTableName() + 
+      " ON " + DataStore::getActivePlaylistViewName() + "." + 
+        DataStore::getActivePlaylistIdColName() +
+      "=" + DataStore::getPlaylistRemoveRequestsTableName() + "." +
+        DataStore::getPlaylistRemoveEntryIdColName() + ";";
+      " WHERE " + DataStore::getPlaylistRemoveRequestsTableName() + "." +
+        DataStore::getPlaylistRemoveEntryIdColName() + 
+      " is null;";
     return dataQuery;
   }
 
