@@ -523,7 +523,7 @@ QUrl UDJServerConnection::getActivePlaylistRemoveUrl(
   playlist_song_id_t toDelete) const
 {
   return QUrl(getServerUrlPath() + "events/" + QString::number(eventId) +
-    "/active_playlist/" + QString::number(toDelete));
+    "/active_playlist/songs/" + QString::number(toDelete));
 }
 
 
