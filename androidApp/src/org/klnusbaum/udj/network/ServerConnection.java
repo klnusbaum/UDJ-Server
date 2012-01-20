@@ -29,6 +29,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+
 
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.HttpVersion;
@@ -58,6 +65,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -95,9 +104,11 @@ public class ServerConnection{
    */
   private static final int SERVER_PORT = 4897;
 
-  private static final String NETWORK_PROTOCOL = "http";
+  //private static final String NETWORK_PROTOCOL = "http";
+  private static final String NETWORK_PROTOCOL = "https";
  
-  private static final String SERVER_HOST = "udjevents.com";
+  //private static final String SERVER_HOST = "udjevents.com";
+  private static final String SERVER_HOST = "10.0.2.2";
 
  
   private static final String TICKET_HASH_HEADER = "X-Udj-Ticket-Hash";
@@ -109,18 +120,47 @@ public class ServerConnection{
 
   private static DefaultHttpClient httpClient;
 
-  public static DefaultHttpClient getHttpClient(){
+  public static DefaultHttpClient getHttpClient() throws IOException{
     if(httpClient == null){
+      try{
+      KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+      trustStore.load(null,null);
+
+      SSLSocketFactory sf = new CustomSSLSocketFactory(trustStore);
+      sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+      Log.e(TAG, 
+        "Need to change host verifier to only work with udjevents.com");
+
       SchemeRegistry schemeReg = new SchemeRegistry();
-      schemeReg.register(
-        new Scheme("http", PlainSocketFactory.getSocketFactory(), SERVER_PORT));
+      /*schemeReg.register(
+        new Scheme("http", PlainSocketFactory.getSocketFactory(), SERVER_PORT));*/
+      schemeReg.register(new Scheme(  
+        "https", sf, SERVER_PORT));
       BasicHttpParams params = new BasicHttpParams();
       ConnManagerParams.setMaxTotalConnections(params, 100);
       HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+      HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
       HttpProtocolParams.setUseExpectContinue(params, true);
+
       ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(
         params, schemeReg);
       httpClient = new DefaultHttpClient(cm, params);
+      }
+      catch(NoSuchAlgorithmException e){
+        //SHould never get here 
+      }
+      catch(KeyManagementException e){
+        //SHould never get here 
+      }
+      catch(KeyStoreException e){
+        //SHould never get here 
+      }
+      catch(CertificateException e){
+        //SHould never get here 
+      }
+      catch(UnrecoverableKeyException e){
+        //SHould never get here 
+      }
     }
     return httpClient;
   }
