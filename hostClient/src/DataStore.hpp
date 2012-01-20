@@ -24,6 +24,7 @@
 #include <QProgressDialog>
 #include <QSettings>
 #include "UDJServerConnection.hpp"
+#include "ConfigDefs.hpp"
 
 class QTimer;
 
@@ -45,7 +46,8 @@ public:
    * @param serverConnection Connection to the UDJ server.
    * @param parent The parent widget.
    */
-  DataStore(UDJServerConnection *serverConnection, QObject *parent=0);
+  DataStore(
+    const QByteArray& ticketHash, const event_id_t& userId, QObject *parent=0);
 
   //@}
 
@@ -100,8 +102,8 @@ public:
    *
    * @return The name of the current event.
    */
-  inline const QString& getEventName() const{
-    return eventName;
+  inline const QString getEventName() const{
+    return getSettings()->value(getEventNameSettingName()).toString();
   }
 
   /** 
@@ -109,19 +111,8 @@ public:
    *
    * @return The id of the current event.
    */
-  inline event_id_t getEventId() const{
-    return serverConnection->getEventId();
-  }
-
-  /** 
-   * \brief Gets whether or not this instance of UDJ is currently hosting an
-   * event.
-   *
-   * @return True if this instance of UDJ is currently hosting an event. 
-   * False otherwise.
-   */
-  inline bool isCurrentlyHosting() const{
-    return serverConnection->getIsHosting();
+  inline const event_id_t getEventId() const{
+    return getSettings()->value(getEventIdSettingName()).value<event_id_t>();
   }
 
   /** 
@@ -140,10 +131,19 @@ public:
    */
   Phonon::MediaSource takeNextSongToPlay();
 
-  const QString getEventState(){
-    QSettings *settings = getSettings();
+  const QString getEventState() const{
+    const QSettings *settings = getSettings();
     return settings->value(getEventStateSettingName()).toString();
   }
+
+  const bool isCurrentlyHosting() const{
+    const QSettings *settings = getSettings();
+    return settings->value(getEventStateSettingName()).toString() ==
+      getHostingEventState();
+  }
+
+
+
 
   //@}
 
@@ -675,6 +675,11 @@ public:
     return eventIdSetting;
   }
 
+  static const QString& getEventNameSettingName(){
+    static const QString eventIdSetting = "eventName";
+    return eventIdSetting;
+  }
+
   static const QString& getEventStateSettingName(){
     static const QString eventStateSettingName = "eventState";
     return eventStateSettingName;
@@ -938,6 +943,11 @@ private:
       QSettings::UserScope, "Bazaar Solutions", "UDJ", this);
     return settings;
   }
+
+  const QSettings* getSettings() const{
+    return getSettings();
+  }
+
 
  
 
@@ -1387,7 +1397,7 @@ private slots:
 
   void insertEventGoer(const QVariantMap &eventGoer);
 
-  void onEventCreate();
+  void onEventCreate(const event_id_t& issuedId);
 
   void onEventCreateFail(const QString message);
 

@@ -39,12 +39,12 @@ LoginWidget::LoginWidget():WidgetWithLoader(tr("Logging in...")){
   setupUi();
   connect(
     serverConnection, 
-    SIGNAL(connectionEstablished()),
+    SIGNAL(authenticated(const QByteArray&, const user_id_t&)),
     this, 
-    SLOT(startMainGUI()));
+    SLOT(startMainGUI(const QByteArray&, const user_id_t&)));
   connect(
     serverConnection, 
-    SIGNAL(unableToConnect(const QString)),
+    SIGNAL(authFailed(const QString)),
     this, 
     SLOT(displayLoginFailedMessage(const QString)));
 }
@@ -86,10 +86,11 @@ void LoginWidget::doLogin(){
   serverConnection->startConnection(usernameBox->text(), passwordBox->text());
 }
 
-void LoginWidget::startMainGUI(){
-  MetaWindow *metaWindow = new MetaWindow(serverConnection);
+void LoginWidget::startMainGUI(
+  const QByteArray& ticketHash, const user_id_t& userId)
+{
+  MetaWindow *metaWindow = new MetaWindow(ticket, userId);
   metaWindow->show();
-  serverConnection->setParent(metaWindow);
   close();
 }
 

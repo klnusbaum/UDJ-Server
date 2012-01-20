@@ -42,13 +42,13 @@ namespace UDJ{
 
 
 MetaWindow::MetaWindow(
-  UDJServerConnection *serverConnection, 
+  const QByteArray& ticketHash,
+  const user_id_t& userId,
   QWidget *parent, 
   Qt::WindowFlags flags)
-  :QMainWindow(parent,flags),
-  serverConnection(serverConnection)
+  :QMainWindow(parent,flags)
 {
-
+  dataStore = new DataStore(ticketHash, userId, this);
   createActions();
   setupUi();
   setupMenus();
@@ -75,14 +75,11 @@ void MetaWindow::addMusicToLibrary(){
 
 void MetaWindow::setupUi(){
 
-  dataStore = new DataStore(serverConnection, this);
-
   playbackWidget = new PlaybackWidget(dataStore, this);
 
   libraryView = new LibraryView(dataStore, this);
 
   eventWidget = new EventWidget(dataStore, this);
-  
  
   songListView = new SongListView(dataStore, this);
  
@@ -136,8 +133,6 @@ void MetaWindow::setupUi(){
     SIGNAL(canNoLongerDisplay()),
     activityList,
     SLOT(switchToLibrary()));
-
-
 
   resize(800,600);
 }

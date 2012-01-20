@@ -32,16 +32,20 @@
 namespace UDJ{
 
 
-DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
- :QObject(parent),serverConnection(serverConnection)
+DataStore::DataStore(
+  const QByteArray& ticket, const user_id_t& userId, QObject *parent)
+  :QObject(parent)
 {
-  serverConnection->setParent(this);
+   
+  serverConnection = new UDJServerConnection(this);
+  serverConnection->setTicket(ticket);
+  serverConnection->setUserId(userId);
   activePlaylistRefreshTimer = new QTimer(this);
   eventGoerRefreshTimer = new QTimer(this);
   activePlaylistRefreshTimer->setInterval(5000);
   eventGoerRefreshTimer->setInterval(5000);
-  eventName = "";
   setupDB();
+
   connect(
     serverConnection,
     SIGNAL(
@@ -66,10 +70,9 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
 
   connect(
     serverConnection,
-    SIGNAL(eventCreated()),
+    SIGNAL(eventCreated(const event_id_t&)),
     this,
-    SLOT(onEventCreate()));
-
+    SLOT(onEventCreate(const event_id_t&)));
 
   connect(
     serverConnection,
@@ -82,7 +85,6 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
     SIGNAL(eventEnded()),
     this,
     SLOT(onEventEnd()));
-
 
   connect(
     serverConnection, 
@@ -101,7 +103,6 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
     SIGNAL(songRemovedFromAvailableMusicOnServer(const library_song_id_t)),
     this,
     SLOT(setAvailableSongSynced(const library_song_id_t)));
-
 
   connect(
     serverConnection,
@@ -143,6 +144,10 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
     this,
     SLOT(processNewEventGoers(QVariantList)));
 
+  if(getEventState() == getHostingEventState()){
+    onEventCreate(getEventId());
+  }
+  
   syncLibrary();
 }
 
@@ -440,9 +445,9 @@ void DataStore::createNewEvent(
   const QString& name, 
   const QString& password)
 {
-  eventName = name;
   QSettings* settings = getSettings();
   settings->setValue(getEventStateSettingName(), getCreatingEventState()); 
+  settings->setValue(getEventNameSettingName(), name); 
   serverConnection->createEvent(name, password);
 }
 
@@ -457,6 +462,7 @@ void DataStore::createNewEvent(
   eventName = name;
   QSettings* settings = getSettings();
   settings->setValue(getEventStateSettingName(), getCreatingEventState()); 
+  settings->setValue(getEventNameSettingName(), name); 
   serverConnection->createEvent(
     name, 
     password,
@@ -1000,23 +1006,25 @@ void DataStore::addSongListToAvailableMusic(song_list_id_t songListId){
   }
 }
 
-void DataStore::onEventCreate(){
+void DataStore::onEventCreate(const event_id_t& issuedId){
   QSettings *settings = getSettings();
-  settings->setValue(getEventIdSettingName(), 
-    QVariant::fromValue(getEventId()));
-  settings->setValue(getEventStateSettingName(), getHostingEventState());
-  eventCleanUp();
+  settings->setValue(getEventIdSettingName(), QVariant::fromValue(issuedId));
+  QString eventState = settings->value(getEventStateSettingName()).toString();
   activePlaylistRefreshTimer->start();
   eventGoerRefreshTimer->start();
+  if(eventState != getHostingEventState()){
+    eventCleanUp();
+    settings->setValue(getEventStateSettingName(), getHostingEventState());
+  }
   emit eventCreated();
 }
 
 void DataStore::onEventEnd(){
   QSettings *settings = getSettings();
-  settings->setValue(getEventStateSettingName(), getNotHostingEventState());
   eventCleanUp();
   activePlaylistRefreshTimer->stop();
   eventGoerRefreshTimer->stop();
+  settings->setValue(getEventStateSettingName(), getNotHostingEventState());
   emit eventEnded();
 }
 

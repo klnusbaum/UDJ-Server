@@ -20,6 +20,7 @@
 #define LOGIN_WIDGET_HPP
 
 #include "WidgetWithLoader.hpp"
+#include "ConfigDefs.hpp"
 
 class QLabel;
 class QLineEdit;
@@ -114,7 +115,7 @@ private slots:
    * \brief Once the user has succesfully authenitcated, this starts up the
    * main gui for udj.
    */
-  void startMainGUI();
+  void startMainGUI(const QByteArray& ticketHash, const user_id_t& userId);
 
   /**
    * \brief Displays a message informing the user that the attempt to login to

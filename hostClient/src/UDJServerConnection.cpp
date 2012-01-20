@@ -37,19 +37,10 @@ UDJServerConnection::UDJServerConnection(QObject *parent):QObject(parent),
     this, SLOT(recievedReply(QNetworkReply*)));
 }
 
-void UDJServerConnection::startConnection(
-  const QString& username,
-  const QString& password
-)
-{
-  authenticate(username, password);
-}
-
 void UDJServerConnection::prepareJSONRequest(QNetworkRequest &request){
   request.setHeader(QNetworkRequest::ContentTypeHeader, "text/json");
   request.setRawHeader(getTicketHeaderName(), ticket_hash);
 }
-
 
 void UDJServerConnection::authenticate(
   const QString& username, 
@@ -299,11 +290,20 @@ void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
     reply->hasRawHeader(getTicketHeaderName()) &&
     reply->hasRawHeader(getUserIdHeaderName()))
   {
-    setLoggedIn(
+    emit authenticated(
       reply->rawHeader(getTicketHeaderName()),
-      reply->rawHeader(getUserIdHeaderName())
+      reply->rawHeader(getUserIdHeaderName()).toString().toLong()
     );
-    emit connectionEstablished();
+  }
+  else if(
+    !reply->hasRawHeader(getTicketHeaderName()) ||
+    !reply->hasRawHeader(getUserIdHeaderName()))
+  {
+    DEBUG_MESSAGE(responseString.toStdString())
+    emit authFailed(
+      tr("We're experiencing some techinical difficulties. "
+      "We'll be back in a bit"));
+    }
   }
   else{
     QByteArray responseData = reply->readAll();
@@ -311,15 +311,8 @@ void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
     DEBUG_MESSAGE(responseString.toStdString())
     QString error = tr("Unable to connect to server: error ") + 
      QString::number(reply->error());
-    emit unableToConnect(error);
+    emit authFailed(error);
   }
-}
-
-void UDJServerConnection::setLoggedIn(QByteArray ticket, QByteArray userId){
-  ticket_hash = ticket;
-  user_id = QString(userId).toLong();
-  timeTicketIssued = QDateTime::currentDateTime();
-  isLoggedIn = true;
 }
 
 void UDJServerConnection::handleAddLibSongsReply(QNetworkReply *reply){
@@ -381,8 +374,8 @@ void UDJServerConnection::handleCreateEventReply(QNetworkReply *reply){
   else{
     //TODO handle bad json resturned from the server.
     isHostingEvent =true;
-    eventId = JSONHelper::getEventId(reply);
-    emit eventCreated();
+    event_id_t issuedId  = JSONHelper::getEventId(reply);
+    emit eventCreated(issuedId);
   }
 }
 
