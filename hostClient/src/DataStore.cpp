@@ -64,49 +64,31 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
     )
   );
 
-
   connect(
     serverConnection,
     SIGNAL(eventCreated()),
     this,
-    SIGNAL(eventCreated()));
+    SLOT(onEventCreate()));
 
-  connect(
-    serverConnection,
-    SIGNAL(eventCreated()),
-    activePlaylistRefreshTimer,
-    SLOT(start()));
-
-  connect(
-    serverConnection,
-    SIGNAL(eventCreated()),
-    eventGoerRefreshTimer,
-    SLOT(start()));
 
   connect(
     serverConnection,
     SIGNAL(eventCreationFailed(const QString)),
     this,
-    SIGNAL(eventCreationFailed(const QString)));
+    SLOT(onEventCreateFail(const QString)));
 
-  connect(serverConnection, SIGNAL(eventEnded()), this, SIGNAL(eventEnded()));
   connect(
-    serverConnection, 
-    SIGNAL(eventEnded()), 
-    activePlaylistRefreshTimer, 
-    SLOT(stop()));
-  connect(
-    serverConnection, 
-    SIGNAL(eventEnded()), 
-    eventGoerRefreshTimer, 
-    SLOT(stop()));
-  connect(serverConnection, SIGNAL(eventEnded()), this, SLOT(eventCleanUp()));
+    serverConnection,
+    SIGNAL(eventEnded()),
+    this,
+    SLOT(onEventEnd()));
+
 
   connect(
     serverConnection, 
     SIGNAL(eventEndingFailed(const QString)), 
     this, 
-    SIGNAL(eventEndingFailed(const QString)));
+    SLOT(onEventEndFail(const QString)));
 
   connect(
     serverConnection,
@@ -148,12 +130,6 @@ DataStore::DataStore(UDJServerConnection *serverConnection, QObject *parent)
     SIGNAL(currentSongSet()),
     this,
     SLOT(refreshActivePlaylist()));
-
-  connect(
-    this,
-    SIGNAL(eventCreated()),
-    this,
-    SLOT(eventCleanUp())); 
 
   connect(
     serverConnection,
@@ -465,6 +441,8 @@ void DataStore::createNewEvent(
   const QString& password)
 {
   eventName = name;
+  QSettings* settings = getSettings();
+  settings->setValue(getEventStateSettingName(), getCreatingEventState()); 
   serverConnection->createEvent(name, password);
 }
 
@@ -477,6 +455,8 @@ void DataStore::createNewEvent(
   const QString& zipcode)
 {
   eventName = name;
+  QSettings* settings = getSettings();
+  settings->setValue(getEventStateSettingName(), getCreatingEventState()); 
   serverConnection->createEvent(
     name, 
     password,
@@ -545,6 +525,8 @@ void DataStore::setLibSongsSyncStatus(
 }
 
 void DataStore::endEvent(){
+  QSettings* settings = getSettings();
+  settings->setValue(getEventStateSettingName(), getEndingEventState()); 
   serverConnection->endEvent();
 }
 
@@ -1016,6 +998,38 @@ void DataStore::addSongListToAvailableMusic(song_list_id_t songListId){
     }while(songList.next());
     addSongsToAvailableSongs(toAddIds);
   }
+}
+
+void DataStore::onEventCreate(){
+  QSettings *settings = getSettings();
+  settings->setValue(getEventIdSettingName(), 
+    QVariant::fromValue(getEventId()));
+  settings->setValue(getEventStateSettingName(), getHostingEventState());
+  eventCleanUp();
+  activePlaylistRefreshTimer->start();
+  eventGoerRefreshTimer->start();
+  emit eventCreated();
+}
+
+void DataStore::onEventEnd(){
+  QSettings *settings = getSettings();
+  settings->setValue(getEventStateSettingName(), getNotHostingEventState());
+  eventCleanUp();
+  activePlaylistRefreshTimer->stop();
+  eventGoerRefreshTimer->stop();
+  emit eventEnded();
+}
+
+void DataStore::onEventCreateFail(const QString message){
+  QSettings *settings = getSettings();
+  settings->setValue(getEventStateSettingName(), getNotHostingEventState());
+  emit eventCreationFailed(message);
+}
+
+void DataStore::onEventEndFail(const QString message){
+  QSettings *settings = getSettings();
+  settings->setValue(getEventStateSettingName(), getHostingEventState());
+  emit eventCreationFailed(message);
 }
 
 

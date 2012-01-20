@@ -747,6 +747,8 @@ private:
 
   void parseLocationResponse(QNetworkReply *reply);
 
+  void handleEventCreationConflict(QNetworkReply *);
+
   //@}
 
 };

@@ -245,5 +245,14 @@ const QVariantList JSONHelper::getEventGoersJSON(QNetworkReply *reply){
   return eventGoers;
 }
 
+const QVariantMap JSONHelper::getSingleEventInfo(QNetworkReply *reply){
+  QByteArray responseData = reply->readAll();
+  QString responseString = QString::fromUtf8(responseData);
+  bool success;
+  QVariantMap event = 
+    QtJson::Json::parse(responseString, success).toMap();
+  return event;
+}
+
 
 } //end namespace UDJ

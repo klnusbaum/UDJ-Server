@@ -370,16 +370,20 @@ void UDJServerConnection::handleDeleteAvailableMusicReply(
 void UDJServerConnection::handleCreateEventReply(QNetworkReply *reply){
   //TODO
   // Handle if a 409 response is returned
-  if(reply->error() != QNetworkReply::NoError){
+  if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 409){
+    handleEventCreationConflict(reply);
+  }
+  else if(reply->error() != QNetworkReply::NoError){
     emit eventCreationFailed("Failed to create event");
     QByteArray errormsg = reply->readAll();
     DEBUG_MESSAGE(QString(errormsg).toStdString())
-    return;
   }
-  //TODO handle bad json resturned from the server.
-  isHostingEvent =true;
-  eventId = JSONHelper::getEventId(reply);
-  emit eventCreated();
+  else{
+    //TODO handle bad json resturned from the server.
+    isHostingEvent =true;
+    eventId = JSONHelper::getEventId(reply);
+    emit eventCreated();
+  }
 }
 
 void UDJServerConnection::handleEndEventReply(QNetworkReply *reply){
@@ -449,7 +453,7 @@ void UDJServerConnection::handleRecievedNewEventGoers(QNetworkReply *reply){
 }
 
 void UDJServerConnection::handleLocaitonResponse(QNetworkReply *reply){
-  DEBUG_MESSAGE("Handling location reply response");
+  DEBUG_MESSAGE("Handling location reply response")
   if(reply->error() == QNetworkReply::NoError){
     parseLocationResponse(reply);
   }
@@ -459,7 +463,18 @@ void UDJServerConnection::handleLocaitonResponse(QNetworkReply *reply){
     emit eventCreationFailed("Failed to create event. There was an error" 
       "verifying your locaiton. Please change it and try again.");
   }
+}
 
+void UDJServerConnection::handleEventCreationConflict(QNetworkReply *reply){
+  DEBUG_MESSAGE("Handling event creation conflict reply")
+  QVariantMap conflictingEvent = JSONHelper::getSingleEventInfo(reply);
+  if(conflictingEvent["host_id"].value<user_id_t>() == user_id){
+    //TODO That party must've been hosted on a different machine because we
+    //didn't know about it. So ask them if they want to end it.
+  }
+  else{
+    //TODO silently log them out of the other event they're in. 
+  }
 }
 
 void UDJServerConnection::parseLocationResponse(QNetworkReply *reply){

@@ -22,6 +22,7 @@
 #include <phonon/mediaobject.h>
 #include <phonon/mediasource.h>
 #include <QProgressDialog>
+#include <QSettings>
 #include "UDJServerConnection.hpp"
 
 class QTimer;
@@ -138,6 +139,11 @@ public:
    * @return The next song that should be played.
    */
   Phonon::MediaSource takeNextSongToPlay();
+
+  const QString getEventState(){
+    QSettings *settings = getSettings();
+    return settings->value(getEventStateSettingName()).toString();
+  }
 
   //@}
 
@@ -664,6 +670,36 @@ public:
     return isSynced;
   }
 
+  static const QString& getEventIdSettingName(){
+    static const QString eventIdSetting = "eventId";
+    return eventIdSetting;
+  }
+
+  static const QString& getEventStateSettingName(){
+    static const QString eventStateSettingName = "eventState";
+    return eventStateSettingName;
+  }
+
+  static const QString& getNotHostingEventState(){
+    static const QString notHostingEventState = "notHostingEvent";
+    return notHostingEventState;
+  }
+
+  static const QString& getCreatingEventState(){
+    static const QString creatingEventState = "creatingEventState";
+    return creatingEventState;
+  }
+
+  static const QString& getHostingEventState(){
+    static const QString eventHostingState = "hostingEvent";
+    return eventHostingState;
+  }
+
+  static const QString& getEndingEventState(){
+    static const QString endingEventState = "endingEventState";
+    return endingEventState;
+  }
+
 
  //@}
 
@@ -896,6 +932,14 @@ private:
    * \brief Syncs all the requests for removals from the active playlst.
    */
   void syncPlaylistRemoveRequests();
+
+  QSettings* getSettings(){
+    QSettings *settings = new QSettings(
+      QSettings::UserScope, "Bazaar Solutions", "UDJ", this);
+    return settings;
+  }
+
+ 
 
 
   //@}
@@ -1343,7 +1387,16 @@ private slots:
 
   void insertEventGoer(const QVariantMap &eventGoer);
 
-  
+  void onEventCreate();
+
+  void onEventCreateFail(const QString message);
+
+  void onEventEnd();
+
+  void onEventEndFail(const QString message);
+
+
+
 //@}
 
 };
