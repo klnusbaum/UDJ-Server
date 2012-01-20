@@ -127,7 +127,7 @@ class PlaylistEntryTimePlayed(models.Model):
 
   
 class Ticket(models.Model):
-  user = models.ForeignKey(User, primary_key=True)
+  user = models.ForeignKey(User)
   ticket_hash = models.CharField(max_length=32, unique=True)
   source_ip_addr = models.IPAddressField()
   time_issued = models.DateTimeField(auto_now=True)
