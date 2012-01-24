@@ -53,7 +53,7 @@ void EventWidget::setupUi(){
     this,
     SLOT(eventEnded()));
   
-  if(dataStore->getEventState() == DataStore::getHostingEventState()){
+  if(dataStore->isCurrentlyHosting()){
     showEventDashboard();
   }
 }

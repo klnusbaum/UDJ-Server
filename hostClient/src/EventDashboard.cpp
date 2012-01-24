@@ -51,7 +51,7 @@ void EventDashboard::setupUi(){
   eventName = new QLabel();
   eventId = new QLabel();
 
-  if(dataStore->getEventState() == DataStore::getHostingEventState()){
+  if(dataStore->isCurrentlyHosting()){
     eventName->setText(dataStore->getEventName());
     eventId->setText(QString::number(dataStore->getEventId()));
   }

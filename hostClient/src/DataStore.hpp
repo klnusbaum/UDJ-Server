@@ -103,7 +103,9 @@ public:
    * @return The name of the current event.
    */
   inline const QString getEventName() const{
-    return getSettings()->value(getEventNameSettingName()).toString();
+    QSettings settings(
+      QSettings::UserScope, getSettingsOrg(), getSettingsApp());
+    return settings.value(getEventNameSettingName()).toString();
   }
 
   /** 
@@ -112,7 +114,9 @@ public:
    * @return The id of the current event.
    */
   inline const event_id_t getEventId() const{
-    return getSettings()->value(getEventIdSettingName()).value<event_id_t>();
+    QSettings settings(
+      QSettings::UserScope, getSettingsOrg(), getSettingsApp());
+    return settings.value(getEventIdSettingName()).value<event_id_t>();
   }
 
   /** 
@@ -132,18 +136,19 @@ public:
   Phonon::MediaSource takeNextSongToPlay();
 
   const QString getEventState() const{
-    const QSettings *settings = getSettings();
-    return settings->value(getEventStateSettingName()).toString();
+    QSettings settings(
+      QSettings::UserScope, getSettingsOrg(), getSettingsApp());
+    return settings.value(getEventStateSettingName()).toString();
   }
 
   const bool isCurrentlyHosting() const{
-    const QSettings *settings = getSettings();
-    return settings->value(getEventStateSettingName()).toString() ==
+    QSettings settings(
+      QSettings::UserScope, getSettingsOrg(), getSettingsApp());
+    return 
+      settings.value(getEventStateSettingName()).toString()
+      ==
       getHostingEventState();
   }
-
-
-
 
   //@}
 
@@ -938,20 +943,6 @@ private:
    */
   void syncPlaylistRemoveRequests();
 
-  QSettings* getSettings(){
-    QSettings *settings = new QSettings(
-      QSettings::UserScope, "Bazaar Solutions", "UDJ", this);
-    return settings;
-  }
-
-  const QSettings* getSettings() const{
-    return getSettings();
-  }
-
-
- 
-
-
   //@}
 
   /** @name Private Constants */
@@ -1406,11 +1397,21 @@ private slots:
   void onEventEndFail(const QString message);
 
 
+  static const QString& getSettingsOrg(){
+    static const QString settingsOrg = "Bazaar Solutions";
+    return settingsOrg;
+  }
+
+  static const QString& getSettingsApp(){
+    static const QString settingsApp = "UDJ";
+    return settingsApp;
+  }
+
+
 
 //@}
 
 };
-
 
 } //end namespace
 #endif //DATA_STORE_HPP

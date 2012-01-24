@@ -144,7 +144,7 @@ DataStore::DataStore(
     this,
     SLOT(processNewEventGoers(QVariantList)));
 
-  if(getEventState() == getHostingEventState()){
+  if(isCurrentlyHosting()){
     onEventCreate(getEventId());
   }
   
@@ -445,9 +445,9 @@ void DataStore::createNewEvent(
   const QString& name, 
   const QString& password)
 {
-  QSettings* settings = getSettings();
-  settings->setValue(getEventStateSettingName(), getCreatingEventState()); 
-  settings->setValue(getEventNameSettingName(), name); 
+  QSettings settings(QSettings::UserScope, getSettingsOrg(), getSettingsApp());
+  settings.setValue(getEventStateSettingName(), getCreatingEventState()); 
+  settings.setValue(getEventNameSettingName(), name); 
   serverConnection->createEvent(name, password);
 }
 
@@ -460,9 +460,9 @@ void DataStore::createNewEvent(
   const QString& zipcode)
 {
   eventName = name;
-  QSettings* settings = getSettings();
-  settings->setValue(getEventStateSettingName(), getCreatingEventState()); 
-  settings->setValue(getEventNameSettingName(), name); 
+  QSettings settings(QSettings::UserScope, getSettingsOrg(), getSettingsApp());
+  settings.setValue(getEventStateSettingName(), getCreatingEventState()); 
+  settings.setValue(getEventNameSettingName(), name); 
   serverConnection->createEvent(
     name, 
     password,
@@ -531,8 +531,8 @@ void DataStore::setLibSongsSyncStatus(
 }
 
 void DataStore::endEvent(){
-  QSettings* settings = getSettings();
-  settings->setValue(getEventStateSettingName(), getEndingEventState()); 
+  QSettings settings(QSettings::UserScope, getSettingsOrg(), getSettingsApp());
+  settings.setValue(getEventStateSettingName(), getEndingEventState()); 
   serverConnection->endEvent();
 }
 
@@ -1007,37 +1007,40 @@ void DataStore::addSongListToAvailableMusic(song_list_id_t songListId){
 }
 
 void DataStore::onEventCreate(const event_id_t& issuedId){
-  QSettings *settings = getSettings();
-  settings->setValue(getEventIdSettingName(), QVariant::fromValue(issuedId));
-  QString eventState = settings->value(getEventStateSettingName()).toString();
+  QSettings settings(QSettings::UserScope, getSettingsOrg(), getSettingsApp());
+  settings.setValue(getEventIdSettingName(), QVariant::fromValue(issuedId));
+  QString eventState = settings.value(getEventStateSettingName()).toString();
   activePlaylistRefreshTimer->start();
   eventGoerRefreshTimer->start();
-  if(eventState != getHostingEventState()){
+  if(!isCurrentlyHosting()){
     eventCleanUp();
-    settings->setValue(getEventStateSettingName(), getHostingEventState());
+    settings.setValue(getEventStateSettingName(), getHostingEventState());
   }
+  serverConnection->setEventId(issuedId);
   emit eventCreated();
 }
 
 void DataStore::onEventEnd(){
-  QSettings *settings = getSettings();
+  QSettings settings(QSettings::UserScope, getSettingsOrg(), getSettingsApp());
   eventCleanUp();
   activePlaylistRefreshTimer->stop();
   eventGoerRefreshTimer->stop();
-  settings->setValue(getEventStateSettingName(), getNotHostingEventState());
+  settings.setValue(getEventStateSettingName(), getNotHostingEventState());
+  settings.setValue(getEventNameSettingName(), "");
+  settings.setValue(getEventIdSettingName(), -1);
   emit eventEnded();
 }
 
 void DataStore::onEventCreateFail(const QString message){
-  QSettings *settings = getSettings();
-  settings->setValue(getEventStateSettingName(), getNotHostingEventState());
+  QSettings settings(QSettings::UserScope, getSettingsOrg(), getSettingsApp());
+  settings.setValue(getEventStateSettingName(), getNotHostingEventState());
   emit eventCreationFailed(message);
 }
 
 void DataStore::onEventEndFail(const QString message){
-  QSettings *settings = getSettings();
-  settings->setValue(getEventStateSettingName(), getHostingEventState());
-  emit eventCreationFailed(message);
+  QSettings settings(QSettings::UserScope, getSettingsOrg(), getSettingsApp());
+  settings.setValue(getEventStateSettingName(), getHostingEventState());
+  emit eventEndingFailed(message);
 }
 
 
