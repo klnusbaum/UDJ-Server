@@ -218,6 +218,17 @@ class TestVoting(User5TestCase):
     upvote = Vote.objects.get(
       playlist_entry__id=playlist_id, user__id=5, weight=1)
 
+  def assert410Vote(self, playlist_id):
+    response = self.doPost(
+      '/udj/events/2/active_playlist/' + str(playlist_id) + '/users/5/downvote', {})
+    self.assertEqual(response.status_code, 410)
+
+
+  def testSongGoneVote(self):
+    self.assert410Vote(5)    
+    self.assert410Vote(6)    
+    self.assert410Vote(7)    
+
 
 class TestRemoveSong(User2TestCase):
   def testBasicRemove(self):

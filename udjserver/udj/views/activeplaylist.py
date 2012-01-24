@@ -93,6 +93,11 @@ def voteSongUp(request, event_id, playlist_id, user_id):
 def voteSong(event_id, playlist_id, user_id, voteWeigth):
   votingUser = User.objects.get(pk=user_id)
   entryToVote = get_object_or_404(ActivePlaylistEntry, pk=playlist_id)
+
+  #Check to see if the song is still in the queue
+  if entryToVote.state != u'QE':
+    return HttpResponse(status=410)
+
   #Check to see if a previous vote exists. If it does, change the weight
   #to the weight given in the arguments. If it doesn't, create a new one
   #with the specified weight
