@@ -52,7 +52,25 @@ MetaWindow::MetaWindow(
   createActions();
   setupUi();
   setupMenus();
+  QSettings settings(
+    QSettings::UserScope, 
+    DataStore::getSettingsOrg(), 
+    DataStore::getSettingsApp());
+  restoreGeometry(settings.value("metaWindowGeometry").toByteArray());
+  restoreState(settings.value("metaWindowState").toByteArray());
 }
+
+void MetaWindow::closeEvent(QCloseEvent *event){
+  QSettings settings(
+    QSettings::UserScope, 
+    DataStore::getSettingsOrg(), 
+    DataStore::getSettingsApp());
+  settings.setValue("metaWindowGeometry", saveGeometry());
+  settings.setValue("metaWindowState", saveState());
+  QMainWindow::closeEvent(event);
+}
+
+
 
 void MetaWindow::addMusicToLibrary(){
   //TODO: Check to see if musicDir is different than then current music dir
@@ -134,7 +152,10 @@ void MetaWindow::setupUi(){
     activityList,
     SLOT(switchToLibrary()));
 
-  resize(800,600);
+  if(dataStore->isCurrentlyHosting()){
+    displayEventWidget();
+  }   
+
 }
 
 void MetaWindow::createActions(){

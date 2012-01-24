@@ -32,6 +32,7 @@ class QAction;
 class QLabel;
 class QSplitter;
 class QStackedWidget;
+class QCloseEvent;
 
 namespace UDJ{
 
@@ -69,6 +70,9 @@ public:
     Qt::WindowFlags flags=0);
 
   //@}
+
+protected:
+  virtual void closeEvent(QCloseEvent *event);
 
 private slots:
 

@@ -710,6 +710,15 @@ public:
     return endingEventState;
   }
 
+  static const QString& getSettingsOrg(){
+    static const QString settingsOrg = "Bazaar Solutions";
+    return settingsOrg;
+  }
+
+  static const QString& getSettingsApp(){
+    static const QString settingsApp = "UDJ";
+    return settingsApp;
+  }
 
  //@}
 
@@ -1396,16 +1405,6 @@ private slots:
 
   void onEventEndFail(const QString message);
 
-
-  static const QString& getSettingsOrg(){
-    static const QString settingsOrg = "Bazaar Solutions";
-    return settingsOrg;
-  }
-
-  static const QString& getSettingsApp(){
-    static const QString settingsApp = "UDJ";
-    return settingsApp;
-  }
 
 
 
