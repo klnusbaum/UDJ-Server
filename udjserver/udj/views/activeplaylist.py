@@ -21,6 +21,7 @@ from udj.models import Event
 from udj.models import Vote
 from udj.JSONCodecs import getActivePlaylistArray
 from udj.JSONCodecs import getActivePlaylistEntryDictionary
+from udj.headers import getGoneResourceHeader
 from udj.auth import getUserForTicket
 from udj.utils import getJSONResponse
 
@@ -96,7 +97,9 @@ def voteSong(event_id, playlist_id, user_id, voteWeigth):
 
   #Check to see if the song is still in the queue
   if entryToVote.state != u'QE':
-    return HttpResponse(status=410)
+    response = HttpResponse(status=410)
+    response[getGoneResourceHeader()] = "song"
+    return response
 
   #Check to see if a previous vote exists. If it does, change the weight
   #to the weight given in the arguments. If it doesn't, create a new one

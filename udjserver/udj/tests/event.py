@@ -14,6 +14,7 @@ from udj.models import ActivePlaylistEntry
 from udj.models import AvailableSong
 from decimal import Decimal
 from datetime import datetime
+from udj.headers import getGoneResourceHeader
 
 class GetEventsTest(User5TestCase):
   def testGetNearbyEvents(self):
@@ -102,6 +103,7 @@ class JoinEventTest(User5TestCase):
   def testJoinEndedEvent(self):
     response = self.doPut('/udj/events/1/users/5')
     self.assertEqual(response.status_code, 410)
+    self.assertEqual(response[getGoneResourceHeader()], "event")
     shouldntBeThere = EventGoer.objects.filter(event__id=1, user__id=5)
     self.assertFalse(shouldntBeThere.exists())
     

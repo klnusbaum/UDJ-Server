@@ -6,3 +6,6 @@ def getTicketHeader():
 
 def getUserIdHeader():
   return "X-Udj-User-Id"
+
+def getGoneResourceHeader():
+  return "X-Udj-Gone-Resource"
