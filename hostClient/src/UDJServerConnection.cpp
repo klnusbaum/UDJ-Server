@@ -27,10 +27,15 @@
 #include "GeocoderApiKey.hpp"
 
 Q_DECLARE_METATYPE(std::vector<UDJ::client_request_id_t>)
+
+
 namespace UDJ{
 
+
 UDJServerConnection::UDJServerConnection(QObject *parent):QObject(parent),
-  isLoggedIn(false)
+  ticket_hash(""),
+  user_id(-1),
+  eventId(-1)
 {
   netAccessManager = new QNetworkAccessManager(this);
   connect(netAccessManager, SIGNAL(finished(QNetworkReply*)),
@@ -64,7 +69,8 @@ void UDJServerConnection::addLibSongOnServer(
   const int duration,
 	const library_song_id_t hostId)
 {
-  if(!isLoggedIn){
+  if(ticket_hash==""){
+    //TODO throw error
     return;
   }
   bool success = true;
@@ -292,18 +298,19 @@ void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
   {
     emit authenticated(
       reply->rawHeader(getTicketHeaderName()),
-      reply->rawHeader(getUserIdHeaderName()).toString().toLong()
+      QString(reply->rawHeader(getUserIdHeaderName())).toLong()
     );
   }
   else if(
     !reply->hasRawHeader(getTicketHeaderName()) ||
     !reply->hasRawHeader(getUserIdHeaderName()))
   {
+    QByteArray responseData = reply->readAll();
+    QString responseString = QString::fromUtf8(responseData);
     DEBUG_MESSAGE(responseString.toStdString())
     emit authFailed(
       tr("We're experiencing some techinical difficulties. "
       "We'll be back in a bit"));
-    }
   }
   else{
     QByteArray responseData = reply->readAll();
@@ -373,8 +380,7 @@ void UDJServerConnection::handleCreateEventReply(QNetworkReply *reply){
   }
   else{
     //TODO handle bad json resturned from the server.
-    isHostingEvent =true;
-    event_id_t issuedId  = JSONHelper::getEventId(reply);
+    event_id_t issuedId = JSONHelper::getEventId(reply);
     emit eventCreated(issuedId);
   }
 }
