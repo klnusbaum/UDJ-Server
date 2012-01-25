@@ -34,7 +34,9 @@ class QKeyEvent;
 namespace UDJ{
 
 
-LoginWidget::LoginWidget():WidgetWithLoader(tr("Logging in...")){
+LoginWidget::LoginWidget(QWidget *parent)
+  :WidgetWithLoader(tr("Logging in..."), parent)
+{
   serverConnection = new UDJServerConnection(this);
   setupUi();
   connect(
@@ -63,7 +65,7 @@ void LoginWidget::setupUi(){
   passwordLabel = new QLabel(tr("Password"));
   passwordLabel->setBuddy(passwordBox);
 
-  loginButton = new QPushButton(tr("Login"), this);
+
 
   QGridLayout *layout = new QGridLayout;
   layout->addWidget(logo,0,0,1,2, Qt::AlignCenter);
@@ -71,10 +73,8 @@ void LoginWidget::setupUi(){
   layout->addWidget(usernameBox,1,1);
   layout->addWidget(passwordLabel,2,0);
   layout->addWidget(passwordBox,2,1);
-  layout->addWidget(loginButton,3,0,1,2, Qt::AlignCenter);
    
   
-  connect(loginButton, SIGNAL(clicked(bool)), this, SLOT(doLogin()));
   loginDisplay->setLayout(layout);
 
   setMainWidget(loginDisplay);
@@ -91,7 +91,7 @@ void LoginWidget::startMainGUI(
 {
   MetaWindow *metaWindow = new MetaWindow(ticketHash, userId);
   metaWindow->show();
-  close();
+  emit startedMainGUI();
 }
 
 void LoginWidget::displayLoginFailedMessage(const QString errorMessage){
@@ -101,6 +101,7 @@ void LoginWidget::displayLoginFailedMessage(const QString errorMessage){
     this,
     tr("Login Failed"),
     errorMessage);
+  emit loginFailed();
 }
 
 
