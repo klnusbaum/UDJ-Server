@@ -26,8 +26,6 @@
 #include "JSONHelper.hpp"
 #include "GeocoderApiKey.hpp"
 
-Q_DECLARE_METATYPE(std::vector<UDJ::client_request_id_t>)
-
 
 namespace UDJ{
 
@@ -82,7 +80,8 @@ void UDJServerConnection::addLibSongOnServer(
     success);
   QNetworkRequest addSongRequest(getLibAddSongUrl());
   prepareJSONRequest(addSongRequest);
-  netAccessManager->put(addSongRequest, songJSON);
+  QNetworkReply *reply = netAccessManager->put(addSongRequest, songJSON);
+  reply->setProperty(getPayloadPropertyName(), songJSON); 
 }
 
 void UDJServerConnection::deleteLibSongOnServer(library_song_id_t toDeleteId){
@@ -99,7 +98,8 @@ void UDJServerConnection::createEvent(
   prepareJSONRequest(createEventRequest);
   const QByteArray eventJSON = JSONHelper::getCreateEventJSON(
     eventName, password);
-  netAccessManager->put(createEventRequest, eventJSON);
+  QNetworkReply *reply = netAccessManager->put(createEventRequest, eventJSON);
+  reply->setProperty(getPayloadPropertyName(), eventJSON); 
 }
 
 void UDJServerConnection::createEvent(
@@ -134,7 +134,8 @@ void UDJServerConnection::createEvent(
   prepareJSONRequest(createEventRequest);
   const QByteArray eventJSON = JSONHelper::getCreateEventJSON(
     eventName, password, latitude, longitude);
-  netAccessManager->put(createEventRequest, eventJSON);
+  QNetworkReply *reply = netAccessManager->put(createEventRequest, eventJSON);
+  reply->setProperty(getPayloadPropertyName(), eventJSON); 
 }
 
 void UDJServerConnection::addSongToAvailableSongs(library_song_id_t songToAdd){
@@ -151,7 +152,9 @@ void UDJServerConnection::addSongsToAvailableSongs(
   QNetworkRequest addSongToAvailableRequest(getAddSongToAvailableUrl());
   prepareJSONRequest(addSongToAvailableRequest);
   const QByteArray songsAddJSON = JSONHelper::getAddToAvailableJSON(songsToAdd);
-  netAccessManager->put(addSongToAvailableRequest, songsAddJSON);
+  QNetworkReply *reply = 
+    netAccessManager->put(addSongToAvailableRequest, songsAddJSON);
+  reply->setProperty(getPayloadPropertyName(), songsAddJSON); 
 }
 
 void UDJServerConnection::removeSongsFromAvailableMusic(
@@ -206,8 +209,7 @@ void UDJServerConnection::addSongsToActivePlaylist(
   }
   QNetworkReply *reply = 
     netAccessManager->put(add2ActivePlaylistRequest, songsAddJSON);
-  reply->setProperty(getActivePlaylistRequestIdsPropertyName(),
-    QVariant::fromValue<std::vector<client_request_id_t> >(requestIds));
+  reply->setProperty(getPayloadPropertyName(), songsAddJSON); 
 }
 
 void UDJServerConnection::removeSongsFromActivePlaylist(
@@ -234,7 +236,9 @@ void UDJServerConnection::setCurrentSong(playlist_song_id_t currentSong){
   QNetworkRequest setCurrentSongRequest(getCurrentSongUrl());
   setCurrentSongRequest.setRawHeader(getTicketHeaderName(), ticket_hash);
   QString params = "playlist_entry_id="+QString::number(currentSong);
-  netAccessManager->post(setCurrentSongRequest, params.toUtf8());
+  QNetworkReply *reply = 
+    netAccessManager->post(setCurrentSongRequest, params.toUtf8());
+  reply->setProperty(getPayloadPropertyName(), params); 
 }
 
 void UDJServerConnection::getEventGoers(){
@@ -402,11 +406,9 @@ void UDJServerConnection::handleRecievedActivePlaylist(QNetworkReply *reply){
 
 void UDJServerConnection::handleRecievedActivePlaylistAdd(QNetworkReply *reply){
   if(reply->error() == QNetworkReply::NoError){
-    QVariant property = reply->property(
-      getActivePlaylistRequestIdsPropertyName());
-    std::vector<client_request_id_t> requestedIds = 
-      property.value<std::vector<client_request_id_t> >();
-    emit songsAddedToActivePlaylist(requestedIds);
+    QVariant payload = reply->property(getPayloadPropertyName());
+    emit songsAddedToActivePlaylist(
+      JSONHelper::extractAddRequestIds(payload.toByteArray()));
   }
   else{
     QByteArray error = reply->readAll();

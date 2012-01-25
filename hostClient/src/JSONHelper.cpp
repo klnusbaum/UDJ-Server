@@ -254,5 +254,19 @@ const QVariantMap JSONHelper::getSingleEventInfo(QNetworkReply *reply){
   return event;
 }
 
+std::vector<client_request_id_t> JSONHelper::extractAddRequestIds(
+  const QByteArray& payload)
+{
+  QString payloadString = QString::fromUtf8(payload);
+  bool success;
+  QVariantList addRequests = 
+    QtJson::Json::parse(payloadString, success).toList();
+  std::vector<client_request_id_t> requestIds(addRequests.size());
+  for(int i=0; i<addRequests.size(); ++i){
+    requestIds[i] = 
+      addRequests[i].toMap()["client_request_id"].value<client_request_id_t>();
+  }
+  return requestIds;
+}
 
 } //end namespace UDJ

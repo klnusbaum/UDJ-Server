@@ -609,18 +609,6 @@ private:
     return userIdHeaderName;
   }
 
-  /**
-   * \brief Get the property name used for storing request ids when performing 
-   * in a reply when doing an addition to the active playlist.
-   *
-   * @return The property name used for storing request ids when performing 
-   * in a reply when doing an addition to the active playlist.
-   */
-  static const char* getActivePlaylistRequestIdsPropertyName(){
-    static const char* activePlaylistRequestIdsPropertyName = "request_ids";
-    return activePlaylistRequestIdsPropertyName;
-  }
-
   static const char* getEventNameProperty(){
     static const char* eventNameProperty = "event_name";
     return eventNameProperty;
@@ -629,6 +617,11 @@ private:
   static const char* getEventPasswordProperty(){
     static const char* eventPasswordProperty = "event_password";
     return eventPasswordProperty;
+  }
+
+  static const char* getPayloadPropertyName(){
+    static const char* payloadPropertyName = "payload";
+    return payloadPropertyName;
   }
 
 

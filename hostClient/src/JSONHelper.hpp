@@ -242,6 +242,9 @@ public:
 
   static const QVariantMap getSingleEventInfo(QNetworkReply *reply);
 
+  static std::vector<client_request_id_t> extractAddRequestIds(
+    const QByteArray& payload);
+
   //@}
 
   /** @name Constants */
