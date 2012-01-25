@@ -106,7 +106,18 @@ private slots:
 
   static const QString& getDataQuery(){
     static const QString dataQuery = 
-      "SELECT * FROM " + DataStore::getActivePlaylistViewName() + 
+      "SELECT " +
+      DataStore::getActivePlaylistViewName() 
+        + "." + DataStore::getActivePlaylistIdColName() + ", " +
+      DataStore::getLibSongColName() + ", " +
+      DataStore::getLibArtistColName() + ", " +
+      DataStore::getLibAlbumColName() + ", " +
+      DataStore::getUpVoteColName() + ", " +
+      DataStore::getDownVoteColName() + ", " +
+      DataStore::getLibDurationColName() + ", " +
+      DataStore::getAdderUsernameColName() + ", " +
+      DataStore::getTimeAddedColName() + 
+      " FROM " + DataStore::getActivePlaylistViewName() + 
       " LEFT JOIN " + DataStore::getPlaylistRemoveRequestsTableName() + 
       " ON " + DataStore::getActivePlaylistViewName() + "." + 
         DataStore::getActivePlaylistIdColName() +

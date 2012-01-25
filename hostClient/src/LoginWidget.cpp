@@ -113,6 +113,7 @@ void LoginWidget::startMainGUI(
 }
 
 void LoginWidget::displayLoginFailedMessage(const QString errorMessage){
+  emit loginFailed();
   DataStore::setCredentialsDirty();
   showMainWidget();
   setCurrentWidget(loginDisplay);
@@ -120,7 +121,6 @@ void LoginWidget::displayLoginFailedMessage(const QString errorMessage){
     this,
     tr("Login Failed"),
     errorMessage);
-  emit loginFailed();
 }
 
 

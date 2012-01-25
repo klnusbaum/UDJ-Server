@@ -57,21 +57,11 @@ ActivePlaylistView::ActivePlaylistView(DataStore* dataStore, QWidget* parent):
 void ActivePlaylistView::configureHeaders(){
   QSqlRecord record = model->record();
   int idIndex = record.indexOf(DataStore::getActivePlaylistIdColName());
-  int libIdIndex = record.indexOf(DataStore::getActivePlaylistLibIdColName());
-  int libIdAliasIndex = record.indexOf(DataStore::getLibIdAlias());
-  int priorityIndex = record.indexOf(DataStore::getPriorityColName());
-  int adderIdIndex = record.indexOf(DataStore::getAdderIdColName());
   int downVoteIndex = record.indexOf(DataStore::getDownVoteColName());
   int upVoteIndex = record.indexOf(DataStore::getUpVoteColName());
   int adderNameIndex = record.indexOf(DataStore::getAdderUsernameColName());
   int timeAddedIndex = record.indexOf(DataStore::getTimeAddedColName());
-  int fileIndex = record.indexOf(DataStore::getLibFileColName());
   setColumnHidden(idIndex, true);
-  setColumnHidden(fileIndex, true);
-  setColumnHidden(libIdIndex, true);
-  setColumnHidden(priorityIndex, true); 
-  setColumnHidden(adderIdIndex, true); 
-  setColumnHidden(libIdAliasIndex, true); 
   model->setHeaderData(
     downVoteIndex, Qt::Horizontal, tr("Down Votes"), Qt::DisplayRole);
   model->setHeaderData(
