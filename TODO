@@ -19,7 +19,6 @@ isSynched. Should be a simple trigger on the database.
 * make the enable/disable of the playback widget more reasonable.
 * Handle multiple users on the same machine
 * Handle same user on different machines
-* Pause playlist updating while stuff is selected in the active playlist view.
 
 ANDROID APP
 *IMPORTANT: SWITCH TO HttpsURLConnection. This will give us automatic caching
