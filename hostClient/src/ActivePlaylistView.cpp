@@ -52,6 +52,11 @@ ActivePlaylistView::ActivePlaylistView(DataStore* dataStore, QWidget* parent):
     SLOT(setCurrentSong(const QModelIndex&)));
   connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
     this, SLOT(handleContextMenuRequest(const QPoint&)));
+  connect(
+    selectionModel(),
+    SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+    this,
+    SLOT(handleSelectionChange(const QItemSelection&, const QItemSelection&)));
 }
 
 void ActivePlaylistView::configureHeaders(){
@@ -100,6 +105,18 @@ void ActivePlaylistView::removeSongs(){
       this,
       model,
       DataStore::getActivePlaylistIdColName()));
+}
+
+void ActivePlaylistView::handleSelectionChange(
+  const QItemSelection& selected,
+  const QItemSelection& deselected)
+{
+  if(selected.indexes().size() == 0){
+    dataStore->resumePlaylistUpdates();
+  }
+  else{
+    dataStore->pausePlaylistUpdates();
+  }
 }
 
 } //end namespace

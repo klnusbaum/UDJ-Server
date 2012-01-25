@@ -93,9 +93,15 @@ private slots:
   void setCurrentSong(const QModelIndex& index);
 
   /**
-   * \breif .
+   * \brief .
    */
   void handleContextMenuRequest(const QPoint& pos);
+
+  /**
+   * \brief .
+   */
+  void handleSelectionChange(
+    const QItemSelection &selected, const QItemSelection &deselected);
 
   /**
    * \brief Removes all the currently selected songs from the active playlist.

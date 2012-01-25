@@ -1078,6 +1078,17 @@ void DataStore::getSavedCredentials(QString* username, QString* password){
   *password = crypt.decryptToString(encryptedPassword);
 }
 
+void DataStore::pausePlaylistUpdates(){
+  if(activePlaylistRefreshTimer->isActive()){
+    activePlaylistRefreshTimer->stop();
+  }
+}
+
+void DataStore::resumePlaylistUpdates(){
+  if(!activePlaylistRefreshTimer->isActive()){
+    activePlaylistRefreshTimer->start();
+  }
+}
 
 
 } //end namespace

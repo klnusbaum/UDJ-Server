@@ -838,6 +838,10 @@ public slots:
 
   void addSongListToAvailableMusic(song_list_id_t songListId);
 
+  void pausePlaylistUpdates();
+
+  void resumePlaylistUpdates();
+
   //@}
 
 signals:
