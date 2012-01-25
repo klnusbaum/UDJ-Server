@@ -21,12 +21,12 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QLabel>
-#include <QHBoxLayout>
 #include <QProgressDialog>
 #include <QMessageBox>
 #include <QCheckBox>
 #include <QFormLayout>
 #include <QComboBox>
+#include <QGridLayout>
 
 
 namespace UDJ{
@@ -58,7 +58,8 @@ CreateEventWidget::CreateEventWidget(
 
 
 void CreateEventWidget::setupUi(){
-  eventForm = new QWidget(this);
+  QWidget *formContainer = new QWidget(this);
+  eventForm = new QWidget(formContainer);
 
   nameEdit = new QLineEdit();
   passwordEdit = new QLineEdit();
@@ -69,15 +70,18 @@ void CreateEventWidget::setupUi(){
   useAddress = new QCheckBox(tr("Provide Address")); 
   createEventButton = new QPushButton(tr("Create Event"));
 
-  QFormLayout *layout = new QFormLayout;
-  layout->addRow(tr("Name of event"), nameEdit);
-  layout->addRow(tr("Password (optional)"), passwordEdit);
-  layout->addRow(useAddress);
-  layout->addRow(tr("Address:"), streetAddress);
-  layout->addRow(tr("City:"), city);
-  layout->addRow(tr("State:"), state);
-  layout->addRow(tr("Zipcode:"), zipcode);
-  layout->addRow(createEventButton);
+  QFormLayout *formLayout = new QFormLayout;
+  formLayout->addRow(tr("Name of event"), nameEdit);
+  formLayout->addRow(tr("Password (optional)"), passwordEdit);
+  formLayout->addRow(useAddress);
+  formLayout->addRow(tr("Address:"), streetAddress);
+  formLayout->addRow(tr("City:"), city);
+  formLayout->addRow(tr("State:"), state);
+  formLayout->addRow(tr("Zipcode:"), zipcode);
+
+  QGridLayout *layout = new QGridLayout;
+  layout->addLayout(formLayout,0,0, Qt::AlignHCenter);
+  layout->addWidget(createEventButton, 1,0, Qt::AlignRight | Qt::AlignTop);
   
   connect(
     useAddress,
@@ -85,10 +89,13 @@ void CreateEventWidget::setupUi(){
     this,
     SLOT(enableAddressInputs(bool)));
   enableAddressInputs(false);
-  
 
   eventForm->setLayout(layout);
-  setMainWidget(eventForm);
+
+  QGridLayout *formContainerLayout = new QGridLayout;
+  formContainerLayout->addWidget(eventForm, 0,0,Qt::AlignCenter);
+  formContainer->setLayout(formContainerLayout);
+  setMainWidget(formContainer);
   showMainWidget();
 }
 
