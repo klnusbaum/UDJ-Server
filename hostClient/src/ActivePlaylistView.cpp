@@ -96,7 +96,11 @@ void ActivePlaylistView::createActions(){
 void ActivePlaylistView::handleContextMenuRequest(const QPoint& pos){
   QMenu contextMenu(this);
   contextMenu.addAction(removeSongAction);
-  contextMenu.exec(QCursor::pos());
+  QAction *selected = contextMenu.exec(QCursor::pos());
+  if(selected==NULL){
+    selectionModel()->clear();
+  }
+  
 }
 
 void ActivePlaylistView::removeSongs(){
