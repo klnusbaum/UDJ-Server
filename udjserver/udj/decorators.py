@@ -64,7 +64,7 @@ def InParty(function):
         "You must be logged into the party to do that")
     elif event_goers[0].event.state == u'FN':
       response = HttpResponse(status=410)
-      response[getGoneResourceHeader] = "event"
+      response[getGoneResourceHeader()] = "event"
       return response
     else:
       return function(*args, **kwargs)
