@@ -17,9 +17,13 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <QApplication>
+#include <QSslConfiguration>
 #include "LoginDialog.hpp"
 
 int main(int argc, char* argv[]){
+  QSslConfiguration defaultConfig = QSslConfiguration::defaultConfiguration(); 
+  defaultConfig.setPeerVerifyMode(QSslSocket::VerifyNone);
+  QSslConfiguration::setDefaultConfiguration(defaultConfig);
   QApplication app(argc, argv);
   app.setApplicationName("Udj");
   app.setQuitOnLastWindowClosed(true);
