@@ -40,6 +40,7 @@ from udj.JSONCodecs import getJSONForEventGoers
 from udj.JSONCodecs import getJSONForEventsByLocation
 from udj.JSONCodecs import getActivePlaylistEntryDictionary
 from udj.utils import getJSONResponse
+from udj.headers import getGoneResourceHeader
 
 
 def getEventHost(event_id):
@@ -134,7 +135,9 @@ def joinEvent(request, event_id, user_id):
 
   event_to_join = Event.objects.get(pk=event_id)
   if event_to_join.state == u'FN':
-    return HttpResponse(status=410)
+    response = HttpResponse(status=410)
+    response[getGoneResourceHeader()] = "event"
+    return response
 
   joining_user = User.objects.get(pk=user_id)
   event_goer , created = EventGoer.objects.get_or_create(

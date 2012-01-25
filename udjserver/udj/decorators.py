@@ -11,6 +11,7 @@ from udj.auth import getUserForTicket
 from django.shortcuts import get_object_or_404
 from udj.headers import getTicketHeader
 from udj.headers import getDjangoTicketHeader
+from udj.headers import getGoneResourceHeader
 from udj.JSONCodecs import getEventDictionary
 
 def IsntHost(function):
@@ -62,7 +63,9 @@ def InParty(function):
       return HttpResponseForbidden(
         "You must be logged into the party to do that")
     elif event_goers[0].event.state == u'FN':
-      return HttpResponse(status=410)
+      response = HttpResponse(status=410)
+      response[getGoneResourceHeader()] = "event"
+      return response
     else:
       return function(*args, **kwargs)
   return wrapper

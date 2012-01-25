@@ -22,7 +22,9 @@
 #include <phonon/mediaobject.h>
 #include <phonon/mediasource.h>
 #include <QProgressDialog>
+#include <QSettings>
 #include "UDJServerConnection.hpp"
+#include "ConfigDefs.hpp"
 
 class QTimer;
 
@@ -44,7 +46,8 @@ public:
    * @param serverConnection Connection to the UDJ server.
    * @param parent The parent widget.
    */
-  DataStore(UDJServerConnection *serverConnection, QObject *parent=0);
+  DataStore(
+    const QByteArray& ticketHash, const event_id_t& userId, QObject *parent=0);
 
   //@}
 
@@ -99,8 +102,10 @@ public:
    *
    * @return The name of the current event.
    */
-  inline const QString& getEventName() const{
-    return eventName;
+  inline const QString getEventName() const{
+    QSettings settings(
+      QSettings::UserScope, getSettingsOrg(), getSettingsApp());
+    return settings.value(getEventNameSettingName()).toString();
   }
 
   /** 
@@ -108,19 +113,10 @@ public:
    *
    * @return The id of the current event.
    */
-  inline event_id_t getEventId() const{
-    return serverConnection->getEventId();
-  }
-
-  /** 
-   * \brief Gets whether or not this instance of UDJ is currently hosting an
-   * event.
-   *
-   * @return True if this instance of UDJ is currently hosting an event. 
-   * False otherwise.
-   */
-  inline bool isCurrentlyHosting() const{
-    return serverConnection->getIsHosting();
+  inline const event_id_t getEventId() const{
+    QSettings settings(
+      QSettings::UserScope, getSettingsOrg(), getSettingsApp());
+    return settings.value(getEventIdSettingName()).value<event_id_t>();
   }
 
   /** 
@@ -138,6 +134,29 @@ public:
    * @return The next song that should be played.
    */
   Phonon::MediaSource takeNextSongToPlay();
+
+  const QString getEventState() const{
+    QSettings settings(
+      QSettings::UserScope, getSettingsOrg(), getSettingsApp());
+    return settings.value(getEventStateSettingName()).toString();
+  }
+
+  const bool isCurrentlyHosting() const{
+    QSettings settings(
+      QSettings::UserScope, getSettingsOrg(), getSettingsApp());
+    return 
+      settings.value(getEventStateSettingName()).toString()
+      ==
+      getHostingEventState();
+  }
+
+  static void saveCredentials(const QString& username, const QString& password);
+
+  static void setCredentialsDirty();
+
+  static bool hasValidSavedCredentials();
+
+  static void getSavedCredentials(QString* username, QString* password);
 
   //@}
 
@@ -595,6 +614,119 @@ public:
     return libIdAlias;
   }
 
+  /**
+   * Gets the name of the active playlist remove request table.
+   *
+   * @return the name of the active playlist remove request table.
+   */
+  static const QString& getPlaylistRemoveRequestsTableName(){
+    static const QString playlistRemoveRequestsTableName = 
+      "playlist_remove_requests";
+    return playlistRemoveRequestsTableName;
+  }
+ 
+  /** 
+   * \brief Get the name for the lib id column in the playlist remove request 
+   * table.
+   *
+   * @return The name fo the lib id column in the playlist remove request table.
+   */
+  static const QString& getPlaylistRemoveIdColName(){
+    static const QString playlistRemoveRequestIdColName = "id";
+    return playlistRemoveRequestIdColName;
+  }
+  
+  /** 
+   * \brief Get the name for the lib id column in the playlist remove request 
+   * table.
+   *
+   * @return The name fo the lib id column in the playlist remove request table.
+   */
+  static const QString& getPlaylistRemoveEntryIdColName(){
+    static const QString playlistRemoveLibIdColName = "playlist_id";
+    return playlistRemoveLibIdColName;
+  }
+
+  /** 
+   * \brief Get the name fo the sync status column in the playlist remove 
+   * request table.
+   *
+   * @return The name fo the lib sync status column in the playlist remove 
+   * request table.
+   */
+  static const QString& getPlaylistRemoveSycnStatusColName(){
+    static const QString playlistRemoveSycnStatusColName = "sync_status";
+    return playlistRemoveSycnStatusColName;
+  }
+
+  /** 
+   * \brief Gets the sync status used in the playlist edd request table to 
+   * indicate that an remove is synced.
+   *
+   * @return The sync status used in the playlist remove request table to 
+   * indicate that an remove is synced.
+   */
+  static const playlist_remove_sync_status_t& getPlaylistRemoveNeedsSync(){
+    static const playlist_remove_sync_status_t needs_sync = 1;
+    return needs_sync;
+  }
+
+  /** 
+   * \brief Gets the sync status used in the playlist remove request table to 
+   * indicate that an remove is synced.
+   *
+   * @return The sync status used in the playlist remove request table to 
+   * indicate that an remove is synced.
+   */
+  static const playlist_remove_sync_status_t& getPlaylistRemoveIsSynced(){
+    static const playlist_remove_sync_status_t isSynced = 0;
+    return isSynced;
+  }
+
+  static const QString& getEventIdSettingName(){
+    static const QString eventIdSetting = "eventId";
+    return eventIdSetting;
+  }
+
+  static const QString& getEventNameSettingName(){
+    static const QString eventIdSetting = "eventName";
+    return eventIdSetting;
+  }
+
+  static const QString& getEventStateSettingName(){
+    static const QString eventStateSettingName = "eventState";
+    return eventStateSettingName;
+  }
+
+  static const QString& getNotHostingEventState(){
+    static const QString notHostingEventState = "notHostingEvent";
+    return notHostingEventState;
+  }
+
+  static const QString& getCreatingEventState(){
+    static const QString creatingEventState = "creatingEventState";
+    return creatingEventState;
+  }
+
+  static const QString& getHostingEventState(){
+    static const QString eventHostingState = "hostingEvent";
+    return eventHostingState;
+  }
+
+  static const QString& getEndingEventState(){
+    static const QString endingEventState = "endingEventState";
+    return endingEventState;
+  }
+
+  static const QString& getSettingsOrg(){
+    static const QString settingsOrg = "Bazaar Solutions";
+    return settingsOrg;
+  }
+
+  static const QString& getSettingsApp(){
+    static const QString settingsApp = "UDJ";
+    return settingsApp;
+  }
 
  //@}
 
@@ -705,6 +837,10 @@ public slots:
     const std::vector<library_song_id_t>& songsToRemove);
 
   void addSongListToAvailableMusic(song_list_id_t songListId);
+
+  void pausePlaylistUpdates();
+
+  void resumePlaylistUpdates();
 
   //@}
 
@@ -827,7 +963,6 @@ private:
    * \brief Syncs all the requests for removals from the active playlst.
    */
   void syncPlaylistRemoveRequests();
-
 
   //@}
 
@@ -1141,75 +1276,6 @@ private:
   }
 
   /**
-   * Gets the name of the active playlist remove request table.
-   *
-   * @return the name of the active playlist remove request table.
-   */
-  static const QString& getPlaylistRemoveRequestsTableName(){
-    static const QString playlistRemoveRequestsTableName = 
-      "playlist_remove_requests";
-    return playlistRemoveRequestsTableName;
-  }
- 
-  /** 
-   * \brief Get the name for the lib id column in the playlist remove request 
-   * table.
-   *
-   * @return The name fo the lib id column in the playlist remove request table.
-   */
-  static const QString& getPlaylistRemoveIdColName(){
-    static const QString playlistRemoveRequestIdColName = "id";
-    return playlistRemoveRequestIdColName;
-  }
-  
-  /** 
-   * \brief Get the name for the lib id column in the playlist remove request 
-   * table.
-   *
-   * @return The name fo the lib id column in the playlist remove request table.
-   */
-  static const QString& getPlaylistRemoveEntryIdColName(){
-    static const QString playlistRemoveLibIdColName = "playlist_id";
-    return playlistRemoveLibIdColName;
-  }
-
-  /** 
-   * \brief Get the name fo the sync status column in the playlist remove 
-   * request table.
-   *
-   * @return The name fo the lib sync status column in the playlist remove 
-   * request table.
-   */
-  static const QString& getPlaylistRemoveSycnStatusColName(){
-    static const QString playlistRemoveSycnStatusColName = "sync_status";
-    return playlistRemoveSycnStatusColName;
-  }
-
-  /** 
-   * \brief Gets the sync status used in the playlist edd request table to 
-   * indicate that an remove is synced.
-   *
-   * @return The sync status used in the playlist remove request table to 
-   * indicate that an remove is synced.
-   */
-  static const playlist_remove_sync_status_t& getPlaylistRemoveNeedsSync(){
-    static const playlist_remove_sync_status_t needs_sync = 1;
-    return needs_sync;
-  }
-
-  /** 
-   * \brief Gets the sync status used in the playlist remove request table to 
-   * indicate that an remove is synced.
-   *
-   * @return The sync status used in the playlist remove request table to 
-   * indicate that an remove is synced.
-   */
-  static const playlist_remove_sync_status_t& getPlaylistRemoveIsSynced(){
-    static const playlist_remove_sync_status_t isSynced = 0;
-    return isSynced;
-  }
-
-  /**
    * \brief Gets the query used to create the playlist remove request table.
    *
    * @return The query used to create the playlist remove request table.
@@ -1244,6 +1310,23 @@ private:
            getEventGoerLeftEventState() +"\"" +
       "));";
     return createEventGoersTableQuery;
+  }
+
+
+  static const QString& getUsernameSettingName(){
+    static const QString usernameSettingName = "username";
+    return usernameSettingName;
+  }
+
+  static const QString& getPasswordSettingName(){
+    static const QString passwordSettingName = "password";
+    return passwordSettingName;
+  }
+
+  static const QString& getHasValidCredsSettingName(){
+    static const QString hasValidSavedCredentialsSettingName = 
+      "has_valid_creds";
+    return hasValidSavedCredentialsSettingName;
   }
 
  //@}
@@ -1343,11 +1426,20 @@ private slots:
 
   void insertEventGoer(const QVariantMap &eventGoer);
 
-  
+  void onEventCreate(const event_id_t& issuedId);
+
+  void onEventCreateFail(const QString message);
+
+  void onEventEnd();
+
+  void onEventEndFail(const QString message);
+
+
+
+
 //@}
 
 };
-
 
 } //end namespace
 #endif //DATA_STORE_HPP

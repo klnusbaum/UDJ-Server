@@ -32,6 +32,7 @@ class QAction;
 class QLabel;
 class QSplitter;
 class QStackedWidget;
+class QCloseEvent;
 
 namespace UDJ{
 
@@ -59,14 +60,19 @@ public:
 
   /** \brief Constructs a MetaWindow
    *
-   * @param serverConnection A connection to a UDJ server.
+   * @param ticketHash Ticket hash that should be used by the data store.
+   * @param userId UserId that should be used by the data store.
    */
   MetaWindow(
-    UDJServerConnection *serverConnection,
+    const QByteArray& ticketHash,
+    const user_id_t& userId,
     QWidget *parent=0, 
     Qt::WindowFlags flags=0);
 
   //@}
+
+protected:
+  virtual void closeEvent(QCloseEvent *event);
 
 private slots:
 
@@ -104,8 +110,6 @@ private:
   DataStore* dataStore;
   /** \brief A widget used for displaying and modifying settings */
   SettingsWidget* settingsWidget;
-  /** \brief A connection with the UDJ server */
-	UDJServerConnection* serverConnection;
 
   /** \brief Triggers selection of music directory. */
   QAction *addMusicAction;

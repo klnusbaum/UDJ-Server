@@ -52,40 +52,31 @@ public:
 
   //@}
 
-  /** @name Connection Controlls */
+  /** @name Connection Controls */
   //@{
 
   /**
-   * \brief Starts the connection to the server.
-   */
-	void startConnection(const QString& username, const QString& password);
-
-  //@}
-
-  /** \brief Connection Query Functions */
-  //@{
-
-  /**
-   * \brief Retrieves the id of the event associated with this server 
-   * connection.
+   * \brief Perform authentication with the server.
    *
-   * @return The id of the event this connection is associated with.
+   * @param username The username.
+   * @param password The password.
    */
-	inline event_id_t  getEventId(){
-    //TODO really need to save this to persistent storage
-		return eventId;
-	}
+  void authenticate(const QString& username, const QString& password);
 
-  /**
-   * \brief Get's whether or not the user is currenlty hosting an event.
-   *
-   * @return True if the user is currently hosting an event. False otherwise.
-   */
-  inline bool getIsHosting(){
-    return isHostingEvent;
+  inline void setTicket(const QByteArray& ticket){
+    ticket_hash = ticket;
+  }
+
+  inline void setUserId(const user_id_t& userId){
+    user_id = userId;
+  }
+
+  inline void setEventId(const event_id_t& newEventId){
+    eventId = newEventId;
   }
 
   //@}
+
 
 public slots:
 
@@ -226,7 +217,7 @@ signals:
   /**
    * \brief Emitted when a connection with the server has been established.
    */
-  void connectionEstablished();
+  void authenticated(const QByteArray& ticketHash, const user_id_t& userId);
   
   /**
    * \brief Emitted when there was a failure to establish a connection with the
@@ -234,7 +225,7 @@ signals:
    *
    * @param errMessage A message describing the error.
    */
-  void unableToConnect(const QString errMessage);
+  void authFailed(const QString errMessage);
 
   /**
    * \brief Emitted when songs are added to the library on the server.
@@ -256,7 +247,7 @@ signals:
   /**
    * \brief Emitted when an event is succesfully created.
    */
-  void eventCreated();
+  void eventCreated(const event_id_t& issuedId);
 
   /**
    * \brief Emitted when an event was failed to be created.
@@ -356,25 +347,17 @@ private:
   /** @name Private Members */
   //@{
 
-  /** \brief Bool indicating whether or not the user is currently logged in. */
-  bool isLoggedIn;
-  /** 
-   * \brief Bool indicating whether or not an event is currently being 
-   * hosted.
-   */
-  bool isHostingEvent;
-
   /** \brief Id of the event associated with this conneciton */
   event_id_t eventId;
-
-  /** \brief Manager for access to the network. */
-  QNetworkAccessManager *netAccessManager;
 
   /** \brief Ticket hash that should be used for all requests. */
   QByteArray ticket_hash;
 
   /** \brief Id of the user that is currently logged in. */
   user_id_t  user_id;
+
+  /** \brief Manager for access to the network. */
+  QNetworkAccessManager *netAccessManager;
 
   /**
    * \brief Time at which the current ticket has being used was issued by the
@@ -650,14 +633,6 @@ private:
 
 
   /**
-   * \brief Perform authentication with the server.
-   *
-   * @param username The username.
-   * @param password The password.
-   */
-  void authenticate(const QString& username, const QString& password);
-
-  /**
    * \brief Handle a response from the server regarding authentication.
    *
    * @param reply Response from the server.
@@ -746,6 +721,8 @@ private:
   void handleLocaitonResponse(QNetworkReply *reply);
 
   void parseLocationResponse(QNetworkReply *reply);
+
+  void handleEventCreationConflict(QNetworkReply *);
 
   //@}
 

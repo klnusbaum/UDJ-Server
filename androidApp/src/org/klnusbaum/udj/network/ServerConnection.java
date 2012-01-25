@@ -113,6 +113,8 @@ public class ServerConnection{
  
   private static final String TICKET_HASH_HEADER = "X-Udj-Ticket-Hash";
   private static final String USER_ID_HEADER = "X-Udj-User-Id";
+  private static final String GONE_RESOURCE_HEADER = "X-Udj-Gone-Resource";
+  
  
   private static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
   
@@ -213,16 +215,8 @@ public class ServerConnection{
   }
 
   private static void basicResponseErrorCheck(
-    HttpResponse resp, String response)
-    throws AuthenticationException, IOException
-  {
-    basicResponseErrorCheck(resp, response, false);
-  }
-
-  private static void basicResponseErrorCheck(
     HttpResponse resp, 
-    String response,
-    boolean createdIsOk
+    String response
   )
     throws AuthenticationException, IOException
   {
@@ -230,12 +224,11 @@ public class ServerConnection{
       throw new AuthenticationException();
     }
     else if(
-      resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK && 
-      !(
-        createdIsOk && 
-        resp.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED)
-      )
+      resp.getStatusLine().getStatusCode() == HttpStatus.SC_BAD_REQUEST || 
+      resp.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND || 
+      resp.getStatusLine().getStatusCode() >= 500)
     {
+      //TODO this should just be "General server error"
       throw new IOException(response);
     }
   }
@@ -243,8 +236,15 @@ public class ServerConnection{
   private static void eventOverErrorCheck(HttpResponse resp)
     throws EventOverException
   {
-    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_GONE){
-      throw new EventOverException();
+    Log.d(TAG, "Headers: ");
+    for(Header h : resp.getAllHeaders()){
+      Log.d(TAG, h.getName() + ": " + h.getValue());
+    }
+    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_GONE
+      && resp.containsHeader(GONE_RESOURCE_HEADER)
+      && resp.getFirstHeader(GONE_RESOURCE_HEADER).getValue().equals("event"))
+    {
+        throw new EventOverException();
     }
   } 
 
@@ -302,7 +302,7 @@ public class ServerConnection{
     final HttpResponse resp = doPut(uri, ticketHash, payload);
     final String response = EntityUtils.toString(resp.getEntity());
     Log.d(TAG, "Simple Put response: \"" + response +"\"");
-    basicResponseErrorCheck(resp, response, true);
+    basicResponseErrorCheck(resp, response);
     return response;
   }
 
@@ -314,7 +314,7 @@ public class ServerConnection{
     final String response = EntityUtils.toString(resp.getEntity());
     Log.d(TAG, "Event related Put response: \"" + response +"\"");
     eventOverErrorCheck(resp);
-    basicResponseErrorCheck(resp, response, true);
+    basicResponseErrorCheck(resp, response);
     return response;
   }
 
@@ -340,7 +340,7 @@ public class ServerConnection{
     final HttpResponse resp = doPost(uri, authToken, payload);
     final String response = EntityUtils.toString(resp.getEntity());
     Log.d(TAG, "Simple Post response: \"" + response +"\"");
-    basicResponseErrorCheck(resp, response, true);
+    basicResponseErrorCheck(resp, response);
     return response;
   }
 
@@ -352,7 +352,7 @@ public class ServerConnection{
     final String response = EntityUtils.toString(resp.getEntity());
     Log.d(TAG, "Event related Post response: \"" + response +"\"");
     eventOverErrorCheck(resp);
-    basicResponseErrorCheck(resp, response, true);
+    basicResponseErrorCheck(resp, response);
     return response;
 
   }
@@ -401,7 +401,7 @@ public class ServerConnection{
     }
     catch(URISyntaxException e){
       return null;
-      //TDOD inform caller that theire query is bad 
+      //TDOD inform caller that their query is bad 
     }
   }
 
@@ -420,7 +420,7 @@ public class ServerConnection{
     }
     catch(URISyntaxException e){
       return null;
-      //TDOD inform caller that theire query is bad 
+      //TDOD inform caller that their query is bad 
     }
   }
 
@@ -456,7 +456,7 @@ public class ServerConnection{
       Log.d(TAG, "Event join Put response: \"" + response +"\"");
       evenJoinConflictCheck(resp, response, userId);
       eventOverErrorCheck(resp);
-      basicResponseErrorCheck(resp, response, true);
+      basicResponseErrorCheck(resp, response);
     }
     catch(URISyntaxException e){
       Log.e(TAG, "URI syntax error in join event");
@@ -475,11 +475,11 @@ public class ServerConnection{
         doEventRelatedDelete(uri, authToken);
       }
       catch(EventOverException e){
-        //If we get here that's fine. no worries.
+        //Should never actually get here
       }
     }
     catch(URISyntaxException e){
-      //TODO inform caller that theire query is bad 
+      //TODO inform caller that their query is bad 
     }
   }
 
@@ -497,7 +497,7 @@ public class ServerConnection{
     }
     catch(URISyntaxException e){
       return null;
-      //TODO inform caller that theire query is bad 
+      //TODO inform caller that their query is bad 
     }
   }
 
@@ -516,7 +516,7 @@ public class ServerConnection{
       return LibraryEntry.fromJSONArray(libEntries);
     }
     catch(URISyntaxException e){
-      //TODO inform caller that theire query is bad 
+      //TODO inform caller that their query is bad 
     }
     return null;
   }
@@ -537,7 +537,7 @@ public class ServerConnection{
       doEventRelatedPut(uri, authToken, payload); 
     }
     catch(URISyntaxException e){
-      //TODO inform caller that theire query is bad 
+      //TODO inform caller that their query is bad 
     }
   }
 
@@ -570,7 +570,7 @@ public class ServerConnection{
         new JSONArray(doEventRelatedGet(uri, authToken)));
     }
     catch(URISyntaxException e){
-      //TODO inform caller that theire query is bad 
+      //TODO inform caller that their query is bad 
     }
     return null;
   }
@@ -600,7 +600,7 @@ public class ServerConnection{
       return new JSONObject(doEventRelatedGet(uri, authToken));
     }
     catch(URISyntaxException e){
-      //TODO inform caller that theire query is bad 
+      //TODO inform caller that their query is bad 
     }
     return null;
   }
@@ -642,7 +642,7 @@ public class ServerConnection{
       doEventRelatedPost(uri, authToken, null);
     }
     catch(URISyntaxException e){
-      //TODO inform caller that theire query is bad 
+      //TODO inform caller that their query is bad 
     }
   }
 }

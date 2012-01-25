@@ -34,7 +34,6 @@ EventWidget::EventWidget(DataStore *dataStore, QWidget *parent)
 
 void EventWidget::setupUi(){
   creatorWidget = new CreateEventWidget(dataStore);
-  //creatorWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
   eventDashboard = new EventDashboard(dataStore, this);
   mainContent = new QStackedWidget(this);
   mainContent->addWidget(creatorWidget);
@@ -53,6 +52,10 @@ void EventWidget::setupUi(){
     SIGNAL(eventEnded()),
     this,
     SLOT(eventEnded()));
+  
+  if(dataStore->isCurrentlyHosting()){
+    showEventDashboard();
+  }
 }
 
 void EventWidget::showEventDashboard(){

@@ -93,9 +93,15 @@ private slots:
   void setCurrentSong(const QModelIndex& index);
 
   /**
-   * \breif .
+   * \brief .
    */
   void handleContextMenuRequest(const QPoint& pos);
+
+  /**
+   * \brief .
+   */
+  void handleSelectionChange(
+    const QItemSelection &selected, const QItemSelection &deselected);
 
   /**
    * \brief Removes all the currently selected songs from the active playlist.
@@ -106,7 +112,26 @@ private slots:
 
   static const QString& getDataQuery(){
     static const QString dataQuery = 
-      "SELECT * FROM " + DataStore::getActivePlaylistViewName() + ";";
+      "SELECT " +
+      DataStore::getActivePlaylistViewName() 
+        + "." + DataStore::getActivePlaylistIdColName() + ", " +
+      DataStore::getLibSongColName() + ", " +
+      DataStore::getLibArtistColName() + ", " +
+      DataStore::getLibAlbumColName() + ", " +
+      DataStore::getUpVoteColName() + ", " +
+      DataStore::getDownVoteColName() + ", " +
+      DataStore::getLibDurationColName() + ", " +
+      DataStore::getAdderUsernameColName() + ", " +
+      DataStore::getTimeAddedColName() + 
+      " FROM " + DataStore::getActivePlaylistViewName() + 
+      " LEFT JOIN " + DataStore::getPlaylistRemoveRequestsTableName() + 
+      " ON " + DataStore::getActivePlaylistViewName() + "." + 
+        DataStore::getActivePlaylistIdColName() +
+      "=" + DataStore::getPlaylistRemoveRequestsTableName() + "." +
+        DataStore::getPlaylistRemoveEntryIdColName() + ";";
+      " WHERE " + DataStore::getPlaylistRemoveRequestsTableName() + "." +
+        DataStore::getPlaylistRemoveEntryIdColName() + 
+      " is null;";
     return dataQuery;
   }
 

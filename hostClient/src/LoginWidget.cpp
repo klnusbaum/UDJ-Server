@@ -27,6 +27,8 @@
 #include <QMessageBox>
 #include <QCheckBox>
 #include <QKeyEvent>
+#include <QCheckBox>
+#include "DataStore.hpp"
 
 class QKeyEvent;
 
@@ -34,17 +36,19 @@ class QKeyEvent;
 namespace UDJ{
 
 
-LoginWidget::LoginWidget():WidgetWithLoader(tr("Logging in...")){
+LoginWidget::LoginWidget(QWidget *parent)
+  :WidgetWithLoader(tr("Logging in..."), parent)
+{
   serverConnection = new UDJServerConnection(this);
   setupUi();
   connect(
     serverConnection, 
-    SIGNAL(connectionEstablished()),
+    SIGNAL(authenticated(const QByteArray&, const user_id_t&)),
     this, 
-    SLOT(startMainGUI()));
+    SLOT(startMainGUI(const QByteArray&, const user_id_t&)));
   connect(
     serverConnection, 
-    SIGNAL(unableToConnect(const QString)),
+    SIGNAL(authFailed(const QString)),
     this, 
     SLOT(displayLoginFailedMessage(const QString)));
 }
@@ -63,7 +67,9 @@ void LoginWidget::setupUi(){
   passwordLabel = new QLabel(tr("Password"));
   passwordLabel->setBuddy(passwordBox);
 
-  loginButton = new QPushButton(tr("Login"), this);
+
+  saveCreds = new QCheckBox(tr("Remmember me"));
+
 
   QGridLayout *layout = new QGridLayout;
   layout->addWidget(logo,0,0,1,2, Qt::AlignCenter);
@@ -71,29 +77,44 @@ void LoginWidget::setupUi(){
   layout->addWidget(usernameBox,1,1);
   layout->addWidget(passwordLabel,2,0);
   layout->addWidget(passwordBox,2,1);
-  layout->addWidget(loginButton,3,0,1,2, Qt::AlignCenter);
+  layout->addWidget(saveCreds, 3, 1);
    
   
-  connect(loginButton, SIGNAL(clicked(bool)), this, SLOT(doLogin()));
   loginDisplay->setLayout(layout);
 
   setMainWidget(loginDisplay);
   showMainWidget(); 
+
+  if(DataStore::hasValidSavedCredentials()){
+    QString username;
+    QString password;
+    DataStore::getSavedCredentials(&username, &password);
+    usernameBox->setText(username);
+    passwordBox->setText(password);
+    saveCreds->setChecked(true); 
+  }
 }
 
 void LoginWidget::doLogin(){
   showLoadingText();
-  serverConnection->startConnection(usernameBox->text(), passwordBox->text());
+  serverConnection->authenticate(usernameBox->text(), passwordBox->text());
 }
 
-void LoginWidget::startMainGUI(){
-  MetaWindow *metaWindow = new MetaWindow(serverConnection);
+void LoginWidget::startMainGUI(
+  const QByteArray& ticketHash, const user_id_t& userId)
+{
+  if(saveCreds->isChecked()){
+    DataStore::saveCredentials(usernameBox->text(), passwordBox->text());
+  }
+
+  MetaWindow *metaWindow = new MetaWindow(ticketHash, userId);
   metaWindow->show();
-  serverConnection->setParent(metaWindow);
-  close();
+  emit startedMainGUI();
 }
 
 void LoginWidget::displayLoginFailedMessage(const QString errorMessage){
+  emit loginFailed();
+  DataStore::setCredentialsDirty();
   showMainWidget();
   setCurrentWidget(loginDisplay);
   QMessageBox::critical(
@@ -101,7 +122,6 @@ void LoginWidget::displayLoginFailedMessage(const QString errorMessage){
     tr("Login Failed"),
     errorMessage);
 }
-
 
 
 }// end namespace UDJ

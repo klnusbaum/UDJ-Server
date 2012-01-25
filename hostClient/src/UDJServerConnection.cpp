@@ -27,29 +27,25 @@
 #include "GeocoderApiKey.hpp"
 
 Q_DECLARE_METATYPE(std::vector<UDJ::client_request_id_t>)
+
+
 namespace UDJ{
 
+
 UDJServerConnection::UDJServerConnection(QObject *parent):QObject(parent),
-  isLoggedIn(false)
+  ticket_hash(""),
+  user_id(-1),
+  eventId(-1)
 {
   netAccessManager = new QNetworkAccessManager(this);
   connect(netAccessManager, SIGNAL(finished(QNetworkReply*)),
     this, SLOT(recievedReply(QNetworkReply*)));
 }
 
-void UDJServerConnection::startConnection(
-  const QString& username,
-  const QString& password
-)
-{
-  authenticate(username, password);
-}
-
 void UDJServerConnection::prepareJSONRequest(QNetworkRequest &request){
   request.setHeader(QNetworkRequest::ContentTypeHeader, "text/json");
   request.setRawHeader(getTicketHeaderName(), ticket_hash);
 }
-
 
 void UDJServerConnection::authenticate(
   const QString& username, 
@@ -73,7 +69,8 @@ void UDJServerConnection::addLibSongOnServer(
   const int duration,
 	const library_song_id_t hostId)
 {
-  if(!isLoggedIn){
+  if(ticket_hash==""){
+    //TODO throw error
     return;
   }
   bool success = true;
@@ -299,11 +296,21 @@ void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
     reply->hasRawHeader(getTicketHeaderName()) &&
     reply->hasRawHeader(getUserIdHeaderName()))
   {
-    setLoggedIn(
+    emit authenticated(
       reply->rawHeader(getTicketHeaderName()),
-      reply->rawHeader(getUserIdHeaderName())
+      QString(reply->rawHeader(getUserIdHeaderName())).toLong()
     );
-    emit connectionEstablished();
+  }
+  else if(
+    !reply->hasRawHeader(getTicketHeaderName()) ||
+    !reply->hasRawHeader(getUserIdHeaderName()))
+  {
+    QByteArray responseData = reply->readAll();
+    QString responseString = QString::fromUtf8(responseData);
+    DEBUG_MESSAGE(responseString.toStdString())
+    emit authFailed(
+      tr("We're experiencing some techinical difficulties. "
+      "We'll be back in a bit"));
   }
   else{
     QByteArray responseData = reply->readAll();
@@ -311,15 +318,8 @@ void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
     DEBUG_MESSAGE(responseString.toStdString())
     QString error = tr("Unable to connect to server: error ") + 
      QString::number(reply->error());
-    emit unableToConnect(error);
+    emit authFailed(error);
   }
-}
-
-void UDJServerConnection::setLoggedIn(QByteArray ticket, QByteArray userId){
-  ticket_hash = ticket;
-  user_id = QString(userId).toLong();
-  timeTicketIssued = QDateTime::currentDateTime();
-  isLoggedIn = true;
 }
 
 void UDJServerConnection::handleAddLibSongsReply(QNetworkReply *reply){
@@ -370,16 +370,19 @@ void UDJServerConnection::handleDeleteAvailableMusicReply(
 void UDJServerConnection::handleCreateEventReply(QNetworkReply *reply){
   //TODO
   // Handle if a 409 response is returned
-  if(reply->error() != QNetworkReply::NoError){
+  if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 409){
+    handleEventCreationConflict(reply);
+  }
+  else if(reply->error() != QNetworkReply::NoError){
     emit eventCreationFailed("Failed to create event");
     QByteArray errormsg = reply->readAll();
     DEBUG_MESSAGE(QString(errormsg).toStdString())
-    return;
   }
-  //TODO handle bad json resturned from the server.
-  isHostingEvent =true;
-  eventId = JSONHelper::getEventId(reply);
-  emit eventCreated();
+  else{
+    //TODO handle bad json resturned from the server.
+    event_id_t issuedId = JSONHelper::getEventId(reply);
+    emit eventCreated(issuedId);
+  }
 }
 
 void UDJServerConnection::handleEndEventReply(QNetworkReply *reply){
@@ -449,7 +452,7 @@ void UDJServerConnection::handleRecievedNewEventGoers(QNetworkReply *reply){
 }
 
 void UDJServerConnection::handleLocaitonResponse(QNetworkReply *reply){
-  DEBUG_MESSAGE("Handling location reply response");
+  DEBUG_MESSAGE("Handling location reply response")
   if(reply->error() == QNetworkReply::NoError){
     parseLocationResponse(reply);
   }
@@ -459,7 +462,18 @@ void UDJServerConnection::handleLocaitonResponse(QNetworkReply *reply){
     emit eventCreationFailed("Failed to create event. There was an error" 
       "verifying your locaiton. Please change it and try again.");
   }
+}
 
+void UDJServerConnection::handleEventCreationConflict(QNetworkReply *reply){
+  DEBUG_MESSAGE("Handling event creation conflict reply")
+  QVariantMap conflictingEvent = JSONHelper::getSingleEventInfo(reply);
+  if(conflictingEvent["host_id"].value<user_id_t>() == user_id){
+    //TODO That party must've been hosted on a different machine because we
+    //didn't know about it. So ask them if they want to end it.
+  }
+  else{
+    //TODO silently log them out of the other event they're in. 
+  }
 }
 
 void UDJServerConnection::parseLocationResponse(QNetworkReply *reply){
@@ -523,7 +537,7 @@ QUrl UDJServerConnection::getActivePlaylistRemoveUrl(
   playlist_song_id_t toDelete) const
 {
   return QUrl(getServerUrlPath() + "events/" + QString::number(eventId) +
-    "/active_playlist/" + QString::number(toDelete));
+    "/active_playlist/songs/" + QString::number(toDelete));
 }
 
 
@@ -550,7 +564,7 @@ bool UDJServerConnection::isAvailableMusicDeleteUrl(const QString& path) const{
 
 bool UDJServerConnection::isActivePlaylistRemoveUrl(const QString& path) const{
   QRegExp rx("^/udj/events/" + QString::number(eventId) + 
-    "/active_playlist/\\d+$");
+    "/active_playlist/songs/\\d+$");
   return rx.exactMatch(path);
 }
 

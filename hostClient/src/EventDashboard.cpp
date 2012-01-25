@@ -47,8 +47,14 @@ void EventDashboard::setupUi(){
   QHBoxLayout *header = new QHBoxLayout;
   QVBoxLayout *eventInfo = new QVBoxLayout;
 
+
   eventName = new QLabel();
   eventId = new QLabel();
+
+  if(dataStore->isCurrentlyHosting()){
+    eventName->setText(dataStore->getEventName());
+    eventId->setText(QString::number(dataStore->getEventId()));
+  }
 
   eventInfo->addWidget(eventName);
   eventInfo->addWidget(eventId);

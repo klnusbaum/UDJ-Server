@@ -37,6 +37,8 @@ SET(UDJ_SRCS
   EventGoersView.cpp
   SongListView.cpp
   MusicModel.cpp
+  LoginDialog.cpp
+  simpleCrypt/simplecrypt.cpp
 )
 
 SET(UDJ_HDRS 
@@ -45,6 +47,7 @@ SET(UDJ_HDRS
   JSONHelper.hpp
   Utils.hpp
   qt-json/json.h
+  simpleCrypt/simplecrypt.h
 )
 
 SET(UDJ_MOC_HDRS 
@@ -66,6 +69,7 @@ SET(UDJ_MOC_HDRS
   EventGoersView.hpp
   SongListView.hpp
   MusicModel.hpp
+  LoginDialog.hpp
 )
 
 

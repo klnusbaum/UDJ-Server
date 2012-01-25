@@ -42,17 +42,35 @@ namespace UDJ{
 
 
 MetaWindow::MetaWindow(
-  UDJServerConnection *serverConnection, 
+  const QByteArray& ticketHash,
+  const user_id_t& userId,
   QWidget *parent, 
   Qt::WindowFlags flags)
-  :QMainWindow(parent,flags),
-  serverConnection(serverConnection)
+  :QMainWindow(parent,flags)
 {
-
+  dataStore = new DataStore(ticketHash, userId, this);
   createActions();
   setupUi();
   setupMenus();
+  QSettings settings(
+    QSettings::UserScope, 
+    DataStore::getSettingsOrg(), 
+    DataStore::getSettingsApp());
+  restoreGeometry(settings.value("metaWindowGeometry").toByteArray());
+  restoreState(settings.value("metaWindowState").toByteArray());
 }
+
+void MetaWindow::closeEvent(QCloseEvent *event){
+  QSettings settings(
+    QSettings::UserScope, 
+    DataStore::getSettingsOrg(), 
+    DataStore::getSettingsApp());
+  settings.setValue("metaWindowGeometry", saveGeometry());
+  settings.setValue("metaWindowState", saveState());
+  QMainWindow::closeEvent(event);
+}
+
+
 
 void MetaWindow::addMusicToLibrary(){
   //TODO: Check to see if musicDir is different than then current music dir
@@ -75,14 +93,11 @@ void MetaWindow::addMusicToLibrary(){
 
 void MetaWindow::setupUi(){
 
-  dataStore = new DataStore(serverConnection, this);
-
   playbackWidget = new PlaybackWidget(dataStore, this);
 
   libraryView = new LibraryView(dataStore, this);
 
   eventWidget = new EventWidget(dataStore, this);
-  
  
   songListView = new SongListView(dataStore, this);
  
@@ -137,9 +152,10 @@ void MetaWindow::setupUi(){
     activityList,
     SLOT(switchToLibrary()));
 
+  if(dataStore->isCurrentlyHosting()){
+    displayEventWidget();
+  }   
 
-
-  resize(800,600);
 }
 
 void MetaWindow::createActions(){

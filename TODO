@@ -17,6 +17,8 @@ potential delete operations is started. need to enforce this work flow some
 how. For instance, don't even allow a syncstatus to change unless it's set to
 isSynched. Should be a simple trigger on the database.
 * make the enable/disable of the playback widget more reasonable.
+* Handle multiple users on the same machine
+* Handle same user on different machines
 
 ANDROID APP
 *IMPORTANT: SWITCH TO HttpsURLConnection. This will give us automatic caching

@@ -37,7 +37,7 @@ AvailableMusicView::AvailableMusicView(DataStore *dataStore, QWidget *parent):
   setEditTriggers(QAbstractItemView::NoEditTriggers);
   availableMusicModel = new MusicModel(getDataQuery(), dataStore, this);
   setModel(availableMusicModel);
-//  horizontalHeader()->setStretchLastSection(true);
+  horizontalHeader()->setStretchLastSection(true);
   configHeaders();
   setSelectionBehavior(QAbstractItemView::SelectRows);
   setContextMenuPolicy(Qt::CustomContextMenu);

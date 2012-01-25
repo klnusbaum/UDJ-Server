@@ -240,6 +240,8 @@ public:
 
   static const QVariantList getEventGoersJSON(QNetworkReply *reply);
 
+  static const QVariantMap getSingleEventInfo(QNetworkReply *reply);
+
   //@}
 
   /** @name Constants */
