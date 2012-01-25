@@ -27,6 +27,8 @@
 #include <QMessageBox>
 #include <QCheckBox>
 #include <QKeyEvent>
+#include <QCheckBox>
+#include "DataStore.hpp"
 
 class QKeyEvent;
 
@@ -66,6 +68,8 @@ void LoginWidget::setupUi(){
   passwordLabel->setBuddy(passwordBox);
 
 
+  saveCreds = new QCheckBox(tr("Remmember me"));
+
 
   QGridLayout *layout = new QGridLayout;
   layout->addWidget(logo,0,0,1,2, Qt::AlignCenter);
@@ -73,6 +77,7 @@ void LoginWidget::setupUi(){
   layout->addWidget(usernameBox,1,1);
   layout->addWidget(passwordLabel,2,0);
   layout->addWidget(passwordBox,2,1);
+  layout->addWidget(saveCreds, 3, 1);
    
   
   loginDisplay->setLayout(layout);
@@ -89,12 +94,17 @@ void LoginWidget::doLogin(){
 void LoginWidget::startMainGUI(
   const QByteArray& ticketHash, const user_id_t& userId)
 {
+  if(saveCreds->isChecked()){
+    DataStore::saveCredentials(usernameBox->text(), passwordBox->text());
+  }
+
   MetaWindow *metaWindow = new MetaWindow(ticketHash, userId);
   metaWindow->show();
   emit startedMainGUI();
 }
 
 void LoginWidget::displayLoginFailedMessage(const QString errorMessage){
+  DataStore::setCredentialsDirty();
   showMainWidget();
   setCurrentWidget(loginDisplay);
   QMessageBox::critical(
@@ -103,7 +113,6 @@ void LoginWidget::displayLoginFailedMessage(const QString errorMessage){
     errorMessage);
   emit loginFailed();
 }
-
 
 
 }// end namespace UDJ

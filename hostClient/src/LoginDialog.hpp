@@ -22,6 +22,7 @@
 #include <QDialog>
 
 class QPushButton;
+class QCheckBox;
 
 namespace UDJ{
 
@@ -54,6 +55,7 @@ private:
 
   /** \brief button used for initiating the login procedure. */
   QPushButton *loginButton;
+
 
   //@}
 

@@ -150,6 +150,14 @@ public:
       getHostingEventState();
   }
 
+  static void saveCredentials(const QString& username, const QString& password);
+
+  static void setCredentialsDirty();
+
+  static void hasValidSavedCredentials();
+
+  static void getSavedCredentials(QString* username, QString* password);
+
   //@}
 
   
@@ -1298,6 +1306,23 @@ private:
            getEventGoerLeftEventState() +"\"" +
       "));";
     return createEventGoersTableQuery;
+  }
+
+
+  static const QString& getUsernameSettingName(){
+    static const QString usernameSettingName = "username";
+    return usernameSettingName;
+  }
+
+  static const QString& getPasswordSettingName(){
+    static const QString passwordSettingName = "password";
+    return passwordSettingName;
+  }
+
+  static const QString& getHasValidCredsSettingName(){
+    static const QString hasValidSavedCredentialsSettingName = 
+      "has_valid_creds";
+    return hasValidSavedCredentialsSettingName;
   }
 
  //@}

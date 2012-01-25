@@ -76,6 +76,8 @@ private:
   /** \brief lineedit used for entering the password. */
   QLineEdit *passwordBox;
 
+  QCheckBox *saveCreds;
+
 
   /** \brief Actual display for the login widget. */
   QWidget *loginDisplay;

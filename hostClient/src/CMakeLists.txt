@@ -38,6 +38,7 @@ SET(UDJ_SRCS
   SongListView.cpp
   MusicModel.cpp
   LoginDialog.cpp
+  simpleCrypt/simplecrypt.cpp
 )
 
 SET(UDJ_HDRS 
@@ -46,6 +47,7 @@ SET(UDJ_HDRS
   JSONHelper.hpp
   Utils.hpp
   qt-json/json.h
+  simpleCrypt/simplecrypt.h
 )
 
 SET(UDJ_MOC_HDRS 

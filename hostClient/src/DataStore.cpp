@@ -28,6 +28,7 @@
 #include <tag.h>
 #include <tstring.h>
 #include <fileref.h>
+#include "CredentialsConfig.hpp"
 
 namespace UDJ{
 
@@ -1042,6 +1043,41 @@ void DataStore::onEventEndFail(const QString message){
   settings.setValue(getEventStateSettingName(), getHostingEventState());
   emit eventEndingFailed(message);
 }
+
+
+void DataStore::saveCredentials(
+  const QString& username, const QString& password)
+{
+  QSettings settings(QSettings::UserScope, getSettingsOrg(), getSettingsApp());
+  SimpleCrypt crypt = getCryptoObject();
+  QString cryptUsername = crypt.encryptToString(username);
+  QString cryptPassword = crypt.encryptToString(password);
+  settings.setValue(getHasValidCredsSettingName(), true);
+  settings.setValue(getUsernameSettingName(), cryptUsername);
+  settings.setValue(getPasswordSettingName(), cryptPassword);
+}
+
+void DataStore::setCredentialsDirty(){
+  QSettings settings(QSettings::UserScope, getSettingsOrg(), getSettingsApp());
+  settings.setValue(getHasValidCredsSettingName(), false);
+}
+
+void DataStore::hasValidSavedCredentials(){
+  QSettings settings(QSettings::UserScope, getSettingsOrg(), getSettingsApp());
+  settings.value(getHasValidCredsSettingName());
+}
+
+void DataStore::getSavedCredentials(QString* username, QString* password){
+  QSettings settings(QSettings::UserScope, getSettingsOrg(), getSettingsApp());
+  SimpleCrypt crypt = getCryptoObject();
+  QString encryptedUsername = 
+    settings.value(getUsernameSettingName()).toString();
+  QString encryptedPassword = 
+    settings.value(getPasswordSettingName()).toString();
+  *username = crypt.decryptToString(encryptedUsername);
+  *password = crypt.decryptToString(encryptedPassword);
+}
+
 
 
 } //end namespace
