@@ -20,7 +20,7 @@
 #include "LoginDialog.hpp"
 #include "LoginWidget.hpp"
 #include <QPushButton>
-#include <QVBoxLayout>
+#include <QGridLayout>
 #include <QApplication>
 
 
@@ -71,9 +71,9 @@ void LoginDialog::setupUi(){
     this,
     SLOT(accept()));
 
-  QVBoxLayout *layout = new QVBoxLayout;
-  layout->addWidget(loginWidget);
-  layout->addWidget(loginButton);
+  QGridLayout *layout = new QGridLayout;
+  layout->addWidget(loginWidget, 0,0,3,3);
+  layout->addWidget(loginButton, 3,1);
   setLayout(layout);
 }
 
