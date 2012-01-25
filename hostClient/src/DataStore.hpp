@@ -154,7 +154,7 @@ public:
 
   static void setCredentialsDirty();
 
-  static void hasValidSavedCredentials();
+  static bool hasValidSavedCredentials();
 
   static void getSavedCredentials(QString* username, QString* password);
 

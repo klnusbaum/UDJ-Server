@@ -1062,9 +1062,9 @@ void DataStore::setCredentialsDirty(){
   settings.setValue(getHasValidCredsSettingName(), false);
 }
 
-void DataStore::hasValidSavedCredentials(){
+bool DataStore::hasValidSavedCredentials(){
   QSettings settings(QSettings::UserScope, getSettingsOrg(), getSettingsApp());
-  settings.value(getHasValidCredsSettingName());
+  return settings.value(getHasValidCredsSettingName()).toBool();
 }
 
 void DataStore::getSavedCredentials(QString* username, QString* password){

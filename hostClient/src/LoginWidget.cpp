@@ -84,6 +84,15 @@ void LoginWidget::setupUi(){
 
   setMainWidget(loginDisplay);
   showMainWidget(); 
+
+  if(DataStore::hasValidSavedCredentials()){
+    QString username;
+    QString password;
+    DataStore::getSavedCredentials(&username, &password);
+    usernameBox->setText(username);
+    passwordBox->setText(password);
+    saveCreds->setChecked(true); 
+  }
 }
 
 void LoginWidget::doLogin(){
