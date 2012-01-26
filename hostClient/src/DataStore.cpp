@@ -84,7 +84,7 @@ DataStore::DataStore(
     SLOT(onEventCreate(const event_id_t&)));
 
   connect(
-    serverConnection,
+    errorHandler,
     SIGNAL(eventCreationFailed(const QString)),
     this,
     SLOT(onEventCreateFail(const QString)));

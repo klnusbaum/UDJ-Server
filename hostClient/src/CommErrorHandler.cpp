@@ -31,6 +31,11 @@ CommErrorHandler::CommErrorHandler(
   serverConnection(serverConnection),
   syncLibOnReauth(false)
 {
+  establishAuthConnections();
+  establishErrorConnections();
+} 
+
+void CommErrorHandler::establishAuthConnections(){
   connect(
     serverConnection,
     SIGNAL(authenticated(const QByteArray&, const user_id_t&)),
@@ -42,21 +47,57 @@ CommErrorHandler::CommErrorHandler(
     SIGNAL(authFailed(const QString)),
     this,
     SIGNAL(hardAuthFailure(const QString)));
+}
 
+void CommErrorHandler::establishErrorConnections(){
   connect(
     serverConnection,
     SIGNAL(libSongAddFailed(CommErrorHandler::CommErrorType)),
     this,
     SLOT(handleLibSongAddError(CommErrorHandler::CommErrorType)));
-} 
 
-void CommErrorHandler::handleLibSongAddError(CommErrorHandler::CommErrorType errorType){
-  if(errorType == AUTH){
-    syncLibOnReauth = true;
-    requestReauth();
+  connect(
+    serverConnection,
+    SIGNAL(eventCreationFailed(
+      CommErrorHandler::CommErrorType, const QByteArray&)),
+    this,
+    SLOT(handleCreateEventError(
+      CommErrorHandler::CommErrorType, const QByteArray&)));
+}
+
+void CommErrorHandler::handleLibSongAddError(
+  CommErrorHandler::CommErrorType errorType)
+{
+  switch(errorType){
+    case AUTH:
+      syncLibOnReauth = true;
+      requestReauth();
+      break;
+    case UNKNOWN_ERROR:
+      //TODO handle this error
+      break;
   }
 }
 
+void CommErrorHandler::handleCreateEventError(
+  CommErrorHandler::CommErrorType errorType,
+  const QByteArray& payload)
+{
+  switch(errorType){
+    case AUTH:
+      createEventOnReauth = true;
+      createEventPayload = payload;
+      requestReauth();
+      break;
+    case CONFLICT:
+      //TODO handle this error
+      break;
+    case UNKNOWN_ERROR:
+      emit eventCreationFailed(tr("We're currently experiencing technical "
+        "difficulties. Please try again in a minute."));
+      break;
+  }
+}
 
 void CommErrorHandler::requestReauth(){
   if(!hasPendingReauthRequest){
@@ -81,6 +122,10 @@ void CommErrorHandler::clearOnReauthFlags(){
   if(syncLibOnReauth){
     dataStore->syncLibrary();
     syncLibOnReauth=false;
+  }
+  if(createEventOnReauth){
+    serverConnection->createEvent(createEventPayload);
+    createEventOnReauth=false;
   }
 }
 

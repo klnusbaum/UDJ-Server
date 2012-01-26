@@ -94,12 +94,9 @@ void UDJServerConnection::createEvent(
   const QString& eventName,
   const QString& password)
 {
-  QNetworkRequest createEventRequest(getCreateEventUrl());
-  prepareJSONRequest(createEventRequest);
   const QByteArray eventJSON = JSONHelper::getCreateEventJSON(
     eventName, password);
-  QNetworkReply *reply = netAccessManager->put(createEventRequest, eventJSON);
-  reply->setProperty(getPayloadPropertyName(), eventJSON); 
+  createEvent(eventJSON);
 }
 
 void UDJServerConnection::createEvent(
@@ -118,24 +115,28 @@ void UDJServerConnection::createEvent(
   reply->setProperty(getEventPasswordProperty(), password);
 }
 
-void UDJServerConnection::endEvent(){
-  QNetworkRequest endEventRequest(getEndEventUrl());
-  endEventRequest.setRawHeader(getTicketHeaderName(), ticket_hash);
-  netAccessManager->deleteResource(endEventRequest);
-}
-
 void UDJServerConnection::createEvent(
   const QString& eventName,
   const QString& password,
   const double &latitude,
   const double &longitude)
 {
-  QNetworkRequest createEventRequest(getCreateEventUrl());
-  prepareJSONRequest(createEventRequest);
   const QByteArray eventJSON = JSONHelper::getCreateEventJSON(
     eventName, password, latitude, longitude);
-  QNetworkReply *reply = netAccessManager->put(createEventRequest, eventJSON);
-  reply->setProperty(getPayloadPropertyName(), eventJSON); 
+  createEvent(eventJSON);
+}
+
+void UDJServerConnection::createEvent(const QByteArray& payload){
+  QNetworkRequest createEventRequest(getCreateEventUrl());
+  prepareJSONRequest(createEventRequest);
+  QNetworkReply *reply = netAccessManager->put(createEventRequest, payload);
+  reply->setProperty(getPayloadPropertyName(), payload); 
+}
+
+void UDJServerConnection::endEvent(){
+  QNetworkRequest endEventRequest(getEndEventUrl());
+  endEventRequest.setRawHeader(getTicketHeaderName(), ticket_hash);
+  netAccessManager->deleteResource(endEventRequest);
 }
 
 void UDJServerConnection::addSongToAvailableSongs(library_song_id_t songToAdd){
@@ -333,13 +334,43 @@ bool UDJServerConnection::checkReplyAndFireErrors(
     emit (this->*errorSignal)(CommErrorHandler::AUTH);
     return true;
   }
+  else if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 409){
+    emit (this->*errorSignal)(CommErrorHandler::CONFLICT);
+    return true;
+  }
+  else if(reply->error() != QNetworkReply::NoError){
+    emit (this->*errorSignal)(CommErrorHandler::UNKNOWN_ERROR);
+    return true;
+  }
   return false;
 }
 
+bool UDJServerConnection::checkReplyAndFireErrors(
+  QNetworkReply *reply,
+  void (UDJ::UDJServerConnection::*errorSignal)
+  (CommErrorHandler::CommErrorType, const QByteArray&))
+{
+  if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 403){
+    emit (this->*errorSignal)(CommErrorHandler::AUTH, 
+      reply->property(getPayloadPropertyName()).toByteArray());
+    return true;
+  }
+  else if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 409){
+    emit (this->*errorSignal)(CommErrorHandler::CONFLICT,
+      reply->property(getPayloadPropertyName()).toByteArray());
+    return true;
+  }
+  else if(reply->error() != QNetworkReply::NoError){
+    emit (this->*errorSignal)(CommErrorHandler::UNKNOWN_ERROR,
+      reply->property(getPayloadPropertyName()).toByteArray());
+    return true;
+  }
+  return false;
+}
 
 void UDJServerConnection::handleAddLibSongsReply(QNetworkReply *reply){
-  if(
-    !checkReplyAndFireErrors(reply, &UDJ::UDJServerConnection::libSongAddFailed))
+  if(!checkReplyAndFireErrors(
+      reply, &UDJ::UDJServerConnection::libSongAddFailed))
   {
     const std::vector<library_song_id_t> updatedIds =   
       JSONHelper::getUpdatedLibIds(reply);
@@ -389,15 +420,9 @@ void UDJServerConnection::handleDeleteAvailableMusicReply(
 void UDJServerConnection::handleCreateEventReply(QNetworkReply *reply){
   //TODO
   // Handle if a 409 response is returned
-  if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 409){
-    handleEventCreationConflict(reply);
-  }
-  else if(reply->error() != QNetworkReply::NoError){
-    emit eventCreationFailed("Failed to create event");
-    QByteArray errormsg = reply->readAll();
-    DEBUG_MESSAGE(QString(errormsg).toStdString())
-  }
-  else{
+  if(!checkReplyAndFireErrors(
+    reply, &UDJ::UDJServerConnection::eventCreationFailed))
+  {
     //TODO handle bad json resturned from the server.
     event_id_t issuedId = JSONHelper::getEventId(reply);
     emit eventCreated(issuedId);
@@ -474,10 +499,12 @@ void UDJServerConnection::handleLocaitonResponse(QNetworkReply *reply){
     parseLocationResponse(reply);
   }
   else{
-    QString locationError = QString(reply->readAll());
+    //TODO redo this in light of the new error handler
+    /*QString locationError = QString(reply->readAll());
     DEBUG_MESSAGE("Error retreving location" << locationError.toStdString())
     emit eventCreationFailed("Failed to create event. There was an error" 
       "verifying your locaiton. Please change it and try again.");
+    */
   }
 }
 
@@ -498,9 +525,12 @@ void UDJServerConnection::parseLocationResponse(QNetworkReply *reply){
   QString response(reply->readAll());
   QStringList outputValues = response.split(",");
   if(outputValues[2] != "200"){
+    //TODO redo this in light of the new error handler
+    /*
     DEBUG_MESSAGE("Error retreving location" << outputValues[2].toStdString())
     emit eventCreationFailed("Failed to create event. There was an error " 
       "verifying your locaiton. Please change it and try again.");
+    */
   }
   else{
     QString eventName = reply->property(getEventNameProperty()).toString();

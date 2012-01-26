@@ -33,7 +33,9 @@ Q_OBJECT
 public:
 
   enum CommErrorType{
-    AUTH
+    AUTH,
+    CONFLICT,
+    UNKNOWN_ERROR
   };
 
 
@@ -45,9 +47,15 @@ signals:
 
   void hardAuthFailure(const QString errMessage);
 
+  void eventCreationFailed(const QString errMessage);
+
 private slots:
 
   void handleLibSongAddError(CommErrorHandler::CommErrorType errorType);
+
+  void handleCreateEventError(
+    CommErrorHandler::CommErrorType errorType,
+    const QByteArray& payload);
 
   void onAuthenticated(const QByteArray& ticket, const user_id_t& user_id);
 
@@ -57,13 +65,21 @@ private:
 
   UDJServerConnection *serverConnection;
 
+  QByteArray createEventPayload;
+
   bool hasPendingReauthRequest;
  
   bool syncLibOnReauth;
 
+  bool createEventOnReauth;
+
   void clearOnReauthFlags();  
 
   void requestReauth();
+
+  void establishAuthConnections();
+ 
+  void establishErrorConnections();
 };
 
 }

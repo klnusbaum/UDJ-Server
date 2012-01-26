@@ -1,17 +1,17 @@
 HOST CLIENT
--Enable seemless playback by queuing up songs that are about to be played.
+- Enable seemless playback by queuing up songs that are about to be played.
 And what's more, songs should fade into one another. Like a real dj would.
 Sync the beat of the new song to the beat of the the one that is currently
 playing, fade into new song, then gradual return beat of new song to normal.
--Import iTunes library capability
--Need to be able to handle the current song being changed from another client.
--Need to be able to handle the event being ended from another client.
-*Handle song not being added to the server correctly.
-*If a song is removed from the library mid event, need to make sure that
+- Import iTunes library capability
+- Need to be able to handle the current song being changed from another client.
+- Need to be able to handle the event being ended from another client.
+* Handle song not being added to the server correctly.
+* If a song is removed from the library mid event, need to make sure that
 the available music, active playlist, and anything else that references the
 library table is updated accordingly
-*make sure ticket is always up to date
-*current syncing model always assumes that a library entry or available 
+* make sure ticket is always up to date
+* current syncing model always assumes that a library entry or available 
 music entry is successfully and completely added with the server before any
 potential delete operations is started. need to enforce this work flow some
 how. For instance, don't even allow a syncstatus to change unless it's set to
@@ -19,15 +19,14 @@ isSynched. Should be a simple trigger on the database.
 * make the enable/disable of the playback widget more reasonable.
 * Handle multiple users on the same machine
 * Handle same user on different machines
+- Handle when credentials change
 
 ANDROID APP
-*IMPORTANT: SWITCH TO HttpsURLConnection. This will give us automatic caching
-compression. Also security. Also, this is what the android team is throwing
-themselves behind so it will be getting the most attention.
--Users should be able to remove songs they added form the playlist
+- Users should be able to remove songs they added form the playlist
 (You know, say they accidentally double added a song)
--Parties with passwords
--Switch auth dialog to dialog fragment
+- Parties with passwords
+- Switch auth dialog to dialog fragment
+- Handle when credentials change
 
 SERVER
 -Maybe If two users add the same song within a certain threshold of oneanother (e.g.

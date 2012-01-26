@@ -161,6 +161,8 @@ public slots:
     const double &latitude,
     const double &longitude);
 
+  void createEvent(const QByteArray& payload);
+
   /**
    * \brief Ends the current event.
    */
@@ -252,12 +254,9 @@ signals:
    */
   void eventCreated(const event_id_t& issuedId);
 
-  /**
-   * \brief Emitted when an event was failed to be created.
-   *
-   * @param errMessage A message describing the error.
-   */
-  void eventCreationFailed(const QString errMessage);
+  void eventCreationFailed(
+    CommErrorHandler::CommErrorType error,
+    const QByteArray& payload);
 
   /**
    * \brief Emitted when an event is succesfully ended.
@@ -603,6 +602,11 @@ private:
     return userIdHeaderName;
   }
 
+  static const QByteArray& getGoneResourceHeaderName(){
+    static const QByteArray goneResourceHeaderName = "X-Udj-Gone-Resource";
+    return goneResourceHeaderName;
+  }
+
   static const char* getEventNameProperty(){
     static const char* eventNameProperty = "event_name";
     return eventNameProperty;
@@ -714,6 +718,11 @@ private:
   bool checkReplyAndFireErrors(
     QNetworkReply *reply,
     void (UDJ::UDJServerConnection::*errorSignal)(CommErrorHandler::CommErrorType));
+
+  bool checkReplyAndFireErrors(
+    QNetworkReply *reply,
+    void (UDJ::UDJServerConnection::*errorSignal)
+    (CommErrorHandler::CommErrorType, const QByteArray&));
 
   //@}
 
