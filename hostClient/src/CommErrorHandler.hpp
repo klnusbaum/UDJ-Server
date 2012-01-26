@@ -51,7 +51,7 @@ signals:
 
 private slots:
 
-  void handleLibSongAddError(CommErrorHandler::CommErrorType errorType);
+  void handleLibSyncError(CommErrorHandler::CommErrorType errorType);
 
   void handleCreateEventError(
     CommErrorHandler::CommErrorType errorType,

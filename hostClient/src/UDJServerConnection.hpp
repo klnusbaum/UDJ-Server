@@ -249,6 +249,8 @@ signals:
   void songDeletedFromLibOnServer(
     const library_song_id_t deletedId);
 
+  void libSongDeleteFailed(CommErrorHandler::CommErrorType error);
+
   /**
    * \brief Emitted when an event is succesfully created.
    */

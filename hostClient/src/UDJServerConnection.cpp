@@ -368,6 +368,7 @@ bool UDJServerConnection::checkReplyAndFireErrors(
   return false;
 }
 
+
 void UDJServerConnection::handleAddLibSongsReply(QNetworkReply *reply){
   if(!checkReplyAndFireErrors(
       reply, &UDJ::UDJServerConnection::libSongAddFailed))
@@ -378,17 +379,16 @@ void UDJServerConnection::handleAddLibSongsReply(QNetworkReply *reply){
   }
 }
 
+
 void UDJServerConnection::handleDeleteLibSongsReply(QNetworkReply *reply){
-  if(reply->error() == QNetworkReply::NoError){
+  if(!checkReplyAndFireErrors(
+      reply, &UDJ::UDJServerConnection::libSongDeleteFailed))
+  {
     QString path = reply->request().url().path();
     QRegExp rx("/udj/users/" + QString::number(user_id) + "/library/(\\d+)");
     rx.indexIn(path);
     library_song_id_t songDeleted = rx.cap(1).toLong();
     emit songDeletedFromLibOnServer(songDeleted);
-  }
-  else{
-    DEBUG_MESSAGE("Error deleting lib song on server: " << 
-      QString(reply->readAll()).toStdString())
   }
 }
 

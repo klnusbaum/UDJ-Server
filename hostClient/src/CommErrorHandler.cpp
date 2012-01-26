@@ -54,7 +54,13 @@ void CommErrorHandler::establishErrorConnections(){
     serverConnection,
     SIGNAL(libSongAddFailed(CommErrorHandler::CommErrorType)),
     this,
-    SLOT(handleLibSongAddError(CommErrorHandler::CommErrorType)));
+    SLOT(handleLibSyncError(CommErrorHandler::CommErrorType)));
+
+  connect(
+    serverConnection,
+    SIGNAL(libSongDeleteFailed(CommErrorHandler::CommErrorType)),
+    this,
+    SLOT(handleLibSyncError(CommErrorHandler::CommErrorType)));
 
   connect(
     serverConnection,
@@ -63,9 +69,10 @@ void CommErrorHandler::establishErrorConnections(){
     this,
     SLOT(handleCreateEventError(
       CommErrorHandler::CommErrorType, const QByteArray&)));
+
 }
 
-void CommErrorHandler::handleLibSongAddError(
+void CommErrorHandler::handleLibSyncError(
   CommErrorHandler::CommErrorType errorType)
 {
   switch(errorType){
