@@ -17,6 +17,8 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "DataStore.hpp"
+#include "UDJServerConnection.hpp"
+#include "CredentialsConfig.hpp"
 #include <QDir>
 #include <QDesktopServices>
 #include <QDir>
@@ -28,14 +30,19 @@
 #include <tag.h>
 #include <tstring.h>
 #include <fileref.h>
-#include "CredentialsConfig.hpp"
 
 namespace UDJ{
 
 
 DataStore::DataStore(
-  const QByteArray& ticket, const user_id_t& userId, QObject *parent)
-  :QObject(parent)
+  const QString& username,
+  const QString& password,
+  const QByteArray& ticket, 
+  const user_id_t& userId, 
+  QObject *parent)
+  :QObject(parent),
+  username(username),
+  password(password)
 {
    
   serverConnection = new UDJServerConnection(this);

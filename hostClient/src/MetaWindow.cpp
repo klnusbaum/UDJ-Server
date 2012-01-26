@@ -42,13 +42,15 @@ namespace UDJ{
 
 
 MetaWindow::MetaWindow(
+  const QString& username,
+  const QString& password,
   const QByteArray& ticketHash,
   const user_id_t& userId,
   QWidget *parent, 
   Qt::WindowFlags flags)
   :QMainWindow(parent,flags)
 {
-  dataStore = new DataStore(ticketHash, userId, this);
+  dataStore = new DataStore(username, password, ticketHash, userId, this);
   createActions();
   setupUi();
   setupMenus();

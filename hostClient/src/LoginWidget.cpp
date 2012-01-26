@@ -107,7 +107,11 @@ void LoginWidget::startMainGUI(
     DataStore::saveCredentials(usernameBox->text(), passwordBox->text());
   }
 
-  MetaWindow *metaWindow = new MetaWindow(ticketHash, userId);
+  MetaWindow *metaWindow = new MetaWindow(
+    usernameBox->text(),
+    passwordBox->text(),
+    ticketHash, 
+    userId);
   metaWindow->show();
   emit startedMainGUI();
 }

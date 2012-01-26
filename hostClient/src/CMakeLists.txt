@@ -39,6 +39,7 @@ SET(UDJ_SRCS
   MusicModel.cpp
   LoginDialog.cpp
   simpleCrypt/simplecrypt.cpp
+  CommErrorHandler.cpp
 )
 
 SET(UDJ_HDRS 
@@ -70,6 +71,7 @@ SET(UDJ_MOC_HDRS
   SongListView.hpp
   MusicModel.hpp
   LoginDialog.hpp
+  CommErrorHandler.hpp
 )
 
 

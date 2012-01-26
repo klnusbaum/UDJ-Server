@@ -326,10 +326,24 @@ void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
   }
 }
 
+bool UDJServerConnection::checkReplyAndFireErrors(
+  QNetworkReply *reply,
+  void (UDJ::UDJServerConnection::*errorSignal)(CommErrorHandler::CommErrorType))
+{
+  if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 403){
+    emit (this->*errorSignal)(CommErrorHandler::AUTH);
+    return true;
+  }
+  return false;
+}
+
+
 void UDJServerConnection::handleAddLibSongsReply(QNetworkReply *reply){
-  const std::vector<library_song_id_t> updatedIds =   
-    JSONHelper::getUpdatedLibIds(reply);
-  emit songsAddedToLibOnServer(updatedIds);
+  if(!checkReplyAndFireErrors(reply, &UDJ::UDJServerConnection::libSongAddFailed)){
+    const std::vector<library_song_id_t> updatedIds =   
+      JSONHelper::getUpdatedLibIds(reply);
+    emit songsAddedToLibOnServer(updatedIds);
+  }
 }
 
 void UDJServerConnection::handleDeleteLibSongsReply(QNetworkReply *reply){

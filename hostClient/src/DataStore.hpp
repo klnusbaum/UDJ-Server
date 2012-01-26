@@ -23,13 +23,13 @@
 #include <phonon/mediasource.h>
 #include <QProgressDialog>
 #include <QSettings>
-#include "UDJServerConnection.hpp"
 #include "ConfigDefs.hpp"
 
 class QTimer;
 
 namespace UDJ{
 
+class UDJServerConnection;
 
 /** 
  * \brief A class that provides access to all persisten storage used by UDJ.
@@ -47,7 +47,11 @@ public:
    * @param parent The parent widget.
    */
   DataStore(
-    const QByteArray& ticketHash, const event_id_t& userId, QObject *parent=0);
+    const QString& username,
+    const QString& password,
+    const QByteArray& ticketHash, 
+    const event_id_t& userId, 
+    QObject *parent=0);
 
   //@}
 
@@ -98,6 +102,12 @@ public:
   song_list_id_t insertSongList(const QString& name);
 
   /** 
+   * \brief Adds any songs to the server for which the
+   * host client doesn't have valid server_lib_song_id.
+   */
+  void syncLibrary();
+
+  /** 
    * \brief Gets the name of the current event.
    *
    * @return The name of the current event.
@@ -117,6 +127,14 @@ public:
     QSettings settings(
       QSettings::UserScope, getSettingsOrg(), getSettingsApp());
     return settings.value(getEventIdSettingName()).value<event_id_t>();
+  }
+
+  inline const QString& getUsername() const{
+    return username;
+  }
+
+  inline const QString& getPassword() const{
+    return password;
   }
 
   /** 
@@ -919,6 +937,10 @@ private:
   QTimer *activePlaylistRefreshTimer;
   
   QTimer *eventGoerRefreshTimer;
+
+  QString username;
+ 
+  QString password;
   //@}
 
   /** @name Private Functions */
@@ -926,12 +948,6 @@ private:
 
   /** \brief Does initiail database setup */
   void setupDB();
-
-  /** 
-   * \brief Adds any songs to the server for which the
-   * host client doesn't have valid server_lib_song_id.
-   */
-  void syncLibrary();
 
   /**
    * \brief Syncs the available music table with the server.

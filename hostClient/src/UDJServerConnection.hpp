@@ -20,6 +20,7 @@
 #define UDJ_SERVER_CONNECTION_HPP
 
 #include "ConfigDefs.hpp"
+#include "CommErrorHandler.hpp"
 #include <QSqlDatabase>
 #include <QDateTime>
 #include <QObject>
@@ -235,6 +236,8 @@ signals:
    */
   void songsAddedToLibOnServer(const std::vector<library_song_id_t> addedIds);
 
+  void libSongAddFailed(CommErrorHandler::CommErrorType error);
+
   /**
    * \brief Emitted when a song is deleted from the library on the server.
    *
@@ -364,15 +367,6 @@ private:
    * server.
    */
   QDateTime timeTicketIssued;
-
-  /**
-   * \brief Sets the status of the server connection to "logged in".
-   *
-   * @param ticket The ticket hash that should be used for all request made to
-   * the server.
-   * @param userId The id of the user that just logged in.
-   */
-  void setLoggedIn(QByteArray ticket, QByteArray userId);
 
   /**
    * \brief Prepares a network request that is going to include JSON.
@@ -716,6 +710,10 @@ private:
   void parseLocationResponse(QNetworkReply *reply);
 
   void handleEventCreationConflict(QNetworkReply *);
+
+  bool checkReplyAndFireErrors(
+    QNetworkReply *reply,
+    void (UDJ::UDJServerConnection::*errorSignal)(CommErrorHandler::CommErrorType));
 
   //@}
 

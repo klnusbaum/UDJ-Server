@@ -64,6 +64,8 @@ public:
    * @param userId UserId that should be used by the data store.
    */
   MetaWindow(
+    const QString& username,
+    const QString& password,
     const QByteArray& ticketHash,
     const user_id_t& userId,
     QWidget *parent=0, 
