@@ -45,12 +45,12 @@ CommErrorHandler::CommErrorHandler(
 
   connect(
     serverConnection,
-    SIGNAL(libSongAddFailed(CommErrorType)),
+    SIGNAL(libSongAddFailed(CommErrorHandler::CommErrorType)),
     this,
-    SLOT(handleLibSongAddError(CommErrorType)));
+    SLOT(handleLibSongAddError(CommErrorHandler::CommErrorType)));
 } 
 
-void CommErrorHandler::handleLibSongAddError(CommErrorType errorType){
+void CommErrorHandler::handleLibSongAddError(CommErrorHandler::CommErrorType errorType){
   if(errorType == AUTH){
     syncLibOnReauth = true;
     requestReauth();

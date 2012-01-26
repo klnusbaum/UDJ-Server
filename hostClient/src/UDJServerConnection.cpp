@@ -326,20 +326,11 @@ void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
   }
 }
 
-bool UDJServerConnection::checkReplyAndFireErrors(
-  QNetworkReply *reply,
-  void (UDJ::UDJServerConnection::*errorSignal)(CommErrorHandler::CommErrorType))
-{
-  if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 403){
-    emit (this->*errorSignal)(CommErrorHandler::AUTH);
-    return true;
-  }
-  return false;
-}
-
-
 void UDJServerConnection::handleAddLibSongsReply(QNetworkReply *reply){
-  if(!checkReplyAndFireErrors(reply, &UDJ::UDJServerConnection::libSongAddFailed)){
+  if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 403){
+    emit libSongAddFailed(CommErrorHandler::AUTH);
+  }
+  else{
     const std::vector<library_song_id_t> updatedIds =   
       JSONHelper::getUpdatedLibIds(reply);
     emit songsAddedToLibOnServer(updatedIds);

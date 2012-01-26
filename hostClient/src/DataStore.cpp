@@ -19,6 +19,7 @@
 #include "DataStore.hpp"
 #include "UDJServerConnection.hpp"
 #include "CredentialsConfig.hpp"
+#include "CommErrorHandler.hpp"
 #include <QDir>
 #include <QDesktopServices>
 #include <QDir>
@@ -44,10 +45,10 @@ DataStore::DataStore(
   username(username),
   password(password)
 {
-   
   serverConnection = new UDJServerConnection(this);
   serverConnection->setTicket(ticket);
   serverConnection->setUserId(userId);
+  errorHandler = new CommErrorHandler(this, serverConnection);
   activePlaylistRefreshTimer = new QTimer(this);
   eventGoerRefreshTimer = new QTimer(this);
   activePlaylistRefreshTimer->setInterval(5000);

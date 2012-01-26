@@ -47,7 +47,7 @@ signals:
 
 private slots:
 
-  void handleLibSongAddError(CommErrorType errorType);
+  void handleLibSongAddError(CommErrorHandler::CommErrorType errorType);
 
   void onAuthenticated(const QByteArray& ticket, const user_id_t& user_id);
 

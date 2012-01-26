@@ -30,6 +30,7 @@ class QTimer;
 namespace UDJ{
 
 class UDJServerConnection;
+class CommErrorHandler;
 
 /** 
  * \brief A class that provides access to all persisten storage used by UDJ.
@@ -941,6 +942,8 @@ private:
   QString username;
  
   QString password;
+
+  CommErrorHandler *errorHandler;
   //@}
 
   /** @name Private Functions */
@@ -1449,6 +1452,7 @@ private slots:
   void onEventEnd();
 
   void onEventEndFail(const QString message);
+
 
 
 
