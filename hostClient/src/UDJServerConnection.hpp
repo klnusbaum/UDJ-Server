@@ -530,7 +530,7 @@ private:
    */
   static const QString& getServerUrlPath(){
     static const QString SERVER_URL_PATH= 
-      "https://localhost:" + getServerPortNumber() + "/udj/";
+      "https://udjevents.com:" + getServerPortNumber() + "/udj/";
     return SERVER_URL_PATH;
   }
 
