@@ -19,6 +19,10 @@
 
 #ifndef CONFIG_DEFS_HPP
 #define CONFIG_DEFS_HPP
+
+#define GEOCODER_API_KEY "@GEOCODER_API_KEY@"
+
+
 #include <QUrl>
 
 namespace UDJ{

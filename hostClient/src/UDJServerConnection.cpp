@@ -24,7 +24,6 @@
 #include <QStringList>
 #include "UDJServerConnection.hpp"
 #include "JSONHelper.hpp"
-#include "GeocoderApiKey.hpp"
 
 
 namespace UDJ{
