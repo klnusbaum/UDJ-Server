@@ -177,6 +177,8 @@ public:
 
   static void getSavedCredentials(QString* username, QString* password);
 
+  static void clearSavedCredentials();
+
   //@}
 
   

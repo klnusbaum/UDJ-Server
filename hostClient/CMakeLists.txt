@@ -40,8 +40,14 @@ ENDIF(UDJ_DEBUG_BUILD)
 
 set(GEOCODER_API_KEY "" CACHE STRING "The api key to user for the usc geocoder webservice")
 
+set(SETTINGS_CRYPTO_KEY "" CACHE STRING "Must speicfy a settings crypto key")
+
 IF(NOT GEOCODER_API_KEY)
   message(FATAL_ERROR "Must specify GEOCODER_API_KEY")
 ENDIF(NOT GEOCODER_API_KEY)
+
+IF(NOT SETTINGS_CRYPTO_KEY)
+  message(FATAL_ERROR "Must specify SETTINGS_CRYPTO_KEY")
+ENDIF(NOT SETTINGS_CRYPTO_KEY)
 
 ADD_SUBDIRECTORY(src)

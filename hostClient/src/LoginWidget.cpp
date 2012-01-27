@@ -69,6 +69,11 @@ void LoginWidget::setupUi(){
 
 
   saveCreds = new QCheckBox(tr("Remmember me"));
+  connect(
+    saveCreds,
+    SIGNAL(toggled(bool)),
+    this,
+    SLOT(saveCredsChanged(bool)));
 
 
   QGridLayout *layout = new QGridLayout;
@@ -125,6 +130,14 @@ void LoginWidget::displayLoginFailedMessage(const QString errorMessage){
     this,
     tr("Login Failed"),
     errorMessage);
+}
+
+void LoginWidget::saveCredsChanged(bool newCreds){
+  if(!newCreds && DataStore::hasValidSavedCredentials()){
+    DataStore::clearSavedCredentials();
+    usernameBox->setText("");
+    passwordBox->setText("");
+  }
 }
 
 

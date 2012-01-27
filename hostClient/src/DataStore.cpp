@@ -18,8 +18,8 @@
  */
 #include "DataStore.hpp"
 #include "UDJServerConnection.hpp"
-#include "CredentialsConfig.hpp"
 #include "CommErrorHandler.hpp"
+#include "simpleCrypt/simplecrypt.h"
 #include <QDir>
 #include <QDesktopServices>
 #include <QDir>
@@ -1057,7 +1057,7 @@ void DataStore::saveCredentials(
   const QString& username, const QString& password)
 {
   QSettings settings(QSettings::UserScope, getSettingsOrg(), getSettingsApp());
-  SimpleCrypt crypt = getCryptoObject();
+  SimpleCrypt crypt = UDJ_GET_CRYPTO_OBJECT;
   QString cryptUsername = crypt.encryptToString(username);
   QString cryptPassword = crypt.encryptToString(password);
   settings.setValue(getHasValidCredsSettingName(), true);
@@ -1077,13 +1077,20 @@ bool DataStore::hasValidSavedCredentials(){
 
 void DataStore::getSavedCredentials(QString* username, QString* password){
   QSettings settings(QSettings::UserScope, getSettingsOrg(), getSettingsApp());
-  SimpleCrypt crypt = getCryptoObject();
+  SimpleCrypt crypt = UDJ_GET_CRYPTO_OBJECT;
   QString encryptedUsername = 
     settings.value(getUsernameSettingName()).toString();
   QString encryptedPassword = 
     settings.value(getPasswordSettingName()).toString();
   *username = crypt.decryptToString(encryptedUsername);
   *password = crypt.decryptToString(encryptedPassword);
+}
+
+void DataStore::clearSavedCredentials(){
+  QSettings settings(QSettings::UserScope, getSettingsOrg(), getSettingsApp());
+  settings.setValue(getHasValidCredsSettingName(), false);
+  settings.setValue(getUsernameSettingName(), "");
+  settings.setValue(getPasswordSettingName(), "");
 }
 
 void DataStore::pausePlaylistUpdates(){

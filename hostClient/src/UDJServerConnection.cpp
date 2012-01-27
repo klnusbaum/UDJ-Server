@@ -622,7 +622,7 @@ QUrl UDJServerConnection::getLocationUrl(
 {
   QUrl toReturn("https://webgis.usc.edu/Services/"
     "Geocode/WebService/GeocoderWebServiceHttpNonParsed_V02_96.aspx");
-  toReturn.addQueryItem("apiKey", GEOCODER_API_KEY);
+  toReturn.addQueryItem("apiKey", UDJ_GEOCODER_API_KEY);
   toReturn.addQueryItem("version" , "2.96");
   toReturn.addQueryItem("streetAddress" , streetAddress);
   toReturn.addQueryItem("state",state);

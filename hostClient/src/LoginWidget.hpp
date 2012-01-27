@@ -118,6 +118,8 @@ private slots:
    */
   void displayLoginFailedMessage(const QString errorMessage);
 
+  void saveCredsChanged(bool newSetting);
+
   //@}
 };
 
