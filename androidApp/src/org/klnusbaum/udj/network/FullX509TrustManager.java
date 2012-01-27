@@ -16,19 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <QApplication>
-#include <QSslConfiguration>
-#include "LoginDialog.hpp"
+package org.klnusbaum.udj.network;
 
-int main(int argc, char* argv[]){
-  QSslConfiguration defaultConfig = QSslConfiguration::defaultConfiguration(); 
-  defaultConfig.setPeerVerifyMode(QSslSocket::VerifyNone);
-  QSslConfiguration::setDefaultConfiguration(defaultConfig);
-  QApplication app(argc, argv);
-  app.setApplicationName("Udj");
-  app.setQuitOnLastWindowClosed(true);
-  UDJ::LoginDialog loginDialog;
-  loginDialog.show(); 
-  int toReturn = app.exec();
-	return toReturn;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.X509TrustManager;
+
+public class FullX509TrustManager implements X509TrustManager{
+
+  public void checkClientTrusted(X509Certificate[] chain, String authType)
+    throws CertificateException
+  {}
+
+  public void checkServerTrusted(X509Certificate[] chain, String authType)
+    throws CertificateException
+  {}
+
+  public X509Certificate[] getAcceptedIssuers(){
+    return null;
+  }
 }

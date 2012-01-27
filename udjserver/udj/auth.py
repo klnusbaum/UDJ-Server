@@ -14,6 +14,7 @@ from datetime import timedelta
 from udj.headers import getTicketHeader
 from udj.headers import getUserIdHeader
 from udj.headers import getDjangoTicketHeader
+import logging
 
 def getUserForTicket(request):
   return Ticket.objects.get(
@@ -68,11 +69,14 @@ def getTicketForUser(userRequestingTicket, givenIpAddress):
 
 @csrf_exempt
 def authenticate(request):
+  logging.debug("in authenticate, checking for valid auth request") 
   if not validAuthRequest(request):
     return HttpResponseBadRequest()
 
   userToAuth = get_object_or_404(User, username=request.POST['username'])
+  logging.debug("In auth, past getting user") 
   if userToAuth.check_password(request.POST['password']):
+    logging.debug("password checked") 
     ticket = getTicketForUser(userToAuth, request.META['REMOTE_ADDR'])
     response = HttpResponse()
     response[getTicketHeader()] = ticket.ticket_hash
