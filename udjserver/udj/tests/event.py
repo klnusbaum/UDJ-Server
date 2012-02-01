@@ -268,6 +268,10 @@ class TestDeleteAvailableMusic(User2TestCase):
     foundSongs = AvailableSong.objects.filter(
       song__host_lib_song_id=3, song__owning_user__id=2)
     self.assertFalse(foundSongs.exists())
+
+  def testBadRemove(self):
+    response = self.doDelete('/udj/events/2/available_music/400')
+    self.assertEqual(response.status_code, 404, response.content)
    
 
 class TestSetCurrentSong(User2TestCase):

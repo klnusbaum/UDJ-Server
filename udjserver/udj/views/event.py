@@ -220,7 +220,7 @@ def removeFromAvailableMusic(request, event_id, song_id):
     AvailableSong.objects.get(
       song__host_lib_song_id=song_id,
       song__owning_user=host).delete()
-  except DoesNotExist:
+  except ObjectDoesNotExist:
     return HttpResponseNotFound("id " + str(song_id) + " doesn't exist")
   return HttpResponse()
 
