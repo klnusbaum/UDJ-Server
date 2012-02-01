@@ -38,6 +38,12 @@ public:
     UNKNOWN_ERROR
   };
 
+  enum OperationType{
+    LIB_SONG_ADD,
+    LIB_SONG_DELETE,
+    CREATE_EVENT,
+    END_EVENT
+  };
 
   CommErrorHandler(
     DataStore *dataStore, 
@@ -51,9 +57,8 @@ signals:
 
 private slots:
 
-  void handleLibSyncError(CommErrorHandler::CommErrorType errorType);
-
-  void handleCreateEventError(
+  void handleCommError(
+    CommErrorHandler::OperationType opType,
     CommErrorHandler::CommErrorType errorType,
     const QByteArray& payload);
 
@@ -73,15 +78,13 @@ private:
 
   bool createEventOnReauth;
 
+  bool endEventOnReauth;
+
   void clearOnReauthFlags();  
 
   void requestReauth();
-
-  void establishAuthConnections();
- 
-  void establishErrorConnections();
 };
 
-}
 
+}
 #endif //COMM_ERROR_HANDLER_HPP

@@ -230,6 +230,11 @@ signals:
    */
   void authFailed(const QString errMessage);
 
+  void commError(
+    CommErrorHandler::OperationType opType, 
+    CommErrorHandler::CommErrorType error, 
+    const QByteArray &payload);
+
   /**
    * \brief Emitted when songs are added to the library on the server.
    *
@@ -237,8 +242,6 @@ signals:
    * server.
    */
   void songsAddedToLibOnServer(const std::vector<library_song_id_t> addedIds);
-
-  void libSongAddFailed(CommErrorHandler::CommErrorType error);
 
   /**
    * \brief Emitted when a song is deleted from the library on the server.
@@ -249,28 +252,15 @@ signals:
   void songDeletedFromLibOnServer(
     const library_song_id_t deletedId);
 
-  void libSongDeleteFailed(CommErrorHandler::CommErrorType error);
-
   /**
    * \brief Emitted when an event is succesfully created.
    */
   void eventCreated(const event_id_t& issuedId);
 
-  void eventCreationFailed(
-    CommErrorHandler::CommErrorType error,
-    const QByteArray& payload);
-
   /**
    * \brief Emitted when an event is succesfully ended.
    */
   void eventEnded();
-
-  /**
-   * \brief Emitted when ending an event fails.
-   *
-   * @param errMessage A message describing the error.
-   */
-  void eventEndingFailed(const QString errMessage);
 
   /**
    * \brief Emitted when songs are succesfully added to the list of available
@@ -715,16 +705,9 @@ private:
 
   void parseLocationResponse(QNetworkReply *reply);
 
-  void handleEventCreationConflict(QNetworkReply *);
-
   bool checkReplyAndFireErrors(
     QNetworkReply *reply,
-    void (UDJ::UDJServerConnection::*errorSignal)(CommErrorHandler::CommErrorType));
-
-  bool checkReplyAndFireErrors(
-    QNetworkReply *reply,
-    void (UDJ::UDJServerConnection::*errorSignal)
-    (CommErrorHandler::CommErrorType, const QByteArray&));
+    CommErrorHandler::OperationType opType);
 
   //@}
 

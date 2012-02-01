@@ -31,11 +31,6 @@ CommErrorHandler::CommErrorHandler(
   serverConnection(serverConnection),
   syncLibOnReauth(false)
 {
-  establishAuthConnections();
-  establishErrorConnections();
-} 
-
-void CommErrorHandler::establishAuthConnections(){
   connect(
     serverConnection,
     SIGNAL(authenticated(const QByteArray&, const user_id_t&)),
@@ -47,62 +42,50 @@ void CommErrorHandler::establishAuthConnections(){
     SIGNAL(authFailed(const QString)),
     this,
     SIGNAL(hardAuthFailure(const QString)));
-}
-
-void CommErrorHandler::establishErrorConnections(){
-  connect(
-    serverConnection,
-    SIGNAL(libSongAddFailed(CommErrorHandler::CommErrorType)),
-    this,
-    SLOT(handleLibSyncError(CommErrorHandler::CommErrorType)));
 
   connect(
     serverConnection,
-    SIGNAL(libSongDeleteFailed(CommErrorHandler::CommErrorType)),
+    SIGNAL(commError(
+      CommErrorHandler::OperationType,
+      CommErrorHandler::CommErrorType,
+      const QByteArray&)),
     this,
-    SLOT(handleLibSyncError(CommErrorHandler::CommErrorType)));
+    SLOT(handleCommError(
+      CommErrorHandler::OperationType,
+      CommErrorHandler::CommErrorType,
+      const QByteArray&)));
+} 
 
-  connect(
-    serverConnection,
-    SIGNAL(eventCreationFailed(
-      CommErrorHandler::CommErrorType, const QByteArray&)),
-    this,
-    SLOT(handleCreateEventError(
-      CommErrorHandler::CommErrorType, const QByteArray&)));
-
-}
-
-void CommErrorHandler::handleLibSyncError(
-  CommErrorHandler::CommErrorType errorType)
-{
-  switch(errorType){
-    case AUTH:
-      syncLibOnReauth = true;
-      requestReauth();
-      break;
-    case UNKNOWN_ERROR:
-      //TODO handle this error
-      break;
-  }
-}
-
-void CommErrorHandler::handleCreateEventError(
+void CommErrorHandler::handleCommError(
+  CommErrorHandler::OperationType opType,
   CommErrorHandler::CommErrorType errorType,
   const QByteArray& payload)
 {
-  switch(errorType){
-    case AUTH:
+  DEBUG_MESSAGE("Handling error of type " << errorType << " for op type " <<
+    opType);
+  if(errorType == CommErrorHandler::AUTH){
+    if(opType == LIB_SONG_ADD || opType == LIB_SONG_DELETE){
+      syncLibOnReauth = true;
+    }
+    else if(opType == CREATE_EVENT){
       createEventOnReauth = true;
       createEventPayload = payload;
-      requestReauth();
-      break;
-    case CONFLICT:
+    }
+    else if(opType == END_EVENT){
+      endEventOnReauth = true;
+    }
+    requestReauth();
+  }
+  else if(errorType == CONFLICT){
+    if(opType == CREATE_EVENT){
       //TODO handle this error
-      break;
-    case UNKNOWN_ERROR:
+    }
+  }
+  else if(errorType == UNKNOWN_ERROR){
+    if(opType == CREATE_EVENT){
       emit eventCreationFailed(tr("We're currently experiencing technical "
         "difficulties. Please try again in a minute."));
-      break;
+    }
   }
 }
 
@@ -133,6 +116,10 @@ void CommErrorHandler::clearOnReauthFlags(){
   if(createEventOnReauth){
     serverConnection->createEvent(createEventPayload);
     createEventOnReauth=false;
+  }
+  if(endEventOnReauth){
+    dataStore->endEvent();
+    endEventOnReauth=false;
   }
 }
 

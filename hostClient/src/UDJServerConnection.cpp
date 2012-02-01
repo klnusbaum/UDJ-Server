@@ -325,43 +325,28 @@ void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
     emit authFailed(error);
   }
 }
-bool UDJServerConnection::checkReplyAndFireErrors(
-  QNetworkReply *reply,
-  void (UDJ::UDJServerConnection::*errorSignal)(CommErrorHandler::CommErrorType))
-{
-  if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 403){
-    emit (this->*errorSignal)(CommErrorHandler::AUTH);
-    return true;
-  }
-  else if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 409){
-    emit (this->*errorSignal)(CommErrorHandler::CONFLICT);
-    return true;
-  }
-  else if(reply->error() != QNetworkReply::NoError){
-    emit (this->*errorSignal)(CommErrorHandler::UNKNOWN_ERROR);
-    return true;
-  }
-  return false;
-}
 
 bool UDJServerConnection::checkReplyAndFireErrors(
   QNetworkReply *reply,
-  void (UDJ::UDJServerConnection::*errorSignal)
-  (CommErrorHandler::CommErrorType, const QByteArray&))
+  CommErrorHandler::OperationType opType
+)
 {
+  QByteArray payload;
+  QVariant potentialPayload = reply->property(getPayloadPropertyName());
+  if(potentialPayload.isValid()){
+    payload = potentialPayload.toByteArray();
+  }
+
   if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 403){
-    emit (this->*errorSignal)(CommErrorHandler::AUTH, 
-      reply->property(getPayloadPropertyName()).toByteArray());
+    emit commError(opType, CommErrorHandler::AUTH, payload);
     return true;
   }
   else if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 409){
-    emit (this->*errorSignal)(CommErrorHandler::CONFLICT,
-      reply->property(getPayloadPropertyName()).toByteArray());
+    emit commError(opType, CommErrorHandler::CONFLICT, payload);
     return true;
   }
   else if(reply->error() != QNetworkReply::NoError){
-    emit (this->*errorSignal)(CommErrorHandler::UNKNOWN_ERROR,
-      reply->property(getPayloadPropertyName()).toByteArray());
+    emit commError(opType, CommErrorHandler::UNKNOWN_ERROR, payload);
     return true;
   }
   return false;
@@ -369,9 +354,7 @@ bool UDJServerConnection::checkReplyAndFireErrors(
 
 
 void UDJServerConnection::handleAddLibSongsReply(QNetworkReply *reply){
-  if(!checkReplyAndFireErrors(
-      reply, &UDJ::UDJServerConnection::libSongAddFailed))
-  {
+  if(!checkReplyAndFireErrors(reply, CommErrorHandler::LIB_SONG_ADD)){
     const std::vector<library_song_id_t> updatedIds =   
       JSONHelper::getUpdatedLibIds(reply);
     emit songsAddedToLibOnServer(updatedIds);
@@ -380,9 +363,7 @@ void UDJServerConnection::handleAddLibSongsReply(QNetworkReply *reply){
 
 
 void UDJServerConnection::handleDeleteLibSongsReply(QNetworkReply *reply){
-  if(!checkReplyAndFireErrors(
-      reply, &UDJ::UDJServerConnection::libSongDeleteFailed))
-  {
+  if(!checkReplyAndFireErrors(reply, CommErrorHandler::LIB_SONG_DELETE)){
     QString path = reply->request().url().path();
     QRegExp rx("/udj/users/" + QString::number(user_id) + "/library/(\\d+)");
     rx.indexIn(path);
@@ -417,11 +398,7 @@ void UDJServerConnection::handleDeleteAvailableMusicReply(
 }
 
 void UDJServerConnection::handleCreateEventReply(QNetworkReply *reply){
-  //TODO
-  // Handle if a 409 response is returned
-  if(!checkReplyAndFireErrors(
-    reply, &UDJ::UDJServerConnection::eventCreationFailed))
-  {
+  if(!checkReplyAndFireErrors(reply, CommErrorHandler::CREATE_EVENT)){
     //TODO handle bad json resturned from the server.
     event_id_t issuedId = JSONHelper::getEventId(reply);
     emit eventCreated(issuedId);
@@ -429,12 +406,9 @@ void UDJServerConnection::handleCreateEventReply(QNetworkReply *reply){
 }
 
 void UDJServerConnection::handleEndEventReply(QNetworkReply *reply){
-  if(reply->error() != QNetworkReply::NoError){
-    emit eventEndingFailed(tr("Failed to end event") + 
-      QString::number(reply->error()) );
-    return;
+  if(!checkReplyAndFireErrors(reply, CommErrorHandler::END_EVENT)){
+    emit eventEnded();
   }
-  emit eventEnded();
 }
 
 void UDJServerConnection::handleRecievedActivePlaylist(QNetworkReply *reply){
@@ -504,18 +478,6 @@ void UDJServerConnection::handleLocaitonResponse(QNetworkReply *reply){
     emit eventCreationFailed("Failed to create event. There was an error" 
       "verifying your locaiton. Please change it and try again.");
     */
-  }
-}
-
-void UDJServerConnection::handleEventCreationConflict(QNetworkReply *reply){
-  DEBUG_MESSAGE("Handling event creation conflict reply")
-  QVariantMap conflictingEvent = JSONHelper::getSingleEventInfo(reply);
-  if(conflictingEvent["host_id"].value<user_id_t>() == user_id){
-    //TODO That party must've been hosted on a different machine because we
-    //didn't know about it. So ask them if they want to end it.
-  }
-  else{
-    //TODO silently log them out of the other event they're in. 
   }
 }
 
