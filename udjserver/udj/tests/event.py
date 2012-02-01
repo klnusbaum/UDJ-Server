@@ -272,6 +272,11 @@ class TestDeleteAvailableMusic(User2TestCase):
   def testBadRemove(self):
     response = self.doDelete('/udj/events/2/available_music/400')
     self.assertEqual(response.status_code, 404, response.content)
+
+  def testRemoveSongAlsoUsedInPreviousEvent(self):
+    response = self.doDelete('/udj/events/2/available_music/1')
+    self.assertEqual(response.status_code, 200, response.content)
+
    
 
 class TestSetCurrentSong(User2TestCase):

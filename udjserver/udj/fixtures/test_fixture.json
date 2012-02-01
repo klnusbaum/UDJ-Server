@@ -40,6 +40,16 @@
     }
   }, 
   {
+    "pk": 5, 
+    "model": "udj.event", 
+    "fields": {
+      "host": 2, 
+      "state": "FN", 
+      "name": "Previous ongoing event", 
+      "time_started": "2011-12-18 20:39:41"
+    }
+  }, 
+  {
     "pk" : 1,
     "model" : "udj.eventlocation",
     "fields":{
@@ -332,6 +342,14 @@
     "fields": {
       "event": 2, 
       "song": 10
+    }
+  }, 
+  {
+    "pk": 8, 
+    "model": "udj.availablesong", 
+    "fields": {
+      "event": 5, 
+      "song": 1
     }
   }, 
   {
