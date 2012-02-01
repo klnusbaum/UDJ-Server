@@ -413,7 +413,7 @@ void UDJServerConnection::handleEndEventReply(QNetworkReply *reply){
 }
 
 void UDJServerConnection::handleRecievedActivePlaylist(QNetworkReply *reply){
-  if(reply->error() == QNetworkReply::NoError){
+  if(!checkReplyAndFireErrors(reply, CommErrorHandler::PLAYLIST_UPDATE)){
     emit newActivePlaylist(JSONHelper::getActivePlaylistFromJSON(reply));
   }
 }

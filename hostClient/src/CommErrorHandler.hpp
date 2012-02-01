@@ -45,7 +45,8 @@ public:
     CREATE_EVENT,
     END_EVENT,
     AVAILABLE_SONG_ADD,
-    AVAILABLE_SONG_DEL
+    AVAILABLE_SONG_DEL,
+    PLAYLIST_UPDATE
   };
 
   CommErrorHandler(
@@ -63,6 +64,8 @@ signals:
   void libSyncError(const QString errMessage);
 
   void availableMusicSyncError(const QString errMessage);
+
+  void refreshActivePlaylistError(const QString errMessage);
 
 private slots:
 
@@ -92,6 +95,8 @@ private:
   bool endEventOnReauth;
 
   bool syncAvailableMusicOnReauth;
+
+  bool refreshActivePlaylistOnReauth;
 
   void clearOnReauthFlags();  
 

@@ -77,6 +77,9 @@ void CommErrorHandler::handleCommError(
     else if(opType == AVAILABLE_SONG_ADD || opType == AVAILABLE_SONG_DEL){
       syncAvailableMusicOnReauth = true;
     }
+    else if(opType == PLAYLIST_UPDATE){
+      refreshActivePlaylistOnReauth = true;
+    }
     requestReauth();
   }
   else if(errorType == CONFLICT){
@@ -84,7 +87,7 @@ void CommErrorHandler::handleCommError(
       //TODO handle this error
     }
   }
-  else if(errorType == UNKNOWN_ERROR){
+  else if(errorType == UNKNOWN_ERROR || errorType == SERVER_ERROR){
     if(opType == CREATE_EVENT){
       emit eventCreationFailed(tr("We're currently experiencing technical "
         "difficulties. Please try again in a minute."));
@@ -128,6 +131,10 @@ void CommErrorHandler::clearOnReauthFlags(){
     dataStore->syncAvailableMusic();
     syncAvailableMusicOnReauth=false;
   }
+  if(refreshActivePlaylistOnReauth){
+    serverConnection->getActivePlaylist();
+    refreshActivePlaylistOnReauth=false;
+  }
 }
 
 void CommErrorHandler::onHardAuthFailure(const QString errMessage){
@@ -144,6 +151,9 @@ void CommErrorHandler::onHardAuthFailure(const QString errMessage){
   }
   if(syncAvailableMusicOnReauth){
     emit availableMusicSyncError(errMessage);
+  }
+  if(refreshActivePlaylistOnReauth){
+    emit refreshActivePlaylistError(errMessage); 
   }
 }
 
