@@ -108,6 +108,11 @@ public:
    */
   void syncLibrary();
 
+  /**
+   * \brief Syncs the available music table with the server.
+   */
+  void syncAvailableMusic();
+
   /** 
    * \brief Gets the name of the current event.
    *
@@ -953,11 +958,6 @@ private:
 
   /** \brief Does initiail database setup */
   void setupDB();
-
-  /**
-   * \brief Syncs the available music table with the server.
-   */
-  void syncAvailableMusic();
 
   /** 
    * \brief Deletes all the entries in the active playlist table.

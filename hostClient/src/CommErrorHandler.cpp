@@ -74,6 +74,9 @@ void CommErrorHandler::handleCommError(
     else if(opType == END_EVENT){
       endEventOnReauth = true;
     }
+    else if(opType == AVAILABLE_SONG_ADD || opType == AVAILABLE_SONG_DEL){
+      syncAvailableMusicOnReauth = true;
+    }
     requestReauth();
   }
   else if(errorType == CONFLICT){
@@ -120,6 +123,27 @@ void CommErrorHandler::clearOnReauthFlags(){
   if(endEventOnReauth){
     dataStore->endEvent();
     endEventOnReauth=false;
+  }
+  if(syncAvailableMusicOnReauth){
+    dataStore->syncAvailableMusic();
+    syncAvailableMusicOnReauth=false;
+  }
+}
+
+void CommErrorHandler::onHardAuthFailure(const QString errMessage){
+  emit hardAuthFailure(errMessage);
+
+  if(syncLibOnReauth){
+    emit libSyncError(errMessage);
+  }
+  if(createEventOnReauth){
+    emit eventCreationFailed(errMessage);
+  }
+  if(endEventOnReauth){
+    emit eventEndingFailed(errMessage);
+  }
+  if(syncAvailableMusicOnReauth){
+    emit availableMusicSyncError(errMessage);
   }
 }
 

@@ -345,6 +345,13 @@ bool UDJServerConnection::checkReplyAndFireErrors(
     emit commError(opType, CommErrorHandler::CONFLICT, payload);
     return true;
   }
+  else if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 500){
+    QByteArray response = reply->readAll();
+    QString resposneMessage = QString(response);
+    DEBUG_MESSAGE(resposneMessage.toStdString())
+    emit commError(opType, CommErrorHandler::SERVER_ERROR, payload);
+    return true;
+  }
   else if(reply->error() != QNetworkReply::NoError){
     emit commError(opType, CommErrorHandler::UNKNOWN_ERROR, payload);
     return true;
@@ -373,21 +380,15 @@ void UDJServerConnection::handleDeleteLibSongsReply(QNetworkReply *reply){
 }
 
 void UDJServerConnection::handleAddAvailableSongReply(QNetworkReply *reply){
-  if(reply->error() == QNetworkReply::NoError){
+  if(!checkReplyAndFireErrors(reply, CommErrorHandler::AVAILABLE_SONG_ADD)){
     std::vector<library_song_id_t> addedIds = 
       JSONHelper::getAddedAvailableSongs(reply);
     emit songsAddedToAvailableMusic(addedIds); 
   }
-  else{
-    DEBUG_MESSAGE("Error adding available music" << std::endl <<
-      QString(reply->readAll()).toStdString())
-  }
 }
 
-void UDJServerConnection::handleDeleteAvailableMusicReply(
-  QNetworkReply *reply)
-{
-  if(reply->error() == QNetworkReply::NoError){
+void UDJServerConnection::handleDeleteAvailableMusicReply(QNetworkReply *reply){
+  if(!checkReplyAndFireErrors(reply, CommErrorHandler::AVAILABLE_SONG_DEL)){
     QString path = reply->request().url().path();
     QRegExp rx("/udj/events/" + QString::number(eventId) + 
       "/available_music/(\\d+)");

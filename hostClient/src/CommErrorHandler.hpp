@@ -35,6 +35,7 @@ public:
   enum CommErrorType{
     AUTH,
     CONFLICT,
+    SERVER_ERROR,
     UNKNOWN_ERROR
   };
 
@@ -42,7 +43,9 @@ public:
     LIB_SONG_ADD,
     LIB_SONG_DELETE,
     CREATE_EVENT,
-    END_EVENT
+    END_EVENT,
+    AVAILABLE_SONG_ADD,
+    AVAILABLE_SONG_DEL
   };
 
   CommErrorHandler(
@@ -55,6 +58,12 @@ signals:
 
   void eventCreationFailed(const QString errMessage);
 
+  void eventEndingFailed(const QString errMessage);
+
+  void libSyncError(const QString errMessage);
+
+  void availableMusicSyncError(const QString errMessage);
+
 private slots:
 
   void handleCommError(
@@ -63,6 +72,8 @@ private slots:
     const QByteArray& payload);
 
   void onAuthenticated(const QByteArray& ticket, const user_id_t& user_id);
+
+  void onHardAuthFailure(const QString errMessage);
 
 private:
 
@@ -79,6 +90,8 @@ private:
   bool createEventOnReauth;
 
   bool endEventOnReauth;
+
+  bool syncAvailableMusicOnReauth;
 
   void clearOnReauthFlags();  
 

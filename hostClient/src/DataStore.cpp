@@ -96,7 +96,7 @@ DataStore::DataStore(
     SLOT(onEventEnd()));
 
   connect(
-    serverConnection, 
+    errorHandler, 
     SIGNAL(eventEndingFailed(const QString)), 
     this, 
     SLOT(onEventEndFail(const QString)));
