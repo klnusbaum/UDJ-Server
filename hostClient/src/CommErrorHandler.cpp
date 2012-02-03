@@ -87,6 +87,9 @@ void CommErrorHandler::handleCommError(
       setCurrentSongPayload = payload;
       setCurrentSongOnReauth = true;
     }
+    else if(opType == PLAYLIST_REMOVE){
+      syncPlaylistRemoveRequestsOnReauth = true;
+    }
     requestReauth();
   }
   else if(errorType == CONFLICT){
@@ -150,6 +153,10 @@ void CommErrorHandler::clearOnReauthFlags(){
     serverConnection->setCurrentSong(setCurrentSongPayload);
     setCurrentSongOnReauth=false;
   }
+  if(syncPlaylistRemoveRequestsOnReauth){
+    dataStore->syncPlaylistRemoveRequests();
+    syncPlaylistRemoveRequestsOnReauth=false;
+  }
 }
 
 void CommErrorHandler::onHardAuthFailure(const QString errMessage){
@@ -172,6 +179,12 @@ void CommErrorHandler::onHardAuthFailure(const QString errMessage){
   }
   if(syncPlaylistAddRequestsOnReauth){
     emit playlistAddRequestError(errMessage);
+  }
+  if(setCurrentSongOnReauth){
+    emit setCurrentSongError(errMessage);
+  }
+  if(syncPlaylistRemoveRequests){
+    emit playlistRemoveRequestError(errMessage);
   }
 }
 

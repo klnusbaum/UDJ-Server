@@ -48,7 +48,8 @@ public:
     AVAILABLE_SONG_DEL,
     PLAYLIST_UPDATE,
     PLAYLIST_ADD,
-    SET_CURRENT_SONG
+    SET_CURRENT_SONG,
+    PLAYLIST_REMOVE
   };
 
   CommErrorHandler(
@@ -70,6 +71,8 @@ signals:
   void refreshActivePlaylistError(const QString errMessage);
 
   void playlistAddRequestError(const QString errMessage);
+
+  void playlistRemoveRequestError(const QString errMessage);
 
   void setCurrentSongError(const QString errMessage);
 
@@ -109,6 +112,8 @@ private:
   bool syncPlaylistAddRequestsOnReauth;
 
   bool setCurrentSongOnReauth;
+
+  bool syncPlaylistRemoveRequestsOnReauth;
 
   void clearOnReauthFlags();
 
