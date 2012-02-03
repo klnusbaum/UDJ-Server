@@ -208,6 +208,8 @@ public slots:
    */
   void setCurrentSong(playlist_song_id_t currentSong);
 
+  void setCurrentSong(const QByteArray& payload);
+
   void getEventGoers();
 
   //@}

@@ -1,18 +1,18 @@
 /**
  * Copyright 2011 Kurtis L. Nusbaum
- * 
+ *
  * This file is part of UDJ.
- * 
+ *
  * UDJ is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * UDJ is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -47,11 +47,12 @@ public:
     AVAILABLE_SONG_ADD,
     AVAILABLE_SONG_DEL,
     PLAYLIST_UPDATE,
-    PLAYLIST_ADD
+    PLAYLIST_ADD,
+    SET_CURRENT_SONG
   };
 
   CommErrorHandler(
-    DataStore *dataStore, 
+    DataStore *dataStore,
     UDJServerConnection *serverConnection);
 
 signals:
@@ -69,6 +70,8 @@ signals:
   void refreshActivePlaylistError(const QString errMessage);
 
   void playlistAddRequestError(const QString errMessage);
+
+  void setCurrentSongError(const QString errMessage);
 
 private slots:
 
@@ -89,8 +92,10 @@ private:
 
   QByteArray createEventPayload;
 
+  QByteArray setCurrentSongPayload;
+
   bool hasPendingReauthRequest;
- 
+
   bool syncLibOnReauth;
 
   bool createEventOnReauth;
@@ -102,6 +107,8 @@ private:
   bool refreshActivePlaylistOnReauth;
 
   bool syncPlaylistAddRequestsOnReauth;
+
+  bool setCurrentSongOnReauth;
 
   void clearOnReauthFlags();
 

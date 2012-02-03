@@ -1,18 +1,18 @@
 /**
  * Copyright 2011 Kurtis L. Nusbaum
- * 
+ *
  * This file is part of UDJ.
- * 
+ *
  * UDJ is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * UDJ is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -45,7 +45,7 @@ void UDJServerConnection::prepareJSONRequest(QNetworkRequest &request){
 }
 
 void UDJServerConnection::authenticate(
-  const QString& username, 
+  const QString& username,
   const QString& password)
 {
   QNetworkRequest authRequest(getAuthUrl());
@@ -60,11 +60,11 @@ void UDJServerConnection::authenticate(
 }
 
 void UDJServerConnection::addLibSongOnServer(
-	const QString& songName,
-	const QString& artistName,
-	const QString& albumName,
+  const QString& songName,
+  const QString& artistName,
+  const QString& albumName,
   const int duration,
-	const library_song_id_t hostId)
+  const library_song_id_t hostId)
 {
   if(ticket_hash==""){
     //TODO throw error
@@ -233,12 +233,16 @@ void UDJServerConnection::removeSongsFromActivePlaylist(
 
 
 void UDJServerConnection::setCurrentSong(playlist_song_id_t currentSong){
+  QString params = "playlist_entry_id="+QString::number(currentSong);
+  setCurrentSong(params.toUtf8());
+}
+
+void UDJServerConnection::setCurrentSong(const QByteArray& payload){
   QNetworkRequest setCurrentSongRequest(getCurrentSongUrl());
   setCurrentSongRequest.setRawHeader(getTicketHeaderName(), ticket_hash);
-  QString params = "playlist_entry_id="+QString::number(currentSong);
-  QNetworkReply *reply = 
-    netAccessManager->post(setCurrentSongRequest, params.toUtf8());
-  reply->setProperty(getPayloadPropertyName(), params); 
+  QNetworkReply *reply =
+    netAccessManager->post(setCurrentSongRequest, payload);
+  reply->setProperty(getPayloadPropertyName(), payload);
 }
 
 void UDJServerConnection::getEventGoers(){
@@ -427,12 +431,8 @@ void UDJServerConnection::handleRecievedActivePlaylistAdd(QNetworkReply *reply){
 }
 
 void UDJServerConnection::handleRecievedCurrentSongSet(QNetworkReply *reply){
-  if(reply->error() == QNetworkReply::NoError){
+  if(!checkReplyAndFireErrors(reply, CommErrorHandler::SET_CURRENT_SONG)){
     emit currentSongSet();
-  }
-  else{
-    DEBUG_MESSAGE(QString(reply->readAll()).toStdString());
-    emit currentSongSetError();
   }
 }
 
