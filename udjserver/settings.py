@@ -74,6 +74,7 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
+
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '-fggs&v^=v!rqo_=41!6zk)zio*!bkc1$hy48@eh_9*lg-li+t'
 
@@ -137,3 +138,16 @@ LOGGING = {
         },
     }
 }
+
+try:
+  import static_config
+  STATICFILES_STORAGE = static_config.STATICFILES_STORAGE
+  AWS_ACCESS_KEY_ID = static_config.AWS_ACCESS_KEY_ID
+  AWS_SECRET_ACCESS_KEY = static_config.AWS_SECRET_ACCESS_KEY
+  AWS_STORAGE_BUCKET_NAME = static_config.AWS_STORAGE_BUCKET_NAME
+  STATIC_URL = static_config.STATIC_URL
+  ADMIN_MEDIA_PREFIX = static_config.ADMIN_MEDIA_PREFIX
+except ImportError:
+  print "No static_config file found. Using default static file configuration"
+  pass
+
