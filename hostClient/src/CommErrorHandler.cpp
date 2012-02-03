@@ -157,6 +157,10 @@ void CommErrorHandler::clearOnReauthFlags(){
     dataStore->syncPlaylistRemoveRequests();
     syncPlaylistRemoveRequestsOnReauth=false;
   }
+  if(refreshActivePlaylistOnReauth){
+    serverConnection->getEventGoers();
+    refreshActivePlaylistOnReauth=false;
+  }
 }
 
 void CommErrorHandler::onHardAuthFailure(const QString errMessage){
@@ -183,7 +187,7 @@ void CommErrorHandler::onHardAuthFailure(const QString errMessage){
   if(setCurrentSongOnReauth){
     emit setCurrentSongError(errMessage);
   }
-  if(syncPlaylistRemoveRequests){
+  if(syncPlaylistRemoveRequestsOnReauth){
     emit playlistRemoveRequestError(errMessage);
   }
 }

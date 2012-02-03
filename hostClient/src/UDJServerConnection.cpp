@@ -445,13 +445,9 @@ void UDJServerConnection::handleRecievedActivePlaylistRemove(QNetworkReply *repl
 }
 
 void UDJServerConnection::handleRecievedNewEventGoers(QNetworkReply *reply){
-  if(reply->error() == QNetworkReply::NoError){
+  if(!checkReplyAndFireErrors(reply, CommErrorHandler::EVENT_GOERS_REFRESH)){
     emit newEventGoers(JSONHelper::getEventGoersJSON(reply));
   }
-  else{
-    DEBUG_MESSAGE("Error retrieving event goer list" <<
-      QString(reply->readAll()).toStdString())
-  } 
 }
 
 void UDJServerConnection::handleLocaitonResponse(QNetworkReply *reply){
