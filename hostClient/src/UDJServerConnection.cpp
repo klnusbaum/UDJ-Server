@@ -419,14 +419,10 @@ void UDJServerConnection::handleRecievedActivePlaylist(QNetworkReply *reply){
 }
 
 void UDJServerConnection::handleRecievedActivePlaylistAdd(QNetworkReply *reply){
-  if(reply->error() == QNetworkReply::NoError){
+  if(!checkReplyAndFireErrors(reply, CommErrorHandler::PLAYLIST_ADD)){
     QVariant payload = reply->property(getPayloadPropertyName());
     emit songsAddedToActivePlaylist(
       JSONHelper::extractAddRequestIds(payload.toByteArray()));
-  }
-  else{
-    QByteArray error = reply->readAll();
-    DEBUG_MESSAGE(QString(error).toStdString())
   }
 }
 

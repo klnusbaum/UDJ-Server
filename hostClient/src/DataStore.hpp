@@ -1,18 +1,18 @@
 /**
  * Copyright 2011 Kurtis L. Nusbaum
- * 
+ *
  * This file is part of UDJ.
- * 
+ *
  * UDJ is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * UDJ is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -102,7 +102,7 @@ public:
 
   song_list_id_t insertSongList(const QString& name);
 
-  /** 
+  /**
    * \brief Adds any songs to the server for which the
    * host client doesn't have valid server_lib_song_id.
    */
@@ -113,7 +113,18 @@ public:
    */
   void syncAvailableMusic();
 
-  /** 
+  /**
+   * \brief Syncs all the requests for additions to the active playlst.
+   */
+  void syncPlaylistAddRequests();
+
+  /**
+   * \brief Syncs all the requests for removals from the active playlst.
+   */
+  void syncPlaylistRemoveRequests();
+
+
+  /**
    * \brief Gets the name of the current event.
    *
    * @return The name of the current event.
@@ -124,7 +135,7 @@ public:
     return settings.value(getEventNameSettingName()).toString();
   }
 
-  /** 
+  /**
    * \brief Gets the id of the current event.
    *
    * @return The id of the current event.
@@ -906,7 +917,7 @@ signals:
    * \brief Emitted when ending an event fails.
    */
   void eventEndingFailed(const QString errMessage);
- 
+
   /**
    * \brief Emitted when the active playlist is modified.
    */
@@ -928,7 +939,7 @@ signals:
 //@}
 
 private:
-  
+
   /** @name Private Members */
   //@{
 
@@ -943,11 +954,11 @@ private:
 
   /** \brief Timer used to refresh the active playlist. */
   QTimer *activePlaylistRefreshTimer;
-  
+
   QTimer *eventGoerRefreshTimer;
 
   QString username;
- 
+
   QString password;
 
   CommErrorHandler *errorHandler;
@@ -959,31 +970,21 @@ private:
   /** \brief Does initiail database setup */
   void setupDB();
 
-  /** 
+  /**
    * \brief Deletes all the entries in the active playlist table.
    */
   void clearActivePlaylist();
 
-  /** 
+  /**
    * \brief Adds a song to the active playlist table.
    *
    * @param songToAdd A QVariantMap which represents the song to be added to
    * the active playlsit table.
    * @param pritority The priority of the song to be added to the active 
-   * playlist. 
+   * playlist.
    */
   void addSong2ActivePlaylistFromQVariant(
     const QVariantMap &songToAdd, int priority);
-
-  /** 
-   * \brief Syncs all the requests for additions to the active playlst.
-   */
-  void syncPlaylistAddRequests();
-
-  /** 
-   * \brief Syncs all the requests for removals from the active playlst.
-   */
-  void syncPlaylistRemoveRequests();
 
   //@}
 

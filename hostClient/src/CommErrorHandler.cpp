@@ -80,6 +80,9 @@ void CommErrorHandler::handleCommError(
     else if(opType == PLAYLIST_UPDATE){
       refreshActivePlaylistOnReauth = true;
     }
+    else if(opType == PLAYLIST_ADD){
+      syncPlaylistAddRequestsOnReauth = true;
+    }
     requestReauth();
   }
   else if(errorType == CONFLICT){
@@ -108,9 +111,9 @@ void CommErrorHandler::onAuthenticated(
   const QByteArray& ticket,
   const user_id_t& user_id)
 {
-  hasPendingReauthRequest = false;
   serverConnection->setTicket(ticket);
   serverConnection->setUserId(user_id);
+  hasPendingReauthRequest = false;
   clearOnReauthFlags();
 }
 
@@ -135,6 +138,10 @@ void CommErrorHandler::clearOnReauthFlags(){
     serverConnection->getActivePlaylist();
     refreshActivePlaylistOnReauth=false;
   }
+  if(syncPlaylistAddRequestsOnReauth){
+    dataStore->syncPlaylistAddRequests();
+    syncPlaylistAddRequestsOnReauth=false;
+  }
 }
 
 void CommErrorHandler::onHardAuthFailure(const QString errMessage){
@@ -153,7 +160,10 @@ void CommErrorHandler::onHardAuthFailure(const QString errMessage){
     emit availableMusicSyncError(errMessage);
   }
   if(refreshActivePlaylistOnReauth){
-    emit refreshActivePlaylistError(errMessage); 
+    emit refreshActivePlaylistError(errMessage);
+  }
+  if(syncPlaylistAddRequestsOnReauth){
+    emit playlistAddRequestError(errMessage);
   }
 }
 
