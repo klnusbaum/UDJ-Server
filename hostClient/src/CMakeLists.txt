@@ -107,6 +107,23 @@ SET(UDJ_DEP_LIBS ${UDJ_DEP_LIBS} ${QT_QTMAIN_LIBRARY})
 ADD_DEFINITIONS(-DQT_DLL)
 GET_FILENAME_COMPONENT(QT_DLL_PATH_tmp ${QT_QMAKE_EXECUTABLE} PATH)
 
+#We need the actual dll files on windows because they have to be bundled
+#with our installer. We can't just bundle the static libs we may have used
+#when compiling. So dlls in this case don't necessarily have to 
+#be the actual libraries we built against (with regards to just taglib and zlib)
+#why we have to do this, I have no idea. It's all weird shit to me. I wish I
+#knew more about windows dev. All I know is that when I build against my
+#tab.lib and zlib1.lib libraries but include the dlls with the installer things
+#seem to work.
+
+IF(NOT TAGLIB_DLL_FILE)
+message(FATAL_ERROR "Must specify the absolute file path to the taglib dll")
+ENDIF(NOT TAGLIB_DLL_FILE)
+
+IF(NOT ZLIB_DLL_FILE)
+message(FATAL_ERROR "Must specify the absolute file path to the taglib dll")
+ENDIF(NOT ZLIB_DLL_FILE)
+
 #IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
 INSTALL(FILES ${QT_DLL_PATH_tmp}/phonond4.dll 
   DESTINATION bin)
@@ -118,8 +135,8 @@ INSTALL(FILES ${QT_DLL_PATH_tmp}/QtSqld4.dll
   DESTINATION bin)
 INSTALL(FILES ${QT_DLL_PATH_tmp}/QtNetworkd4.dll 
   DESTINATION bin)
-INSTALL(FILES "C:/Program Files (x86)/taglib/bin/tag.dll" DESTINATION bin)
-INSTALL(FILES "C:/Program Files (x86)/zlib/bin/zlib1.dll" DESTINATION bin)
+INSTALL(FILES ${TAGLIB_DLL_FILE} DESTINATION bin)
+INSTALL(FILES ${ZLIB_DLL_FILE} DESTINATION bin)
 #ELSE(CMAKE_BUILD_TYPE STREQUAL "Debug")
 #INSTALL(FILES ${QT_DLL_PATH_tmp}/phonon4.dll 
 #  DESTINATION bin)
