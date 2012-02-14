@@ -17,7 +17,7 @@ from udj.models import Ticket
 class DoesServerOpsTestCase(TestCase):
   fixtures = ['test_fixture.json']
   client = Client()
-  
+
   def setUp(self):
     response = self.client.post(
       '/udj/auth', {'username': self.username, 'password' : self.userpass})
@@ -25,24 +25,26 @@ class DoesServerOpsTestCase(TestCase):
     self.ticket_hash = response.__getitem__(getTicketHeader())
     self.user_id = response.__getitem__(getUserIdHeader())
 
-  def doJSONPut(self, url, payload):
-   return self.client.put(
+  def doJSONPut(self, url, payload, headers={}):
+    headers[getDjangoTicketHeader()] = self.ticket_hash
+    return self.client.put(
       url,
-      data=payload, content_type='text/json', 
-      **{getDjangoTicketHeader() : self.ticket_hash})
+      data=payload, content_type='text/json',
+      **headers)
 
   def doPut(self, url):
    return self.client.put(url, **{getDjangoTicketHeader() : self.ticket_hash})
 
   def doGet(self, url):
     return self.client.get(url, **{getDjangoTicketHeader() : self.ticket_hash})
-   
-  def doDelete(self, url):
-    return self.client.delete(url, **{getDjangoTicketHeader() : self.ticket_hash})
+
+  def doDelete(self, url, headers={}):
+    headers[getDjangoTicketHeader()] = self.ticket_hash
+    return self.client.delete(url, **headers)
 
   def doPost(self, url, args):
     return self.client.post(url, args, **{getDjangoTicketHeader() : self.ticket_hash})
-  
+
   def verifyJSONResponse(self, response):
     self.assertEqual(response['Content-Type'], 'text/json')
 
