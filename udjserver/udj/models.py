@@ -7,7 +7,6 @@ class Event(models.Model):
   host = models.ForeignKey(User)
   time_started = models.DateTimeField(auto_now_add=True)
   state = models.CharField(max_length=2, choices=STATE_CHOICES, default=u'AC')
-  machine_uuid = models.CharField(max_length=32)
 
   """
   def validate_unique(self, exclude=None):
