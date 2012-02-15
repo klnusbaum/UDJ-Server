@@ -6,8 +6,7 @@
       "time_started": "2011-12-28 01:03:43", 
       "state": "FN", 
       "host": 3, 
-      "name": "Finished Event",
-      "machine_uuid" : "10000000000000000000000000000000"
+      "name": "Finished Event"
     }
   }, 
   {
@@ -17,8 +16,7 @@
       "time_started": "2011-12-28 01:22:04", 
       "state": "AC", 
       "host": 2, 
-      "name": "Ongoing event",
-      "machine_uuid" : "20000000000000000000000000000000"
+      "name": "Ongoing event"
     }
   }, 
   {
@@ -28,8 +26,7 @@
       "time_started": "2011-12-28 01:56:17", 
       "state": "AC", 
       "host": 4, 
-      "name": "Empty Event",
-      "machine_uuid" : "40000000000000000000000000000000"
+      "name": "Empty Event"
     }
   }, 
   {
@@ -39,8 +36,7 @@
       "host": 7, 
       "state": "AC", 
       "name": "Minnesota Event", 
-      "time_started": "2012-01-08 20:39:41",
-      "machine_uuid" : "70000000000000000000000000000000"
+      "time_started": "2012-01-08 20:39:41"
     }
   }, 
   {
@@ -50,8 +46,7 @@
       "host": 2, 
       "state": "FN", 
       "name": "Previous ongoing event", 
-      "time_started": "2011-12-18 20:39:41",
-      "machine_uuid" : "20000000000000000000000000000000"
+      "time_started": "2011-12-18 20:39:41"
     }
   }, 
   {
