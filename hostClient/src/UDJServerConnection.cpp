@@ -66,6 +66,7 @@ void UDJServerConnection::addLibSongOnServer(
   const int duration,
   const library_song_id_t hostId)
 {
+  DEBUG_MESSAGE("Adding song to library on server: " << songName.toStdString())
   bool success = true;
 
   lib_song_t songToAdd = {hostId, songName, artistName, albumName, duration};
@@ -75,7 +76,7 @@ void UDJServerConnection::addLibSongOnServer(
     success);
   QNetworkRequest addSongRequest(getLibAddSongUrl());
   prepareJSONRequest(addSongRequest);
-  addSongRequest.setRawHeader(getMachineUUIDHeaderName(), machineUUID);
+  addSongRequest.setRawHeader(getMachineUUIDHeaderName(), machineUUID.toUtf8());
   QNetworkReply *reply = netAccessManager->put(addSongRequest, songJSON);
   reply->setProperty(getPayloadPropertyName(), songJSON);
 }
@@ -83,10 +84,10 @@ void UDJServerConnection::addLibSongOnServer(
 void UDJServerConnection::deleteLibSongOnServer(library_song_id_t toDeleteId){
   QNetworkRequest deleteSongRequest(getLibDeleteSongUrl(toDeleteId));
   deleteSongRequest.setRawHeader(getTicketHeaderName(), ticket_hash);
-  deleteSongRequest.setRawHeader(getMachineUUIDHeaderName(), machineUUID);
+  deleteSongRequest.setRawHeader(getMachineUUIDHeaderName(), machineUUID.toUtf8());
   QNetworkReply *reply = netAccessManager->deleteResource(deleteSongRequest);
 }
- 
+
 void UDJServerConnection::createEvent(
   const QString& eventName,
   const QString& password)
@@ -149,7 +150,7 @@ void UDJServerConnection::addSongsToAvailableSongs(
   }
   QNetworkRequest addSongToAvailableRequest(getAddSongToAvailableUrl());
   prepareJSONRequest(addSongToAvailableRequest);
-  addSongRequest.setRawHeader(getMachineUUIDHeaderName(), machineUUID);
+  addSongToAvailableRequest.setRawHeader(getMachineUUIDHeaderName(), machineUUID.toUtf8());
   const QByteArray songsAddJSON = JSONHelper::getAddToAvailableJSON(songsToAdd);
   QNetworkReply *reply =
     netAccessManager->put(addSongToAvailableRequest, songsAddJSON);

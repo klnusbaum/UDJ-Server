@@ -18,8 +18,10 @@ how. For instance, don't even allow a syncstatus to change unless it's set to
 isSynched. Should be a simple trigger on the database.
 * make the enable/disable of the playback widget more reasonable.
 * Handle multiple users on the same machine
-* Handle same user on different machines
 - Handle when credentials change
+- When getting a 404 on deleting a song, the host client should just
+go ahead and mark the song as sycned and deleted because
+clearly the server didn't even know about it in the first.
 
 ANDROID APP
 - Users should be able to remove songs they added form the playlist

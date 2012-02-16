@@ -1102,7 +1102,7 @@ QString DataStore::getMachineUUID(){
     return settings.value(getMachineUUIDSettingName()).toString();
   }
   else{
-    QString machineUUID = QUuid::creatUuid().toString().remove(QRegExp("(\\{|\\}|\\-)"));
+    QString machineUUID = QUuid::createUuid().toString().remove(QRegExp("(\\{|\\}|\\-)"));
     settings.setValue(getMachineUUIDSettingName(), machineUUID);
     return machineUUID;
   }

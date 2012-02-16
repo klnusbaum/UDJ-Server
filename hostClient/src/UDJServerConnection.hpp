@@ -529,7 +529,7 @@ private:
    */
   static const QString& getServerUrlPath(){
     static const QString SERVER_URL_PATH= 
-      "https://udjevents.com:" + getServerPortNumber() + "/udj/";
+      "https://localhost:" + getServerPortNumber() + "/udj/";
     return SERVER_URL_PATH;
   }
 
@@ -573,7 +573,7 @@ private:
     return API_VERSION_HEAER_NAME;
   }
 
-  static const QString& getMachineUUIDHeaderName(){
+  static const QByteArray& getMachineUUIDHeaderName(){
     static const QByteArray MACHINE_UUID_HEADER_NAME = "X-Udj-Machine-UUID";
     return MACHINE_UUID_HEADER_NAME;
   }
