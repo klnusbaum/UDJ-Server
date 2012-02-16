@@ -1,18 +1,18 @@
 /**
  * Copyright 2011 Kurtis L. Nusbaum
- * 
+ *
  * This file is part of UDJ.
- * 
+ *
  * UDJ is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * UDJ is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -41,14 +41,14 @@ namespace UDJ{
 class UDJServerConnection : public QObject{
 Q_OBJECT
 public:
-  
+
   /** @name Constructor(s) and Destructor */
   //@{
 
   /**
    * \brief Constructs a UDJServerConnection.
    */
-	UDJServerConnection(QObject *parent=NULL);
+  UDJServerConnection(QObject *parent=NULL);
 
 
   //@}
@@ -68,6 +68,10 @@ public:
     ticket_hash = ticket;
   }
 
+  inline void setMachineUUID(const QString& uuid){
+    machineUUID = uuid;
+  }
+
   inline void setUserId(const user_id_t& userId){
     user_id = userId;
   }
@@ -83,7 +87,7 @@ public slots:
 
   /** @name Slots */
   //@{
-	
+
   /**
    * \brief Adds a song to the library on the server.
    *
@@ -94,9 +98,9 @@ public slots:
    * @param hostid The id of the song on the host.
    */
   void addLibSongOnServer(
-		const QString& songName,
-		const QString& artistName,
-		const QString& albumName,
+    const QString& songName,
+    const QString& artistName,
+    const QString& albumName,
     const int duration,
     const library_song_id_t hostid);
 
@@ -180,7 +184,7 @@ public slots:
    * @param songId Id of the song to be added to the active playlist.
    */
   void addSongToActivePlaylist(
-    client_request_id_t requestId, 
+    client_request_id_t requestId,
     library_song_id_t songId);
 
   /**
@@ -190,12 +194,12 @@ public slots:
    * @param songIds Ids of the songs to be added to the active playlist.
    */
   void addSongsToActivePlaylist(
-    const std::vector<client_request_id_t>& requestIds, 
+    const std::vector<client_request_id_t>& requestIds,
     const std::vector<library_song_id_t>& songIds);
 
   /**
    * \brief Removes the given songs from the active playlist on the server.
-   * 
+   *
    * @param playlistIds The ids of the playlist entries that should be remove.
    */
   void removeSongsFromActivePlaylist(
@@ -223,7 +227,7 @@ signals:
    * \brief Emitted when a connection with the server has been established.
    */
   void authenticated(const QByteArray& ticketHash, const user_id_t& userId);
-  
+
   /**
    * \brief Emitted when there was a failure to establish a connection with the
    * server.
@@ -233,14 +237,14 @@ signals:
   void authFailed(const QString errMessage);
 
   void commError(
-    CommErrorHandler::OperationType opType, 
-    CommErrorHandler::CommErrorType error, 
+    CommErrorHandler::OperationType opType,
+    CommErrorHandler::CommErrorType error,
     const QByteArray &payload);
 
   /**
    * \brief Emitted when songs are added to the library on the server.
    *
-   * @param addedIds Ids of the songs that were added to the library on the 
+   * @param addedIds Ids of the songs that were added to the library on the
    * server.
    */
   void songsAddedToLibOnServer(const std::vector<library_song_id_t> addedIds);
@@ -352,6 +356,9 @@ private:
   /** \brief Id of the user that is currently logged in. */
   user_id_t  user_id;
 
+  /** \brief Machine UUID used for library interaction. */
+  QString machineUUID;
+
   /** \brief Manager for access to the network. */
   QNetworkAccessManager *netAccessManager;
 
@@ -384,12 +391,12 @@ private:
   QUrl getLibAddSongUrl() const;
 
   /**
-   * \brief Get the url to be used for removing a song from the library on the 
+   * \brief Get the url to be used for removing a song from the library on the
    * server.
    *
-   * @param toDelete The id of the song to delete from the library on the 
+   * @param toDelete The id of the song to delete from the library on the
    * server.
-   * @return The url to be used for adding songs to the library on the 
+   * @return The url to be used for adding songs to the library on the
    * server.
    */
   QUrl getLibDeleteSongUrl(library_song_id_t toDelete) const;
@@ -407,7 +414,7 @@ private:
    * \brief Get the url to be used for removing a song from the list of
    * available music for an event on the server.
    *
-   * @param toDelete The id of the song to be deleted from the list of 
+   * @param toDelete The id of the song to be deleted from the list of
    * availabe music for an event on the server.
    * @return The url to be used for removing a song from the list of
    * available music for an event on the server.
@@ -460,7 +467,7 @@ private:
     const QString& zipcode) const;
 
   /**
-   * \brief Determines whether or not a url path is a path which can be used 
+   * \brief Determines whether or not a url path is a path which can be used
    * for deleting a song from the library on the server.
    *
    * @param path The path whose identity is in question.
@@ -470,7 +477,7 @@ private:
   bool isLibDeleteUrl(const QString& path) const;
  
   /**
-   * \brief Determines whether or not a url path is a path which can be used 
+   * \brief Determines whether or not a url path is a path which can be used
    * for deleting a song from the list of available music on the server.
    *
    * @param path The path whose identity is in question.
@@ -480,7 +487,7 @@ private:
   bool isAvailableMusicDeleteUrl(const QString& path) const;
 
   /**
-   * \brief Determines whether or not a url path is a path which can be used 
+   * \brief Determines whether or not a url path is a path which can be used
    * for deleting a song from the active playlist on the server.
    *
    * @param path The path whose identity is in question.
@@ -493,13 +500,13 @@ private:
     return url.authority() == "webgis.usc.edu";
   }
 
-  /** 
+  /**
    * \brief Get the port number to be used when communicating with the server.
    *
    * This port number is a memorial to Keith Nusbaum, my father. I loved him
-   * deeply and he was taken from this world far too soon. Never-the-less 
-   * we all continue to benefit from his good deeds. Without him, I wouldn't 
-   * be here, and there would be no UDJ. Please, don't change this port 
+   * deeply and he was taken from this world far too soon. Never-the-less
+   * we all continue to benefit from his good deeds. Without him, I wouldn't
+   * be here, and there would be no UDJ. Please, don't change this port
    * number. Keep the memory of my father alive.
    * K = 10 % 10 = 0
    * e = 4  % 10 = 4
@@ -514,10 +521,10 @@ private:
     static const QString serverPortNumber = "4897";
     return serverPortNumber;
   }
-  
+
   /**
    * \brief Gets the url path to the server in string form.
-   * 
+   *
    * @return The url path to the server in string form.
    */
   static const QString& getServerUrlPath(){
@@ -528,14 +535,14 @@ private:
 
   /**
    * \brief Gets the url path to the server in URL form.
-   * 
+   *
    * @return The url path to the server in URL form.
    */
   static const QUrl& getServerUrl(){
     static const QUrl SERVER_URL(getServerUrlPath());
     return SERVER_URL;
   }
-  
+
   /**
    * \brief Gets the url for authenticating with the server.
    *
@@ -564,6 +571,11 @@ private:
   static const QByteArray& getAPIVersionHeaderName(){
     static const QByteArray API_VERSION_HEAER_NAME = "X-Udj-Api-Version";
     return API_VERSION_HEAER_NAME;
+  }
+
+  static const QString& getMachineUUIDHeaderName(){
+    static const QByteArray MACHINE_UUID_HEADER_NAME = "X-Udj-Machine-UUID";
+    return MACHINE_UUID_HEADER_NAME;
   }
 
   /**

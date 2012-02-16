@@ -66,10 +66,6 @@ void UDJServerConnection::addLibSongOnServer(
   const int duration,
   const library_song_id_t hostId)
 {
-  if(ticket_hash==""){
-    //TODO throw error
-    return;
-  }
   bool success = true;
 
   lib_song_t songToAdd = {hostId, songName, artistName, albumName, duration};
@@ -79,13 +75,15 @@ void UDJServerConnection::addLibSongOnServer(
     success);
   QNetworkRequest addSongRequest(getLibAddSongUrl());
   prepareJSONRequest(addSongRequest);
+  addSongRequest.setRawHeader(getMachineUUIDHeaderName(), machineUUID);
   QNetworkReply *reply = netAccessManager->put(addSongRequest, songJSON);
-  reply->setProperty(getPayloadPropertyName(), songJSON); 
+  reply->setProperty(getPayloadPropertyName(), songJSON);
 }
 
 void UDJServerConnection::deleteLibSongOnServer(library_song_id_t toDeleteId){
   QNetworkRequest deleteSongRequest(getLibDeleteSongUrl(toDeleteId));
   deleteSongRequest.setRawHeader(getTicketHeaderName(), ticket_hash);
+  deleteSongRequest.setRawHeader(getMachineUUIDHeaderName(), machineUUID);
   QNetworkReply *reply = netAccessManager->deleteResource(deleteSongRequest);
 }
  
@@ -151,8 +149,9 @@ void UDJServerConnection::addSongsToAvailableSongs(
   }
   QNetworkRequest addSongToAvailableRequest(getAddSongToAvailableUrl());
   prepareJSONRequest(addSongToAvailableRequest);
+  addSongRequest.setRawHeader(getMachineUUIDHeaderName(), machineUUID);
   const QByteArray songsAddJSON = JSONHelper::getAddToAvailableJSON(songsToAdd);
-  QNetworkReply *reply = 
+  QNetworkReply *reply =
     netAccessManager->put(addSongToAvailableRequest, songsAddJSON);
   reply->setProperty(getPayloadPropertyName(), songsAddJSON); 
 }
