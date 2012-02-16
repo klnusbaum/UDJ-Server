@@ -50,6 +50,7 @@ DataStore::DataStore(
   serverConnection = new UDJServerConnection(this);
   serverConnection->setTicket(ticket);
   serverConnection->setUserId(userId);
+  serverConnection->setMachineUUID(getMachineUUID());
   errorHandler = new CommErrorHandler(this, serverConnection);
   activePlaylistRefreshTimer = new QTimer(this);
   eventGoerRefreshTimer = new QTimer(this);
