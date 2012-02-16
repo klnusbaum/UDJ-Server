@@ -986,6 +986,8 @@ private:
   void addSong2ActivePlaylistFromQVariant(
     const QVariantMap &songToAdd, int priority);
 
+  static QString getMachineUUID();
+
   //@}
 
   /** @name Private Constants */
@@ -1345,10 +1347,16 @@ private:
     return passwordSettingName;
   }
 
+
   static const QString& getHasValidCredsSettingName(){
     static const QString hasValidSavedCredentialsSettingName = 
       "has_valid_creds";
     return hasValidSavedCredentialsSettingName;
+  }
+
+  static const QString& getMachineUUIDSettingName(){
+    static const QString machineUUIDSettingName = "machine_uuid";
+    return machineUUIDSettingName;
   }
 
  //@}
@@ -1356,7 +1364,7 @@ private:
 /** @name Private Slots */
 //@{
 private slots:
-  
+
   /**
    * \brief Sets the sync status of a library song to synced.
    *
