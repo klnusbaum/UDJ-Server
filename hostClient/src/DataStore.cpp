@@ -242,7 +242,7 @@ void DataStore::addSongToLibrary(Phonon::MediaSource song){
   TagLib::FileRef f(fileName.toStdString().c_str());
   if(!f.isNull() && f.tag() && f.audioProperties()){
     TagLib::Tag *tag = f.tag();
-    songName =	TStringToQString(tag->title());
+    songName = TStringToQString(tag->title());
     artistName = TStringToQString(tag->artist());
     albumName = TStringToQString(tag->album());
     duration = f.audioProperties()->length();

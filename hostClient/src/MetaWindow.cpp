@@ -46,7 +46,7 @@ MetaWindow::MetaWindow(
   const QString& password,
   const QByteArray& ticketHash,
   const user_id_t& userId,
-  QWidget *parent, 
+  QWidget *parent,
   Qt::WindowFlags flags)
   :QMainWindow(parent,flags)
 {
@@ -55,8 +55,8 @@ MetaWindow::MetaWindow(
   setupUi();
   setupMenus();
   QSettings settings(
-    QSettings::UserScope, 
-    DataStore::getSettingsOrg(), 
+    QSettings::UserScope,
+    DataStore::getSettingsOrg(),
     DataStore::getSettingsApp());
   restoreGeometry(settings.value("metaWindowGeometry").toByteArray());
   restoreState(settings.value("metaWindowState").toByteArray());
@@ -64,8 +64,8 @@ MetaWindow::MetaWindow(
 
 void MetaWindow::closeEvent(QCloseEvent *event){
   QSettings settings(
-    QSettings::UserScope, 
-    DataStore::getSettingsOrg(), 
+    QSettings::UserScope,
+    DataStore::getSettingsOrg(),
     DataStore::getSettingsApp());
   settings.setValue("metaWindowGeometry", saveGeometry());
   settings.setValue("metaWindowState", saveState());
@@ -93,6 +93,15 @@ void MetaWindow::addMusicToLibrary(){
   progress.setValue(numNewFiles);
 }
 
+void MetaWindow::addSongToLibrary(){
+  QString fileName = QFileDialog::getOpenFileName(
+      this,
+      tr("Pick song to add"),
+      QDir::homePath(),
+      tr("Audio Files (*.mp3 *.ogg)"));
+  dataStore->addSongToLibrary(Phonon::MediaSource(fileName));
+}
+
 void MetaWindow::setupUi(){
 
   playbackWidget = new PlaybackWidget(dataStore, this);
@@ -100,9 +109,9 @@ void MetaWindow::setupUi(){
   libraryView = new LibraryView(dataStore, this);
 
   eventWidget = new EventWidget(dataStore, this);
- 
+
   songListView = new SongListView(dataStore, this);
- 
+
   activityList = new ActivityList(dataStore);
 
   QWidget* contentStackContainer = new QWidget(this);
@@ -114,12 +123,12 @@ void MetaWindow::setupUi(){
   QVBoxLayout *contentStackLayout = new QVBoxLayout;
   contentStackLayout->addWidget(contentStack, Qt::AlignCenter);
   contentStackContainer->setLayout(contentStackLayout);
- 
+
   QSplitter *content = new QSplitter(Qt::Horizontal, this);
   content->addWidget(activityList);
   content->addWidget(contentStackContainer);
   content->setStretchFactor(1, 10);
-  
+
   QVBoxLayout *mainLayout = new QVBoxLayout;
   mainLayout->addWidget(content,6);
   mainLayout->addWidget(playbackWidget);
@@ -156,22 +165,26 @@ void MetaWindow::setupUi(){
 
   if(dataStore->isCurrentlyHosting()){
     displayEventWidget();
-  }   
+  }
 
 }
 
 void MetaWindow::createActions(){
   quitAction = new QAction(tr("&Quit"), this);
   quitAction->setShortcuts(QKeySequence::Quit);
-  addMusicAction = new QAction(tr("&Add Music"), this);
-  addMusicAction->setShortcut(tr("Ctrl+A"));
+  addMusicAction = new QAction(tr("Add &Music"), this);
+  addMusicAction->setShortcut(tr("Ctrl+M"));
+  addSongAction = new QAction(tr("A&dd Song"), this);
+  addSongAction->setShortcut(tr("Ctrl+D"));
   connect(addMusicAction, SIGNAL(triggered()), this, SLOT(addMusicToLibrary()));
   connect(quitAction, SIGNAL(triggered()), this, SLOT(close()));
+  connect(addSongAction, SIGNAL(triggered()), this, SLOT(addSongToLibrary()));
 }
 
 void MetaWindow::setupMenus(){
   QMenu *musicMenu = menuBar()->addMenu(tr("&Music"));
   musicMenu->addAction(addMusicAction);
+  musicMenu->addAction(addSongAction);
   musicMenu->addSeparator();
   musicMenu->addAction(quitAction);
 }

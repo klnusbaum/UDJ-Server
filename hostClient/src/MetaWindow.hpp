@@ -86,6 +86,8 @@ private slots:
    */
   void addMusicToLibrary();
 
+  void addSongToLibrary();
+
   /**
    * \brief Displays the library view in the main content panel.
    */
@@ -115,10 +117,12 @@ private:
 
   /** \brief Triggers selection of music directory. */
   QAction *addMusicAction;
- 
+
   /** \brief Causes the application to quit. */
   QAction *quitAction;
- 
+
+  QAction *addSongAction;
+
 //  QFileSystemWatcher* fileWatcher;
 
 
@@ -151,7 +155,7 @@ private:
 
   /** \brief Creates the actions used in the MetaWindow */
   void createActions();
-  
+
   //@}
 
 };
