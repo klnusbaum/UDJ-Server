@@ -13,7 +13,7 @@ class Event(models.Model):
     if self.state==u'AC' and \
       Event.objects.exclude(pk=self.pk).filter(host=self.host, state=u'AC')\
       .exists()\
-    : 
+    :
       raise ValidationError(
         'User hosting two parties at the same time, that\'s a no-no')
     super(LibraryEntry, self).validate_unique(exclude=exclude)
@@ -61,15 +61,17 @@ class LibraryEntry(models.Model):
   duration = models.IntegerField()
   owning_user = models.ForeignKey(User)
   is_deleted = models.BooleanField(default=False)
+  machine_uuid = models.CharField(max_length=32)
 
   def validate_unique(self, exclude=None):
     if not self.is_deleted and \
       LibraryEntry.objects.exclude(pk=self.pk).filter(
-      host_lib_song_id=self.host_lib_song_id, 
+      host_lib_song_id=self.host_lib_song_id,
+      machine_uuid=self.machine_uuid,
       owning_user=self.owning_user).exists()\
-    : 
+    :
       raise ValidationError(
-        'Non-unique host_lib_song_id and owning_user combination')
+        'Non-unique host_lib_song_id, machine_uuid, and owning_user combination')
     super(LibraryEntry, self).validate_unique(exclude=exclude)
 
   def __unicode__(self):
@@ -125,14 +127,14 @@ class PlaylistEntryTimePlayed(models.Model):
     return self.playlist_entry.song.title +  " : played at " \
       + str(self.time_played)
 
-  
+
 class Ticket(models.Model):
   user = models.ForeignKey(User)
   ticket_hash = models.CharField(max_length=32, unique=True)
   source_ip_addr = models.IPAddressField()
   time_issued = models.DateTimeField(auto_now=True)
 
-  class Meta: 
+  class Meta:
     unique_together = ("user", "ticket_hash", "source_ip_addr")
 
   def __unicode__(self):
@@ -146,7 +148,7 @@ class EventGoer(models.Model):
   event = models.ForeignKey(Event)
   time_joined = models.DateTimeField(auto_now_add=True)
   state = models.CharField(max_length=2, choices=STATE_CHOICES, default=u'IE')
-  
+
   class Meta: 
     unique_together = ("user", "event")
 
@@ -158,6 +160,6 @@ class Vote(models.Model):
   user =  models.ForeignKey(User)
   weight = models.IntegerField()
 
-  class Meta: 
+  class Meta:
     unique_together = ("user", "playlist_entry")
 

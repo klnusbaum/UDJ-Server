@@ -1,18 +1,18 @@
 /**
  * Copyright 2011 Kurtis L. Nusbaum
- * 
+ *
  * This file is part of UDJ.
- * 
+ *
  * UDJ is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * UDJ is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -45,7 +45,7 @@ void UDJServerConnection::prepareJSONRequest(QNetworkRequest &request){
 }
 
 void UDJServerConnection::authenticate(
-  const QString& username, 
+  const QString& username,
   const QString& password)
 {
   QNetworkRequest authRequest(getAuthUrl());
@@ -60,16 +60,13 @@ void UDJServerConnection::authenticate(
 }
 
 void UDJServerConnection::addLibSongOnServer(
-	const QString& songName,
-	const QString& artistName,
-	const QString& albumName,
+  const QString& songName,
+  const QString& artistName,
+  const QString& albumName,
   const int duration,
-	const library_song_id_t hostId)
+  const library_song_id_t hostId)
 {
-  if(ticket_hash==""){
-    //TODO throw error
-    return;
-  }
+  DEBUG_MESSAGE("Adding song to library on server: " << songName.toStdString())
   bool success = true;
 
   lib_song_t songToAdd = {hostId, songName, artistName, albumName, duration};
@@ -79,16 +76,18 @@ void UDJServerConnection::addLibSongOnServer(
     success);
   QNetworkRequest addSongRequest(getLibAddSongUrl());
   prepareJSONRequest(addSongRequest);
+  addSongRequest.setRawHeader(getMachineUUIDHeaderName(), machineUUID.toUtf8());
   QNetworkReply *reply = netAccessManager->put(addSongRequest, songJSON);
-  reply->setProperty(getPayloadPropertyName(), songJSON); 
+  reply->setProperty(getPayloadPropertyName(), songJSON);
 }
 
 void UDJServerConnection::deleteLibSongOnServer(library_song_id_t toDeleteId){
   QNetworkRequest deleteSongRequest(getLibDeleteSongUrl(toDeleteId));
   deleteSongRequest.setRawHeader(getTicketHeaderName(), ticket_hash);
+  deleteSongRequest.setRawHeader(getMachineUUIDHeaderName(), machineUUID.toUtf8());
   QNetworkReply *reply = netAccessManager->deleteResource(deleteSongRequest);
 }
- 
+
 void UDJServerConnection::createEvent(
   const QString& eventName,
   const QString& password)
@@ -151,8 +150,9 @@ void UDJServerConnection::addSongsToAvailableSongs(
   }
   QNetworkRequest addSongToAvailableRequest(getAddSongToAvailableUrl());
   prepareJSONRequest(addSongToAvailableRequest);
+  addSongToAvailableRequest.setRawHeader(getMachineUUIDHeaderName(), machineUUID.toUtf8());
   const QByteArray songsAddJSON = JSONHelper::getAddToAvailableJSON(songsToAdd);
-  QNetworkReply *reply = 
+  QNetworkReply *reply =
     netAccessManager->put(addSongToAvailableRequest, songsAddJSON);
   reply->setProperty(getPayloadPropertyName(), songsAddJSON); 
 }
@@ -233,12 +233,16 @@ void UDJServerConnection::removeSongsFromActivePlaylist(
 
 
 void UDJServerConnection::setCurrentSong(playlist_song_id_t currentSong){
+  QString params = "playlist_entry_id="+QString::number(currentSong);
+  setCurrentSong(params.toUtf8());
+}
+
+void UDJServerConnection::setCurrentSong(const QByteArray& payload){
   QNetworkRequest setCurrentSongRequest(getCurrentSongUrl());
   setCurrentSongRequest.setRawHeader(getTicketHeaderName(), ticket_hash);
-  QString params = "playlist_entry_id="+QString::number(currentSong);
-  QNetworkReply *reply = 
-    netAccessManager->post(setCurrentSongRequest, params.toUtf8());
-  reply->setProperty(getPayloadPropertyName(), params); 
+  QNetworkReply *reply =
+    netAccessManager->post(setCurrentSongRequest, payload);
+  reply->setProperty(getPayloadPropertyName(), payload);
 }
 
 void UDJServerConnection::getEventGoers(){
@@ -362,8 +366,7 @@ bool UDJServerConnection::checkReplyAndFireErrors(
 
 void UDJServerConnection::handleAddLibSongsReply(QNetworkReply *reply){
   if(!checkReplyAndFireErrors(reply, CommErrorHandler::LIB_SONG_ADD)){
-    const std::vector<library_song_id_t> updatedIds =   
-      JSONHelper::getUpdatedLibIds(reply);
+    const std::vector<library_song_id_t> updatedIds = JSONHelper::getUpdatedLibIds(reply);
     emit songsAddedToLibOnServer(updatedIds);
   }
 }
@@ -421,46 +424,30 @@ void UDJServerConnection::handleRecievedActivePlaylist(QNetworkReply *reply){
 void UDJServerConnection::handleRecievedActivePlaylistAdd(QNetworkReply *reply){
   if(!checkReplyAndFireErrors(reply, CommErrorHandler::PLAYLIST_ADD)){
     QVariant payload = reply->property(getPayloadPropertyName());
-    emit songsAddedToActivePlaylist(
-      JSONHelper::extractAddRequestIds(payload.toByteArray()));
+    emit songsAddedToActivePlaylist(JSONHelper::extractAddRequestIds(payload.toByteArray()));
   }
 }
 
 void UDJServerConnection::handleRecievedCurrentSongSet(QNetworkReply *reply){
-  if(reply->error() == QNetworkReply::NoError){
+  if(!checkReplyAndFireErrors(reply, CommErrorHandler::SET_CURRENT_SONG)){
     emit currentSongSet();
-  }
-  else{
-    DEBUG_MESSAGE(QString(reply->readAll()).toStdString());
-    emit currentSongSetError();
   }
 }
 
-void UDJServerConnection::handleRecievedActivePlaylistRemove(
-  QNetworkReply *reply)
-{
-  if(reply->error() == QNetworkReply::NoError){
+void UDJServerConnection::handleRecievedActivePlaylistRemove(QNetworkReply *reply){
+  if(!checkReplyAndFireErrors(reply, CommErrorHandler::PLAYLIST_REMOVE)){
     QString path = reply->request().url().path();
-    QRegExp rx("/udj/events/" + QString::number(eventId) + 
-      "/active_playlist/(\\d+)");
+    QRegExp rx("/udj/events/" + QString::number(eventId) + "/active_playlist/(\\d+)");
     rx.indexIn(path);
     playlist_song_id_t songDeleted = rx.cap(1).toLong();
     emit songRemovedFromActivePlaylist(songDeleted);
   }
-  else{
-    DEBUG_MESSAGE("Error deleting song from active playlist " <<
-      QString(reply->readAll()).toStdString())
-  } 
 }
 
 void UDJServerConnection::handleRecievedNewEventGoers(QNetworkReply *reply){
-  if(reply->error() == QNetworkReply::NoError){
+  if(!checkReplyAndFireErrors(reply, CommErrorHandler::EVENT_GOERS_REFRESH)){
     emit newEventGoers(JSONHelper::getEventGoersJSON(reply));
   }
-  else{
-    DEBUG_MESSAGE("Error retrieving event goer list" <<
-      QString(reply->readAll()).toStdString())
-  } 
 }
 
 void UDJServerConnection::handleLocaitonResponse(QNetworkReply *reply){

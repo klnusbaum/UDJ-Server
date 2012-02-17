@@ -10,7 +10,6 @@ urlpatterns += patterns('udj.views.library',
     r'^users/(?P<user_id>\d+)/library/(?P<lib_id>\d+)$', 
     'deleteSongFromLibrary'
   ),
-  (r'^users/(?P<user_id>\d+)/library$', 'deleteEntireLibrary'),
 ) 
 
 urlpatterns += patterns('udj.views.event',

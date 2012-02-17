@@ -1,4 +1,6 @@
+#!/usr/bin/env python
 import os
+from django.core.management import execute_manager
 
 def createDBFile():
   PATH = os.path.dirname(os.path.realpath(__file__))
@@ -20,5 +22,12 @@ def createDBFile():
 
 if not os.path.exists('udjdb.py'):
   createDBFile()
+
+import settings
+os.remove('udjDebug.db')
+execute_manager(settings, argv=['manage.py', 'syncdb', '--noinput'])
+execute_manager(settings, argv=['manage.py', 'loaddata', 
+  'udj/fixtures/test_fixture.json'])
+
 
 

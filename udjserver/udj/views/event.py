@@ -15,6 +15,7 @@ from udj.auth import getUserForTicket
 from udj.decorators import TicketUserMatch
 from udj.decorators import AcceptsMethods
 from udj.decorators import NeedsJSON
+from udj.decorators import NeedsUUID
 from udj.decorators import NeedsAuth
 from udj.decorators import IsEventHost
 from udj.decorators import CanLoginToEvent
@@ -41,6 +42,7 @@ from udj.JSONCodecs import getJSONForEventsByLocation
 from udj.JSONCodecs import getActivePlaylistEntryDictionary
 from udj.utils import getJSONResponse
 from udj.headers import getGoneResourceHeader
+from udj.headers import getDjangoUUIDHeader
 
 
 def getEventHost(event_id):
@@ -198,13 +200,15 @@ def getRandomMusic(request, event_id):
 
 @IsEventHost
 @NeedsJSON
+@NeedsUUID
 def addToAvailableMusic(request, event_id):
   event = get_object_or_404(Event, pk=event_id)
+  uuid = request.META[getDjangoUUIDHeader()]
   toAdd = json.loads(request.raw_post_data)
   added = []
   for song_id in toAdd:
     songToAdd = LibraryEntry.objects.get(
-      host_lib_song_id=song_id, owning_user=event.host)
+      host_lib_song_id=song_id, owning_user=event.host, machine_uuid=uuid)
     addedSong , created = AvailableSong.objects.get_or_create(
       event=event, song=songToAdd)
     added.append(song_id)

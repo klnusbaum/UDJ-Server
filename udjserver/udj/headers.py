@@ -9,3 +9,9 @@ def getUserIdHeader():
 
 def getGoneResourceHeader():
   return "X-Udj-Gone-Resource"
+
+def getUUIDHeader():
+  return "X-UDJ-Machine-UUID"
+
+def getDjangoUUIDHeader():
+  return "HTTP_X_UDJ_MACHINE_UUID"

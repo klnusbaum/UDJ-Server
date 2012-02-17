@@ -8,14 +8,15 @@ from django.contrib.auth.models import User
 from datetime import datetime
 import math
 
-def getLibraryEntryFromJSON(songJson, user_id):
-  return LibraryEntry( 
-    host_lib_song_id = songJson['id'], 
-    title = songJson['title'], 
-    artist  = songJson['artist'], 
-    album = songJson['album'], 
+def getLibraryEntryFromJSON(songJson, user_id, uuid):
+  return LibraryEntry(
+    host_lib_song_id = songJson['id'],
+    title = songJson['title'],
+    artist  = songJson['artist'],
+    album = songJson['album'],
     duration = songJson['duration'],
-    owning_user = User.objects.get(id=user_id)
+    owning_user = User.objects.get(id=user_id),
+    machine_uuid=uuid
   )
 
 def getJSONForAvailableSongs(songs):

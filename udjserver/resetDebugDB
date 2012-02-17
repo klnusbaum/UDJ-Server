@@ -1,5 +1,0 @@
-python createDBFile.py
-python rmdb.py
-python manage.py syncdb --noinput
-python manage.py loaddata udj/fixtures/test_fixture.json
-

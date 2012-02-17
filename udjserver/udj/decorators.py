@@ -11,6 +11,7 @@ from udj.auth import getUserForTicket
 from django.shortcuts import get_object_or_404
 from udj.headers import getTicketHeader
 from udj.headers import getDjangoTicketHeader
+from udj.headers import getDjangoUUIDHeader
 from udj.headers import getGoneResourceHeader
 from udj.JSONCodecs import getEventDictionary
 
@@ -50,7 +51,7 @@ def IsntCurrentlyHosting(function):
     else:
       return function(*args, **kwargs)
   return wrapper
-   
+
 def InParty(function):
   def wrapper(*args, **kwargs):
     request = args[0]
@@ -104,7 +105,7 @@ def NeedsAuth(function):
     else:
       return function(*args, **kwargs)
   return wrapper
-      
+
 def IsntInOtherEvent(function):
   def wrapper(*args, **kwargs):
     request = args[0]
@@ -152,7 +153,7 @@ def AcceptsMethods(acceptedMethods):
         return HttpResponseNotAllowed(acceptedMethods)
     return wrapper
   return decorator
-      
+
 def NeedsJSON(function):
   def wrapper(*args, **kwargs):
     request = args[0]
@@ -165,5 +166,12 @@ def NeedsJSON(function):
     else:
       return function(*args, **kwargs)
   return wrapper
-    
-    
+
+def NeedsUUID(function):
+  def wrapper(*args, **kwargs):
+    request = args[0]
+    if not request.META.has_key(getDjangoUUIDHeader()):
+      return HttpResponseBadRequest('must specify a machine UUID')
+    else:
+      return function(*args, **kwargs)
+  return wrapper

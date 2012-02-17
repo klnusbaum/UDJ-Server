@@ -1,18 +1,18 @@
 /**
  * Copyright 2011 Kurtis L. Nusbaum
- * 
+ *
  * This file is part of UDJ.
- * 
+ *
  * UDJ is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * UDJ is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -68,8 +68,8 @@ void CommErrorHandler::handleCommError(
       syncLibOnReauth = true;
     }
     else if(opType == CREATE_EVENT){
-      createEventOnReauth = true;
       createEventPayload = payload;
+      createEventOnReauth = true;
     }
     else if(opType == END_EVENT){
       endEventOnReauth = true;
@@ -82,6 +82,13 @@ void CommErrorHandler::handleCommError(
     }
     else if(opType == PLAYLIST_ADD){
       syncPlaylistAddRequestsOnReauth = true;
+    }
+    else if(opType == SET_CURRENT_SONG){
+      setCurrentSongPayload = payload;
+      setCurrentSongOnReauth = true;
+    }
+    else if(opType == PLAYLIST_REMOVE){
+      syncPlaylistRemoveRequestsOnReauth = true;
     }
     requestReauth();
   }
@@ -102,7 +109,7 @@ void CommErrorHandler::requestReauth(){
   if(!hasPendingReauthRequest){
     hasPendingReauthRequest = true;
     serverConnection->authenticate(
-      dataStore->getUsername(), 
+      dataStore->getUsername(),
       dataStore->getPassword());
   }
 }
@@ -142,6 +149,18 @@ void CommErrorHandler::clearOnReauthFlags(){
     dataStore->syncPlaylistAddRequests();
     syncPlaylistAddRequestsOnReauth=false;
   }
+  if(setCurrentSongOnReauth){
+    serverConnection->setCurrentSong(setCurrentSongPayload);
+    setCurrentSongOnReauth=false;
+  }
+  if(syncPlaylistRemoveRequestsOnReauth){
+    dataStore->syncPlaylistRemoveRequests();
+    syncPlaylistRemoveRequestsOnReauth=false;
+  }
+  if(refreshActivePlaylistOnReauth){
+    serverConnection->getEventGoers();
+    refreshActivePlaylistOnReauth=false;
+  }
 }
 
 void CommErrorHandler::onHardAuthFailure(const QString errMessage){
@@ -164,6 +183,12 @@ void CommErrorHandler::onHardAuthFailure(const QString errMessage){
   }
   if(syncPlaylistAddRequestsOnReauth){
     emit playlistAddRequestError(errMessage);
+  }
+  if(setCurrentSongOnReauth){
+    emit setCurrentSongError(errMessage);
+  }
+  if(syncPlaylistRemoveRequestsOnReauth){
+    emit playlistRemoveRequestError(errMessage);
   }
 }
 

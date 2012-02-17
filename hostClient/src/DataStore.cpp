@@ -28,6 +28,8 @@
 #include <QSqlRecord>
 #include <QThread>
 #include <QTimer>
+#include <QUuid>
+#include <QRegExp>
 #include <tag.h>
 #include <tstring.h>
 #include <fileref.h>
@@ -38,8 +40,8 @@ namespace UDJ{
 DataStore::DataStore(
   const QString& username,
   const QString& password,
-  const QByteArray& ticket, 
-  const user_id_t& userId, 
+  const QByteArray& ticket,
+  const user_id_t& userId,
   QObject *parent)
   :QObject(parent),
   username(username),
@@ -48,6 +50,7 @@ DataStore::DataStore(
   serverConnection = new UDJServerConnection(this);
   serverConnection->setTicket(ticket);
   serverConnection->setUserId(userId);
+  serverConnection->setMachineUUID(getMachineUUID());
   errorHandler = new CommErrorHandler(this, serverConnection);
   activePlaylistRefreshTimer = new QTimer(this);
   eventGoerRefreshTimer = new QTimer(this);
@@ -1091,6 +1094,18 @@ void DataStore::clearSavedCredentials(){
   settings.setValue(getHasValidCredsSettingName(), false);
   settings.setValue(getUsernameSettingName(), "");
   settings.setValue(getPasswordSettingName(), "");
+}
+
+QString DataStore::getMachineUUID(){
+  QSettings settings(QSettings::UserScope, getSettingsOrg(), getSettingsApp());
+  if(settings.contains(getMachineUUIDSettingName())){
+    return settings.value(getMachineUUIDSettingName()).toString();
+  }
+  else{
+    QString machineUUID = QUuid::createUuid().toString().remove(QRegExp("(\\{|\\}|\\-)"));
+    settings.setValue(getMachineUUIDSettingName(), machineUUID);
+    return machineUUID;
+  }
 }
 
 void DataStore::pausePlaylistUpdates(){

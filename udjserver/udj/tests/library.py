@@ -1,23 +1,25 @@
 import json
+from udj.headers import getDjangoUUIDHeader
 from udj.tests.testhelpers import User2TestCase
 from udj.tests.testhelpers import User3TestCase
 from udj.tests.testhelpers import User4TestCase
 from udj.models import LibraryEntry
 
-def verifySongAdded(testObject, lib_id, ids, title, artist, album):
-  matchedEntries = LibraryEntry.objects.filter(host_lib_song_id=lib_id, 
-    owning_user=testObject.user_id)
-  testObject.assertEqual(len(matchedEntries), 1, 
-    msg="Couldn't find inserted song.")
-  insertedLibEntry = matchedEntries[0]
-  testObject.assertEqual(insertedLibEntry.title, title)
-  testObject.assertEqual(insertedLibEntry.artist, artist)
-  testObject.assertEqual(insertedLibEntry.album, album)
+class LibTestCases(User2TestCase):
 
-  testObject.assertTrue(lib_id in ids)
+  def verifySongAdded(self, lib_id, ids, title, artist, album):
+    matchedEntries = LibraryEntry.objects.filter(host_lib_song_id=lib_id, 
+      owning_user=self.user_id)
+    self.assertEqual(len(matchedEntries), 1,
+      msg="Couldn't find inserted song.")
+    insertedLibEntry = matchedEntries[0]
+    self.assertEqual(insertedLibEntry.title, title)
+    self.assertEqual(insertedLibEntry.artist, artist)
+    self.assertEqual(insertedLibEntry.album, album)
+
+    self.assertTrue(lib_id in ids)
 
 
-class LibAddTestCase(User2TestCase):
   def testSingleLibAdd(self):
 
     lib_id = 13
@@ -36,11 +38,12 @@ class LibAddTestCase(User2TestCase):
 
 
     response = self.doJSONPut(
-      '/udj/users/' + self.user_id + '/library/songs', json.dumps(payload))
-    self.assertEqual(response.status_code, 201)
+      '/udj/users/' + self.user_id + '/library/songs', json.dumps(payload),
+      headers={getDjangoUUIDHeader() : "20000000000000000000000000000000"})
+    self.assertEqual(response.status_code, 201, msg=response.content)
     self.verifyJSONResponse(response)
     ids = json.loads(response.content)
-    verifySongAdded(self, lib_id, ids, title, artist, album)
+    self.verifySongAdded(lib_id, ids, title, artist, album)
 
   def testMultiLibAdd(self):
 
@@ -74,13 +77,14 @@ class LibAddTestCase(User2TestCase):
     ]
 
     response = self.doJSONPut(
-      '/udj/users/' + self.user_id + '/library/songs', json.dumps(payload))
+      '/udj/users/' + self.user_id + '/library/songs', json.dumps(payload),
+      headers={getDjangoUUIDHeader() : "20000000000000000000000000000000"})
 
     self.assertEqual(response.status_code, 201, msg=response.content)
     self.verifyJSONResponse(response)
     ids = json.loads(response.content)
-    verifySongAdded(self, lib_id1, ids, title1, artist1, album1)
-    verifySongAdded(self, lib_id2, ids, title2, artist2, album2)
+    self.verifySongAdded(lib_id1, ids, title1, artist1, album1)
+    self.verifySongAdded(lib_id2, ids, title2, artist2, album2)
 
   def testDupAdd(self):
 
@@ -94,7 +98,8 @@ class LibAddTestCase(User2TestCase):
       "duration" : 237 
     }]
     response = self.doJSONPut(
-      '/udj/users/' + self.user_id + '/library/songs', json.dumps(payload))
+      '/udj/users/' + self.user_id + '/library/songs', json.dumps(payload),
+      headers={getDjangoUUIDHeader() : "20000000000000000000000000000000"})
 
     self.assertEqual(response.status_code, 201, msg=response.content)
     self.verifyJSONResponse(response)
@@ -102,19 +107,11 @@ class LibAddTestCase(User2TestCase):
     self.assertEqual(ids[0], dup_lib_id)
     onlyOneSong = LibraryEntry.objects.get(
       owning_user__id=2, host_lib_song_id=dup_lib_id)
-    
-class LibRemoveTestCase(User2TestCase):
+
   def testLibSongDelete(self):
-    response = self.doDelete('/udj/users/' + self.user_id + '/library/10')
-    self.assertEqual(response.status_code, 200)
+    response = self.doDelete('/udj/users/' + self.user_id + '/library/10',
+      headers={getDjangoUUIDHeader() : "20000000000000000000000000000000"})
+    self.assertEqual(response.status_code, 200, msg=response.content)
     deletedEntries = LibraryEntry.objects.filter(
       host_lib_song_id=10, owning_user__id=2, is_deleted=True)
     self.assertEqual(len(deletedEntries), 1)
-
-  def testFullDelete(self):
-    response = self.doDelete('/udj/users/'+self.user_id+'/library')
-    self.assertEqual(response.status_code, 200)
-    deletedEntries = LibraryEntry.objects.filter(
-      owning_user__id=2, is_deleted=True)
-    self.assertEqual(len(deletedEntries), 12)
-

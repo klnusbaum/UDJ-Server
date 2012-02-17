@@ -103,7 +103,8 @@
       "artist": "Third Eye Blind", 
       "title": "Never Let You Go", 
       "duration": 237, 
-      "owning_user": 2
+      "owning_user": 2,
+      "machine_uuid" : "20000000000000000000000000000000"
     }
   }, 
   {
@@ -116,7 +117,8 @@
       "artist": "Third Eye Blind", 
       "title": "10 Days Late", 
       "duration": 185, 
-      "owning_user": 2
+      "owning_user": 2,
+      "machine_uuid" : "20000000000000000000000000000000"
     }
   }, 
   {
@@ -129,7 +131,8 @@
       "artist": "Third Eye Blind", 
       "title": "Semi-Charmed Life", 
       "duration": 268, 
-      "owning_user": 2
+      "owning_user": 2,
+      "machine_uuid" : "20000000000000000000000000000000"
     }
   }, 
   {
@@ -142,7 +145,8 @@
       "artist": "Skrillex", 
       "title": "My Name Is Skrillex", 
       "duration": 271, 
-      "owning_user": 2
+      "owning_user": 2,
+      "machine_uuid" : "20000000000000000000000000000000"
     }
   }, 
   {
@@ -155,7 +159,8 @@
       "artist": "Skirllex", 
       "title": "With You Friends", 
       "duration": 382, 
-      "owning_user": 2
+      "owning_user": 2,
+      "machine_uuid" : "20000000000000000000000000000000"
     }
   }, 
   {
@@ -168,7 +173,8 @@
       "artist": "The Mars Volta", 
       "title": "Inertiatic Esp", 
       "duration": 264, 
-      "owning_user": 2
+      "owning_user": 2,
+      "machine_uuid" : "20000000000000000000000000000000"
     }
   }, 
   {
@@ -181,7 +187,8 @@
       "artist": "The Mars Volta", 
       "title": "Ilyena", 
       "duration": 335, 
-      "owning_user": 2
+      "owning_user": 2,
+      "machine_uuid" : "20000000000000000000000000000000"
     }
   }, 
   {
@@ -194,7 +201,8 @@
       "artist": "The Mars Volta", 
       "title": "Teflon", 
       "duration": 304, 
-      "owning_user": 2
+      "owning_user": 2,
+      "machine_uuid" : "20000000000000000000000000000000"
     }
   }, 
   {
@@ -207,7 +215,8 @@
       "artist": "Daft Punk", 
       "title": "Around The World", 
       "duration": 428, 
-      "owning_user": 2
+      "owning_user": 2,
+      "machine_uuid" : "20000000000000000000000000000000"
     }
   }, 
   {
@@ -220,7 +229,8 @@
       "artist": "Deadmau5", 
       "title": "Moar Ghosts 'n' Stuff", 
       "duration": 297, 
-      "owning_user": 2
+      "owning_user": 2,
+      "machine_uuid" : "20000000000000000000000000000000"
     }
   }, 
   {
@@ -233,7 +243,8 @@
       "artist": "The Smashing Pumpkins", 
       "title": "Tonight, Tonight", 
       "duration": 255, 
-      "owning_user": 3
+      "owning_user": 3,
+      "machine_uuid" : "30000000000000000000000000000000"
     }
   }, 
   {
@@ -246,7 +257,8 @@
       "artist": "The Smashing Pumpkins", 
       "title": "Zero", 
       "duration": 160, 
-      "owning_user": 3
+      "owning_user": 3,
+      "machine_uuid" : "30000000000000000000000000000000"
     }
   }, 
   {
@@ -259,7 +271,8 @@
       "artist": "The Smashing Pumpkins", 
       "title": "1979", 
       "duration": 266, 
-      "owning_user": 3
+      "owning_user": 3,
+      "machine_uuid" : "30000000000000000000000000000000"
     }
   }, 
   {
@@ -272,7 +285,8 @@
       "artist": "Third Eye Blind", 
       "title": "Graduate", 
       "duration": 189, 
-      "owning_user": 2
+      "owning_user": 2,
+      "machine_uuid" : "20000000000000000000000000000000"
     }
   }, 
   {
@@ -285,7 +299,8 @@
       "artist": "Third Eye Blind", 
       "title": "Water Landing", 
       "duration": 269, 
-      "owning_user": 2
+      "owning_user": 2,
+      "machine_uuid" : "20000000000000000000000000000000"
     }
   }, 
   {
