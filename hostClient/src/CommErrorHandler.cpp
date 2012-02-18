@@ -24,12 +24,21 @@
 namespace UDJ{
 
 CommErrorHandler::CommErrorHandler(
-  DataStore *dataStore, 
+  DataStore *dataStore,
   UDJServerConnection *serverConnection)
   :QObject(dataStore),
   dataStore(dataStore),
   serverConnection(serverConnection),
-  syncLibOnReauth(false)
+  hasPendingReauthRequest(false),
+  syncLibOnReauth(false),
+  createEventOnReauth(false),
+  endEventOnReauth(false),
+  syncAvailableMusicOnReauth(false),
+  refreshActivePlaylistOnReauth(false),
+  syncPlaylistAddRequestsOnReauth(false),
+  setCurrentSongOnReauth(false),
+  syncPlaylistRemoveRequestsOnReauth(false),
+  refreshEventGoersOnReauth(false)
 {
   connect(
     serverConnection,
@@ -54,7 +63,8 @@ CommErrorHandler::CommErrorHandler(
       CommErrorHandler::OperationType,
       CommErrorHandler::CommErrorType,
       const QByteArray&)));
-} 
+
+}
 
 void CommErrorHandler::handleCommError(
   CommErrorHandler::OperationType opType,
@@ -68,27 +78,30 @@ void CommErrorHandler::handleCommError(
       syncLibOnReauth = true;
     }
     else if(opType == CREATE_EVENT){
+      DEBUG_MESSAGE("Flagging createEvent on reauth")
       createEventPayload = payload;
       createEventOnReauth = true;
     }
     else if(opType == END_EVENT){
       endEventOnReauth = true;
     }
-    else if(opType == AVAILABLE_SONG_ADD || opType == AVAILABLE_SONG_DEL){
-      syncAvailableMusicOnReauth = true;
-    }
-    else if(opType == PLAYLIST_UPDATE){
-      refreshActivePlaylistOnReauth = true;
-    }
-    else if(opType == PLAYLIST_ADD){
-      syncPlaylistAddRequestsOnReauth = true;
-    }
-    else if(opType == SET_CURRENT_SONG){
-      setCurrentSongPayload = payload;
-      setCurrentSongOnReauth = true;
-    }
-    else if(opType == PLAYLIST_REMOVE){
-      syncPlaylistRemoveRequestsOnReauth = true;
+    else if(dataStore->isCurrentlyHosting()){
+      if(opType == AVAILABLE_SONG_ADD || opType == AVAILABLE_SONG_DEL){
+        syncAvailableMusicOnReauth = true;
+      }
+      else if(opType == PLAYLIST_UPDATE){
+        refreshActivePlaylistOnReauth = true;
+      }
+      else if(opType == PLAYLIST_ADD){
+        syncPlaylistAddRequestsOnReauth = true;
+      }
+      else if(opType == SET_CURRENT_SONG){
+        setCurrentSongPayload = payload;
+        setCurrentSongOnReauth = true;
+      }
+      else if(opType == PLAYLIST_REMOVE){
+        syncPlaylistRemoveRequestsOnReauth = true;
+      }
     }
     requestReauth();
   }
@@ -130,6 +143,7 @@ void CommErrorHandler::clearOnReauthFlags(){
     syncLibOnReauth=false;
   }
   if(createEventOnReauth){
+    DEBUG_MESSAGE("Creating event on Reauth")
     serverConnection->createEvent(createEventPayload);
     createEventOnReauth=false;
   }
