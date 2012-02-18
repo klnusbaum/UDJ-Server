@@ -24,12 +24,21 @@
 namespace UDJ{
 
 CommErrorHandler::CommErrorHandler(
-  DataStore *dataStore, 
+  DataStore *dataStore,
   UDJServerConnection *serverConnection)
   :QObject(dataStore),
   dataStore(dataStore),
   serverConnection(serverConnection),
-  syncLibOnReauth(false)
+  hasPendingReauthRequest(false),
+  syncLibOnReauth(false),
+  createEventOnReauth(false),
+  endEventOnReauth(false),
+  syncAvailableMusicOnReauth(false),
+  refreshActivePlaylistOnReauth(false),
+  syncPlaylistAddRequestsOnReauth(false),
+  setCurrentSongOnReauth(false),
+  syncPlaylistRemoveRequestsOnReauth(false),
+  refreshEventGoersOnReauth(false)
 {
   connect(
     serverConnection,
@@ -69,6 +78,7 @@ void CommErrorHandler::handleCommError(
       syncLibOnReauth = true;
     }
     else if(opType == CREATE_EVENT){
+      DEBUG_MESSAGE("Flagging createEvent on reauth")
       createEventPayload = payload;
       createEventOnReauth = true;
     }
@@ -133,6 +143,7 @@ void CommErrorHandler::clearOnReauthFlags(){
     syncLibOnReauth=false;
   }
   if(createEventOnReauth){
+    DEBUG_MESSAGE("Creating event on Reauth")
     serverConnection->createEvent(createEventPayload);
     createEventOnReauth=false;
   }
