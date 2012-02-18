@@ -78,18 +78,9 @@ void PlaybackWidget::metaDataChanged(){
   if(titleInfo.size() > 0){
     songTitle->setText(titleInfo.at(0));
   }
-}
-
-
-void PlaybackWidget::play(){
-  if(mediaObject->currentSource().type() == Phonon::MediaSource::Empty){
-    Phonon::MediaSource nextSong = dataStore->takeNextSongToPlay();
-    if(nextSong.type() == Phonon::MediaSource::Invalid){
-      return;
-    }
-    mediaObject->setCurrentSource(nextSong);
+  else{
+    songTitle->setText("");
   }
-  mediaObject->play();
 }
 
 void PlaybackWidget::stateChanged(
@@ -116,9 +107,20 @@ void PlaybackWidget::stateChanged(
   }
 }
 
+void PlaybackWidget::play(){
+  if(mediaObject->currentSource().type() == Phonon::MediaSource::Empty){
+    Phonon::MediaSource nextSong = dataStore->takeNextSongToPlay();
+    if(nextSong.type() == Phonon::MediaSource::Empty){
+      return;
+    }
+    mediaObject->setCurrentSource(nextSong);
+  }
+  mediaObject->play();
+}
+
 void PlaybackWidget::aboutToFinish(){
   Phonon::MediaSource nextSong = dataStore->getNextSongToPlay();
-  if(nextSong.type() == Phonon::MediaSource::Invalid){
+  if(nextSong.type() == Phonon::MediaSource::Empty){
      return;
   }
   mediaObject->enqueue(dataStore->getNextSongToPlay());
@@ -126,7 +128,7 @@ void PlaybackWidget::aboutToFinish(){
 
 void PlaybackWidget::finished(){
   Phonon::MediaSource nextSong = dataStore->takeNextSongToPlay();
-  if(nextSong.type() == Phonon::MediaSource::Invalid){
+  if(nextSong.type() != Phonon::MediaSource::Empty){
     mediaObject->setCurrentSource(nextSong);
     mediaObject->play();
   }
