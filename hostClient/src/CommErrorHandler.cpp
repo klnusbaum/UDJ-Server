@@ -54,7 +54,8 @@ CommErrorHandler::CommErrorHandler(
       CommErrorHandler::OperationType,
       CommErrorHandler::CommErrorType,
       const QByteArray&)));
-} 
+
+}
 
 void CommErrorHandler::handleCommError(
   CommErrorHandler::OperationType opType,
@@ -74,21 +75,23 @@ void CommErrorHandler::handleCommError(
     else if(opType == END_EVENT){
       endEventOnReauth = true;
     }
-    else if(opType == AVAILABLE_SONG_ADD || opType == AVAILABLE_SONG_DEL){
-      syncAvailableMusicOnReauth = true;
-    }
-    else if(opType == PLAYLIST_UPDATE){
-      refreshActivePlaylistOnReauth = true;
-    }
-    else if(opType == PLAYLIST_ADD){
-      syncPlaylistAddRequestsOnReauth = true;
-    }
-    else if(opType == SET_CURRENT_SONG){
-      setCurrentSongPayload = payload;
-      setCurrentSongOnReauth = true;
-    }
-    else if(opType == PLAYLIST_REMOVE){
-      syncPlaylistRemoveRequestsOnReauth = true;
+    else if(dataStore->isCurrentlyHosting()){
+      if(opType == AVAILABLE_SONG_ADD || opType == AVAILABLE_SONG_DEL){
+        syncAvailableMusicOnReauth = true;
+      }
+      else if(opType == PLAYLIST_UPDATE){
+        refreshActivePlaylistOnReauth = true;
+      }
+      else if(opType == PLAYLIST_ADD){
+        syncPlaylistAddRequestsOnReauth = true;
+      }
+      else if(opType == SET_CURRENT_SONG){
+        setCurrentSongPayload = payload;
+        setCurrentSongOnReauth = true;
+      }
+      else if(opType == PLAYLIST_REMOVE){
+        syncPlaylistRemoveRequestsOnReauth = true;
+      }
     }
     requestReauth();
   }
