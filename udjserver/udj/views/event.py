@@ -113,6 +113,8 @@ def endEvent(request, event_id):
   #TODO We have a race condition here. Gonna need to wrap this in a transaction
   #in the future
   toEnd = Event.objects.get(pk=event_id)
+  if toEnd.state == u'FN':
+    return HttpResponse("Party ended")
   toEnd.state = u'FN'
   toEnd.save()
   EventEndTime(event=toEnd).save()

@@ -62,6 +62,10 @@ class EndEventTest(User2TestCase):
     EventEndTime.objects.get(event__id=2)
     EventGoer.objects.get(user__id=2, event__id=2, state=u'LE')
 
+  def testDoubleEnd(self):
+    response = self.doDelete('/udj/events/2')
+    response = self.doDelete('/udj/events/2')
+
 class EndEmptyEventTest(User4TestCase):
   def testEndEmptyEvent(self):
     response = self.doDelete('/udj/events/3')
