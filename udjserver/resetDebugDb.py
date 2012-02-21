@@ -24,7 +24,7 @@ if not os.path.exists('udjdb.py'):
   createDBFile()
 
 import settings
-os.remove('udjDebug.db')
+#os.remove('udjDebug.db')
 execute_manager(settings, argv=['manage.py', 'syncdb', '--noinput'])
 execute_manager(settings, argv=['manage.py', 'loaddata', 
   'udj/fixtures/test_fixture.json'])

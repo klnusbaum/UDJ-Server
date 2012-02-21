@@ -140,14 +140,6 @@ LOGGING = {
 }
 
 try:
-  import static_config
-  STATICFILES_STORAGE = static_config.STATICFILES_STORAGE
-  AWS_ACCESS_KEY_ID = static_config.AWS_ACCESS_KEY_ID
-  AWS_SECRET_ACCESS_KEY = static_config.AWS_SECRET_ACCESS_KEY
-  AWS_STORAGE_BUCKET_NAME = static_config.AWS_STORAGE_BUCKET_NAME
-  STATIC_URL = static_config.STATIC_URL
-  ADMIN_MEDIA_PREFIX = static_config.ADMIN_MEDIA_PREFIX
+  from settings_local import *
 except ImportError:
-  print "No static_config file found. Using default static file configuration"
   pass
-
