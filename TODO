@@ -20,6 +20,8 @@ isSynched. Should be a simple trigger on the database.
 go ahead and mark the song as sycned and deleted because
 clearly the server didn't even know about it in the first.
 * Fix time added so it actually looks decent
+* Available Songs to come back when the client is quit in the middle
+of an event.
 
 ANDROID APP
 - Users should be able to remove songs they added form the playlist

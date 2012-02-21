@@ -61,7 +61,7 @@ private slots:
    * @parma oldState The old state of the primary MediaObject.
    */
   void stateChanged(Phonon::State newState, Phonon::State oldState);
-  
+
   /** \brief Called when ever the primary MediaObject "ticks" 
    *
    * @param time The current time of the primary MediaObject.
@@ -98,6 +98,8 @@ private slots:
     * @param newSong The new song that should be playing.
     */
    void setNewSource(Phonon::MediaSource newSong);
+
+   void clearWidget();
 
   //@}
 

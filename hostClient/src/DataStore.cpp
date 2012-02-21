@@ -409,8 +409,12 @@ Phonon::MediaSource DataStore::getNextSongToPlay(){
     nextSongQuery.exec(),
     nextSongQuery)
   //TODO handle is this returns false
-  nextSongQuery.first();
-  return Phonon::MediaSource(nextSongQuery.value(0).toString());
+  if(nextSongQuery.first()){
+    return Phonon::MediaSource(nextSongQuery.value(0).toString());
+  }
+  else{
+    return Phonon::MediaSource("");
+  }
 }
 
 Phonon::MediaSource DataStore::takeNextSongToPlay(){

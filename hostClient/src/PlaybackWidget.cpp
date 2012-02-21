@@ -1,18 +1,18 @@
 /**
  * Copyright 2011 Kurtis L. Nusbaum
- * 
+ *
  * This file is part of UDJ.
- * 
+ *
  * UDJ is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * UDJ is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -47,7 +47,7 @@ PlaybackWidget::PlaybackWidget(DataStore *dataStore, QWidget *parent):
   connect(mediaObject, SIGNAL(finished()), this, SLOT(finished()));
   connect(
     mediaObject,
-    SIGNAL(metaDataChanged()), 
+    SIGNAL(metaDataChanged()),
     this,
     SLOT(metaDataChanged()));
   connect(
@@ -55,14 +55,18 @@ PlaybackWidget::PlaybackWidget(DataStore *dataStore, QWidget *parent):
     SIGNAL(manualSongChange(Phonon::MediaSource)),
     this,
     SLOT(setNewSource(Phonon::MediaSource)));
-    
 
+  connect(
+    dataStore,
+    SIGNAL(eventEnded()),
+    this,
+    SLOT(clearWidget()));
   Phonon::createPath(mediaObject, audioOutput);
 }
 
 void PlaybackWidget::tick(qint64 time){
-	QTime tickTime(0, (time/60000)%60, (time/1000)%60);
-	timeLabel->setText(tickTime.toString("mm:ss"));
+  QTime tickTime(0, (time/60000)%60, (time/1000)%60);
+  timeLabel->setText(tickTime.toString("mm:ss"));
 }
 
 void PlaybackWidget::sourceChanged(const Phonon::MediaSource &source){
@@ -74,15 +78,9 @@ void PlaybackWidget::metaDataChanged(){
   if(titleInfo.size() > 0){
     songTitle->setText(titleInfo.at(0));
   }
-}
-
-
-void PlaybackWidget::play(){
-  if(mediaObject->currentSource().type() == Phonon::MediaSource::Empty){
-    Phonon::MediaSource nextSong = dataStore->takeNextSongToPlay();
-    mediaObject->setCurrentSource(nextSong);
+  else{
+    songTitle->setText("");
   }
-  mediaObject->play();
 }
 
 void PlaybackWidget::stateChanged(
@@ -90,67 +88,84 @@ void PlaybackWidget::stateChanged(
 {
   switch(newState){
   case Phonon::PlayingState:
-    playAction->setEnabled(false);   
-    pauseAction->setEnabled(true);   
-    stopAction->setEnabled(true);   
+    playAction->setEnabled(false);
+    pauseAction->setEnabled(true);
+    stopAction->setEnabled(true);
     break;
   case Phonon::StoppedState:
-    playAction->setEnabled(true);   
-    pauseAction->setEnabled(false);   
-    stopAction->setEnabled(false);   
+    playAction->setEnabled(true);
+    pauseAction->setEnabled(false);
+    stopAction->setEnabled(false);
     break;
   case Phonon::PausedState:
-    playAction->setEnabled(true);   
-    pauseAction->setEnabled(false);   
-    stopAction->setEnabled(true);   
+    playAction->setEnabled(true);
+    pauseAction->setEnabled(false);
+    stopAction->setEnabled(true);
     break;
   default:
     break;
   }
 }
 
+void PlaybackWidget::play(){
+  if(mediaObject->currentSource().type() == Phonon::MediaSource::Empty){
+    Phonon::MediaSource nextSong = dataStore->takeNextSongToPlay();
+    if(nextSong.type() == Phonon::MediaSource::Empty){
+      return;
+    }
+    mediaObject->setCurrentSource(nextSong);
+  }
+  mediaObject->play();
+}
+
 void PlaybackWidget::aboutToFinish(){
+  Phonon::MediaSource nextSong = dataStore->getNextSongToPlay();
+  if(nextSong.type() == Phonon::MediaSource::Empty){
+     return;
+  }
   mediaObject->enqueue(dataStore->getNextSongToPlay());
 }
 
 void PlaybackWidget::finished(){
   Phonon::MediaSource nextSong = dataStore->takeNextSongToPlay();
-  mediaObject->setCurrentSource(nextSong);
-  mediaObject->play();
+  if(nextSong.type() != Phonon::MediaSource::Empty){
+    mediaObject->setCurrentSource(nextSong);
+    mediaObject->play();
+  }
 }
 
 void PlaybackWidget::setupUi(){
 
-	songTitle = new QLabel(this);
-	timeLabel = new QLabel("--:--", this);
+  songTitle = new QLabel(this);
+  timeLabel = new QLabel("--:--", this);
 
   QToolBar *bar = new QToolBar;
-  bar->addAction(playAction);  
-  bar->addAction(pauseAction);  
-  bar->addAction(stopAction);  
+  bar->addAction(playAction);
+  bar->addAction(pauseAction);
+  bar->addAction(stopAction);
 
   seekSlider = new Phonon::SeekSlider(this);
   seekSlider->setMediaObject(mediaObject);
-  
+
   volumeSlider = new Phonon::VolumeSlider(this);
   volumeSlider->setAudioOutput(audioOutput);
   volumeSlider->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 
-	QHBoxLayout *infoLayout = new QHBoxLayout;
-	infoLayout->addWidget(songTitle);
-	infoLayout->addStretch();
-	infoLayout->addWidget(timeLabel);
+  QHBoxLayout *infoLayout = new QHBoxLayout;
+  infoLayout->addWidget(songTitle);
+  infoLayout->addStretch();
+  infoLayout->addWidget(timeLabel);
 
   QHBoxLayout *seekerLayout = new QHBoxLayout;
   seekerLayout->addWidget(seekSlider);
-  
+
   QHBoxLayout *playBackLayout = new QHBoxLayout;
   playBackLayout->addWidget(bar);
   playBackLayout->addStretch();
   playBackLayout->addWidget(volumeSlider);
 
   QVBoxLayout *mainLayout = new QVBoxLayout;
-	mainLayout->addLayout(infoLayout);
+  mainLayout->addLayout(infoLayout);
   mainLayout->addLayout(seekerLayout);
   mainLayout->addLayout(playBackLayout);
   setLayout(mainLayout);
@@ -178,6 +193,13 @@ void PlaybackWidget::createActions(){
 void PlaybackWidget::setNewSource(Phonon::MediaSource newSong){
   mediaObject->setCurrentSource(newSong);
   mediaObject->play();
+}
+
+void PlaybackWidget::clearWidget(){
+  mediaObject->stop();
+  mediaObject->clear();
+  songTitle->setText("");
+  timeLabel->setText("--:--");
 }
 
 
