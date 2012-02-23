@@ -1,18 +1,18 @@
 /**
  * Copyright 2011 Kurtis L. Nusbaum
- * 
+ *
  * This file is part of UDJ.
- * 
+ *
  * UDJ is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * UDJ is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -37,6 +37,7 @@ import android.widget.TextView;
 import android.view.Window;
 
 import org.klnusbaum.udj.R;
+import org.klnusbaum.udj.Utils;
 import org.klnusbaum.udj.Constants;
 import org.klnusbaum.udj.network.ServerConnection;
 
@@ -151,11 +152,16 @@ public class AuthActivity extends AccountAuthenticatorActivity{
         if (TextUtils.isEmpty(mUsername) || TextUtils.isEmpty(mPassword)) {
             mMessage.setText(getMessage());
         } else {
-            // Show a progress dialog, and kick off a background task to perform
-            // the user login attempt.
-            showProgress();
-            mAuthTask = new UserLoginTask();
-            mAuthTask.execute();
+            if(!Utils.isNetworkAvailable(this)){
+                mMessage.setText(getText(R.string.no_network_connection));
+            }
+            else{
+                // Show a progress dialog, and kick off a background task to perform
+                // the user login attempt.
+                showProgress();
+                mAuthTask = new UserLoginTask();
+                mAuthTask.execute();
+            }
         }
     }
 
