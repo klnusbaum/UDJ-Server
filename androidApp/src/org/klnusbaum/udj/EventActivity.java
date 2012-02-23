@@ -146,7 +146,10 @@ public class EventActivity extends EventEndedListenerActivity
       return true;
     case R.id.menu_search:
       startSearch(null, false, null, false);
-      return true;  
+      return true;
+    case R.id.menu_random:
+      doRandomSearch();
+      return true;
     default:
       return super.onOptionsItemSelected(item);
     }
@@ -159,6 +162,13 @@ public class EventActivity extends EventEndedListenerActivity
       startActivityForResult(intent, 0);
     }
   }
+
+  private void doRandomSearch(){
+    Intent randomIntent = new Intent(this, RandomSearchActivity.class);
+    startActivity(randomIntent);
+  }
+
+
 
   @Override 
   public void onBackPressed(){

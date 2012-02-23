@@ -75,6 +75,7 @@
   <string name="total_votes">Rank</string>
   <string name="logout_of_other_event">Logout</string>
   <string name="already_in_event_join_fail_message">You\'re logged into</string>
+  <string name="menu_random">Random</string>
 
 
 <!-- Stuff for action bar compatibility -->
