@@ -18,115 +18,16 @@
  */
 package org.klnusbaum.udj;
 
-import android.support.v4.app.ListFragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.CursorAdapter;
 
-import android.database.Cursor;
-import android.os.Bundle;
 import android.content.Intent;
-import android.content.ContentValues;
-import android.content.ContentResolver;
 import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.ImageButton;
-import android.view.LayoutInflater;
+import android.app.SearchManager;
 
-import java.util.List;
+public class MusicSearchFragment extends SearchFragment{
 
-import org.klnusbaum.udj.network.PlaylistSyncService;
-import org.klnusbaum.udj.containers.LibraryEntry;
-
-public class MusicSearchFragment extends ListFragment
-  implements LoaderManager.LoaderCallbacks<MusicSearchLoader.MusicSearchResult>
-{
-  public static final String SEARCH_QUERY_EXTRA = "search_query";
-  private static final int LIB_SEARCH_LOADER_TAG = 0;
-
-  /** Adapter used to help display the contents of the library. */
-  MusicSearchAdapter searchAdapter;
-  private String searchQuery;
-  private Account account;
-
-  private View.OnClickListener addSongToPlaylistListener =
-    new View.OnClickListener(){
-      public void onClick(View v){
-        LibraryEntry songToAdd = 
-          (LibraryEntry)v.getTag(R.id.LIB_ENTRY_VIEW_TAG);
-        Intent addSongIntent = new Intent(
-          Intent.ACTION_INSERT,
-          UDJEventProvider.PLAYLIST_ADD_REQUEST_URI,
-          getActivity(),
-          PlaylistSyncService.class);
-        addSongIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
-        addSongIntent.putExtra(Constants.LIB_ID_EXTRA, songToAdd.getLibId());
-        getActivity().startService(addSongIntent);
-      }
-    };
-
-  
-  @Override
-  public void onActivityCreated(Bundle savedInstanceState){
-    super.onActivityCreated(savedInstanceState);
-
-    setEmptyText(getActivity().getString(R.string.no_library_songs));
-    Bundle args = getArguments();
-    searchQuery = args.getString(SEARCH_QUERY_EXTRA);
-    account = Utils.basicGetUdjAccount(getActivity());
-    //TODO Handle null account.
-
-    searchAdapter = new MusicSearchAdapter(getActivity());
-    setListAdapter(searchAdapter);
-    setListShown(false);
-    getLoaderManager().initLoader(LIB_SEARCH_LOADER_TAG, null, this);
-  }
-
-  public void setSearchQuery(String newQuery){
-    searchQuery = newQuery;
-    getLoaderManager().restartLoader(LIB_SEARCH_LOADER_TAG, null, this);
-  }
-
-  public Loader<MusicSearchLoader.MusicSearchResult> onCreateLoader(
-    int id, Bundle args)
-  {
-    if(id == LIB_SEARCH_LOADER_TAG){
-      return new RegularSearchLoader(
-        getActivity(), searchQuery, account);
-    }
-    return null;
-  }
-
-  public void onLoadFinished(
-    Loader<MusicSearchLoader.MusicSearchResult> loader,
-    MusicSearchLoader.MusicSearchResult data)
-  {
-    if(data.getError() == MusicSearchLoader.MusicSearchError.NO_ERROR){
-      searchAdapter = new MusicSearchAdapter(
-        getActivity(), 
-        data.getResults(),
-        addSongToPlaylistListener);
-      setListAdapter(searchAdapter);
-    }
-    else if(data.getError() == 
-      MusicSearchLoader.MusicSearchError.EVENT_ENDED_ERROR)
-    {
-      Utils.handleEventOver(getActivity(), account);
-    }
-
-    if(isResumed()){
-      setListShown(true);
-    }
-    else if(isVisible()){
-      setListShownNoAnimation(true);
-    }
-  }
-
-  public void onLoaderReset(Loader<MusicSearchLoader.MusicSearchResult> loader){
-    setListAdapter(null);
+  public Loader<MusicSearchLoader.MusicSearchResult> getLoader(Account account){
+    String searchQuery = getActivity().getIntent().getStringExtra(SearchManager.QUERY);
+    return new RegularSearchLoader(getActivity(), searchQuery, account);
   }
 }
