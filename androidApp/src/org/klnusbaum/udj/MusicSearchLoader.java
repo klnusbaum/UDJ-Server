@@ -39,12 +39,12 @@ import org.klnusbaum.udj.network.ServerConnection;
 import org.klnusbaum.udj.containers.LibraryEntry;
 import org.klnusbaum.udj.exceptions.EventOverException;
 
-public class MusicSearchLoader 
+public abstract class MusicSearchLoader 
   extends AsyncTaskLoader<MusicSearchLoader.MusicSearchResult>
 {
- 
+
   public enum MusicSearchError{
-    NO_ERROR, 
+    NO_ERROR,
     EVENT_ENDED_ERROR,
     NO_SEARCH_ERROR,
     SERVER_ERROR,
@@ -54,7 +54,7 @@ public class MusicSearchLoader
   public static class MusicSearchResult{
     private List<LibraryEntry> res;
     private MusicSearchError error;
-  
+
     public MusicSearchResult(List<LibraryEntry> res){
       this.res = res;
       this.error = MusicSearchError.NO_ERROR;
@@ -74,83 +74,73 @@ public class MusicSearchLoader
     }
   }
 
-
-  private String query;
   private Account account;
 
-  public MusicSearchLoader(
-    Context context, String query, Account account)
-  {
+  public MusicSearchLoader(Context context, Account account){
     super(context);
-    this.query = query;
     this.account = account;
   }
 
   public MusicSearchResult loadInBackground(){
-    return doSearch(true);
+    return attemptSearch(true);
   }
 
-  private MusicSearchResult doSearch(boolean attemptReauth){
-    if(query != null){
-      AccountManager am = AccountManager.get(getContext());
-      String authToken = "";
-      try{
-        authToken = am.blockingGetAuthToken(account, "", true);
-      }
-      catch(IOException e){
-        //TODO this might actually be an auth error
-        return new MusicSearchResult(null, 
-          MusicSearchError.AUTHENTICATION_ERROR);
-      }
-      catch(AuthenticatorException e){
-        return new MusicSearchResult(null, 
-          MusicSearchError.AUTHENTICATION_ERROR);
-      }
-      catch(OperationCanceledException e){
-        return new MusicSearchResult(null, 
-          MusicSearchError.AUTHENTICATION_ERROR);
-      }
+  private MusicSearchResult attemptSearch(boolean attemptReauth){
+    AccountManager am = AccountManager.get(getContext());
+    String authToken = "";
+    try{
+      authToken = am.blockingGetAuthToken(account, "", true);
+    }
+    catch(IOException e){
+      //TODO this might actually be an auth error
+      return new MusicSearchResult(null, 
+        MusicSearchError.AUTHENTICATION_ERROR);
+    }
+    catch(AuthenticatorException e){
+      return new MusicSearchResult(null, 
+        MusicSearchError.AUTHENTICATION_ERROR);
+    }
+    catch(OperationCanceledException e){
+      return new MusicSearchResult(null, 
+        MusicSearchError.AUTHENTICATION_ERROR);
+    }
 
-      try{
-        long eventId = 
-          Long.valueOf(am.getUserData(account, Constants.LAST_EVENT_ID_DATA));
-        List<LibraryEntry> list = 
-          ServerConnection.availableMusicQuery(query, eventId, authToken);
-        return new MusicSearchResult(list);
+    try{
+      long eventId = 
+        Long.valueOf(am.getUserData(account, Constants.LAST_EVENT_ID_DATA));
+      return doSearch(eventId, authToken);
+    }
+    catch(JSONException e){
+      return new MusicSearchResult(null, 
+        MusicSearchError.SERVER_ERROR);
+    }
+    catch(ParseException e){
+      return new MusicSearchResult(null, MusicSearchError.SERVER_ERROR);
+    }
+    catch(IOException e){
+      return new MusicSearchResult(null, MusicSearchError.SERVER_ERROR);
+    }
+    catch(AuthenticationException e){
+      if(attemptReauth){
+        Log.d(TAG, "soft auth failure");
+        am.invalidateAuthToken(Constants.ACCOUNT_TYPE, authToken);
+        return attemptSearch(false);
       }
-      catch(JSONException e){
-        return new MusicSearchResult(null, 
-          MusicSearchError.SERVER_ERROR);
-      }
-      catch(ParseException e){
-        return new MusicSearchResult(null, 
-          MusicSearchError.SERVER_ERROR);
-      }
-      catch(IOException e){
-        return new MusicSearchResult(null, 
-          MusicSearchError.SERVER_ERROR);
-      }
-      catch(AuthenticationException e){
-        if(attemptReauth){
-          Log.d(TAG, "soft auth failure");
-          am.invalidateAuthToken(Constants.ACCOUNT_TYPE, authToken);
-          return doSearch(false);
-        }
-        else{
-          Log.d(TAG, "hard auth failure");
-          return new MusicSearchResult(null, 
-            MusicSearchError.AUTHENTICATION_ERROR);
-        }
-      }
-      catch(EventOverException e){
-        return new MusicSearchResult(null, MusicSearchError.EVENT_ENDED_ERROR);
+      else{
+        Log.d(TAG, "hard auth failure");
+        return new MusicSearchResult(null, MusicSearchError.AUTHENTICATION_ERROR);
       }
     }
-    return new MusicSearchResult(null, MusicSearchError.NO_SEARCH_ERROR);
+    catch(EventOverException e){
+      return new MusicSearchResult(null, MusicSearchError.EVENT_ENDED_ERROR);
+    }
   }
 
   @Override
   protected void onStartLoading(){
     forceLoad();
   }
+
+  protected abstract MusicSearchResult doSearch(long eventId, String authToken) throws
+    JSONException, ParseException, IOException, AuthenticationException, EventOverException;
 }

@@ -90,12 +90,12 @@ public class MusicSearchFragment extends ListFragment
     searchQuery = newQuery;
     getLoaderManager().restartLoader(LIB_SEARCH_LOADER_TAG, null, this);
   }
-    
+
   public Loader<MusicSearchLoader.MusicSearchResult> onCreateLoader(
     int id, Bundle args)
   {
     if(id == LIB_SEARCH_LOADER_TAG){
-      return new MusicSearchLoader(
+      return new RegularSearchLoader(
         getActivity(), searchQuery, account);
     }
     return null;
