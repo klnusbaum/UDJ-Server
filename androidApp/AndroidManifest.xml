@@ -20,8 +20,8 @@
 <manifest
       xmlns:android="http://schemas.android.com/apk/res/android"
       package="org.klnusbaum.udj"
-      android:versionCode="1"
-      android:versionName="1.0">
+      android:versionCode="2"
+      android:versionName="1.1">
 
     <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="15"/>
 
