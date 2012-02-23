@@ -33,13 +33,11 @@ import android.app.SearchManager;
 public class MusicSearchActivity extends EventEndedListenerActivity{
 
   private static final String TAG = "MusicActivity";
-  private String searchQuery;
   private MusicSearchFragment searchFrag;
 
   @Override
   public void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
-    searchQuery = getIntent().getStringExtra(SearchManager.QUERY);
 
     //TODO before calling fragment, to get ID and give that to it.
     FragmentManager fm = getSupportFragmentManager();
@@ -52,7 +50,7 @@ public class MusicSearchActivity extends EventEndedListenerActivity{
   protected void onNewIntent(Intent intent){
     Log.d(TAG, "In on new intent");
     if(Intent.ACTION_SEARCH.equals(intent.getAction())){
-      searchQuery = intent.getStringExtra(SearchManager.QUERY);
+      String searchQuery = intent.getStringExtra(SearchManager.QUERY);
       getIntent().putExtra(SearchManager.QUERY, searchQuery);
       getSupportLoaderManager().restartLoader(
         SearchFragment.LIB_SEARCH_LOADER_TAG, null, searchFrag);
