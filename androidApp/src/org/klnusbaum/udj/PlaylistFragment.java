@@ -254,16 +254,6 @@ public class PlaylistFragment extends ListFragment
           getString(R.string.added_by) + " " +
           cursor.getString(adderUserNameIndex));
       }
-
-      TextView upvotes = (TextView)view.findViewById(R.id.up_votes);
-      TextView downvotes = (TextView)view.findViewById(R.id.down_votes);
-      int upVoteIndex = cursor.getColumnIndex(UDJEventProvider.UP_VOTES_COLUMN);
-      int downVoteIndex =
-        cursor.getColumnIndex(UDJEventProvider.DOWN_VOTES_COLUMN);
-      int numUpvotes = cursor.getInt(upVoteIndex);
-      int numDownvotes = cursor.getInt(downVoteIndex);
-      upvotes.setText(String.valueOf(numUpvotes) + " \u2191");
-      downvotes.setText(String.valueOf(numDownvotes) + " \u2193");
     }
 
     @Override

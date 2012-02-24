@@ -5,7 +5,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    (r'^udj/', include('udj.urls')),
+    url(r'^udj/', include('udj.urls')),
     # Examples:
     # url(r'^$', 'udjserver.views.home', name='home'),
     # url(r'^udjserver/', include('udjserver.foo.urls')),
@@ -15,5 +15,5 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
-  
+    url(r'^', include('frontend.urls')),
 )

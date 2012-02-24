@@ -6,6 +6,13 @@ def removeSongFromActivePlaylist(modeladmin, request, queryset):
 
 removeSongFromActivePlaylist.short_description = "Remove songs from playlist"
 
+def endEvent(modeladmin, request, queryset):
+  queryset.update(state='FN')
+  for endingEvent in queryset:
+    EventEndTime(event=endingEvent).save()
+
+endEvent.short_description = "End selected events"
+
 class ActivePlaylistEntryAdmin(admin.ModelAdmin):
   list_display = ('song', 'time_added', 'adder', 'event', 'state')
   list_filter = ('state','event',)
@@ -28,6 +35,7 @@ class LibraryAdmin(admin.ModelAdmin):
 class EventAdmin(admin.ModelAdmin):
   list_display = ('name', 'host', 'time_started', 'state')
   list_filter = ('host', 'state') 
+  actions = [endEvent]
 
 class VoteAdmin(admin.ModelAdmin):
   list_display = ('playlist_entry', 'user', 'weight')
