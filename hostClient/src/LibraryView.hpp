@@ -23,6 +23,7 @@
 #include <QTableView>
 
 class QContextMenuEvent;
+class QSortFilterProxyModel;
 
 namespace UDJ{
 
@@ -68,6 +69,8 @@ private:
 
   /** \brief The model backing LibraryView.  */
   MusicModel *libraryModel;
+
+  QSortFilterProxyModel *proxyModel;
 
   /** \brief Action used for deleting songs from the library. */
   QAction *deleteSongAction;

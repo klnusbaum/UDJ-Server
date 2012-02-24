@@ -24,6 +24,7 @@
 #include <QMenu>
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QSortFilterProxyModel>
 
 namespace UDJ{
 
@@ -33,9 +34,13 @@ LibraryView::LibraryView(DataStore *dataStore, QWidget* parent):
   dataStore(dataStore)
 {
   libraryModel = new MusicModel(getDataQuery(), dataStore, this);
+  proxyModel = new QSortFilterProxyModel(this);
+  proxyModel->setSourceModel(libraryModel);
+
   verticalHeader()->hide();
   horizontalHeader()->setStretchLastSection(true);
-  setModel(libraryModel);
+  setModel(proxyModel);
+  setSortingEnabled(true);
   setSelectionBehavior(QAbstractItemView::SelectRows);
   setContextMenuPolicy(Qt::CustomContextMenu);
   configureColumns();
@@ -109,7 +114,8 @@ void LibraryView::addSongToAvailableMusic(){
     Utils::getSelectedIds<library_song_id_t>(
       this,
       libraryModel,
-      DataStore::getLibIdColName()));
+      DataStore::getLibIdColName(),
+      proxyModel));
 }
 
 void LibraryView::deleteSongs(){
@@ -117,7 +123,8 @@ void LibraryView::deleteSongs(){
     Utils::getSelectedIds<library_song_id_t>(
       this,
       libraryModel,
-      DataStore::getLibIdColName()));
+      DataStore::getLibIdColName(),
+      proxyModel));
 }
 
 void LibraryView::addSongsToSongList(song_list_id_t songListId){
@@ -126,7 +133,8 @@ void LibraryView::addSongsToSongList(song_list_id_t songListId){
     Utils::getSelectedIds<library_song_id_t>(
       this,
       libraryModel,
-      DataStore::getLibIdColName()));
+      DataStore::getLibIdColName(),
+      proxyModel));
 }
 
 

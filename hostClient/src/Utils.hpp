@@ -21,6 +21,7 @@
 #include <QSqlQueryModel>
 #include <QTableView>
 #include <QSqlRecord>
+#include <QSortFilterProxyModel>
 #include <set>
 #include <vector>
 
@@ -33,7 +34,8 @@ namespace Utils{
 template<class T> std::vector<T> getSelectedIds(
   const QTableView* view,
   const QSqlQueryModel* model,
-  const QString& colName)
+  const QString& colName,
+  const QSortFilterProxyModel *proxyModel=0)
 {
   QModelIndexList selected = view->selectionModel()->selectedIndexes();
   std::vector<T> selectedIds;
@@ -44,7 +46,9 @@ template<class T> std::vector<T> getSelectedIds(
     ++it
   )
   {
-    rows.insert(it->row()); 
+    rows.insert(
+        (proxyModel ? proxyModel->mapToSource(*it).row() : it->row())
+    );
   }
   for(
     std::set<int>::const_iterator it = rows.begin();
