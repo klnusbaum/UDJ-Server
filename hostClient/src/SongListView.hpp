@@ -23,6 +23,7 @@
 #include "DataStore.hpp"
 
 class QAction;
+class QSortFilterProxyModel;
 
 
 namespace UDJ{
@@ -70,9 +71,11 @@ private:
   QAction *removeFromSongList;
 
   song_list_id_t currentSongListId;
- 
+
   /** \brief The model backing this view. */
-  MusicModel *songListEntryModel;  
+  MusicModel *songListEntryModel;
+
+  QSortFilterProxyModel *proxyModel;
 
 
   //@}

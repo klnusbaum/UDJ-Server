@@ -24,6 +24,7 @@
 #include <QModelIndex>
 #include <QSqlRecord>
 #include <QHeaderView>
+#include <QSortFilterProxyModel>
 #include <set>
 
 
@@ -36,7 +37,12 @@ AvailableMusicView::AvailableMusicView(DataStore *dataStore, QWidget *parent):
 {
   setEditTriggers(QAbstractItemView::NoEditTriggers);
   availableMusicModel = new MusicModel(getDataQuery(), dataStore, this);
-  setModel(availableMusicModel);
+  proxyModel = new QSortFilterProxyModel(this);
+  proxyModel->setSourceModel(availableMusicModel);
+
+  setModel(proxyModel);
+  setSortingEnabled(true);
+  verticalHeader()->hide();
   horizontalHeader()->setStretchLastSection(true);
   configHeaders();
   setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -94,7 +100,8 @@ void AvailableMusicView::addSongsToActivePlaylist(){
   dataStore->addSongsToActivePlaylist(Utils::getSelectedIds<library_song_id_t>(
     this,
     availableMusicModel,
-    DataStore::getAvailableEntryLibIdColName()));
+    DataStore::getAvailableEntryLibIdColName(),
+    proxyModel));
 }
 
 void AvailableMusicView::removeSongsFromAvailableMusic(){
@@ -102,11 +109,13 @@ void AvailableMusicView::removeSongsFromAvailableMusic(){
     Utils::getSelectedIds<library_song_id_t>(
       this,
       availableMusicModel,
-      DataStore::getAvailableEntryLibIdColName()));
+      DataStore::getAvailableEntryLibIdColName(),
+      proxyModel));
 }
 
 void AvailableMusicView::addSongToActivePlaylist(const QModelIndex& index){
-  QSqlRecord songToPlayRecord = availableMusicModel->record(index.row());
+  QSqlRecord songToPlayRecord = 
+    availableMusicModel->record(proxyModel->mapToSource(index).row());
   QVariant data = 
     songToPlayRecord.value(DataStore::getAvailableEntryLibIdColName());
   dataStore->addSongToActivePlaylist(data.value<library_song_id_t>());

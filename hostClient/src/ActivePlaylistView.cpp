@@ -34,7 +34,6 @@ ActivePlaylistView::ActivePlaylistView(DataStore* dataStore, QWidget* parent):
   setContextMenuPolicy(Qt::CustomContextMenu);
   setEditTriggers(QAbstractItemView::NoEditTriggers);
   model = new MusicModel(getDataQuery(), dataStore, this);
-  verticalHeader()->hide();
   horizontalHeader()->setStretchLastSection(true);
   createActions();
   setModel(model);

@@ -23,6 +23,7 @@
 #include "ConfigDefs.hpp"
 
 class QAction;
+class QSortFilterProxyModel;
 
 namespace UDJ{
 
@@ -56,13 +57,15 @@ private:
    * to the playlist.
    */
   DataStore *dataStore;
- 
+
   /** \brief The model backing this view. */
-  MusicModel *availableMusicModel;  
+  MusicModel *availableMusicModel;
+
+  QSortFilterProxyModel *proxyModel;
 
   /** \brief Action for removing songs from the available music */
   QAction *removeFromAvailableMusic;
- 
+
   /** \brief Action for adding songs to the active playlist. */
   QAction *addToActivePlaylist;
 

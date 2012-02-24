@@ -40,8 +40,14 @@ SongListView::SongListView(DataStore *dataStore, QWidget *parent):
   createActions();
   songListEntryModel = 
     new MusicModel(getQuery(currentSongListId), dataStore, this);
-  setModel(songListEntryModel);
+
+  proxyModel = new QSortFilterProxyModel(this);
+  proxyModel->setSourceModel(songListEntryModel);
+  setModel(proxyModel);
+
+  setSortingEnabled(true);
   horizontalHeader()->setStretchLastSection(true);
+  verticalHeader()->hide();
   setSelectionBehavior(QAbstractItemView::SelectRows);
   setContextMenuPolicy(Qt::CustomContextMenu);
   connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
@@ -62,7 +68,6 @@ void SongListView::configHeaders(){
   setColumnHidden(libIdIndex, true);
   setColumnHidden(idIndex, true);
   resizeColumnToContents(durationIndex);
-
 }
 
 void SongListView::handleContextMenuRequest(const QPoint &pos){
@@ -113,7 +118,8 @@ void SongListView::removeSelectedSongsFromList(){
     Utils::getSelectedIds<song_list_entry_id_t>(
       this,
       songListEntryModel,
-      DataStore::getSongListEntryIdColName()));
+      DataStore::getSongListEntryIdColName(),
+      proxyModel));
 }
 
 
