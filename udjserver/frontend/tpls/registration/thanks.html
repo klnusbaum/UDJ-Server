@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %} - Thanks{% endblock %}
+
+{% block content %}
+      <br/>
+      <br/>
+      <div class="row">
+        <div class="span4 offset4">
+          <h1>Thanks!</h1>
+          <p>Thanks for creating an account. Now the only thing left to do is go download 
+          the app!</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="span2 offset5">
+          <a href="https://market.android.com/details?id=org.klnusbaum.udj">
+            <img src="{{ STATIC_URL }}android_market_logo.png"/>
+          </a>
+        </div>
+      </div>
+{% endblock %}
+
