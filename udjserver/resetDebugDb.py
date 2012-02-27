@@ -4,8 +4,8 @@ from django.core.management import execute_manager
 
 def createDBFile():
   PATH = os.path.dirname(os.path.realpath(__file__))
-  filename = os.path.join('udjdb.py')
-  dbName = os.path.join('udjDebug.db')
+  filename = os.path.join(PATH, 'udjdb.py')
+  dbName = os.path.join(PATH, 'udjDebug.db')
   file = open(filename, 'w')
   file.write("def getUDJDbSettings():\n")
   file.write("  return {'default': {\n")
@@ -24,7 +24,6 @@ if not os.path.exists('udjdb.py'):
   createDBFile()
 
 import settings
-#os.remove('udjDebug.db')
 execute_manager(settings, argv=['manage.py', 'reset', 'udj', '--noinput'])
 execute_manager(settings, argv=['manage.py', 'syncdb', '--noinput'])
 execute_manager(settings, argv=['manage.py', 'loaddata', 
