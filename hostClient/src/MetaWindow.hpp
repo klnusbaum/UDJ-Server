@@ -38,7 +38,7 @@ namespace UDJ{
 
 class SettingsWidget;
 class PlaylistView;
-class LibraryView;
+class LibraryWidget;
 class ActivityList;
 class EventWidget;
 class DataStore;
@@ -109,7 +109,7 @@ private:
   /** \brief The main widget holding all the various tabs in the display. */
   QTabWidget *tabs;
   /** \brief Used to display the contents of the users media library */
-  LibraryView* libraryView;
+  LibraryWidget* libraryWidget;
   /** \brief The users media library */
   DataStore* dataStore;
   /** \brief A widget used for displaying and modifying settings */

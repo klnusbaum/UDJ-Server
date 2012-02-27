@@ -21,7 +21,7 @@
 #include "SettingsWidget.hpp"
 #include "MusicFinder.hpp"
 #include "DataStore.hpp"
-#include "LibraryView.hpp"
+#include "LibraryWidget.hpp"
 #include "ActivityList.hpp"
 #include "EventWidget.hpp"
 #include <QSqlQuery>
@@ -106,7 +106,7 @@ void MetaWindow::setupUi(){
 
   playbackWidget = new PlaybackWidget(dataStore, this);
 
-  libraryView = new LibraryView(dataStore, this);
+  libraryWidget = new LibraryWidget(dataStore, this);
 
   eventWidget = new EventWidget(dataStore, this);
 
@@ -116,10 +116,10 @@ void MetaWindow::setupUi(){
 
   QWidget* contentStackContainer = new QWidget(this);
   contentStack = new QStackedWidget(this);
-  contentStack->addWidget(libraryView);
+  contentStack->addWidget(libraryWidget);
   contentStack->addWidget(eventWidget);
   contentStack->addWidget(songListView);
-  contentStack->setCurrentWidget(libraryView);
+  contentStack->setCurrentWidget(libraryWidget);
   QVBoxLayout *contentStackLayout = new QVBoxLayout;
   contentStackLayout->addWidget(contentStack, Qt::AlignCenter);
   contentStackContainer->setLayout(contentStackLayout);
@@ -191,7 +191,7 @@ void MetaWindow::setupMenus(){
 
 
 void MetaWindow::displayLibrary(){
-  contentStack->setCurrentWidget(libraryView);
+  contentStack->setCurrentWidget(libraryWidget);
 }
 
 void MetaWindow::displayEventWidget(){
@@ -200,7 +200,6 @@ void MetaWindow::displayEventWidget(){
 
 
 void MetaWindow::displaySongList(song_list_id_t songListId){
-  std::cout << "About to display song list:  " << songListId << std::endl;
   songListView->setSongListId(songListId);
   contentStack->setCurrentWidget(songListView);
 }
