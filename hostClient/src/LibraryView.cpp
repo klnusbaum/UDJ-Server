@@ -36,6 +36,7 @@ LibraryView::LibraryView(DataStore *dataStore, QWidget* parent):
   libraryModel = new MusicModel(getDataQuery(), dataStore, this);
   proxyModel = new QSortFilterProxyModel(this);
   proxyModel->setSourceModel(libraryModel);
+  proxyModel->setFilterKeyColumn(-1);
 
   verticalHeader()->hide();
   horizontalHeader()->setStretchLastSection(true);
@@ -135,6 +136,10 @@ void LibraryView::addSongsToSongList(song_list_id_t songListId){
       libraryModel,
       DataStore::getLibIdColName(),
       proxyModel));
+}
+
+void LibraryView::filterContents(const QString& filter){
+  proxyModel->setFilterFixedString(filter);
 }
 
 

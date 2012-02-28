@@ -45,6 +45,16 @@ public:
    */
   LibraryView(DataStore *dataStore, QWidget* parent=0);
 
+
+  //@}
+
+public slots:
+  /** @name Slots */
+  //@{
+
+  /** \brief . */
+  void filterContents(const QString& filter);
+
   //@}
 private slots:
   /** @name Private Slots */

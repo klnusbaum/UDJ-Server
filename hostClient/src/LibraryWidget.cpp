@@ -40,6 +40,12 @@ LibraryWidget::LibraryWidget(DataStore* dataStore, QWidget* parent):
   layout->addWidget(libraryView,1,0,1,10);
 
   setLayout(layout);
+
+  connect(
+    searchEdit,
+    SIGNAL(textChanged(const QString&)),
+    libraryView,
+    SLOT(filterContents(const QString&)));
 }
 
 
