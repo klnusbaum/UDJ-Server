@@ -38,6 +38,17 @@ LibraryWidget::LibraryWidget(DataStore* dataStore, QWidget* parent):
   layout->addWidget(searchLabel,0,1,1,8, Qt::AlignRight);
   layout->addWidget(searchEdit,0,9,1,1);
   layout->addWidget(libraryView,1,0,1,10);
+  layout->setRowStretch(1, 10);
+  layout->setColumnStretch(0, 1);
+  layout->setColumnStretch(1, 1);
+  layout->setColumnStretch(2, 1);
+  layout->setColumnStretch(3, 1);
+  layout->setColumnStretch(4, 1);
+  layout->setColumnStretch(5, 1);
+  layout->setColumnStretch(6, 1);
+  layout->setColumnStretch(7, 1);
+  layout->setColumnStretch(8, 1);
+  layout->setColumnStretch(9, 2);
 
   setLayout(layout);
 
