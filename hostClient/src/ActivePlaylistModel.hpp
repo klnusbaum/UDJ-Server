@@ -16,36 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef MUSIC_MODEL_HPP
-#define MUSIC_MODEL_HPP
-#include <QSqlQueryModel>
+#ifndef ACTIVE_PLAYLIST_MODEL_HPP
+#define ACTIVE_PLAYLIST_MODEL_HPP
+#include "MusicModel.hpp"
 
 namespace UDJ{
 
 class DataStore;
 
-class MusicModel : public QSqlQueryModel{
+class ActivePlaylistModel : public MusicModel{
 Q_OBJECT
 public:
 
-  MusicModel(const QString& query, DataStore *dataStore, QObject *parent);
+  ActivePlaylistModel(const QString& query, DataStore *dataStore, QObject *parent);
 
   virtual QVariant data(const QModelIndex& item, int role) const;
-
-public slots:
-
-  void refresh();
-
-  void refresh(QString query);
-
-private:
-
-  DataStore *dataStore;
-
-  QString query;
 
 };
 
 
 }
-#endif //MUSIC_MODEL_HPP
+#endif //ACTIVEPLAYLIST_MODEL_HPP

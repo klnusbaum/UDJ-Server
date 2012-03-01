@@ -16,36 +16,30 @@
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef MUSIC_MODEL_HPP
-#define MUSIC_MODEL_HPP
-#include <QSqlQueryModel>
+#include "DataStore.hpp"
+#include "ActivePlaylistModel.hpp"
+#include <QSqlRecord>
+
 
 namespace UDJ{
 
-class DataStore;
 
-class MusicModel : public QSqlQueryModel{
-Q_OBJECT
-public:
+ActivePlaylistModel::ActivePlaylistModel(
+  const QString& query, DataStore *dataStore, QObject *parent)
+  :MusicModel(query, dataStore, parent)
+{}
 
-  MusicModel(const QString& query, DataStore *dataStore, QObject *parent);
-
-  virtual QVariant data(const QModelIndex& item, int role) const;
-
-public slots:
-
-  void refresh();
-
-  void refresh(QString query);
-
-private:
-
-  DataStore *dataStore;
-
-  QString query;
-
-};
-
+QVariant ActivePlaylistModel::data(const QModelIndex& item, int role) const{
+  int timeAddedIndex = record().indexOf(DataStore::getTimeAddedColName());
+  QVariant actualData = MusicModel::data(item, role);
+  if(item.column() == timeAddedIndex && role == Qt::DisplayRole){
+    return actualData.toString().section('T', 1);
+  }
+  else{
+    return actualData;
+  }
 
 }
-#endif //MUSIC_MODEL_HPP
+
+
+} //end namespace UDJ

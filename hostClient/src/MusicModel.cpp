@@ -42,10 +42,6 @@ void MusicModel::refresh(QString newQuery){
   setQuery(newQuery, dataStore->getDatabaseConnection());
 }
 
-
-
-
-
 QVariant MusicModel::data(const QModelIndex& item, int role) const{
   if(role == Qt::TextAlignmentRole){
     return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
@@ -63,7 +59,6 @@ QVariant MusicModel::data(const QModelIndex& item, int role) const{
   else{
     return actualData;
   }
-
 
 }
 

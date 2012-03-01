@@ -17,7 +17,7 @@
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "ActivePlaylistView.hpp"
-#include "MusicModel.hpp"
+#include "ActivePlaylistModel.hpp"
 #include "Utils.hpp"
 #include <QHeaderView>
 #include <QSqlRecord>
@@ -33,7 +33,7 @@ ActivePlaylistView::ActivePlaylistView(DataStore* dataStore, QWidget* parent):
 {
   setContextMenuPolicy(Qt::CustomContextMenu);
   setEditTriggers(QAbstractItemView::NoEditTriggers);
-  model = new MusicModel(getDataQuery(), dataStore, this);
+  model = new ActivePlaylistModel(getDataQuery(), dataStore, this);
   horizontalHeader()->setStretchLastSection(true);
   createActions();
   setModel(model);

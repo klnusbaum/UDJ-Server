@@ -26,7 +26,7 @@ class QAction;
 
 namespace UDJ{
 
-class MusicModel;
+class ActivePlaylistModel;
 
 /**
  * \brief Used to dislay the active playlist.
@@ -70,7 +70,7 @@ private:
   /**
    * \brief The model backing the view
    */
-  MusicModel *model;
+  ActivePlaylistModel *model;
 
   /**
    * \brief Action used to remove songs from the active playlist.
