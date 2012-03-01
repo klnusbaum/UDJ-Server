@@ -37,6 +37,8 @@ LibraryView::LibraryView(DataStore *dataStore, QWidget* parent):
   proxyModel = new QSortFilterProxyModel(this);
   proxyModel->setSourceModel(libraryModel);
   proxyModel->setFilterKeyColumn(-1);
+  proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+
 
   verticalHeader()->hide();
   horizontalHeader()->setStretchLastSection(true);
