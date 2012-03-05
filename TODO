@@ -24,11 +24,13 @@ clearly the server didn't even know about it in the first.
 of an event.
 
 ANDROID APP
-- Users should be able to remove songs they added form the playlist
+* Users should be able to remove songs they added form the playlist
 (You know, say they accidentally double added a song)
 - Parties with passwords
 * Switch auth dialog to dialog fragment
 * Handle when credentials change
+* Fix SSL error certain phones are getting.
+* Toasts when adding a song from the available music list.
 
 SERVER
 -Maybe If two users add the same song within a certain threshold of oneanother (e.g.
@@ -40,7 +42,8 @@ just merge the song requests
 -Need to do json validation. Make sure it's good json and make sure it looks
 like its supposed to (i.e. doesn't have certain attributes missing)
 *Validate that the libid's that are being requested to be added to the
-active playlist to make sure that they belong to the host of the party.
+active playlist to make sure that they are in the list of available songs.
+
 
 
 OVERALL
