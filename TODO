@@ -22,15 +22,17 @@ clearly the server didn't even know about it in the first.
 * Fix time added so it actually looks decent
 * Available Songs to come back when the client is quit in the middle
 of an event.
+- password protected events
 
 ANDROID APP
 * Users should be able to remove songs they added form the playlist
 (You know, say they accidentally double added a song)
 - Parties with passwords
-* Switch auth dialog to dialog fragment
-* Handle when credentials change
-* Fix SSL error certain phones are getting.
+- Switch auth dialog to dialog fragment
+- Handle when credentials change
 * Toasts when adding a song from the available music list.
+- password protected events
+* Fix configuration change issues, namely when logging into event.
 
 SERVER
 -Maybe If two users add the same song within a certain threshold of oneanother (e.g.
