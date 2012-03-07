@@ -167,13 +167,14 @@ public class PlaylistFragment extends ListFragment
   private void removeSong(int position){
     Cursor toRemove = (Cursor)playlistAdapter.getItem(position);
     int idIndex = toRemove.getColumnIndex(UDJEventProvider.PLAYLIST_ID_COLUMN);
+    Log.d(TAG, "Removing song with id " + toRemove.getLong(idIndex));
     Intent removeSongIntent = new Intent(
       Intent.ACTION_DELETE,
       UDJEventProvider.PLAYLIST_REMOVE_REQUEST_URI,
       getActivity(),
       PlaylistSyncService.class);
     removeSongIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
-    removeSongIntent.putExtra(Constants.PLAYLIST_ID_EXTRA, toRemove.getString(idIndex));
+    removeSongIntent.putExtra(Constants.PLAYLIST_ID_EXTRA, toRemove.getLong(idIndex));
     getActivity().startService(removeSongIntent);
     Toast toast = Toast.makeText(
        getActivity(),

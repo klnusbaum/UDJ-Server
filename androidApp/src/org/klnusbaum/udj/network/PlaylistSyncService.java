@@ -436,7 +436,7 @@ public class PlaylistSyncService extends IntentService{
   }
 
   private void insertSongRemoveRequest(long playlistId){
-    Log.d(TAG, "In inserting song remove request");
+    Log.d(TAG, "In inserting song remove request with id " + playlistId);
     ContentValues toInsert = new ContentValues();
     toInsert.put(
         UDJEventProvider.REMOVE_REQUEST_PLAYLIST_ID_COLUMN, playlistId);
