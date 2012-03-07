@@ -45,6 +45,7 @@ import android.view.MenuItem;
 import android.view.ContextMenu;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import org.klnusbaum.udj.network.PlaylistSyncService;
 import org.klnusbaum.udj.containers.Event;
@@ -84,8 +85,8 @@ public class PlaylistFragment extends ListFragment
   }
 
   @Override
-	public void onCreateContextMenu(ContextMenu menu, View v, 
-		ContextMenu.ContextMenuInfo menuInfo)
+  public void onCreateContextMenu(ContextMenu menu, View v, 
+    ContextMenu.ContextMenuInfo menuInfo)
   {
     AdapterView.AdapterContextMenuInfo info = 
       (AdapterView.AdapterContextMenuInfo)menuInfo;
@@ -123,47 +124,68 @@ public class PlaylistFragment extends ListFragment
     menu.setHeaderTitle(song.getString(titleIndex));
   }
 
-	@Override
-	public boolean onContextItemSelected(MenuItem item){
+  @Override
+  public boolean onContextItemSelected(MenuItem item){
     AdapterView.AdapterContextMenuInfo info = 
       (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
     switch(item.getItemId()){
     case R.id.share:
       shareSong(info.position);
-			return true;
+      return true;
     case R.id.vote_up:
-      upVoteSong(info.position); 
+      upVoteSong(info.position);
       return true;
     case R.id.vote_down:
-      downVoteSong(info.position); 
+      downVoteSong(info.position);
       return true;
-		default:
-			return super.onContextItemSelected(item);
-		}
-	}
+    case R.id.remove_song:
+      removeSong(info.position);
+      return true;
+    default:
+      return super.onContextItemSelected(item);
+    }
+  }
 
   private void shareSong(int position){
     Cursor toShare = (Cursor)playlistAdapter.getItem(position); 
-    int titleIndex = 
+    int titleIndex =
       toShare.getColumnIndex(UDJEventProvider.TITLE_COLUMN);
     String songTitle = toShare.getString(titleIndex);
     String eventName = am.getUserData(account, Constants.EVENT_NAME_DATA);
     Intent shareIntent = new Intent(Intent.ACTION_SEND);
-		shareIntent.setType("text/plain");
-		shareIntent.putExtra(
-			android.content.Intent.EXTRA_TEXT, 
-			getString(R.string.song_share_1) + " " + 
-			songTitle + " " +
-			getString(R.string.song_share_2) + " " + eventName + ".");
-		startActivity(
-			Intent.createChooser(shareIntent, getString(R.string.share_via)));
+    shareIntent.setType("text/plain");
+    shareIntent.putExtra(
+      android.content.Intent.EXTRA_TEXT,
+      getString(R.string.song_share_1) + " " +
+      songTitle + " " +
+      getString(R.string.song_share_2) + " " + eventName + ".");
+    startActivity(
+      Intent.createChooser(shareIntent, getString(R.string.share_via)));
 
+  }
+
+  private void removeSong(int position){
+    Cursor toRemove = (Cursor)playlistAdapter.getItem(position);
+    int idIndex = toRemove.getColumnIndex(UDJEventProvider.PLAYLIST_ID_COLUMN);
+    Intent removeSongIntent = new Intent(
+      Intent.ACTION_DELETE,
+      UDJEventProvider.PLAYLIST_REMOVE_REQUEST_URI,
+      getActivity(),
+      PlaylistSyncService.class);
+    removeSongIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
+    removeSongIntent.putExtra(Constants.PLAYLIST_ID_EXTRA, toRemove.getString(idIndex));
+    getActivity().startService(removeSongIntent);
+    Toast toast = Toast.makeText(
+       getActivity(),
+       getString(R.string.removing_song),
+       Toast.LENGTH_SHORT);
+    toast.show();
   }
 
   private void upVoteSong(int position){
     voteOnSong(position, UDJEventProvider.UP_VOTE_TYPE);
   }
-  
+
   private void downVoteSong(int position){
     voteOnSong(position, UDJEventProvider.DOWN_VOTE_TYPE);
   }

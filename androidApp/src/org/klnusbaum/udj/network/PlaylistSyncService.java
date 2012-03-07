@@ -84,8 +84,7 @@ public class PlaylistSyncService extends IntentService{
 
   @Override
   public void onHandleIntent(Intent intent){
-    Log.i(TAG, "In playlist sync service");
-    final Account account = 
+    final Account account =
       (Account)intent.getParcelableExtra(Constants.ACCOUNT_EXTRA);
     long eventId = Long.valueOf(AccountManager.get(this).getUserData(
       account, Constants.LAST_EVENT_ID_DATA));
@@ -111,6 +110,9 @@ public class PlaylistSyncService extends IntentService{
     }
     else if(intent.getAction().equals(Intent.ACTION_VIEW)){
       updateActivePlaylist(account, eventId, true); 
+    }
+    else if(intent.getAction().equals(Intent.ACTION_DELETE)){
+      Log.d(TAG, "Gonna delete a song bitches");
     }
   }
 

@@ -1,18 +1,18 @@
 /**
  * Copyright 2011 Kurtis L. Nusbaum
- * 
+ *
  * This file is part of UDJ.
- * 
+ *
  * UDJ is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * UDJ is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with UDJ.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -46,10 +46,10 @@ import org.json.JSONException;
  * with the current event the user is logged into.
  */
 public class UDJEventProvider extends ContentProvider{
-  
-	/** Name of the database */
+
+  /** Name of the database */
   private static final String DATABASE_NAME = "event.db";
-	/** Database version number */
+  /** Database version number */
   private static final int DATABASE_VERSION = 1;
 
   /** URI for the playlist */
@@ -58,6 +58,9 @@ public class UDJEventProvider extends ContentProvider{
 
   public static final Uri PLAYLIST_ADD_REQUEST_URI = 
     Uri.parse("content://org.klnusbaum.udj/playlist/add_request");
+
+  public static final Uri PLAYLIST_REMOVE_REQUEST_URI = 
+    Uri.parse("content://org.klnusbaum.udj/playlist/remove_request");
 
   public static final Uri VOTES_URI = 
     Uri.parse("content://org.klnusbaum.udj/playlist/votes");
@@ -68,13 +71,13 @@ public class UDJEventProvider extends ContentProvider{
 
   /** PLAYLIST TABLE */
 
-	/** Name of the playlist table. */
+  /** Name of the playlist table. */
   private static final String PLAYLIST_TABLE_NAME = "playlist";
 
   /** Used to identify bad library ids */
   public static final long INVALID_LIB_ID = -1;
 
-	/** Constants used for various Playlist column names */
+  /** Constants used for various Playlist column names */
   public static final String PLAYLIST_ID_COLUMN = "_id";
   public static final String UP_VOTES_COLUMN = "up_votes";
   public static final String DOWN_VOTES_COLUMN = "down_votes";
@@ -87,16 +90,16 @@ public class UDJEventProvider extends ContentProvider{
   public static final String ADDER_ID_COLUMN = "adder_id";
   public static final String ADDER_USERNAME_COLUMN = "adder_username";
 
-	/** SQL statement for creating the playlist table. */
+  /** SQL statement for creating the playlist table. */
   private static final String PLAYLIST_TABLE_CREATE = 
     "CREATE TABLE " + PLAYLIST_TABLE_NAME + "("+
-		PLAYLIST_ID_COLUMN + " INTEGER PRIMARY KEY , " +
+    PLAYLIST_ID_COLUMN + " INTEGER PRIMARY KEY , " +
     UP_VOTES_COLUMN + " INTEGER NOT NULL, " +
     DOWN_VOTES_COLUMN + " INTEGER NOT NULL, " +
     PRIORITY_COLUMN + " INTEGER NOT NULL, "  +
     TIME_ADDED_COLUMN + " TEXT NOT NULL, " +
     DURATION_COLUMN + " INTEGER NOT NULL, " +
-		TITLE_COLUMN + " TEXT NOT NULL, " +
+    TITLE_COLUMN + " TEXT NOT NULL, " +
     ARTIST_COLUMN + " TEXT NOT NULL, " + 
     ALBUM_COLUMN + " TEXT NOT NULL, " +
     ADDER_ID_COLUMN + " INTEGER NOT NULL, " +
@@ -186,13 +189,13 @@ public class UDJEventProvider extends ContentProvider{
   /** SQL statement for creating the current song table */
   private static final String CURRENT_SONG_TABLE_CREATE = 
     "CREATE TABLE " + CURRENT_SONG_TABLE_NAME + "("+
-		PLAYLIST_ID_COLUMN + " INTEGER PRIMARY KEY , " +
+    PLAYLIST_ID_COLUMN + " INTEGER PRIMARY KEY , " +
     UP_VOTES_COLUMN + " INTEGER NOT NULL, " +
     DOWN_VOTES_COLUMN + " INTEGER NOT NULL, " +
     TIME_ADDED_COLUMN + " TEXT NOT NULL, " +
     TIME_PLAYED_COLUMN + " TEXT NOT NULL, " +
     DURATION_COLUMN + " INTEGER NOT NULL, " +
-		TITLE_COLUMN + " TEXT NOT NULL, " +
+    TITLE_COLUMN + " TEXT NOT NULL, " +
     ARTIST_COLUMN + " TEXT NOT NULL, " + 
     ALBUM_COLUMN + " TEXT NOT NULL, " +
     ADDER_ID_COLUMN + " INTEGER NOT NULL, " +
@@ -200,19 +203,19 @@ public class UDJEventProvider extends ContentProvider{
 
 
 
-	/** Helper for opening up the actual database. */
+  /** Helper for opening up the actual database. */
   private EventDBHelper dbOpenHelper;
 
-	/**
-	 * A class for helping open a PartDB.
-	 */
+  /**
+   * A class for helping open a PartDB.
+   */
   private class EventDBHelper extends SQLiteOpenHelper{
 
-		/**
-		 * Constructs a new EventDBHelper object.
-		 *
-	 	 * @param context The context in which the HostsDBOpenHelper is used.
-	 	 */
+    /**
+     * Constructs a new EventDBHelper object.
+     *
+      * @param context The context in which the HostsDBOpenHelper is used.
+      */
     EventDBHelper(Context context){
       super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
