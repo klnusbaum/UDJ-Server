@@ -35,6 +35,8 @@ import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.widget.TextView;
 import android.view.Window;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 
 import org.klnusbaum.udj.R;
 import org.klnusbaum.udj.Utils;
@@ -111,6 +113,13 @@ public class AuthActivity extends AccountAuthenticatorActivity{
         mPasswordEdit = (EditText) findViewById(R.id.password_edit);
         if (!TextUtils.isEmpty(mUsername)) mUsernameEdit.setText(mUsername);
         mMessage.setText(getMessage());
+
+        TextView signUp = (TextView) findViewById(R.id.signup_text);
+    /*    String text =
+          "Don't have an account? "+
+          "<a href=\"https://www.udjevents.com/registration/register/\">Sign up here</a>";*/
+        signUp.setText(Html.fromHtml(getString(R.string.dont_have_account)));
+        signUp.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     /*

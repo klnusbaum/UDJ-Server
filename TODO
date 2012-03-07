@@ -30,7 +30,6 @@ ANDROID APP
 - Parties with passwords
 - Switch auth dialog to dialog fragment
 - Handle when credentials change
-* Toasts when adding a song from the available music list.
 - password protected events
 * Fix configuration change issues, namely when logging into event.
 
