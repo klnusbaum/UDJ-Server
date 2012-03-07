@@ -26,33 +26,37 @@ import android.widget.TextView;
 import android.widget.ImageButton;
 import android.database.DataSetObserver;
 import android.view.LayoutInflater;
+import android.widget.Toast;
+import android.content.Intent;
+import android.accounts.Account;
 
 import java.util.List;
 
 import org.klnusbaum.udj.containers.LibraryEntry;
+import org.klnusbaum.udj.network.PlaylistSyncService;
 
 public class MusicSearchAdapter implements ListAdapter{
 
   private List<LibraryEntry> entries;
   private Context context;
-  private View.OnClickListener addClickListener;
+  private Account account;
   public static final int LIB_ENTRY_VIEW_TYPE = 0;
 
-  public MusicSearchAdapter(Context context){
+  public MusicSearchAdapter(Context context, Account account){
     this.entries = null;
-    this.addClickListener = null;
     this.context = context;
+    this.account = account;
   }
 
   public MusicSearchAdapter(
-    Context context, 
+    Context context,
     List<LibraryEntry> entries,
-    View.OnClickListener addClickListener
+    Account account
   )
   {
     this.entries = entries;
     this.context = context;
-    this.addClickListener = addClickListener;
+    this.account = account;
   }
 
   public boolean areAllItemsEnabled(){
@@ -97,7 +101,7 @@ public class MusicSearchAdapter implements ListAdapter{
 
   public View getView(int position, View convertView, ViewGroup parent){
     //TODO should probably enforce view type
-    LibraryEntry libEntry = getLibraryEntry(position);
+    final LibraryEntry libEntry = getLibraryEntry(position);
     View toReturn = convertView;
     if(toReturn == null){
       //toReturn = View.inflate(context, R.layout.library_list_item, null);
@@ -114,8 +118,24 @@ public class MusicSearchAdapter implements ListAdapter{
     songView.setText(libEntry.getTitle());
     artistView.setText(
       context.getString(R.string.by) + " " + libEntry.getArtist());
-    addButton.setOnClickListener(addClickListener);
-    addButton.setTag(R.id.LIB_ENTRY_VIEW_TAG, libEntry);
+    addButton.setOnClickListener(
+      new View.OnClickListener(){
+        public void onClick(View v){
+          Intent addSongIntent = new Intent(
+            Intent.ACTION_INSERT,
+            UDJEventProvider.PLAYLIST_ADD_REQUEST_URI,
+            context,
+            PlaylistSyncService.class);
+          addSongIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
+          addSongIntent.putExtra(Constants.LIB_ID_EXTRA, libEntry.getLibId());
+          context.startService(addSongIntent);
+          Toast toast = Toast.makeText(
+            context,
+            context.getString(R.string.adding_song) + " " + libEntry.getTitle(),
+            Toast.LENGTH_SHORT);
+          toast.show();
+        }
+      });
     return toReturn;
   }
 

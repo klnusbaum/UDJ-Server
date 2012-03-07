@@ -48,9 +48,6 @@
   <string name="added_by">Added by</string>
   <string name="by">By</string>
   <string name="you">You</string>
-  <string name="add_song_notification_title">Adding Song(s)</string>
-  <string name="add_song_notification_content">Adding Songs(s) to playlist</string>
-  <string name="song_added_notification_title">Song(s) Added</string>
   <string name="song_added_notification_content">Tap to dismiss</string>
   <string name="song_add_failed_title">Adding Song(s) Failed</string>
   <string name="song_add_failed_content">Tap here to retry</string>
@@ -76,6 +73,7 @@
   <string name="logout_of_other_event">Logout</string>
   <string name="already_in_event_join_fail_message">You\'re logged into</string>
   <string name="menu_random">Random</string>
+  <string name="adding_song">Adding</string>
 
 
 <!-- Stuff for action bar compatibility -->

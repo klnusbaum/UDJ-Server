@@ -42,22 +42,6 @@ public abstract class SearchFragment extends ListFragment
   private MusicSearchAdapter searchAdapter;
   private Account account;
 
-  private View.OnClickListener addSongToPlaylistListener =
-    new View.OnClickListener(){
-      public void onClick(View v){
-        LibraryEntry songToAdd = 
-          (LibraryEntry)v.getTag(R.id.LIB_ENTRY_VIEW_TAG);
-        Intent addSongIntent = new Intent(
-          Intent.ACTION_INSERT,
-          UDJEventProvider.PLAYLIST_ADD_REQUEST_URI,
-          getActivity(),
-          PlaylistSyncService.class);
-        addSongIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
-        addSongIntent.putExtra(Constants.LIB_ID_EXTRA, songToAdd.getLibId());
-        getActivity().startService(addSongIntent);
-      }
-    };
-
   @Override
   public void onActivityCreated(Bundle savedInstanceState){
     super.onActivityCreated(savedInstanceState);
@@ -65,7 +49,7 @@ public abstract class SearchFragment extends ListFragment
     account = Utils.basicGetUdjAccount(getActivity());
     setEmptyText(getActivity().getString(R.string.no_library_songs));
 
-    searchAdapter = new MusicSearchAdapter(getActivity());
+    searchAdapter = new MusicSearchAdapter(getActivity(), account);
     setListAdapter(searchAdapter);
     setListShown(false);
     getLoaderManager().initLoader(LIB_SEARCH_LOADER_TAG, null, this);
@@ -88,7 +72,7 @@ public abstract class SearchFragment extends ListFragment
       searchAdapter = new MusicSearchAdapter(
         getActivity(),
         data.getResults(),
-        addSongToPlaylistListener);
+        account);
       setListAdapter(searchAdapter);
     }
     else if(data.getError() ==
