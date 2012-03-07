@@ -530,9 +530,28 @@ public class ServerConnection{
     }
   }
 
+  public static void removeSongsFromActivePlaylist(
+    List<Long> requests, long eventId, String authToken)
+    throws IOException, AuthenticationException, EventOverException
+  {
+    for(Long plId: requests){
+      try{
+        URI uri = new URI(
+          NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT,
+          "/udj/events/"+eventId+"/active_playlist/songs/"+plId,
+          null, null);
+        Log.d(TAG, "Add remove song from active playlist: " + plId);
+        doEventRelatedDelete(uri, authToken);
+      }
+      catch(URISyntaxException e){
+        //TODO inform caller that their query is bad 
+      }
+    }
+  }
+
+
   private static JSONArray getAddToActivePlaylistJSON(
     HashMap<Long, Long> requests) throws JSONException
-  
   {
     JSONArray toReturn = new JSONArray();
     for(Long requestId : requests.keySet()){

@@ -222,7 +222,7 @@ public class RESTProcessor{
       batchOps.clear();
     }
   }
-  
+
   private static ContentProviderOperation getAddRequestSyncedOp(long requestId){
     final ContentProviderOperation.Builder updateBuilder = 
       ContentProviderOperation.newUpdate(
@@ -234,6 +234,40 @@ public class RESTProcessor{
          UDJEventProvider.ADD_REQUEST_SYNCED);
     return updateBuilder.build();
   }
+
+  public static void setPlaylistRemoveRequestsSynced(
+      List<Long> plIds, Context context)
+    throws RemoteException, OperationApplicationException
+  {
+    Log.d(TAG, "Sycning playlist remove statuses");
+    final ContentResolver resolver = context.getContentResolver();
+    ArrayList<ContentProviderOperation> batchOps = 
+      new ArrayList<ContentProviderOperation>();
+    for(Long plId : plIds){
+      batchOps.add(getRemoveRequestSyncedOp(plId));
+      if(batchOps.size() >= 50){
+        resolver.applyBatch(Constants.AUTHORITY, batchOps);
+        batchOps.clear();
+      }
+    }
+    if(batchOps.size() > 0){
+      resolver.applyBatch(Constants.AUTHORITY, batchOps);
+      batchOps.clear();
+    }
+  }
+
+  private static ContentProviderOperation getRemoveRequestSyncedOp(long plId){
+    final ContentProviderOperation.Builder updateBuilder = 
+      ContentProviderOperation.newUpdate(
+        UDJEventProvider.PLAYLIST_REMOVE_REQUEST_URI)
+      .withSelection(
+        UDJEventProvider.REMOVE_REQUEST_PLAYLIST_ID_COLUMN + "=" +String.valueOf(plId),
+        null)
+      .withValue(UDJEventProvider.ADD_REQUEST_SYNC_STATUS_COLUMN,
+         UDJEventProvider.REMOVE_REQUEST_SYNCED);
+    return updateBuilder.build();
+  }
+
 
   public static void setVoteRequestsSynced(Cursor voteRequests, Context context)
   {

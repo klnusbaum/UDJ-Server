@@ -324,13 +324,10 @@ public class PlaylistSyncService extends IntentService{
       }
 
       try{
+        Log.d(TAG, "Actually syncing remove request");
         ServerConnection.removeSongsFromActivePlaylist(
           removeRequests, eventId, authToken);
         RESTProcessor.setPlaylistRemoveRequestsSynced(removeRequests, this);
-      }
-      catch(JSONException e){
-        alertRemoveSongException(account);
-        Log.e(TAG, "JSON exception when adding to playist");
       }
       catch(ParseException e){
         alertRemoveSongException(account);
