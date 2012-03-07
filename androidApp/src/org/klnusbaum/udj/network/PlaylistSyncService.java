@@ -98,8 +98,10 @@ public class PlaylistSyncService extends IntentService{
         syncAddRequests(account, eventId, true);
       }
       else if(intent.getData().equals(UDJEventProvider.VOTES_URI)){
+        //TODO handle if Playlist id is bad
         long playlistId = 
           intent.getLongExtra(Constants.PLAYLIST_ID_EXTRA, -1);
+        //TODO handle if votetype is bad
         int voteType = intent.getIntExtra(
           Constants.VOTE_TYPE_EXTRA, 
           UDJEventProvider.INVALID_VOTE_TYPE);
@@ -112,7 +114,15 @@ public class PlaylistSyncService extends IntentService{
       updateActivePlaylist(account, eventId, true); 
     }
     else if(intent.getAction().equals(Intent.ACTION_DELETE)){
-      Log.d(TAG, "Gonna delete a song bitches");
+      Log.d(TAG, "Handling delete");
+      if(intent.getData().equals(UDJEventProvider.PLAYLIST_REMOVE_REQUEST_URI)){
+        Log.d(TAG, "In plalist syncservice, about to insert song into remove requests");
+        //TODO handle if Playlist id is bad.
+        long playlistId = intent.getLongExtra(Constants.PLAYLIST_ID_EXTRA, -1);
+        insertSongRemoveRequest(playlistId);
+        syncRemoveRequests(account, eventId, true);
+      }
+      updateActivePlaylist(account, eventId, true);
     }
   }
 
@@ -264,6 +274,14 @@ public class PlaylistSyncService extends IntentService{
     // exceptions that could occuer. Need to pay special attention to this.
   }
 
+  private void syncRemoveRequests(
+      Account account, long eventId, boolean attemptReauth)
+  {
+    Log.d(TAG, "In syncing remove requests");
+
+
+  }
+
   private void syncVoteRequests(
     Account account, long eventId, boolean attemptReauth)
   {
@@ -412,11 +430,17 @@ public class PlaylistSyncService extends IntentService{
 
   private void insertAddSongRequest(long libId){
     ContentValues toInsert = new ContentValues();
-    toInsert.put(
-      UDJEventProvider.ADD_REQUEST_LIB_ID_COLUMN, libId);
+    toInsert.put(UDJEventProvider.ADD_REQUEST_LIB_ID_COLUMN, libId);
     ContentResolver cr = getContentResolver();
-    cr.insert(
-      UDJEventProvider.PLAYLIST_ADD_REQUEST_URI, 
-      toInsert);
+    cr.insert(UDJEventProvider.PLAYLIST_ADD_REQUEST_URI, toInsert);
+  }
+
+  private void insertSongRemoveRequest(long playlistId){
+    Log.d(TAG, "In inserting song remove request");
+    ContentValues toInsert = new ContentValues();
+    toInsert.put(
+        UDJEventProvider.REMOVE_REQUEST_PLAYLIST_ID_COLUMN, playlistId);
+    ContentResolver cr = getContentResolver();
+    cr.insert(UDJEventProvider.PLAYLIST_REMOVE_REQUEST_URI, toInsert);
   }
 }

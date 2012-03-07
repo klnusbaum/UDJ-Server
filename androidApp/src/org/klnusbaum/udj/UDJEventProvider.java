@@ -50,7 +50,7 @@ public class UDJEventProvider extends ContentProvider{
   /** Name of the database */
   private static final String DATABASE_NAME = "event.db";
   /** Database version number */
-  private static final int DATABASE_VERSION = 1;
+  private static final int DATABASE_VERSION = 2;
 
   /** URI for the playlist */
   public static final Uri PLAYLIST_URI = 
@@ -130,9 +130,34 @@ public class UDJEventProvider extends ContentProvider{
     " OR " + ADD_REQUEST_SYNC_STATUS_COLUMN + "=" + ADD_REQUEST_SYNCED +
     "));";
 
+  /** SONG ADD REQUESTS TABLE */
+
+  /** Name of add request table. */
+  private static final String REMOVE_REQUESTS_TABLE_NAME = "remove_requests";
+
+  /** Constants used for various column names in the song add request table. */
+  public static final String REMOVE_REQUEST_ID_COLUMN = "_id";
+  public static final String REMOVE_REQUEST_PLAYLIST_ID_COLUMN = "pl_id";
+  public static final String REMOVE_REQUEST_SYNC_STATUS_COLUMN = "sync_status";
+
+  /** Constants used for the sync status of a remove request */
+  public static final int REMOVE_REQUEST_NEEDS_SYNC = 1;
+  public static final int REMOVE_REQUEST_SYNCED = 0;
+
+  /** SQL statement for creating the song add requests table. */
+  private static final String REMOVE_REQUEST_TABLE_CREATE = 
+    "CREATE TABLE " + REMOVE_REQUESTS_TABLE_NAME + "(" +
+    REMOVE_REQUEST_ID_COLUMN + " INTEGER PRIMARY KEY AUTOINCREMENT, " + 
+    REMOVE_REQUEST_PLAYLIST_ID_COLUMN + " INTEGER NOT NULL, " +
+    REMOVE_REQUEST_SYNC_STATUS_COLUMN + " INTEGER DEFAULT "+ 
+      REMOVE_REQUEST_NEEDS_SYNC + ", " +
+    "CHECK (" + REMOVE_REQUEST_SYNC_STATUS_COLUMN + "=" + REMOVE_REQUEST_NEEDS_SYNC +
+    " OR " + REMOVE_REQUEST_SYNC_STATUS_COLUMN + "=" + REMOVE_REQUEST_SYNCED +
+    "));";
+
 
    /** VOTES TABLE */
-   
+
    /** Name of votes table */
    private static final String VOTES_TABLE_NAME = "votes";
 
@@ -227,11 +252,14 @@ public class UDJEventProvider extends ContentProvider{
       db.execSQL(VOTES_TABLE_CREATE);
       db.execSQL(PLAYLIST_VIEW_CREATE);
       db.execSQL(CURRENT_SONG_TABLE_CREATE);
+      db.execSQL(REMOVE_REQUEST_TABLE_CREATE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
-
+      if(oldVersion==1 && newVersion==2){
+        db.execSQL(REMOVE_REQUEST_TABLE_CREATE);
+      }
     }
   }
 
@@ -256,6 +284,10 @@ public class UDJEventProvider extends ContentProvider{
       SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
       return db.delete(ADD_REQUESTS_TABLE_NAME, where, whereArgs);
     } 
+    else if(uri.equals(PLAYLIST_REMOVE_REQUEST_URI)){
+      SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+      return db.delete(REMOVE_REQUESTS_TABLE_NAME, where, whereArgs);
+    } 
     else if(uri.equals(VOTES_URI)){
       SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
       return db.delete(VOTES_TABLE_NAME, where, whereArgs);
@@ -272,7 +304,7 @@ public class UDJEventProvider extends ContentProvider{
     Uri toReturn = null;
     if(uri.equals(PLAYLIST_URI)){
       SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
-      long rowId = db.insert(PLAYLIST_TABLE_NAME, null, initialValues);    
+      long rowId = db.insert(PLAYLIST_TABLE_NAME, null, initialValues);
       if(rowId >=0){
         toReturn = Uri.withAppendedPath(
           PLAYLIST_URI, String.valueOf(rowId));
@@ -280,7 +312,15 @@ public class UDJEventProvider extends ContentProvider{
     }
     else if(uri.equals(PLAYLIST_ADD_REQUEST_URI)){
       SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
-      long rowId = db.insert(ADD_REQUESTS_TABLE_NAME, null, initialValues);    
+      long rowId = db.insert(ADD_REQUESTS_TABLE_NAME, null, initialValues);
+      if(rowId >=0){
+        toReturn = Uri.withAppendedPath(
+          PLAYLIST_ADD_REQUEST_URI, String.valueOf(rowId));
+      }
+    }
+    else if(uri.equals(PLAYLIST_REMOVE_REQUEST_URI)){
+      SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+      long rowId = db.insert(REMOVE_REQUESTS_TABLE_NAME, null, initialValues);
       if(rowId >=0){
         toReturn = Uri.withAppendedPath(
           PLAYLIST_ADD_REQUEST_URI, String.valueOf(rowId));
@@ -318,6 +358,9 @@ public class UDJEventProvider extends ContentProvider{
     else if(uri.equals(PLAYLIST_ADD_REQUEST_URI)){
       qb.setTables(ADD_REQUESTS_TABLE_NAME);
     }
+    else if(uri.equals(PLAYLIST_REMOVE_REQUEST_URI)){
+      qb.setTables(REMOVE_REQUESTS_TABLE_NAME);
+    }
     else if(uri.equals(CURRENT_SONG_URI)){
       qb.setTables(CURRENT_SONG_TABLE_NAME);
     }
@@ -353,6 +396,12 @@ public class UDJEventProvider extends ContentProvider{
         db.update(ADD_REQUESTS_TABLE_NAME, values, where, whereArgs);
       return numRowsChanged;
     } 
+    else if(uri.equals(PLAYLIST_REMOVE_REQUEST_URI)){
+      SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+      int numRowsChanged = 
+        db.update(REMOVE_REQUESTS_TABLE_NAME, values, where, whereArgs);
+      return numRowsChanged;
+    } 
     else if(uri.equals(VOTES_URI)){
       SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
       int numRowsChanged = 
@@ -368,6 +417,7 @@ public class UDJEventProvider extends ContentProvider{
     cr.delete(PLAYLIST_URI, null, null);
     cr.delete(VOTES_URI, null, null);
     cr.delete(CURRENT_SONG_URI, null, null);
+    cr.delete(PLAYLIST_REMOVE_REQUEST_URI, null, null);
   }
 
   public static void setPreviousAddRequests(
@@ -394,7 +444,7 @@ public class UDJEventProvider extends ContentProvider{
 
     }
     catch(OperationApplicationException e){
-    
+
     }
   }
 
@@ -413,7 +463,7 @@ public class UDJEventProvider extends ContentProvider{
   }
 
   public static void setPreviousVoteRequests(
-    ContentResolver cr, 
+    ContentResolver cr,
     JSONObject votes)
     throws JSONException
   {
@@ -446,7 +496,7 @@ public class UDJEventProvider extends ContentProvider{
 
     }
     catch(OperationApplicationException e){
-    
+
     }
   }
 
