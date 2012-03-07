@@ -78,6 +78,8 @@
     Don\'t have an account? <a href="https://www.udjevents.com/registration/register/">
       Sign up here!</a>]]></string>
   <string name="removing_song">Removing Song</string>
+  <string name="song_remove_failed_title">Removing Song(s) Failed</string>
+  <string name="song_remove_failed_content">Tap here to retry</string>
 
 
 <!-- Stuff for action bar compatibility -->

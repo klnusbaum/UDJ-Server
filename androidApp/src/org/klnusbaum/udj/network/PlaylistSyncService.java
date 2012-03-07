@@ -78,6 +78,14 @@ public class PlaylistSyncService extends IntentService{
     "=" +
     UDJEventProvider.ADD_REQUEST_NEEDS_SYNC;
 
+  private static final String[] removeRequestsProjection = new String[] {
+    UDJEventProvider.REMOVE_REQUEST_PLAYLIST_ID_COLUMN
+  };
+  private static final String removeRequestSeleciton =
+    UDJEventProvider.REMOVE_REQUEST_SYNC_STATUS_COLUMN +
+    "=" +
+    UDJEventProvider.REMOVE_REQUEST_NEEDS_SYNC;
+
   public PlaylistSyncService(){
     super("PlaylistSyncService");
   }
@@ -277,8 +285,87 @@ public class PlaylistSyncService extends IntentService{
   private void syncRemoveRequests(
       Account account, long eventId, boolean attemptReauth)
   {
-    Log.d(TAG, "In syncing remove requests");
+    Log.d(TAG, "syncing remove requests");
+    ContentResolver cr = getContentResolver();
+    Cursor requestsCursor = cr.query(
+      UDJEventProvider.PLAYLIST_REMOVE_REQUEST_URI,
+      removeRequestsProjection,
+      removeRequestSeleciton,
+      null,
+      null);
 
+    ArrayList<Long> removeRequests = new ArrayList<Long>();
+    if(requestsCursor.moveToFirst()){
+      int requestIdColumn = requestsCursor.getColumnIndex(
+        UDJEventProvider.REMOVE_REQUEST_PLAYLIST_ID_COLUMN);
+      do{
+        removeRequests.add(requestsCursor.getLong(requestIdColumn));
+      }while(requestsCursor.moveToNext());
+    }
+    requestsCursor.close();
+
+    if(removeRequests.size() >0){
+      String authToken = "";
+      AccountManager am = AccountManager.get(this);
+      try{
+        authToken = am.blockingGetAuthToken(account, "", true);
+      }
+      catch(AuthenticatorException e){
+        alertRemoveSongException(account);
+        Log.e(TAG, "Authentication exception when adding to playist");
+      }
+      catch(OperationCanceledException e){
+        alertRemoveSongException(account);
+        Log.e(TAG, "Op Canceled exception when adding to playist");
+      }
+      catch(IOException e){
+        alertRemoveSongException(account);
+        Log.e(TAG, "IO exception when adding to playist");
+      }
+
+      try{
+        ServerConnection.removeSongsFromActivePlaylist(
+          removeRequests, eventId, authToken);
+        RESTProcessor.setPlaylistRemoveRequestsSynced(removeRequests, this);
+      }
+      catch(JSONException e){
+        alertRemoveSongException(account);
+        Log.e(TAG, "JSON exception when adding to playist");
+      }
+      catch(ParseException e){
+        alertRemoveSongException(account);
+        Log.e(TAG, "Parse exception when adding to playist");
+      }
+      catch(IOException e){
+        alertRemoveSongException(account);
+        Log.e(TAG, "IO exception when adding to playist");
+      }
+      catch(AuthenticationException e){
+        if(attemptReauth){
+          am.invalidateAuthToken(Constants.ACCOUNT_TYPE, authToken); 
+          syncRemoveRequests(account, eventId, false);
+          Log.e(TAG, "Soft Authentication exception when adding to playist");
+        }
+        else{
+          alertRemoveSongException(account);
+          Log.e(TAG, "Hard Authentication exception when adding to playist");
+        }
+      }
+      catch(RemoteException e){
+        alertRemoveSongException(account);
+        Log.e(TAG, "Remote exception when adding to playist");
+      }
+      catch(OperationApplicationException e){
+        alertRemoveSongException(account);
+        Log.e(TAG, "Operation Application exception when adding to playist");
+      }
+      catch(EventOverException e){
+        Log.e(TAG, "Event over exceptoin when retreiving playlist");
+        Utils.handleEventOver(this, account);
+      }
+    }
+    //TODO This point of the app seems very dangerous as there are so many
+    // exceptions that could occuer. Need to pay special attention to this.
 
   }
 
@@ -344,20 +431,20 @@ public class PlaylistSyncService extends IntentService{
       //TODO This point of the app seems very dangerous as there are so many
       // exceptions that could occuer. Need to pay special attention to this.
   }
-  
+
   private void alertAddSongException(Account account){
     Notification addNotification = new Notification(
       R.drawable.udjlauncher, 
       getString(R.string.song_add_failed_title),
       System.currentTimeMillis());
-    Intent syncVotes = new Intent(
+    Intent syncAddRequests = new Intent(
       Intent.ACTION_INSERT,
       UDJEventProvider.PLAYLIST_ADD_REQUEST_URI,
       this,
       PlaylistSyncService.class);
-    syncVotes.putExtra(Constants.ACCOUNT_EXTRA, account);
+    syncAddRequests.putExtra(Constants.ACCOUNT_EXTRA, account);
     PendingIntent pe = PendingIntent.getService(
-      this, 0, syncVotes, 0);
+      this, 0, syncAddRequests, 0);
     addNotification.setLatestEventInfo(
       this, 
       getString(R.string.song_add_failed_title),
@@ -367,6 +454,30 @@ public class PlaylistSyncService extends IntentService{
     NotificationManager nm = 
       (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
     nm.notify(SONG_ADDED_ID, addNotification);
+  }
+
+  private void alertRemoveSongException(Account account){
+    Notification removeNotification = new Notification(
+      R.drawable.udjlauncher,
+      getString(R.string.song_remove_failed_title),
+      System.currentTimeMillis());
+    Intent syncRemoveRequests = new Intent(
+      Intent.ACTION_DELETE,
+      UDJEventProvider.PLAYLIST_REMOVE_REQUEST_URI,
+      this,
+      PlaylistSyncService.class);
+    syncRemoveRequests.putExtra(Constants.ACCOUNT_EXTRA, account);
+    PendingIntent pe = PendingIntent.getService(
+      this, 0, syncRemoveRequests, 0);
+    removeNotification.setLatestEventInfo(
+      this, 
+      getString(R.string.song_remove_failed_title),
+      getString(R.string.song_remove_failed_content),
+      pe);
+    removeNotification.flags |= Notification.FLAG_AUTO_CANCEL;
+    NotificationManager nm = 
+      (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+    nm.notify(SONG_ADDED_ID, removeNotification);
 
   }
 
