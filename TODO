@@ -29,7 +29,6 @@ ANDROID APP
 - Switch auth dialog to dialog fragment
 - Handle when credentials change
 - password protected events
-* Fix configuration change issues, namely when logging into event.
 
 SERVER
 -Maybe If two users add the same song within a certain threshold of oneanother (e.g.
