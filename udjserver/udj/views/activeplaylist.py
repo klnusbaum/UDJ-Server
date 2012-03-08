@@ -6,6 +6,7 @@ from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseForbidden
 from django.core.exceptions import ObjectDoesNotExist
+from udj.decorators import IsEventHostOrAdder
 from udj.decorators import IsEventHost
 from udj.decorators import AcceptsMethods
 from udj.decorators import NeedsJSON
@@ -115,7 +116,7 @@ def voteSong(event_id, playlist_id, user_id, voteWeigth):
   return HttpResponse()
 
 @NeedsAuth
-@IsEventHost
+@IsEventHostOrAdder
 @AcceptsMethods('DELETE')
 def removeSongFromActivePlaylist(request, event_id, playlist_id):
   toRemove = get_object_or_404(

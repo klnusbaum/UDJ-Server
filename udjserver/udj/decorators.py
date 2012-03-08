@@ -6,6 +6,7 @@ from django.http import HttpResponseNotAllowed
 from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
 from udj.models import Event
+from udj.models import ActivePlaylistEntry
 from udj.models import EventGoer
 from udj.auth import getUserForTicket
 from django.shortcuts import get_object_or_404
@@ -87,6 +88,21 @@ def IsEventHost(function):
     event = get_object_or_404(Event, pk=event_id)
     if event.host != user:
       return HttpResponseForbidden("Only the host of that event may do that")
+    else:
+      return function(*args, **kwargs)
+  return wrapper
+
+def IsEventHostOrAdder(function):
+  def wrapper(*args, **kwargs):
+    request = args[0]
+    event_id = kwargs['event_id']
+    playlist_id = kwargs['playlist_id']
+    user = getUserForTicket(request)
+    event = get_object_or_404(Event, pk=event_id)
+    playlistEntry = ActivePlaylistEntry.objects.get(pk=playlist_id)
+
+    if event.host != user and playlistEntry.adder != user:
+      return HttpResponseForbidden("Only the host of that event or song adder may do that")
     else:
       return function(*args, **kwargs)
   return wrapper

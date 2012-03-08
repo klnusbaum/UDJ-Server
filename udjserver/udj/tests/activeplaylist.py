@@ -244,6 +244,15 @@ class TestRemoveSong(User2TestCase):
     response = self.doDelete('/udj/events/2/active_playlist/songs/7')
     self.assertEqual(response.status_code, 200)
 
+class OtherTestRemove(User3TestCase):
+  def testBasicRemove(self):
+    playlist_id=2
+    response = self.doDelete('/udj/events/2/active_playlist/songs/2')
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(
+      ActivePlaylistEntry.objects.get(id=2).state, u'RM')
+
+
 class TestGetAddRequests(User2TestCase):
   def testGetAddRequests(self):
     response = self.doGet('/udj/events/2/active_playlist/users/2/add_requests')
