@@ -25,8 +25,6 @@ of an event.
 - password protected events
 
 ANDROID APP
-* Users should be able to remove songs they added form the playlist
-(You know, say they accidentally double added a song)
 - Parties with passwords
 - Switch auth dialog to dialog fragment
 - Handle when credentials change
