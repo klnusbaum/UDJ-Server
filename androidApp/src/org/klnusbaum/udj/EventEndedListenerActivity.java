@@ -93,10 +93,18 @@ public abstract class EventEndedListenerActivity extends FragmentActivity{
 
   private void eventEnded(){
     DialogFragment newFrag = new EventEndedDialog();
+    Bundle args = new Bundle();
+    args.putParcelable(Constants.ACCOUNT_EXTRA,account);
+    newFrag.setArguments(args);
     newFrag.show(getSupportFragmentManager(), EVENT_ENDED_DIALOG);
   }
 
-  public class EventEndedDialog extends DialogFragment{
+  public static class EventEndedDialog extends DialogFragment{
+
+    private Account getAccount(){
+      return (Account)getArguments().getParcelable(Constants.ACCOUNT_EXTRA);
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
       return new AlertDialog.Builder(getActivity())
@@ -119,7 +127,7 @@ public abstract class EventEndedListenerActivity extends FragmentActivity{
     private void finalizeEventEnd(){
       AccountManager am = AccountManager.get(getActivity());
       am.setUserData(
-        account, 
+        getAccount(), 
         Constants.EVENT_STATE_DATA, 
         String.valueOf(Constants.LEAVING_EVENT));
       Intent leaveEvent = new Intent(
@@ -127,7 +135,7 @@ public abstract class EventEndedListenerActivity extends FragmentActivity{
         Constants.EVENT_URI,
         getActivity(),
         EventCommService.class);
-      leaveEvent.putExtra(Constants.ACCOUNT_EXTRA, account);
+      leaveEvent.putExtra(Constants.ACCOUNT_EXTRA, getAccount());
       getActivity().startService(leaveEvent);
       getActivity().setResult(Activity.RESULT_OK);
       getActivity().finish();
