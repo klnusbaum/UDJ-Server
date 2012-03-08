@@ -259,11 +259,9 @@ public class EventListFragment extends ListFragment implements
   }
 
   private boolean isShowingProgress(){
-    return 
-      getActivity().getSupportFragmentManager().findFragmentByTag(
-        PROG_DIALOG_TAG)
-      != 
-      null;
+    Fragment progDialog =
+      getActivity().getSupportFragmentManager().findFragmentByTag(PROG_DIALOG_TAG);
+    return progDialog != null && progDialog.isVisible();
   }
 
   public void onPause(){
@@ -451,6 +449,7 @@ public class EventListFragment extends ListFragment implements
       am.getUserData(account, Constants.EVENT_JOIN_ERROR));
     Bundle args = new Bundle();
     args.putInt(Constants.EVENT_JOIN_ERROR_EXTRA, joinError.ordinal());
+    newFrag.setArguments(args);
     newFrag.show(
       getActivity().getSupportFragmentManager(), EVENT_JOIN_FAIL_TAG);
   }
