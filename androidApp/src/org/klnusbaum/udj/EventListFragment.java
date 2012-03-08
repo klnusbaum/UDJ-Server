@@ -103,7 +103,7 @@ public class EventListFragment extends ListFragment implements
       loaderArgs.putParcelable(LOCATION_EXTRA, givenLocation);
       return loaderArgs;
     }
-    
+
     public int getSearchType(){
       return SEARCH_TYPE; 
     }
@@ -434,40 +434,34 @@ public class EventListFragment extends ListFragment implements
     pd.dismiss();
   }
 
-  private class ProgressFragment extends DialogFragment{
+  public static class ProgressFragment extends DialogFragment{
+
     public Dialog onCreateDialog(Bundle icicle){
       final ProgressDialog dialog = new ProgressDialog(getActivity());
       dialog.setMessage(getActivity().getString(R.string.joining_event));
       dialog.setIndeterminate(true);
-      dialog.setCancelable(true);
-      dialog.setOnCancelListener(new DialogInterface.OnCancelListener(){
-        public void onCancel(DialogInterface dialog){
-          getActivity().unregisterReceiver(eventJoinedReceiver);
-        }
-      });
       return dialog;
     }
   }
 
   private void handleEventJoinFail(){
-    DialogFragment newFrag = new EventJoinFailDialog(account);
+    DialogFragment newFrag = new EventJoinFailDialog();
+    AccountManager am = AccountManager.get(getActivity());
+    EventJoinError joinError = EventJoinError.valueOf(
+      am.getUserData(account, Constants.EVENT_JOIN_ERROR));
+    Bundle args = new Bundle();
+    args.putInt(Constants.EVENT_JOIN_ERROR_EXTRA, joinError.ordinal());
     newFrag.show(
       getActivity().getSupportFragmentManager(), EVENT_JOIN_FAIL_TAG);
   }
 
-  public class EventJoinFailDialog extends DialogFragment{
-    private Account account;
-
-    public EventJoinFailDialog(Account account){
-      super();
-      this.account = account;
-    }
+  public static class EventJoinFailDialog extends DialogFragment{
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
-      AccountManager am = AccountManager.get(getActivity());
-      EventJoinError joinError = EventJoinError.valueOf(
-        am.getUserData(account, Constants.EVENT_JOIN_ERROR));
+      Bundle args = getArguments();
+      EventJoinError joinError = 
+        EventJoinError.values()[args.getInt(Constants.EVENT_JOIN_ERROR_EXTRA)];
       AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
         .setTitle(R.string.event_join_fail_title);
       String message; 
@@ -479,7 +473,7 @@ public class EventListFragment extends ListFragment implements
         message = getString(R.string.auth_join_fail_message); 
         break;
       case EVENT_OVER_ERROR:
-        refreshList();
+        ((EventSelectorActivity)getActivity()).refreshList();
         message = getString(R.string.event_over_join_fail_message); 
         break;
       case NO_NETWORK_ERROR:

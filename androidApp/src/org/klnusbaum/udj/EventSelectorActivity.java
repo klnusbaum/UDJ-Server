@@ -86,4 +86,8 @@ public class EventSelectorActivity extends FragmentActivity{
     }
   }
 
+  public void refreshList(){
+    list.refreshList();
+  }
+
 }
