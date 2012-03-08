@@ -52,13 +52,19 @@ public class EventSelectorActivity extends FragmentActivity{
 
     FragmentManager fm = getSupportFragmentManager();
     if(fm.findFragmentById(android.R.id.content) == null){
-      list = new EventListFragment();
+      EventListFragment list = new EventListFragment();
       fm.beginTransaction().add(android.R.id.content, list).commit();
     }
   }
 
+  private EventListFragment getEventList(){
+    return
+      ((EventListFragment)getSupportFragmentManager().findFragmentById(android.R.id.content));
+  }
+
   protected void onNewIntent(Intent intent){
     if(Intent.ACTION_SEARCH.equals(intent.getAction())){
+      EventListFragment list = getEventList();
       list.setEventSearch(new EventListFragment.NameEventSearch(
         intent.getStringExtra(SearchManager.QUERY)));
     }
@@ -76,7 +82,7 @@ public class EventSelectorActivity extends FragmentActivity{
   public boolean onOptionsItemSelected(MenuItem item){
     switch (item.getItemId()) {
     case R.id.menu_refresh:
-      list.refreshList();
+      getEventList().refreshList();
       return true;
     case R.id.menu_search:
       startSearch(null, false, null, false);
@@ -87,7 +93,7 @@ public class EventSelectorActivity extends FragmentActivity{
   }
 
   public void refreshList(){
-    list.refreshList();
+    getEventList().refreshList();
   }
 
 }
