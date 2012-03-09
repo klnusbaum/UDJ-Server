@@ -44,14 +44,23 @@
               {% ifequal page "home"  %}
               <li class="active"><a href="#">Home</a></li>
               <li><a href="/registration/register/">Register</a></li>
+              <li><a href="/contact/">Contact</a></li>
               {% else %}{% ifequal page "login"  %}
               <li><a href="/">Home</a></li>
               <li class="active"><a href="#">Register</a></li>
+              <li><a href="/contact/">Contact</a></li>
+              {% else %}{% ifequal page "contact" %}
+              <li><a href="/">Home</a></li>
+              <li><a href="/registration/register/">Register</a></li>
+              <li class="active"><a href="/contact/">Contact</a></li>
               {% else %}
               <li><a href="/">Home</a></li>
               <li><a href="/registration/register/">Register</a></li>
+              <li><a href="/contact/">Contact</a></li>
               {% endifequal %}
               {% endifequal %}
+              {% endifequal %}
+
             </ul>
           </div><!--/.nav-collapse -->
         </div>

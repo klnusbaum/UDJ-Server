@@ -22,3 +22,8 @@ def thanks(request):
   return render_to_response("registration/thanks.html", {},
       context_instance=RequestContext(request))
 
+
+def contact(request):
+  return render_to_response('contact.html', {'page' : 'contact'}, context_instance=RequestContext(request))
+
+
