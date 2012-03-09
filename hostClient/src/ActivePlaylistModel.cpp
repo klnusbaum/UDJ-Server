@@ -19,6 +19,7 @@
 #include "DataStore.hpp"
 #include "ActivePlaylistModel.hpp"
 #include <QSqlRecord>
+#include <QDateTime>
 
 
 namespace UDJ{
@@ -33,7 +34,9 @@ QVariant ActivePlaylistModel::data(const QModelIndex& item, int role) const{
   int timeAddedIndex = record().indexOf(DataStore::getTimeAddedColName());
   QVariant actualData = MusicModel::data(item, role);
   if(item.column() == timeAddedIndex && role == Qt::DisplayRole){
-    return actualData.toString().section('T', 1);
+    QDateTime timeAdded = QDateTime::fromString(actualData.toString(),Qt::ISODate);
+    timeAdded.setTimeSpec(Qt::UTC);
+    return timeAdded.toLocalTime().toString("h:m ap");
   }
   else{
     return actualData;
