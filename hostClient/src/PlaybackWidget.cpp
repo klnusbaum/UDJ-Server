@@ -75,7 +75,7 @@ PlaybackWidget::PlaybackWidget(DataStore *dataStore, QWidget *parent):
     SLOT(disablePlayback()));
 
   Phonon::createPath(mediaObject, audioOutput);
-  setEnabled(false);
+  dataStore->isCurrentlyHosting() ? setEnabled(true) : setEnabled(false);
 }
 
 void PlaybackWidget::tick(qint64 time){
