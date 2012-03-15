@@ -31,7 +31,7 @@ namespace UDJ{
 
 
 PlaybackWidget::PlaybackWidget(DataStore *dataStore, QWidget *parent):
-  QWidget(parent), dataStore(dataStore)
+  QWidget(parent), dataStore(dataStore), currentPlaybackState(PLAYING)
 {
   audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
   mediaObject = new Phonon::MediaObject(this);
@@ -44,7 +44,7 @@ PlaybackWidget::PlaybackWidget(DataStore *dataStore, QWidget *parent):
     this, SLOT(stateChanged(Phonon::State, Phonon::State)));
   connect(mediaObject, SIGNAL(currentSourceChanged(Phonon::MediaSource)),
     this, SLOT(sourceChanged(Phonon::MediaSource)));
-  connect(mediaObject, SIGNAL(finished()), this, SLOT(finished()));
+  connect(mediaObject, SIGNAL(finished()), this, SLOT(playNextSong()));
   connect(
     mediaObject,
     SIGNAL(metaDataChanged()),
@@ -74,8 +74,15 @@ PlaybackWidget::PlaybackWidget(DataStore *dataStore, QWidget *parent):
     this,
     SLOT(disablePlayback()));
 
+  connect(
+    dataStore,
+    SIGNAL(activePlaylistModified()),
+    this,
+    SLOT(handlePlaylistChange()));
+
   Phonon::createPath(mediaObject, audioOutput);
   dataStore->isCurrentlyHosting() ? setEnabled(true) : setEnabled(false);
+  playNextSong();
 }
 
 void PlaybackWidget::tick(qint64 time){
@@ -100,51 +107,23 @@ void PlaybackWidget::metaDataChanged(){
 void PlaybackWidget::stateChanged(
   Phonon::State newState, Phonon::State oldState)
 {
-  switch(newState){
-  case Phonon::PlayingState:
-    playAction->setEnabled(false);
-    pauseAction->setEnabled(true);
-    stopAction->setEnabled(true);
-    break;
-  case Phonon::StoppedState:
-    playAction->setEnabled(true);
-    pauseAction->setEnabled(false);
-    stopAction->setEnabled(false);
-    break;
-  case Phonon::PausedState:
-    playAction->setEnabled(true);
-    pauseAction->setEnabled(false);
-    stopAction->setEnabled(true);
-    break;
-  default:
-    break;
-  }
+
 }
 
-void PlaybackWidget::play(){
-  if(mediaObject->currentSource().type() == Phonon::MediaSource::Empty){
-    Phonon::MediaSource nextSong = dataStore->takeNextSongToPlay();
-    if(nextSong.type() == Phonon::MediaSource::Empty){
-      return;
-    }
-    mediaObject->setCurrentSource(nextSong);
-  }
-  mediaObject->play();
-}
-
-void PlaybackWidget::aboutToFinish(){
-  Phonon::MediaSource nextSong = dataStore->getNextSongToPlay();
-  if(nextSong.type() == Phonon::MediaSource::Empty){
-     return;
-  }
-  mediaObject->enqueue(dataStore->getNextSongToPlay());
-}
-
-void PlaybackWidget::finished(){
+void PlaybackWidget::playNextSong(){
   Phonon::MediaSource nextSong = dataStore->takeNextSongToPlay();
+  mediaObject->setCurrentSource(nextSong);
   if(nextSong.type() != Phonon::MediaSource::Empty){
-    mediaObject->setCurrentSource(nextSong);
     mediaObject->play();
+  }
+}
+
+void PlaybackWidget::handlePlaylistChange(){
+  if((mediaObject->currentSource().type() == Phonon::MediaSource::Empty ||
+      mediaObject->currentSource().type() == Phonon::MediaSource::Invalid) &&
+      currentPlaybackState != PAUSED)
+  {
+    playNextSong();
   }
 }
 
@@ -156,27 +135,26 @@ void PlaybackWidget::setupUi(){
   QToolBar *bar = new QToolBar;
   bar->addAction(playAction);
   bar->addAction(pauseAction);
-  bar->addAction(stopAction);
-
-  seekSlider = new Phonon::SeekSlider(this);
-  seekSlider->setMediaObject(mediaObject);
 
   volumeSlider = new Phonon::VolumeSlider(this);
   volumeSlider->setAudioOutput(audioOutput);
   volumeSlider->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+
+  seekSlider = new Phonon::SeekSlider(this);
+  seekSlider->setMediaObject(mediaObject);
 
   QHBoxLayout *infoLayout = new QHBoxLayout;
   infoLayout->addWidget(songTitle);
   infoLayout->addStretch();
   infoLayout->addWidget(timeLabel);
 
-  QHBoxLayout *seekerLayout = new QHBoxLayout;
-  seekerLayout->addWidget(seekSlider);
-
   QHBoxLayout *playBackLayout = new QHBoxLayout;
   playBackLayout->addWidget(bar);
   playBackLayout->addStretch();
   playBackLayout->addWidget(volumeSlider);
+
+  QHBoxLayout *seekerLayout = new QHBoxLayout;
+  seekerLayout->addWidget(seekSlider);
 
   QVBoxLayout *mainLayout = new QVBoxLayout;
   mainLayout->addLayout(infoLayout);
@@ -185,23 +163,32 @@ void PlaybackWidget::setupUi(){
   setLayout(mainLayout);
 }
 
+void PlaybackWidget::play(){
+  currentPlaybackState = PLAYING;
+  mediaObject->play();
+  playAction->setEnabled(false);
+  pauseAction->setEnabled(true);
+}
+
+void PlaybackWidget::pause(){
+  currentPlaybackState = PAUSED;
+  mediaObject->pause();
+  playAction->setEnabled(true);
+  pauseAction->setEnabled(false);
+}
+
 
 void PlaybackWidget::createActions(){
   playAction = new QAction(style()->standardIcon(QStyle::SP_MediaPlay),
     tr("Play"), this);
   playAction->setShortcut(tr("Ctrl+P"));
+  playAction->setEnabled(false);
   pauseAction = new QAction(style()->standardIcon(QStyle::SP_MediaPause),
     tr("Pause"), this);
   pauseAction->setShortcut(tr("Ctrl+A"));
-  pauseAction->setEnabled(false);
-  stopAction = new QAction(style()->standardIcon(QStyle::SP_MediaStop),
-    tr("Stop"), this);
-  stopAction->setShortcut(tr("Ctrl+S"));
-  stopAction->setEnabled(false);
 
   connect(playAction, SIGNAL(triggered()), this, SLOT(play()));
-  connect(pauseAction, SIGNAL(triggered()), mediaObject, SLOT(pause()));
-  connect(stopAction, SIGNAL(triggered()), mediaObject, SLOT(stop()));
+  connect(pauseAction, SIGNAL(triggered()), this, SLOT(pause()));
 }
 
 void PlaybackWidget::setNewSource(Phonon::MediaSource newSong){

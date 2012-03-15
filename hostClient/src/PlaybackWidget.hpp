@@ -39,6 +39,14 @@ class PlaybackWidget : public QWidget{
 Q_OBJECT
 
 public:
+  /** @name Enums */
+  //@{
+
+  /** \brief The various states of playback that the widget can be in. */
+  enum PlaybackState {PAUSED, PLAYING};
+
+  //@}
+
   /** @name Constructors */
   //@{
 
@@ -76,18 +84,9 @@ private slots:
   void sourceChanged(const Phonon::MediaSource &source);
 
   /**
-   * \brief Called whenever the current song being played is about to finish.
+   * \brief Called when the next available song should be played.
    */
-  void aboutToFinish();
-
-  /**
-   * \brief Called when the primary media object has finished playing it's
-   * current song.
-   */
-   void finished();
-
-   /** \brief Start playback. */
-   void play();
+   void playNextSong();
 
    /** \brief Handles when meta data is changed. */
    void metaDataChanged();
@@ -104,6 +103,12 @@ private slots:
    void enablePlayback();
 
    void disablePlayback();
+
+   void handlePlaylistChange();
+
+   void play();
+
+   void pause();
 
   //@}
 
@@ -123,23 +128,21 @@ private:
   /** @name Private Memeber */
   //@{
 
+  /** \brief The current state of music playback. */
+  PlaybackState currentPlaybackState;
+
+
   /** \brief Causes playback to start */
   QAction *playAction;
 
   /** \brief Pauses playback */
   QAction *pauseAction;
 
-  /** \brief Stops playback */
-  QAction *stopAction;
-
   /** \brief Used to display the name of the currently playing song. */
-	QLabel *songTitle;
+  QLabel *songTitle;
 
   /** \bried Used to display the time played of the current song. */
   QLabel *timeLabel;
-
-  /** \brief The main seeker to change the songs current playback position. */
-  Phonon::SeekSlider *seekSlider;
 
   /** \brief The primary media object used for song playback. */
   Phonon::MediaObject *mediaObject;
@@ -150,9 +153,10 @@ private:
   /** \brief The volume slider used to control playback volume. */
   Phonon::VolumeSlider *volumeSlider;
 
-  /**
-   * \brief The data store backing this instance of UDJ.
-   */
+  /** \brief The seek slider for adjusting playback position. */
+  Phonon::SeekSlider *seekSlider;
+
+  /** \brief The data store backing this instance of UDJ. */
   DataStore *dataStore;
 
   //@}
@@ -160,4 +164,4 @@ private:
 };
 
 } //end namespace UDJ
-#endif 
+#endif
