@@ -61,7 +61,21 @@ PlaybackWidget::PlaybackWidget(DataStore *dataStore, QWidget *parent):
     SIGNAL(eventEnded()),
     this,
     SLOT(clearWidget()));
+
+  connect(
+    dataStore,
+    SIGNAL(eventCreated()),
+    this,
+    SLOT(enablePlayback()));
+
+  connect(
+    dataStore,
+    SIGNAL(eventEnded()),
+    this,
+    SLOT(disablePlayback()));
+
   Phonon::createPath(mediaObject, audioOutput);
+  setEnabled(false);
 }
 
 void PlaybackWidget::tick(qint64 time){
@@ -200,6 +214,14 @@ void PlaybackWidget::clearWidget(){
   mediaObject->clear();
   songTitle->setText("");
   timeLabel->setText("--:--");
+}
+
+void PlaybackWidget::enablePlayback(){
+  setEnabled(true);
+}
+
+void PlaybackWidget::disablePlayback(){
+  setEnabled(false);
 }
 
 

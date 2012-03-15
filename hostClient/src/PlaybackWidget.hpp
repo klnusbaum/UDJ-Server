@@ -101,6 +101,10 @@ private slots:
 
    void clearWidget();
 
+   void enablePlayback();
+
+   void disablePlayback();
+
   //@}
 
 private:
