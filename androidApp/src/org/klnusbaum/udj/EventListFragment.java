@@ -234,17 +234,24 @@ public class EventListFragment extends ListFragment implements
     super.onResume();
     if(account != null){
       int eventState = Utils.getEventState(getActivity(), account);
-      if(isShowingProgress()){
-        if(eventState == Constants.EVENT_JOIN_FAILED){
-          dismissProgress();
-          handleEventJoinFail();
-          //TODO inform user joining failed.
-        }
-        else{
-          registerEventListener();
-        }
+      Log.d(TAG, "Checking Event State");
+      if(eventState == Constants.JOINING_EVENT){
+        Log.d(TAG, "Is joining");
+        Log.d(TAG, "Reregistering event listener");
+        registerEventListener();
+      }
+      else if(eventState == Constants.EVENT_JOIN_FAILED){
+        Log.d(TAG, "Event Joined Failed");
+        dismissProgress();
+        handleEventJoinFail();
+        //TODO inform user joining failed.
       }
       else if(eventState == Constants.IN_EVENT){
+        Log.d(TAG, "Already signed into event. Checking Progress visibility");
+        if(isShowingProgress()){
+          Log.d(TAG, "Determined progress is indeed showing");
+          dismissProgress();
+        }
         long eventId = Long.valueOf(
           am.getUserData(account, Constants.LAST_EVENT_ID_DATA));
         Intent startEventActivity = 
@@ -258,16 +265,13 @@ public class EventListFragment extends ListFragment implements
     }
   }
 
-  private boolean isShowingProgress(){
-    Fragment progDialog =
-      getActivity().getSupportFragmentManager().findFragmentByTag(PROG_DIALOG_TAG);
-    return progDialog != null && progDialog.isVisible();
-  }
-
   public void onPause(){
     super.onPause();
-    if(isShowingProgress()){
-      getActivity().unregisterReceiver(eventJoinedReceiver);
+    if(account != null){
+      int eventState = Utils.getEventState(getActivity(), account);
+      if(eventState == Constants.JOINING_EVENT){
+        getActivity().unregisterReceiver(eventJoinedReceiver);
+      }
     }
   }
 
@@ -425,6 +429,13 @@ public class EventListFragment extends ListFragment implements
     getActivity().registerReceiver(
       eventJoinedReceiver, 
       new IntentFilter(Constants.EVENT_JOIN_FAILED_ACTION));
+    Log.d(TAG, "Listener registered");
+  }
+
+  private boolean isShowingProgress(){
+    ProgressFragment pd =
+      (ProgressFragment)getActivity().getSupportFragmentManager().findFragmentByTag(PROG_DIALOG_TAG);
+    return pd != null && pd.getDialog().isShowing();
   }
 
   private void dismissProgress(){

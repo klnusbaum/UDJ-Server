@@ -139,6 +139,7 @@ public class EventCommService extends IntentService{
         account, 
         Constants.EVENT_STATE_DATA, 
         String.valueOf(Constants.IN_EVENT));
+      Log.d(TAG, "Sending joined event broadcast");
       sendBroadcast(joinedEventIntent);
     }
     catch(IOException e){
