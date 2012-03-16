@@ -36,7 +36,7 @@ QVariant ActivePlaylistModel::data(const QModelIndex& item, int role) const{
   if(item.column() == timeAddedIndex && role == Qt::DisplayRole){
     QDateTime timeAdded = QDateTime::fromString(actualData.toString(),Qt::ISODate);
     timeAdded.setTimeSpec(Qt::UTC);
-    return timeAdded.toLocalTime().toString("h:m ap");
+    return timeAdded.toLocalTime().toString("h:mm ap");
   }
   else{
     return actualData;
