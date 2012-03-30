@@ -111,10 +111,13 @@ public class ServerConnection{
 
   private static final String SERVER_HOST = "udjevents.com";
 
+  private static final String API_VERSION = "0.2";
+
 
   private static final String TICKET_HASH_HEADER = "X-Udj-Ticket-Hash";
   private static final String USER_ID_HEADER = "X-Udj-User-Id";
   private static final String GONE_RESOURCE_HEADER = "X-Udj-Gone-Resource";
+  private static final String API_VERSION_HEADER = "X-Udj-Api-Version";
 
 
   private static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
@@ -169,9 +172,10 @@ public class ServerConnection{
     entity = new UrlEncodedFormEntity(params);
     final HttpPost post = new HttpPost(AUTH_URI);
     post.addHeader(entity.getContentType());
+    post.addHeader(API_VERSION_HEADER, API_VERSION);
     post.setEntity(entity);
     final HttpResponse resp = getHttpClient().execute(post);
-    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
+    if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_IMPLEMENTED){
       throw new APIVersionException();
     }
     else if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
