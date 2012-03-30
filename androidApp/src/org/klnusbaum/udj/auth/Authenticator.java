@@ -18,7 +18,6 @@
  */
 package org.klnusbaum.udj.auth;
 
-import java.util.Calendar;
 import java.io.IOException;
 
 import org.apache.http.auth.AuthenticationException;
@@ -36,6 +35,7 @@ import android.text.TextUtils;
 import org.klnusbaum.udj.R;
 import org.klnusbaum.udj.Constants;
 import org.klnusbaum.udj.network.ServerConnection;
+import org.klnusbaum.udj.exceptions.APIVersionException;
 
 /**
  * Class used to authenticate with the UDJ server
@@ -105,8 +105,17 @@ public class Authenticator extends AbstractAccountAuthenticator{
       catch(IOException e){
         //TODO actually do something with this exception 
       }
+      catch(APIVersionException e){
+        final Intent intent = new Intent(context, NeedUpdateActivity.class);
+        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, 
+          response);
+        intent.putExtra(AccountManager.KEY_ERROR_CODE, Constants.AUTH_API_VERSION_ERROR);
+        final Bundle bundle = new Bundle();
+        bundle.putParcelable(AccountManager.KEY_INTENT, intent);
+        return bundle;
+      }
     }
-    
+
     //Oh snap, they're username and password didn't work. O well, better have
     // them sort it out.
     final Intent intent = new Intent(context, AuthActivity.class);

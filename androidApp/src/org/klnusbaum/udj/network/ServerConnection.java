@@ -78,6 +78,9 @@ import org.klnusbaum.udj.containers.Event;
 import org.klnusbaum.udj.UDJEventProvider;
 import org.klnusbaum.udj.exceptions.EventOverException;
 import org.klnusbaum.udj.exceptions.AlreadyInEventException;
+import org.klnusbaum.udj.exceptions.APIVersionException;
+
+
 /**
  * A connection to the UDJ server
  */
@@ -148,7 +151,7 @@ public class ServerConnection{
   }
 
   public static AuthResult authenticate(String username, String password)
-    throws AuthenticationException, IOException
+    throws AuthenticationException, IOException, APIVersionException
   {
     URI AUTH_URI = null;
     try{
@@ -169,6 +172,9 @@ public class ServerConnection{
     post.setEntity(entity);
     final HttpResponse resp = getHttpClient().execute(post);
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
+      throw new APIVersionException();
+    }
+    else if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED){
       throw new AuthenticationException();
     }
     else if(!resp.containsHeader(TICKET_HASH_HEADER)){

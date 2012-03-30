@@ -22,7 +22,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.widget.TabHost;
 import android.widget.Toast;
 import android.view.Menu;
 import android.view.MenuItem;

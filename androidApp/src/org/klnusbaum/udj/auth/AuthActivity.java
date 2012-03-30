@@ -115,9 +115,6 @@ public class AuthActivity extends AccountAuthenticatorActivity{
         mMessage.setText(getMessage());
 
         TextView signUp = (TextView) findViewById(R.id.signup_text);
-    /*    String text =
-          "Don't have an account? "+
-          "<a href=\"https://www.udjevents.com/registration/register/\">Sign up here</a>";*/
         signUp.setText(Html.fromHtml(getString(R.string.dont_have_account)));
         signUp.setMovementMethod(LinkMovementMethod.getInstance());
     }

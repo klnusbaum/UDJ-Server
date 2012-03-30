@@ -1,0 +1,18 @@
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:orientation="vertical"
+>
+    <TextView 
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      android:id="@+id/need_update_text"
+      android:padding="4dp"
+      android:layout_gravity="right"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textAppearance="?android:attr/textAppearanceLarge"
+      android:text="@string/api_version_error_message"
+    />
+</LinearLayout>
+

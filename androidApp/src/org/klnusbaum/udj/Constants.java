@@ -78,5 +78,6 @@ public class Constants{
     authority(Constants.AUTHORITY).appendPath("event").build();
 
   /** Error constants */
+  public static final int AUTH_API_VERSION_ERROR = 1;
 
 }
