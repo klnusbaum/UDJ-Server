@@ -3,14 +3,17 @@ from django.test.client import Client
 from django.contrib.auth.models import User
 from udj.headers import getTicketHeader
 from udj.headers import getUserIdHeader
+from udj.headers import getDjangoApiVersionHeader
 from udj.models import Ticket
 class AuthTest(TestCase):
   fixtures = ['test_fixture.json']
 
   def testAuth(self):
     client = Client()
-    response = client.post('/udj/auth', {'username': 'test2', 'password' : 'twotest'})
-    self.assertEqual(response.status_code, 200)
+    headers = {}
+    headers[getDjangoApiVersionHeader()] = "0.2"
+    response = client.post('/udj/auth', {'username': 'test2', 'password' : 'twotest'}, **headers)
+    self.assertEqual(response.status_code, 200, response.content)
     self.assertTrue(response.has_header(getTicketHeader()))
     self.assertTrue(response.has_header(getUserIdHeader()))
     testUser = User.objects.filter(username='test2')
@@ -21,8 +24,10 @@ class AuthTest(TestCase):
 
   def testDoubleTicket(self):
     client = Client()
+    headers = {}
+    headers[getDjangoApiVersionHeader()] = "0.2"
     response = client.post(
-      '/udj/auth', {'username': 'test2', 'password' : 'twotest'})
+      '/udj/auth', {'username': 'test2', 'password' : 'twotest'}, **headers)
     self.assertEqual(response.status_code, 200)
     self.assertTrue(response.has_header(getTicketHeader()))
     self.assertTrue(response.has_header(getUserIdHeader()))
@@ -34,7 +39,7 @@ class AuthTest(TestCase):
     firstTime = ticket.time_issued
     self.assertEqual(firstTicket, ticket.ticket_hash)
     response = client.post(
-      '/udj/auth', {'username': 'test2', 'password' : 'twotest'})
+      '/udj/auth', {'username': 'test2', 'password' : 'twotest'}, **headers)
     ticket = Ticket.objects.get(user=testUser)
     secondTicket = response[getTicketHeader()]
     secondTime = ticket.time_issued

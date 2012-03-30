@@ -15,3 +15,9 @@ def getUUIDHeader():
 
 def getDjangoUUIDHeader():
   return "HTTP_X_UDJ_MACHINE_UUID"
+
+def getApiVersionHeader():
+  return "X-Udj-Api-Version"
+
+def getDjangoApiVersionHeader():
+  return "HTTP_X_UDJ_API_VERSION"

@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from udj.headers import getTicketHeader
 from udj.headers import getDjangoTicketHeader
 from udj.headers import getUserIdHeader
+from udj.headers import getDjangoApiVersionHeader
 from udj.models import Ticket
 
 class DoesServerOpsTestCase(TestCase):
@@ -19,8 +20,11 @@ class DoesServerOpsTestCase(TestCase):
   client = Client()
 
   def setUp(self):
+    headers = {}
+    headers[getDjangoApiVersionHeader()] = "0.2"
     response = self.client.post(
-      '/udj/auth', {'username': self.username, 'password' : self.userpass})
+      '/udj/auth', {'username': self.username, 'password' : self.userpass},
+      **headers)
     self.assertEqual(response.status_code, 200)
     self.ticket_hash = response.__getitem__(getTicketHeader())
     self.user_id = response.__getitem__(getUserIdHeader())
