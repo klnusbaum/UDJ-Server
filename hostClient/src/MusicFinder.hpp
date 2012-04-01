@@ -66,7 +66,7 @@ private:
    * constains music.
    */
   static const QRegExp& getMusicFileMatcher(){
-    static const QRegExp matcher("(.*mp3)|(.*m4a)|(.*wav)|(.*ogg)");
+    static const QRegExp matcher("(.*mp3)|(.*m4a)|(.*wav)");
     return matcher;
   }
 

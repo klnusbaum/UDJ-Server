@@ -252,6 +252,16 @@ void DataStore::addSongToLibrary(Phonon::MediaSource song){
     return;
   }
 
+  if(songName == ""){
+    songName = unknownSongTitle();
+  }
+  if(artistName == ""){
+    artistName = unknownSongArtist();
+  }
+  if(albumName == ""){
+    albumName = unknownSongAlbum();
+  }
+
   library_song_id_t hostId =-1;
   QSqlQuery addQuery(
     "INSERT INTO "+getLibraryTableName()+ 
