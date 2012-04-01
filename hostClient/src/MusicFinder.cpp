@@ -82,27 +82,33 @@ QString MusicFinder::getMusicFileExtFilter(){
 
 QStringList MusicFinder::availableMusicTypes(){
   QStringList mimes = Phonon::BackendCapabilities::availableMimeTypes();
+  for(int i=0; i< mimes.size(); ++i){
+    DEBUG_MESSAGE("Mime: " << mimes.at(i).toStdString())
+  }
   QStringList toReturn;
-  if(mimes.contains("audio/flac")){
+  if(mimes.contains("audio/flac") || mimes.contains("audio/x-flac")){
     toReturn.append("flac");
   }
-  if(mimes.contains("audio/mp3")){
+  if(mimes.contains("audio/mp3") || mimes.contains("audio/x-mp3")){
     toReturn.append("mp3");
   }
   if(mimes.contains("audio/mp4")){
     toReturn.append("mp4");
   }
-  if(mimes.contains("audio/mp4")){
-    toReturn.append("mp4");
-  }
-  if(mimes.contains("audio/m4a") || mimes.contains("applications/x-qt-m4a")){
+  if(mimes.contains("audio/m4a") 
+    || ("audio/x-m4a") 
+|| mimes.contains("applications/x-qt-m4a")){
     toReturn.append("m4a");
   }
-  if(mimes.contains("audio/wav")){
+  if(mimes.contains("audio/wav") || mimes.contains("audio/x-wav")){
     toReturn.append("wav");
   }
-  if(mimes.contains("audio/ogg")){
-    toReturn.append("wav");
+  if(mimes.contains("audio/ogg") ||
+mimes.contains("application/ogg") ||
+mimes.contains("audio/x-vorbis") || 
+mimes.contains("audio/x-vorbis+ogg"))
+{
+    toReturn.append("ogg");
   }
   return toReturn;
 }
