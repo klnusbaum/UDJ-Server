@@ -99,14 +99,14 @@ class AddSongToPlaylistTests(User2TestCase):
       adder__id=2,  
       event__id=2,
       client_request_id=request_id)
-    
+
   def testDuplicateAdd(self):
     request_id = 2
     payload = [{ 'lib_id' : 1, 'client_request_id' : request_id}]
     response = \
       self.doJSONPut('/udj/events/2/active_playlist/songs', json.dumps(payload))
     self.assertEqual(response.status_code, 201)
-       
+
     songRequests = ActivePlaylistEntry.objects.get(
       song__host_lib_song_id=1, client_request_id=request_id, event__id=2)
 
@@ -116,7 +116,7 @@ class AddSongToPlaylistTests(User2TestCase):
     response = \
       self.doJSONPut('/udj/events/2/active_playlist/songs', json.dumps(payload))
     self.assertEqual(response.status_code, 201)
-    
+
     songThatShouldntBeThere = ActivePlaylistEntry.objects.filter(
       adder__id=2,
       event__id=2,
@@ -130,14 +130,21 @@ class AddSongToPlaylistTests(User2TestCase):
 
     response = \
       self.doJSONPut('/udj/events/2/active_playlist/songs', json.dumps(payload))
-    self.assertEqual(response.status_code, 201)
-    
+    self.assertEqual(response.status_code, 201, response.content)
+
     songThatShouldntBeThere = ActivePlaylistEntry.objects.filter(
       adder__id=2,
       event__id=2,
       client_request_id=request_id,
       state=u'QE')
     self.assertFalse(songThatShouldntBeThere.exists())
+
+  def testAddNotInAvailable(self):
+    request_id = 5
+    payload = [{'lib_id' :  7 , 'client_request_id' : 5}]
+    response = \
+      self.doJSONPut('/udj/events/2/active_playlist/songs', json.dumps(payload))
+    self.assertEqual(response.status_code, 404)
 
 class AddSongToPlaylist2Tests(User2TestCase):
   def testAlreadyPlayed(self):
