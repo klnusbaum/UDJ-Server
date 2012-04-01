@@ -45,18 +45,13 @@ public:
    */
   static QList<Phonon::MediaSource> findMusicInDir(const QString& musicDir);
 
+  static QList<Phonon::MediaSource> findMusicInDirWithMatcher(
+      const QString& musicDir, const QRegExp& fileMatcher);
+  static QString getMusicFileExtFilter();
   //@}
 private:
   /** @name Private Function(s) */
   //@{
-
-  /** 
-   * \brief Given a file, determines whether or not it contains music.
-   * 
-   * @param file The file in question.
-   * @param True if the file in question contains music, false otherwise.
-   */
-  static bool isMusicFile(const QFileInfo& file);
 
   /**
    * Retrieves the regular expression used to help determine if a file
@@ -65,10 +60,9 @@ private:
    * @return The regular expression user to help determine if a file
    * constains music.
    */
-  static const QRegExp& getMusicFileMatcher(){
-    static const QRegExp matcher("(.*mp3)|(.*m4a)|(.*wav)");
-    return matcher;
-  }
+  static QRegExp getMusicFileMatcher();
+
+  static QStringList availableMusicTypes();
 
   //@}
 }; 

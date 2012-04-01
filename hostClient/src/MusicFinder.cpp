@@ -18,30 +18,93 @@
  */
 #include "MusicFinder.hpp"
 #include <QRegExp>
+#include <phonon/backendcapabilities.h>
+#include "ConfigDefs.hpp"
 
 namespace UDJ{
 
-
 QList<Phonon::MediaSource> MusicFinder::findMusicInDir(const QString& musicDir){
+  QRegExp fileMatcher = getMusicFileMatcher();
+  return findMusicInDirWithMatcher(musicDir, fileMatcher);
+}
+
+QList<Phonon::MediaSource> MusicFinder::findMusicInDirWithMatcher(
+    const QString& musicDir, const QRegExp& fileMatcher)
+{
   QList<Phonon::MediaSource> toReturn;
   QDir dir(musicDir);
   QFileInfoList potentialFiles = dir.entryInfoList(QDir::Dirs| QDir::Files | QDir::NoDotAndDotDot);
   QFileInfo currentFile;
   for(int i =0; i < potentialFiles.size(); ++i){
     currentFile = potentialFiles[i];
-    if(currentFile.isFile() && isMusicFile(currentFile)){
+    if(currentFile.isFile() && fileMatcher.exactMatch(currentFile.fileName())){
       toReturn.append(Phonon::MediaSource(currentFile.absoluteFilePath()));
     }
     else if(currentFile.isDir()){
-      toReturn.append(findMusicInDir(dir.absoluteFilePath(currentFile.absoluteFilePath())));
+      toReturn.append(findMusicInDirWithMatcher(
+            dir.absoluteFilePath(currentFile.absoluteFilePath()), fileMatcher));
     }
   }
   return toReturn;
 }
 
-bool MusicFinder::isMusicFile(const QFileInfo& file){
-  return getMusicFileMatcher().exactMatch(file.fileName());
+QRegExp MusicFinder::getMusicFileMatcher(){
+  QStringList availableTypes = availableMusicTypes();
+  QString matcherString="";
+  for(int i=0;i<availableTypes.size();++i){
+    if(i==availableTypes.size()-1){
+      matcherString += "(.*" + availableTypes.at(i) + ")";
+    }
+    else{
+      matcherString += "(.*" + availableTypes.at(i) + ")|";
+    }
+  }
+  DEBUG_MESSAGE("Matcher REGEX: " << matcherString.toStdString())
+  QRegExp matcher(matcherString);
+  return matcher;
 }
 
+QString MusicFinder::getMusicFileExtFilter(){
+  QStringList availableTypes = availableMusicTypes();
+  QString filterString="(";
+  for(int i=0;i<availableTypes.size();++i){
+    if(i==availableTypes.size()-1){
+      filterString += "*." + availableTypes.at(i);
+    }
+    else{
+      filterString += "*." + availableTypes.at(i) + " ";
+    }
+  }
+  filterString += ")";
+  DEBUG_MESSAGE("File Ext Filter: " << filterString.toStdString())
+  return filterString;
+}
+
+QStringList MusicFinder::availableMusicTypes(){
+  QStringList mimes = Phonon::BackendCapabilities::availableMimeTypes();
+  QStringList toReturn;
+  if(mimes.contains("audio/flac")){
+    toReturn.append("flac");
+  }
+  if(mimes.contains("audio/mp3")){
+    toReturn.append("mp3");
+  }
+  if(mimes.contains("audio/mp4")){
+    toReturn.append("mp4");
+  }
+  if(mimes.contains("audio/mp4")){
+    toReturn.append("mp4");
+  }
+  if(mimes.contains("audio/m4a") || mimes.contains("applications/x-qt-m4a")){
+    toReturn.append("m4a");
+  }
+  if(mimes.contains("audio/wav")){
+    toReturn.append("wav");
+  }
+  if(mimes.contains("audio/ogg")){
+    toReturn.append("wav");
+  }
+  return toReturn;
+}
 
 } //end namespace
