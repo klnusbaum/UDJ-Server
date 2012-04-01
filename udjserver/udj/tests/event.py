@@ -263,6 +263,15 @@ class TestPutAvailableMusic(User2TestCase):
     AvailableSong.objects.get(
       song__host_lib_song_id=8, song__owning_user__id=2)
 
+  def testReaddDeleted(self):
+    toAdd = [11]
+    response = self.doJSONPut(
+      '/udj/events/2/available_music', json.dumps(toAdd),
+      headers={getDjangoUUIDHeader() : "20000000000000000000000000000000"})
+    readdedSong = AvailableSong.objects.get(
+      song__host_lib_song_id=11, event__id=2)
+    self.assertTrue(readdedSong.state, u'AC')
+
 class TestCantPutAvailableMusic(User3TestCase):
   def testPut(self):
    toAdd=[7]
@@ -273,9 +282,9 @@ class TestDeleteAvailableMusic(User2TestCase):
   def testRemove(self):
     response = self.doDelete('/udj/events/2/available_music/3')
     self.assertEqual(response.status_code, 200, response.content)
-    foundSongs = AvailableSong.objects.filter(
+    foundSongs = AvailableSong.objects.get(
       song__host_lib_song_id=3, song__owning_user__id=2)
-    self.assertFalse(foundSongs.exists())
+    self.assertTrue(foundSongs.state, 'RM')
 
   def testBadRemove(self):
     response = self.doDelete('/udj/events/2/available_music/400')
@@ -284,6 +293,9 @@ class TestDeleteAvailableMusic(User2TestCase):
   def testRemoveSongAlsoUsedInPreviousEvent(self):
     response = self.doDelete('/udj/events/2/available_music/1')
     self.assertEqual(response.status_code, 200, response.content)
+    foundSongs = AvailableSong.objects.get(
+      song__host_lib_song_id=1, event__id=2)
+    self.assertTrue(foundSongs.state, 'RM')
 
 
 

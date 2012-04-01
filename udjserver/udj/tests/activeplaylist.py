@@ -146,6 +146,15 @@ class AddSongToPlaylistTests(User2TestCase):
       self.doJSONPut('/udj/events/2/active_playlist/songs', json.dumps(payload))
     self.assertEqual(response.status_code, 404)
 
+  def testAddRemovedAvailableSong(self):
+    request_id = 5
+    payload = [{'lib_id' :  8 , 'client_request_id' : 5}]
+    response = \
+      self.doJSONPut('/udj/events/2/active_playlist/songs', json.dumps(payload))
+    self.assertEqual(response.status_code, 201)
+    shouldBeRemoved = ActivePlaylistEntry.objects.get(client_request_id=5, adder__id=2, event__id=2)
+    self.assertEqual(shouldBeRemoved.state, u'RM')
+
 class AddSongToPlaylist2Tests(User2TestCase):
   def testAlreadyPlayed(self):
     request_id = 1

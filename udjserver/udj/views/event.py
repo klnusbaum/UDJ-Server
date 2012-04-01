@@ -181,14 +181,14 @@ def getAvailableMusic(request, event_id):
     return HttpResponseBadRequest('Must specify query')
   query = request.GET.__getitem__('query')
   available_songs = AvailableSong.objects.filter(
-    event__id=event_id, song__owning_user=event.host)
+    event__id=event_id, song__owning_user=event.host).exclude(state=u'RM')
   available_songs = available_songs.filter(
     Q(song__title__icontains=query) |
     Q(song__artist__icontains=query) |
     Q(song__album__icontains=query))
   if(request.GET.__contains__('max_results')):
     available_songs = available_songs[:request.GET['max_results']]
-    
+
   return getJSONResponse(getJSONForAvailableSongs(available_songs))
 
 @NeedsAuth
@@ -212,7 +212,7 @@ def addToAvailableMusic(request, event_id):
     songToAdd = LibraryEntry.objects.get(
       host_lib_song_id=song_id, owning_user=event.host, machine_uuid=uuid)
     addedSong , created = AvailableSong.objects.get_or_create(
-      event=event, song=songToAdd)
+        event=event, song=songToAdd, defaults={'state': u'AC'})
     added.append(song_id)
 
   return getJSONResponse(json.dumps(added), status=201)
@@ -221,7 +221,11 @@ def addToAvailableMusic(request, event_id):
 @AcceptsMethods('DELETE')
 @IsEventHost
 def removeFromAvailableMusic(request, event_id, song_id):
-  host = getUserForTicket(request)
+  toRemove = get_object_or_404(AvailableSong, song__host_lib_song_id=song_id, event__id=event_id)
+  toRemove.state = u'RM'
+  toRemove.save()
+  return HttpResponse()
+  """
   try:
     AvailableSong.objects.get(
       song__host_lib_song_id=song_id,
@@ -230,6 +234,7 @@ def removeFromAvailableMusic(request, event_id, song_id):
   except ObjectDoesNotExist:
     return HttpResponseNotFound("id " + str(song_id) + " doesn't exist")
   return HttpResponse()
+  """
 
 
 @csrf_exempt
