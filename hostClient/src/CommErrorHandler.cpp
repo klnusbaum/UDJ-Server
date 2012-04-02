@@ -111,6 +111,11 @@ void CommErrorHandler::handleCommError(
         " another event. Please end that one before creating a new one."));
     }
   }
+  else if(errorType == NOT_FOUND_ERROR){
+    if(opType == LIB_SONG_DELETE){
+      
+    }
+  }
   else if(errorType == UNKNOWN_ERROR || errorType == SERVER_ERROR){
     if(opType == CREATE_EVENT){
       emit eventCreationFailed(tr("We're currently experiencing technical "

@@ -341,7 +341,16 @@ bool UDJServerConnection::checkReplyAndFireErrors(
     payload = potentialPayload.toByteArray();
   }
 
-  if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 403){
+  if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 404 &&
+      opType==CommErrorHandler::LIB_SONG_DELETE)
+  {
+    return false;
+  }
+  else if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 404){
+    emit commError(opType, CommErrorHandler::NOT_FOUND_ERROR, payload);
+    return true;
+  }
+  else if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 403){
     emit commError(opType, CommErrorHandler::AUTH, payload);
     return true;
   }
