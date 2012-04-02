@@ -312,6 +312,9 @@ void DataStore::removeSongsFromLibrary(std::vector<library_song_id_t> toRemove){
     emit libSongsModified();
     syncLibrary();
   }
+  if(isCurrentlyHosting()){
+    removeSongsFromAvailableMusic(toRemove);
+  }
 }
 
 void DataStore::addSongToAvailableSongs(library_song_id_t toAdd){
@@ -370,7 +373,7 @@ void DataStore::removeSongsFromAvailableMusic(
     " WHERE "  + getAvailableEntryLibIdColName() + " = ? ;");
   bulkUpdate.addBindValue(toDelete);
 
-  EXEC_BULK_QUERY("Error inserting songs into add queue for active playlist", 
+  EXEC_BULK_QUERY("Error Removing songs from available music", 
     bulkUpdate)
   if(bulkUpdate.lastError().type() == QSqlError::NoError){
     syncAvailableMusic();

@@ -285,6 +285,8 @@ class TestDeleteAvailableMusic(User2TestCase):
     foundSongs = AvailableSong.objects.get(
       song__host_lib_song_id=3, song__owning_user__id=2)
     self.assertTrue(foundSongs.state, 'RM')
+    shouldBeRemoved = ActivePlaylistEntry.objects.get(pk=4)
+    self.assertTrue(shouldBeRemoved.state, u'RM')
 
   def testBadRemove(self):
     response = self.doDelete('/udj/events/2/available_music/400')

@@ -224,17 +224,8 @@ def removeFromAvailableMusic(request, event_id, song_id):
   toRemove = get_object_or_404(AvailableSong, song__host_lib_song_id=song_id, event__id=event_id)
   toRemove.state = u'RM'
   toRemove.save()
+  ActivePlaylistEntry.objects.filter(song__host_lib_song_id=song_id, event__id=event_id).update(state=u'RM')
   return HttpResponse()
-  """
-  try:
-    AvailableSong.objects.get(
-      song__host_lib_song_id=song_id,
-      song__owning_user=host,
-      event__id=event_id).delete()
-  except ObjectDoesNotExist:
-    return HttpResponseNotFound("id " + str(song_id) + " doesn't exist")
-  return HttpResponse()
-  """
 
 
 @csrf_exempt
