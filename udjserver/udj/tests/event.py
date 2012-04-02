@@ -205,6 +205,11 @@ class TestGetAvailableMusic(User3TestCase):
     self.verifyJSONResponse(response)
     results = json.loads(response.content)
 
+  def testBlankSearch(self):
+    response = self.doGet(
+      '/udj/events/2/available_music?query=')
+    self.assertEqual(response.status_code, 400, response.content)
+
 class TestPutAvailableMusic(User2TestCase):
   def testSimplePut(self): 
     toAdd=[6]

@@ -180,6 +180,8 @@ def getAvailableMusic(request, event_id):
   if(not request.GET.__contains__('query')):
     return HttpResponseBadRequest('Must specify query')
   query = request.GET.__getitem__('query')
+  if query=='':
+    return HttpResponseBadRequest('Blank searches not allowed')
   available_songs = AvailableSong.objects.filter(
     event__id=event_id, song__owning_user=event.host).exclude(state=u'RM')
   available_songs = available_songs.filter(
