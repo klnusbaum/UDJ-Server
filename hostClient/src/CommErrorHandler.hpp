@@ -36,6 +36,7 @@ public:
     AUTH,
     CONFLICT,
     SERVER_ERROR,
+    NOT_FOUND_ERROR,
     UNKNOWN_ERROR
   };
 
