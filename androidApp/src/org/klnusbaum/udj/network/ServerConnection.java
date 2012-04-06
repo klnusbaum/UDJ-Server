@@ -114,7 +114,7 @@ public class ServerConnection{
 
   private static final String SERVER_HOST = "udjevents.com";
 
-  private static final String API_VERSION = "0.2";
+  private static final String API_VERSION = "0.1";
 
 
   private static final String TICKET_HASH_HEADER = "X-Udj-Ticket-Hash";
@@ -179,6 +179,9 @@ public class ServerConnection{
     post.addHeader(API_VERSION_HEADER, API_VERSION);
     post.setEntity(entity);
     final HttpResponse resp = getHttpClient().execute(post);
+    Log.d(TAG, "Auth Status code was " + resp.getStatusLine().getStatusCode());
+    final String response = EntityUtils.toString(resp.getEntity());
+    Log.d(TAG, "Auth Response was " + response);
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_IMPLEMENTED){
       throw new APIVersionException();
     }
