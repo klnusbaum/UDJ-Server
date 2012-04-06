@@ -5,6 +5,7 @@ from udj.tests.testhelpers import User3TestCase
 from udj.tests.testhelpers import User4TestCase
 from udj.tests.testhelpers import User5TestCase
 from udj.tests.testhelpers import User8TestCase
+from udj.models import EventPassword
 from udj.models import Event
 from udj.models import EventEndTime
 from udj.models import LibraryEntry
@@ -51,6 +52,23 @@ class CreateEventTest(User5TestCase):
     addedEvent = Event.objects.get(pk=givenEventId)
     self.assertEqual(addedEvent.name, partyName)
     partyHost = EventGoer.objects.get(event=addedEvent, user__id=self.user_id)
+
+  def testCreatePasswordEvent(self):
+    eventName = "A Bitchn' Party"
+    eventPassword = 'dog'
+    event = {
+      'name' : eventName,
+      'password' : eventPassword
+    }
+    response = self.doJSONPut('/udj/events/event', json.dumps(event))
+    self.assertEqual(response.status_code, 201, "Error: " + response.content)
+    self.verifyJSONResponse(response)
+    givenEventId = json.loads(response.content)['event_id']
+    addedEvent = Event.objects.get(pk=givenEventId)
+    self.assertEqual(addedEvent.name, eventName)
+    partyHost = EventGoer.objects.get(event=addedEvent, user__id=self.user_id)
+    password = EventPassword.objects.get(event__id=givenEventId)
+
 
 
 

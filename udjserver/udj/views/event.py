@@ -95,7 +95,7 @@ def createEvent(request):
 
   if 'password' in event:
     m = hashlib.sha1()
-    m.update(event[password])
+    m.update(event['password'])
     EventPassword(event=newEvent, password_hash=m.hexdigest()).save()
 
   hostInsert = EventGoer(user=user, event=newEvent)
