@@ -32,8 +32,9 @@ class DoesServerOpsTestCase(TestCase):
       data=payload, content_type='text/json',
       **headers)
 
-  def doPut(self, url):
-   return self.client.put(url, **{getDjangoTicketHeader() : self.ticket_hash})
+  def doPut(self, url, headers={}):
+    headers[getDjangoTicketHeader()] = self.ticket_hash
+    return self.client.put(url, **headers)
 
   def doGet(self, url):
     return self.client.get(url, **{getDjangoTicketHeader() : self.ticket_hash})

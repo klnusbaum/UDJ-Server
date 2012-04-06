@@ -43,6 +43,8 @@ from udj.JSONCodecs import getActivePlaylistEntryDictionary
 from udj.utils import getJSONResponse
 from udj.headers import getGoneResourceHeader
 from udj.headers import getDjangoUUIDHeader
+from udj.headers import getEventPasswordHeader
+from udj.headers import getDjangoEventPasswordHeader;
 
 
 def getEventHost(event_id):
@@ -58,7 +60,7 @@ def getEvents(request):
     state=u'AC')
   events_json = getJSONForEvents(events)
   return getJSONResponse(events_json)
-  
+
 
 @NeedsAuth
 @AcceptsMethods('GET')
@@ -93,9 +95,9 @@ def createEvent(request):
 
   if 'password' in event:
     m = hashlib.sha1()
-    m.update(event[password])
+    m.update(event['password'])
     EventPassword(event=newEvent, password_hash=m.hexdigest()).save()
-  
+
   hostInsert = EventGoer(user=user, event=newEvent)
   hostInsert.save()
   return getJSONResponse('{"event_id" : ' + str(newEvent.id) + '}', status=201)
@@ -134,8 +136,27 @@ def joinOrLeaveEvent(request, event_id, user_id):
   elif request.method == 'DELETE':
     return leaveEvent(request, event_id=event_id, user_id=user_id)
 
+def authEvent(request, event_id):
+  password = EventPassword.objects.filter(event__id=event_id)
+
+  if password.exists():
+    if getDjangoEventPasswordHeader() in request.META:
+      givenPassword = request.META[getDjangoEventPasswordHeader()]
+      m = hashlib.sha1()
+      m.update(givenPassword)
+      hashedPassword = m.hexdigest()
+      if hashedPassword == password[0].password_hash:
+        return True, None
+    return False, HttpResponseNotFound()
+  else:
+    return True, None
+
 @IsntInOtherEvent
 def joinEvent(request, event_id, user_id):
+
+  authSuccessfull, httpResponse = authEvent(request, event_id)
+  if not authSuccessfull:
+    return httpResponse
 
   event_to_join = Event.objects.get(pk=event_id)
   if event_to_join.state == u'FN':
@@ -146,7 +167,7 @@ def joinEvent(request, event_id, user_id):
   joining_user = User.objects.get(pk=user_id)
   event_goer , created = EventGoer.objects.get_or_create(
     user=joining_user, event=event_to_join)
-  
+
   #needed in case the user has logged out and is now logging back in
   if not created:
     event_goer.state=u'IE'

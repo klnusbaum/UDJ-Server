@@ -5,6 +5,7 @@ from udj.tests.testhelpers import User3TestCase
 from udj.tests.testhelpers import User4TestCase
 from udj.tests.testhelpers import User5TestCase
 from udj.tests.testhelpers import User8TestCase
+from udj.models import EventPassword
 from udj.models import Event
 from udj.models import EventEndTime
 from udj.models import LibraryEntry
@@ -14,7 +15,7 @@ from udj.models import ActivePlaylistEntry
 from udj.models import AvailableSong
 from decimal import Decimal
 from datetime import datetime
-from udj.headers import getGoneResourceHeader, getDjangoUUIDHeader
+from udj.headers import getGoneResourceHeader, getDjangoUUIDHeader, getDjangoEventPasswordHeader
 
 class GetEventsTest(User5TestCase):
   def testGetNearbyEvents(self):
@@ -25,7 +26,6 @@ class GetEventsTest(User5TestCase):
     self.verifyJSONResponse(response)
     events = json.loads(response.content)
     self.assertEqual(len(events), 2)
-
 
   def testGetEvents(self):
     response = self.doGet('/udj/events?name=empty')
@@ -52,6 +52,23 @@ class CreateEventTest(User5TestCase):
     addedEvent = Event.objects.get(pk=givenEventId)
     self.assertEqual(addedEvent.name, partyName)
     partyHost = EventGoer.objects.get(event=addedEvent, user__id=self.user_id)
+
+  def testCreatePasswordEvent(self):
+    eventName = "A Bitchn' Party"
+    eventPassword = 'dog'
+    event = {
+      'name' : eventName,
+      'password' : eventPassword
+    }
+    response = self.doJSONPut('/udj/events/event', json.dumps(event))
+    self.assertEqual(response.status_code, 201, "Error: " + response.content)
+    self.verifyJSONResponse(response)
+    givenEventId = json.loads(response.content)['event_id']
+    addedEvent = Event.objects.get(pk=givenEventId)
+    self.assertEqual(addedEvent.name, eventName)
+    partyHost = EventGoer.objects.get(event=addedEvent, user__id=self.user_id)
+    password = EventPassword.objects.get(event__id=givenEventId)
+
 
 
 
@@ -110,7 +127,20 @@ class JoinEventTest(User5TestCase):
     self.assertEqual(response[getGoneResourceHeader()], "event")
     shouldntBeThere = EventGoer.objects.filter(event__id=1, user__id=5)
     self.assertFalse(shouldntBeThere.exists())
-    
+
+  def testPassword(self):
+    response = self.doPut(
+      '/udj/events/6/users/5',
+      headers={getDjangoEventPasswordHeader() : 'udj'})
+    self.assertEqual(response.status_code, 201, response.content)
+
+  def testBadPassword(self):
+    response = self.doPut(
+      '/udj/events/6/users/5',
+      headers={getDjangoEventPasswordHeader() : 'wrong'})
+    self.assertEqual(response.status_code, 404, response.content)
+
+
 class LeaveEventTest(User3TestCase):
   def testLeaveEvent(self):
     response = self.doDelete('/udj/events/2/users/3')
@@ -124,8 +154,6 @@ class LeaveEndedEventTest(User8TestCase):
     self.assertEqual(response.status_code, 200, response.content)
     event_goer_entries = EventGoer.objects.get(
       event__id=1, user__id=8, state=u'LE')
-  
-    
 
 
 #Disabling this for now. We'll come back to it later.
