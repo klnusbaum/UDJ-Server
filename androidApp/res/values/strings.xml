@@ -81,6 +81,8 @@
   <string name="song_remove_failed_title">Removing Song(s) Failed</string>
   <string name="song_remove_failed_content">Tap here to retry</string>
   <string name="api_version_error_message">This Version of UDJ no longer works. Please download the latest update for it.</string>
+  <string name="event_label">Event:</string>
+  <string name="event_password">Event Password</string>
 
 
 <!-- Stuff for action bar compatibility -->

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import android.util.Log;
+import android.os.Bundle;
 
 public class Event{
   public static final String ID_PARAM ="id";
@@ -138,6 +139,29 @@ public class Event{
       toReturn.add(Event.valueOf(array.getJSONObject(i)));
     }
     return toReturn;
+  }
+
+  public Bundle bundleUp(){
+    Bundle toReturn = new Bundle();
+    toReturn.putLong(ID_PARAM, getEventId());
+    toReturn.putString(NAME_PARAM, getName());
+    toReturn.putString(HOST_NAME_PARAM, getHostName());
+    toReturn.putLong(HOST_ID_PARAM, getHostId());
+    toReturn.putDouble(LATITUDE_PARAM, getLatitude());
+    toReturn.putDouble(LONGITUDE_PARAM, getLongitude());
+    toReturn.putBoolean(HAS_PASSWORD_PARAM, getHasPassword());
+    return toReturn;
+  }
+
+  public static Event unbundle(Bundle toUnbundle){
+    return new Event(
+      toUnbundle.getLong(ID_PARAM),
+      toUnbundle.getString(NAME_PARAM),
+      toUnbundle.getString(HOST_NAME_PARAM),
+      toUnbundle.getLong(HOST_ID_PARAM),
+      toUnbundle.getDouble(LATITUDE_PARAM),
+      toUnbundle.getDouble(LONGITUDE_PARAM),
+      toUnbundle.getBoolean(HAS_PASSWORD_PARAM));
   }
 
 }
