@@ -36,6 +36,7 @@ public class Event{
   public static final String HOST_ID_PARAM="host_id";
   public static final String LATITUDE_PARAM="latitude";
   public static final String LONGITUDE_PARAM="longitude";
+  public static final String HAS_PASSWORD_PARAM="has_password";
 
   private long eventId;
   private String name;
@@ -43,6 +44,7 @@ public class Event{
   private long hostId;
   private double latitude;
   private double longitude;
+  private boolean hasPassword;
 
 
   public Event(
@@ -51,7 +53,8 @@ public class Event{
     String hostName,
     long hostId, 
     double latitude, 
-    double longitude)
+    double longitude,
+    boolean hasPassword)
   {
     this.eventId = eventId;
     this.name = name;
@@ -59,6 +62,7 @@ public class Event{
     this.hostId = hostId;
     this.latitude = latitude;
     this.longitude = longitude;
+    this.hasPassword = hasPassword;
   }
 
   public long getEventId(){
@@ -85,6 +89,10 @@ public class Event{
     return longitude;
   }
 
+  public boolean getHasPassword(){
+    return hasPassword;
+  }
+
   public static Event valueOf(JSONObject jObj)
     throws JSONException 
   {
@@ -94,7 +102,8 @@ public class Event{
       jObj.getString(HOST_NAME_PARAM),
       jObj.getLong(HOST_ID_PARAM),
       jObj.optDouble(LATITUDE_PARAM, -100.0),
-      jObj.optDouble(LONGITUDE_PARAM, -100.0));
+      jObj.optDouble(LONGITUDE_PARAM, -100.0),
+      jObj.getBoolean(HAS_PASSWORD_PARAM));
   }
 
   public static JSONObject getJSONObject(Event event)
@@ -107,6 +116,7 @@ public class Event{
     toReturn.put(HOST_ID_PARAM, event.getHostId());
     toReturn.put(LATITUDE_PARAM, event.getLatitude());
     toReturn.put(LONGITUDE_PARAM, event.getLongitude());
+    toReturn.put(HAS_PASSWORD_PARAM, event.getHasPassword());
     return toReturn;
   }
 
@@ -118,8 +128,8 @@ public class Event{
       toReturn.put(getJSONObject(event));
     }
     return toReturn;
-  } 
-  
+  }
+
   public static ArrayList<Event> fromJSONArray(JSONArray array)
     throws JSONException
   {
