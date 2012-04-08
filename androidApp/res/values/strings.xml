@@ -83,6 +83,8 @@
   <string name="api_version_error_message">This Version of UDJ no longer works. Please download the latest update for it.</string>
   <string name="event_label">Event:</string>
   <string name="event_password">Event Password</string>
+  <string name="unknown_auth_error">We\'re currently having difficulties.</string>
+  <string name="check_updates">Check For Updates</string>
 
 
 <!-- Stuff for action bar compatibility -->

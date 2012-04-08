@@ -147,6 +147,7 @@ public class ServerConnection{
     return httpClient;
   }
 
+
   public static class AuthResult{
     public String ticketHash;
     public long userId;
