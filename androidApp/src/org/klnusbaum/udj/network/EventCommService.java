@@ -95,6 +95,8 @@ public class EventCommService extends IntentService{
 
     long userId, eventId;
     String authToken;
+    String password = "";
+    boolean hasPassword = false;
     //TODO hanle error if account isn't provided
     try{
       userId = 
@@ -102,8 +104,16 @@ public class EventCommService extends IntentService{
       //TODO handle if event id isn't provided
       authToken = am.blockingGetAuthToken(account, "", true);  
       eventId = intent.getLongExtra(
-        Constants.EVENT_ID_EXTRA, 
+        Constants.EVENT_ID_EXTRA,
         Constants.NO_EVENT_ID);
+      if(intent.hasExtra(Constants.EVENT_PASSWORD_EXTRA)){
+        Log.d(TAG, "password given for event");
+        hasPassword = true;
+        password = intent.getStringExtra(Constants.EVENT_PASSWORD_EXTRA);
+      }
+      else{
+        Log.d(TAG, "No password given for event");
+      }
     }
     catch(OperationCanceledException e){
       Log.e(TAG, "Operation canceled exception in EventCommService" );
@@ -122,10 +132,15 @@ public class EventCommService extends IntentService{
     }
 
     try{
-      ServerConnection.joinEvent(eventId, userId, authToken);
+      if(!hasPassword){
+        ServerConnection.joinEvent(eventId, userId, authToken);
+      }
+      else{
+        ServerConnection.joinEvent(eventId, userId, password, authToken);
+      }
       setEventData(intent, am, account);
       ContentResolver cr = getContentResolver();
-      UDJEventProvider.eventCleanup(cr);          
+      UDJEventProvider.eventCleanup(cr);
       HashMap<Long,Long> previousRequests = ServerConnection.getAddRequests(
         userId, eventId, authToken);
       UDJEventProvider.setPreviousAddRequests(cr, previousRequests);

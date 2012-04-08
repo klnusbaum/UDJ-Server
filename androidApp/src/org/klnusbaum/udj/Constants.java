@@ -59,6 +59,8 @@ public class Constants{
   public static final String EVENT_LAT_EXTRA = "org.klnusbaum.udj.EventLat";
   public static final String EVENT_LONG_EXTRA = "org.klnusbaum.udj.EventLong";
   public static final String EVENT_JOIN_ERROR_EXTRA = "org.klnusbaum.udj.EventJoinError";
+  public static final String EVENT_EXTRA = "org.klnusbaum.udj.Event";
+  public static final String EVENT_PASSWORD_EXTRA = "org.klnusbaum.udj.EventPassword";
 
 
   /** Constants for actions used throughout */

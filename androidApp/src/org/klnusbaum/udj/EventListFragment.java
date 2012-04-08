@@ -66,6 +66,8 @@ public class EventListFragment extends ListFragment implements
   LoaderManager.LoaderCallbacks<EventsLoader.EventsLoaderResult>,
   LocationListener
 {
+
+
   private static final String TAG = "EventListFragment";
   private static final String PROG_DIALOG_TAG = "prog_dialog";
   private static final String EVENT_JOIN_FAIL_TAG = "prog_dialog";
@@ -78,7 +80,8 @@ public class EventListFragment extends ListFragment implements
     "org.klnusbaum.udj.LastKnownLocation";
   private static final String LAST_SEARCH_TYPE_EXTRA = 
     "org.klnusbaum.udj.LastSearchType";
-  private static final int ACCOUNT_CREATION = 0;
+  private static final int ACCOUNT_CREATION_REQUEST_CODE = 0;
+  private static final int GET_PASSWORD_REQUEST_CODE = 1;
 
   private interface EventSearch{
     public abstract Bundle getLoaderArgs();
@@ -168,7 +171,7 @@ public class EventListFragment extends ListFragment implements
     Log.d(TAG, "Accounts length was " + udjAccounts.length);
     if(udjAccounts.length < 1){
       Intent getAccountIntent = new Intent(getActivity(), AuthActivity.class);
-      startActivityForResult(getAccountIntent, ACCOUNT_CREATION);
+      startActivityForResult(getAccountIntent, ACCOUNT_CREATION_REQUEST_CODE);
       return;
     }
     else if(udjAccounts.length == 1){
@@ -218,13 +221,22 @@ public class EventListFragment extends ListFragment implements
     int requestCode, int resultCode, Intent data)
   {
     switch(requestCode){
-    case ACCOUNT_CREATION:
+    case ACCOUNT_CREATION_REQUEST_CODE:
       if(resultCode == Activity.RESULT_OK){
         account = (Account)data.getParcelableExtra(Constants.ACCOUNT_EXTRA);
       }
       else{
         getActivity().setResult(Activity.RESULT_CANCELED);
         getActivity().finish();
+      }
+      break;
+    case GET_PASSWORD_REQUEST_CODE: 
+      Log.d(TAG, "Got Password request back");
+      if(resultCode == Activity.RESULT_OK){
+        Log.d(TAG, "request code was ok");
+        String eventPassword = data.getStringExtra(Constants.EVENT_PASSWORD_EXTRA);
+        Event toJoin = Event.unbundle(data.getBundleExtra(Constants.EVENT_EXTRA));
+        joinEvent(toJoin, eventPassword);
       }
       break;
     }
@@ -321,36 +333,58 @@ public class EventListFragment extends ListFragment implements
 
   @Override
   public void onListItemClick(ListView l, View v, int position, long id){
+    Event toJoin = (Event)eventAdapter.getItem(position);
+    if(toJoin.getHasPassword()){
+      getPasswordForEvent(toJoin);
+    }
+    else{
+      joinEvent(toJoin);
+    }
+  }
+
+  public void getPasswordForEvent(Event toJoin){
+    Bundle eventBundle = toJoin.bundleUp();
+    Intent getPasswordIntent = new Intent(getActivity(), EventPasswordActivity.class);
+    getPasswordIntent.putExtra(Constants.EVENT_EXTRA, eventBundle);
+    startActivityForResult(getPasswordIntent, GET_PASSWORD_REQUEST_CODE);
+  }
+
+  public void joinEvent(Event toJoin){
+    joinEvent(toJoin, "");
+  }
+
+  public void joinEvent(Event toJoin, String password){
+    Log.d(TAG, "Joining Event");
     am.setUserData(
-      account, 
-      Constants.EVENT_STATE_DATA, 
+      account,
+      Constants.EVENT_STATE_DATA,
       String.valueOf(Constants.JOINING_EVENT));
     showProgress();
     Intent joinEventIntent = new Intent(
-      Intent.ACTION_INSERT, 
-      Constants.EVENT_URI, 
-      getActivity(), 
+      Intent.ACTION_INSERT,
+      Constants.EVENT_URI,
+      getActivity(),
       EventCommService.class);
-    Event toJoin = (Event)eventAdapter.getItem(position);
     joinEventIntent.putExtra(
-      Constants.EVENT_ID_EXTRA, 
+      Constants.EVENT_ID_EXTRA,
       toJoin.getEventId());
     joinEventIntent.putExtra(
-      Constants.EVENT_NAME_EXTRA, 
+      Constants.EVENT_NAME_EXTRA,
       toJoin.getName());
     joinEventIntent.putExtra(
-      Constants.EVENT_HOSTNAME_EXTRA, 
+      Constants.EVENT_HOSTNAME_EXTRA,
       toJoin.getHostName());
     joinEventIntent.putExtra(
-      Constants.EVENT_HOST_ID_EXTRA, 
+      Constants.EVENT_HOST_ID_EXTRA,
       toJoin.getHostId());
     joinEventIntent.putExtra(
       Constants.EVENT_LAT_EXTRA,
       toJoin.getLatitude());
     joinEventIntent.putExtra(
-      Constants.EVENT_LONG_EXTRA, 
+      Constants.EVENT_LONG_EXTRA,
       toJoin.getLongitude());
     joinEventIntent.putExtra(Constants.ACCOUNT_EXTRA, account);
+    joinEventIntent.putExtra(Constants.EVENT_PASSWORD_EXTRA, password);
     getActivity().startService(joinEventIntent);
   }
 

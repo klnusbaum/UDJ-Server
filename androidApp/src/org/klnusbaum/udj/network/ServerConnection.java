@@ -24,6 +24,8 @@ import android.database.Cursor;
 
 import java.util.List;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,6 +40,7 @@ import java.security.cert.CertificateException;
 
 
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.HttpVersion;
 import org.apache.http.Header;
 import org.apache.http.conn.scheme.Scheme;
@@ -118,6 +121,7 @@ public class ServerConnection{
   private static final String USER_ID_HEADER = "X-Udj-User-Id";
   private static final String GONE_RESOURCE_HEADER = "X-Udj-Gone-Resource";
   private static final String API_VERSION_HEADER = "X-Udj-Api-Version";
+  private static final String EVENT_PASSWORD_HEADER = "X-Udj-Event-Password";
 
 
   private static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
@@ -262,11 +266,20 @@ public class ServerConnection{
   public static HttpResponse doPut(URI uri, String ticketHash, String payload)
     throws IOException
   {
+    return doPut(uri, ticketHash, payload, new HashSet<Header>());
+  }
+
+  public static HttpResponse doPut(URI uri, String ticketHash, String payload, Set<Header> headers)
+    throws IOException
+  {
     Log.d(TAG, "Doing put to uri: " + uri);
     Log.d(TAG, "Put payload is: "+ (payload != null ? payload : "no payload"));
     String toReturn = null;
     final HttpPut put = new HttpPut(uri);
     put.addHeader(TICKET_HASH_HEADER, ticketHash);
+    for(Header h: headers){
+      put.addHeader(h);
+    }
     if(payload != null){
       StringEntity entity = new StringEntity(payload);
       entity.setContentType("text/json");
@@ -426,12 +439,28 @@ public class ServerConnection{
     throws IOException, AuthenticationException, EventOverException, 
     AlreadyInEventException, JSONException, ParseException
   {
+    joinEvent(eventId, userId, "", ticketHash);
+  }
+
+
+  public static void joinEvent(long eventId, long userId, String password, String ticketHash)
+    throws IOException, AuthenticationException, EventOverException,
+    AlreadyInEventException, JSONException, ParseException
+  {
     try{
       URI uri  = new URI(
         NETWORK_PROTOCOL, null, SERVER_HOST, SERVER_PORT, 
         "/udj/events/" + eventId + "/users/"+userId,
         null, null);
-      final HttpResponse resp = doPut(uri, ticketHash, "");
+      final HttpResponse resp;
+      if(password == null || password.equals("")){
+        resp = doPut(uri, ticketHash, "");
+      }
+      else{
+        final HashSet<Header> headers = new HashSet<Header>();
+        headers.add(new BasicHeader(EVENT_PASSWORD_HEADER, password));
+        resp = doPut(uri, ticketHash, "", headers);
+      }
       final String response = EntityUtils.toString(resp.getEntity());
       Log.d(TAG, "Event join Put response: \"" + response +"\"");
       evenJoinConflictCheck(resp, response, userId);

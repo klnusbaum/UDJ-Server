@@ -26,6 +26,8 @@ import android.widget.TextView;
 import android.widget.ImageButton;
 import android.database.DataSetObserver;
 import android.view.LayoutInflater;
+import android.widget.ImageView;
+import android.util.Log;
 
 import java.util.List;
 
@@ -33,6 +35,7 @@ import org.klnusbaum.udj.containers.Event;
 
 public class EventListAdapter implements ListAdapter{
 
+  public static final String TAG = "EventListAdapter";
   private List<Event> events;
   private Context context;
   private View.OnClickListener addClickListener;
@@ -111,6 +114,11 @@ public class EventListAdapter implements ListAdapter{
       (TextView)toReturn.findViewById(R.id.event_host_name);
     eventName.setText(event.getName());
     hostName.setText(event.getHostName());
+    if(event.getHasPassword()){
+      Log.d(TAG, "Unhidding lock");
+      ImageView lock = (ImageView)toReturn.findViewById(R.id.lock_icon);
+      lock.setVisibility(0);
+    }
     return toReturn;
   }
 
