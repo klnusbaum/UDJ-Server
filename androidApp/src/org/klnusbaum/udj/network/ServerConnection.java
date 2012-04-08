@@ -114,7 +114,7 @@ public class ServerConnection{
 
   private static final String SERVER_HOST = "udjevents.com";
 
-  private static final String API_VERSION = "0.1";
+  private static final String API_VERSION = "0.2";
 
 
   private static final String TICKET_HASH_HEADER = "X-Udj-Ticket-Hash";
