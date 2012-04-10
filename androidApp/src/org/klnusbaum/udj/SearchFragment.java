@@ -18,22 +18,14 @@
  */
 package org.klnusbaum.udj;
 
-import android.support.v4.app.ListFragment;
+import org.klnusbaum.udj.PullToRefresh.RefreshableListFragment;
+
+import android.accounts.Account;
+import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 
-import android.os.Bundle;
-import android.content.Intent;
-import android.content.ContentValues;
-import android.content.ContentResolver;
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.view.View;
-
-import org.klnusbaum.udj.network.PlaylistSyncService;
-import org.klnusbaum.udj.containers.LibraryEntry;
-
-public abstract class SearchFragment extends ListFragment
+public abstract class SearchFragment extends RefreshableListFragment
   implements LoaderManager.LoaderCallbacks<MusicSearchLoader.MusicSearchResult>
 {
   public static final int LIB_SEARCH_LOADER_TAG = 0;
@@ -64,10 +56,16 @@ public abstract class SearchFragment extends ListFragment
     return null;
   }
 
+  @Override
+	protected void doRefreshWork() {
+	  getLoaderManager().restartLoader(LIB_SEARCH_LOADER_TAG, null, this);
+  }
+  
   public void onLoadFinished(
     Loader<MusicSearchLoader.MusicSearchResult> loader,
     MusicSearchLoader.MusicSearchResult data)
   {
+	 refreshDone();
     if(data.getError() == MusicSearchLoader.MusicSearchError.NO_ERROR){
       searchAdapter = new MusicSearchAdapter(
         getActivity(),
