@@ -64,156 +64,149 @@ import org.klnusbaum.udj.network.EventCommService;
 /**
  * The main activity display class.
  */
-public class EventActivity extends EventEndedListenerActivity
-  implements LoaderManager.LoaderCallbacks<Cursor>
-{
-  private static final String QUIT_DIALOG_TAG = "quit_dialog";
-  private static final int CURRENT_SONG_LOADER_ID = 1;
-  private static final String TAG = "EventActivity";
+public class EventActivity extends EventEndedListenerActivity implements
+		LoaderManager.LoaderCallbacks<Cursor> {
+	private static final String QUIT_DIALOG_TAG = "quit_dialog";
+	private static final int CURRENT_SONG_LOADER_ID = 1;
+	private static final String TAG = "EventActivity";
 
-  private TextView currentSong;
+	private TextView currentSong;
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState){
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.event);
-    currentSong = (TextView)findViewById(R.id.current_song_title);
-    setCurrentSongDisplay(null);
-    //TODO hanle if no event
-    getPlaylistFromServer();    
-    getSupportLoaderManager().initLoader(CURRENT_SONG_LOADER_ID, null, this);
-  }
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.event);
+		currentSong = (TextView) findViewById(R.id.current_song_title);
+		setCurrentSongDisplay(null);
+		// TODO hanle if no event
+		getPlaylistFromServer();
+		getSupportLoaderManager()
+				.initLoader(CURRENT_SONG_LOADER_ID, null, this);
+	}
 
+	public void getPlaylistFromServer() {
+		int eventState = Utils.getEventState(this, account);
+		if (eventState == Constants.IN_EVENT) {
+			Intent getPlaylist = new Intent(Intent.ACTION_VIEW,
+					UDJEventProvider.PLAYLIST_URI, this,
+					PlaylistSyncService.class);
+			getPlaylist.putExtra(Constants.ACCOUNT_EXTRA, account);
+			startService(getPlaylist);
+		}
+	}
 
-  private void getPlaylistFromServer(){
-    int eventState = Utils.getEventState(this, account);
-    if(eventState == Constants.IN_EVENT){
-      Intent getPlaylist = new Intent(
-        Intent.ACTION_VIEW,
-        UDJEventProvider.PLAYLIST_URI,
-        this,
-        PlaylistSyncService.class);
-      getPlaylist.putExtra(Constants.ACCOUNT_EXTRA, account);
-      startService(getPlaylist);
-    }
-  } 
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		switch (id) {
+		case CURRENT_SONG_LOADER_ID:
+			return new CursorLoader(this, UDJEventProvider.CURRENT_SONG_URI,
+					new String[] { UDJEventProvider.TITLE_COLUMN }, null, null,
+					null);
+		default:
+			return null;
+		}
+	}
 
-  public Loader<Cursor> onCreateLoader(int id, Bundle args){
-    switch(id){
-    case CURRENT_SONG_LOADER_ID:
-      return new CursorLoader(
-        this,
-        UDJEventProvider.CURRENT_SONG_URI,
-        new String[]{UDJEventProvider.TITLE_COLUMN},
-        null,
-        null,
-        null);
-    default:
-      return null;
-    }
-  }
+	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+		if (loader.getId() == CURRENT_SONG_LOADER_ID) {
+			setCurrentSongDisplay(data);
+		}
+	}
 
-  public void onLoadFinished(Loader<Cursor> loader, Cursor data){
-    if(loader.getId()==CURRENT_SONG_LOADER_ID){
-      setCurrentSongDisplay(data);   
-    }
-  }
+	public void onLoaderReset(Loader<Cursor> loader) {
 
-  public void onLoaderReset(Loader<Cursor> loader){
-    
-  }
+	}
 
-  private void setCurrentSongDisplay(Cursor data){
-    if(data != null && data.moveToFirst()){
-      currentSong.setText(data.getString(data.getColumnIndex(
-        UDJEventProvider.TITLE_COLUMN)));
-    }
-    else{
-      currentSong.setText(R.string.no_current_song);
-    }
-  }
+	private void setCurrentSongDisplay(Cursor data) {
+		if (data != null && data.moveToFirst()) {
+			currentSong.setText(data.getString(data
+					.getColumnIndex(UDJEventProvider.TITLE_COLUMN)));
+		} else {
+			currentSong.setText(R.string.no_current_song);
+		}
+	}
 
-  public boolean onCreateOptionsMenu(Menu menu){
-    MenuInflater inflater = getMenuInflater();
-    inflater.inflate(R.menu.event, menu);
-    return true;
-  }
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.event, menu);
+		return true;
+	}
 
-  public boolean onOptionsItemSelected(MenuItem item){
-    switch (item.getItemId()) {
-    case R.id.menu_refresh:
-      getPlaylistFromServer();
-      return true;
-    case R.id.menu_search:
-      startSearch(null, false, null, false);
-      return true;
-    case R.id.menu_random:
-      doRandomSearch();
-      return true;
-    default:
-      return super.onOptionsItemSelected(item);
-    }
-  }
+	private PlaylistFragment getPlaylist() {
+		return ((PlaylistFragment) getSupportFragmentManager()
+				.findFragmentById(R.id.playlist));
+	}
 
-  protected void onNewIntent(Intent intent){
-    Log.d(TAG, "In on new intent");
-    if(Intent.ACTION_SEARCH.equals(intent.getAction())){
-      intent.setClass(this, MusicSearchActivity.class);
-      startActivityForResult(intent, 0);
-    }
-  }
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_refresh:
+			PlaylistFragment list = getPlaylist();
+			list.setListShown(false);
+			getPlaylistFromServer();
+			return true;
+		case R.id.menu_search:
+			startSearch(null, false, null, false);
+			return true;
+		case R.id.menu_random:
+			doRandomSearch();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
 
-  private void doRandomSearch(){
-    Intent randomIntent = new Intent(this, RandomSearchActivity.class);
-    startActivity(randomIntent);
-  }
+	protected void onNewIntent(Intent intent) {
+		Log.d(TAG, "In on new intent");
+		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+			intent.setClass(this, MusicSearchActivity.class);
+			startActivityForResult(intent, 0);
+		}
+	}
 
+	private void doRandomSearch() {
+		Intent randomIntent = new Intent(this, RandomSearchActivity.class);
+		startActivity(randomIntent);
+	}
 
+	@Override
+	public void onBackPressed() {
+		DialogFragment newFrag = new QuitDialogFragment();
+		newFrag.show(getSupportFragmentManager(), QUIT_DIALOG_TAG);
+	}
 
-  @Override 
-  public void onBackPressed(){
-    DialogFragment newFrag = new QuitDialogFragment();
-    newFrag.show(getSupportFragmentManager(), QUIT_DIALOG_TAG);
-  }
+	private void doQuit() {
+		AccountManager am = AccountManager.get(this);
+		am.setUserData(account, Constants.EVENT_STATE_DATA,
+				String.valueOf(Constants.LEAVING_EVENT));
+		Intent leaveEvent = new Intent(Intent.ACTION_DELETE,
+				Constants.EVENT_URI, this, EventCommService.class);
+		leaveEvent.putExtra(Constants.ACCOUNT_EXTRA, account);
+		startService(leaveEvent);
+		setResult(Activity.RESULT_OK);
+		finish();
+	}
 
-  private void doQuit(){
-    AccountManager am = AccountManager.get(this);
-    am.setUserData(
-      account, 
-      Constants.EVENT_STATE_DATA, 
-      String.valueOf(Constants.LEAVING_EVENT));
-    Intent leaveEvent = new Intent(
-      Intent.ACTION_DELETE,
-      Constants.EVENT_URI,
-      this,
-      EventCommService.class);
-    leaveEvent.putExtra(Constants.ACCOUNT_EXTRA, account);
-    startService(leaveEvent);
-    setResult(Activity.RESULT_OK);
-    finish();
-  }
+	public static class QuitDialogFragment extends DialogFragment {
 
-  public static class QuitDialogFragment extends DialogFragment{
-    
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState){
-      return new AlertDialog.Builder(getActivity())
-        .setTitle(R.string.quit_title)
-        .setMessage(R.string.quit_message)
-        .setPositiveButton(android.R.string.ok,
-          new DialogInterface.OnClickListener(){
-            public void onClick(DialogInterface dialog, int whichButton){
-              dismiss();
-              ((EventActivity)getActivity()).doQuit();
-            }
-          })
-        .setNegativeButton(android.R.string.cancel,
-          new DialogInterface.OnClickListener(){
-            public void onClick(DialogInterface dialog, int whichButton){
-              dismiss();
-            }
-          })
-        .create();
-    }
-  }
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			return new AlertDialog.Builder(getActivity())
+					.setTitle(R.string.quit_title)
+					.setMessage(R.string.quit_message)
+					.setPositiveButton(android.R.string.ok,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									dismiss();
+									((EventActivity) getActivity()).doQuit();
+								}
+							})
+					.setNegativeButton(android.R.string.cancel,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									dismiss();
+								}
+							}).create();
+		}
+	}
 }
