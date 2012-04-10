@@ -78,10 +78,13 @@ class LibraryEntry(models.Model):
     return "Library Entry " + str(self.host_lib_song_id) + ": " + self.title
 
 class AvailableSong(models.Model):
+  STATE_CHOICES = ((u'AC', u'Active'), (u'RM', 'Removed'),)
+
   song = models.ForeignKey(LibraryEntry)
   event = models.ForeignKey(Event)
+  state = models.CharField(max_length=3, choices=STATE_CHOICES, default=u'AC')
 
-  class Meta: 
+  class Meta:
     unique_together = ("song", "event")
 
   def __unicode__(self):

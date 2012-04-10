@@ -58,4 +58,14 @@
     android:layout_below="@id/event_item_name"
     android:layout_toRightOf="@id/event_host_label"
   />
+  <ImageView
+    android:id="@+id/lock_icon"
+    android:src="@drawable/ic_lock"
+    android:padding="2dp"
+    android:layout_width="16dp"
+    android:layout_height="16dp"
+    android:layout_alignParentRight="true"
+    android:layout_alignParentTop="true"
+    android:visibility="invisible"
+  />
 </RelativeLayout>

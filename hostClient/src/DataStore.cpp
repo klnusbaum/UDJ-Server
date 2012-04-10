@@ -252,6 +252,16 @@ void DataStore::addSongToLibrary(Phonon::MediaSource song){
     return;
   }
 
+  if(songName == ""){
+    songName = unknownSongTitle();
+  }
+  if(artistName == ""){
+    artistName = unknownSongArtist();
+  }
+  if(albumName == ""){
+    albumName = unknownSongAlbum();
+  }
+
   library_song_id_t hostId =-1;
   QSqlQuery addQuery(
     "INSERT INTO "+getLibraryTableName()+ 
@@ -301,6 +311,9 @@ void DataStore::removeSongsFromLibrary(std::vector<library_song_id_t> toRemove){
   if(bulkDelete.lastError().type() == QSqlError::NoError){
     emit libSongsModified();
     syncLibrary();
+  }
+  if(isCurrentlyHosting()){
+    removeSongsFromAvailableMusic(toRemove);
   }
 }
 
@@ -360,7 +373,7 @@ void DataStore::removeSongsFromAvailableMusic(
     " WHERE "  + getAvailableEntryLibIdColName() + " = ? ;");
   bulkUpdate.addBindValue(toDelete);
 
-  EXEC_BULK_QUERY("Error inserting songs into add queue for active playlist", 
+  EXEC_BULK_QUERY("Error Removing songs from available music", 
     bulkUpdate)
   if(bulkUpdate.lastError().type() == QSqlError::NoError){
     syncAvailableMusic();

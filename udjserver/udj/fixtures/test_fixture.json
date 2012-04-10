@@ -50,6 +50,24 @@
     }
   }, 
   {
+    "pk": 6, 
+    "model": "udj.event", 
+    "fields": {
+      "host": 11, 
+      "state": "AC", 
+      "name": "Password protected event", 
+      "time_started": "2011-12-18 20:39:41"
+    }
+  }, 
+  {
+    "pk": 1,
+    "model": "udj.eventpassword",
+    "fields":{
+      "event": 6,
+      "password_hash": "db73ddfeff891c664ef226caf202c52a9aa651f9"
+    }
+  },
+  {
     "pk" : 1,
     "model" : "udj.eventlocation",
     "fields":{
@@ -308,7 +326,8 @@
     "model": "udj.availablesong", 
     "fields": {
       "event": 2, 
-      "song": 1
+      "song": 1,
+      "state": "AC"
     }
   }, 
   {
@@ -316,7 +335,8 @@
     "model": "udj.availablesong", 
     "fields": {
       "event": 2, 
-      "song": 2
+      "song": 2,
+      "state": "AC"
     }
   }, 
   {
@@ -324,7 +344,8 @@
     "model": "udj.availablesong", 
     "fields": {
       "event": 2, 
-      "song": 3
+      "song": 3,
+      "state": "AC"
     }
   }, 
   {
@@ -332,7 +353,8 @@
     "model": "udj.availablesong", 
     "fields": {
       "event": 2, 
-      "song": 4
+      "song": 4,
+      "state": "AC"
     }
   }, 
   {
@@ -340,7 +362,8 @@
     "model": "udj.availablesong", 
     "fields": {
       "event": 2, 
-      "song": 5
+      "song": 5,
+      "state": "AC"
     }
   }, 
   {
@@ -348,7 +371,8 @@
     "model": "udj.availablesong", 
     "fields": {
       "event": 2, 
-      "song": 9
+      "song": 9,
+      "state": "AC"
     }
   }, 
   {
@@ -356,7 +380,8 @@
     "model": "udj.availablesong", 
     "fields": {
       "event": 2, 
-      "song": 10
+      "song": 10,
+      "state": "AC"
     }
   }, 
   {
@@ -364,7 +389,35 @@
     "model": "udj.availablesong", 
     "fields": {
       "event": 5, 
-      "song": 1
+      "song": 1,
+      "state": "AC"
+    }
+  }, 
+  {
+    "pk": 9, 
+    "model": "udj.availablesong", 
+    "fields": {
+      "event": 2, 
+      "song": 15,
+      "state": "RM"
+    }
+  }, 
+  {
+    "pk": 10, 
+    "model": "udj.availablesong", 
+    "fields": {
+      "event": 2, 
+      "song": 8,
+      "state": "RM"
+    }
+  }, 
+  {
+    "pk": 11, 
+    "model": "udj.availablesong", 
+    "fields": {
+      "event": 2, 
+      "song": 14,
+      "state": "RM"
     }
   }, 
   {
@@ -514,6 +567,16 @@
       "user": 4, 
       "time_joined": "2011-12-28 01:35:40", 
       "event": 3,
+      "state" : "IE"
+    }
+  }, 
+  {
+    "pk": 6, 
+    "model": "udj.eventgoer", 
+    "fields": {
+      "user": 11, 
+      "time_joined": "2011-12-18 20:39:41",
+      "event": 6,
       "state" : "IE"
     }
   }, 
@@ -776,6 +839,24 @@
       "password": "sha1$d5ff2$eb66ce3c2cc022a5fdc5747a9b2800a444e9d443", 
       "email": "", 
       "date_joined": "2012-01-16 05:08:37"
+    }
+  },
+  {
+    "pk": 11, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "EventPasswordUser", 
+      "first_name": "", 
+      "last_name": "", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "last_login": "2012-04-06 17:52:18", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$f61df$a259b8d40be1103d4344d08c2af2763ebf2430a9", 
+      "email": "", 
+      "date_joined": "2012-04-06 17:52:18"
     }
   }
 ]

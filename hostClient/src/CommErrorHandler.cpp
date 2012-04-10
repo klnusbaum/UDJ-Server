@@ -107,7 +107,13 @@ void CommErrorHandler::handleCommError(
   }
   else if(errorType == CONFLICT){
     if(opType == CREATE_EVENT){
-      //TODO handle this error
+      emit eventCreationFailed(tr("Looks like you're currently hosting"
+        " another event. Please end that one before creating a new one."));
+    }
+  }
+  else if(errorType == NOT_FOUND_ERROR){
+    if(opType == LIB_SONG_DELETE){
+      
     }
   }
   else if(errorType == UNKNOWN_ERROR || errorType == SERVER_ERROR){

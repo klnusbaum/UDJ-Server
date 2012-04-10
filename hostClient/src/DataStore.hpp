@@ -200,6 +200,31 @@ public:
   
   /** @name Public Constants */
   //@{
+  
+  /**
+   * \brief When a song title can't be found, this title should be used instead.
+   */
+  static const QString& unknownSongTitle(){
+    static const QString unknownSongTitle = tr("Unknown");
+    return unknownSongTitle;
+  }
+
+  /**
+   * \brief When a song artist can't be found, this artist should be used instead.
+   */
+  static const QString& unknownSongArtist(){
+    static const QString unknownSongArtist = tr("Unknown");
+    return unknownSongArtist;
+  }
+
+  /**
+   * \brief When a song album can't be found, this album should be used instead.
+   */
+  static const QString& unknownSongAlbum(){
+    static const QString unknownSongAlbum = tr("Unknown");
+    return unknownSongAlbum;
+  }
+
 
   /**
    * \brief Gets the name of the table in the musicdb that contains information

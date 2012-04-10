@@ -309,24 +309,16 @@ void UDJServerConnection::handleAuthReply(QNetworkReply* reply){
       QString(reply->rawHeader(getUserIdHeaderName())).toLong()
     );
   }
-  else if(
-    !reply->hasRawHeader(getTicketHeaderName()) ||
-    !reply->hasRawHeader(getUserIdHeaderName()))
-  {
+  else if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 403){
+    emit authFailed(tr("Incorrect Username and password"));
+  }
+  else{
     QByteArray responseData = reply->readAll();
     QString responseString = QString::fromUtf8(responseData);
     DEBUG_MESSAGE(responseString.toStdString())
     emit authFailed(
       tr("We're experiencing some techinical difficulties. "
       "We'll be back in a bit"));
-  }
-  else{
-    QByteArray responseData = reply->readAll();
-    QString responseString = QString::fromUtf8(responseData);
-    DEBUG_MESSAGE(responseString.toStdString())
-    QString error = tr("Unable to connect to server: error ") + 
-     QString::number(reply->error());
-    emit authFailed(error);
   }
 }
 
@@ -341,7 +333,16 @@ bool UDJServerConnection::checkReplyAndFireErrors(
     payload = potentialPayload.toByteArray();
   }
 
-  if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 403){
+  if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 404 &&
+      opType==CommErrorHandler::LIB_SONG_DELETE)
+  {
+    return false;
+  }
+  else if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 404){
+    emit commError(opType, CommErrorHandler::NOT_FOUND_ERROR, payload);
+    return true;
+  }
+  else if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) == 403){
     emit commError(opType, CommErrorHandler::AUTH, payload);
     return true;
   }

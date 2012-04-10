@@ -91,9 +91,20 @@
             android:excludeFromRecents="true"
         />
 
+
        <activity
          android:name="RandomSearchActivity"
        />
+
+       <activity
+         android:name="NeedUpdateActivity"
+       />
+
+       <activity
+         android:name="EventPasswordActivity"
+         android:theme="@android:style/Theme.Dialog"
+       />
+
         <service
             android:name=".auth.AuthService"
             android:exported="true"

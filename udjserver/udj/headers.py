@@ -15,3 +15,9 @@ def getUUIDHeader():
 
 def getDjangoUUIDHeader():
   return "HTTP_X_UDJ_MACHINE_UUID"
+
+def getEventPasswordHeader():
+  return "X-Udj-Event-Password";
+
+def getDjangoEventPasswordHeader():
+  return "HTTP_X_UDJ_EVENT_PASSWORD";

@@ -44,7 +44,11 @@ class VoteAdmin(admin.ModelAdmin):
 class TicketAdmin(admin.ModelAdmin):
   list_display = ('user', 'ticket_hash', 'time_issued', 'source_ip_addr')
   list_filter = ('user',)
-  
+
+class AvailableSongAdmin(admin.ModelAdmin):
+  list_display=('song', 'event', 'state')
+  list_filter = ('event', 'state')
+
 
 admin.site.register(Ticket, TicketAdmin)
 admin.site.register(Event, EventAdmin)
@@ -54,6 +58,6 @@ admin.site.register(EventLocation)
 admin.site.register(LibraryEntry, LibraryAdmin)
 admin.site.register(ActivePlaylistEntry, ActivePlaylistEntryAdmin)
 admin.site.register(EventGoer, EventGoerAdmin)
-admin.site.register(AvailableSong)
+admin.site.register(AvailableSong, AvailableSongAdmin)
 admin.site.register(Vote, VoteAdmin)
 admin.site.register(PlaylistEntryTimePlayed)

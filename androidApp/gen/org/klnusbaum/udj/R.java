@@ -85,11 +85,12 @@ containing a value of this type.
         public static final int ic_action_share=0x7f020006;
         public static final int ic_home=0x7f020007;
         public static final int ic_launcher=0x7f020008;
-        public static final int ic_menu_share=0x7f020009;
-        public static final int icon=0x7f02000a;
-        public static final int pulltorefresh_down_arrow=0x7f02000b;
-        public static final int pulltorefresh_up_arrow=0x7f02000c;
-        public static final int udjlauncher=0x7f02000d;
+        public static final int ic_lock=0x7f020009;
+        public static final int ic_menu_share=0x7f02000a;
+        public static final int icon=0x7f02000b;
+        public static final int pulltorefresh_down_arrow=0x7f02000c;
+        public static final int pulltorefresh_up_arrow=0x7f02000d;
+        public static final int udjlauncher=0x7f02000e;
     }
     public static final class id {
         public static final int LIB_ENTRY_VIEW_TAG=0x7f050003;
@@ -103,36 +104,39 @@ containing a value of this type.
         public static final int event_host_label=0x7f05000f;
         public static final int event_host_name=0x7f050010;
         public static final int event_item_name=0x7f05000e;
+        public static final int event_password_edit=0x7f050012;
         /**  Pull to Refresh 
          */
         public static final int gridview=0x7f050009;
-        public static final int lib_add_button=0x7f050013;
-        public static final int libraryArtistName=0x7f050012;
-        public static final int librarySongName=0x7f050011;
-        public static final int menu_random=0x7f050024;
+        public static final int lib_add_button=0x7f050016;
+        public static final int libraryArtistName=0x7f050015;
+        public static final int librarySongName=0x7f050014;
+        public static final int lock_icon=0x7f050011;
+        public static final int menu_random=0x7f050027;
         public static final int menu_refresh=0x7f050008;
-        public static final int menu_search=0x7f050025;
-        public static final int message=0x7f050014;
-        public static final int message_bottom=0x7f050017;
-        public static final int ok_button=0x7f050019;
-        public static final int password_edit=0x7f050016;
+        public static final int menu_search=0x7f050028;
+        public static final int message=0x7f050017;
+        public static final int message_bottom=0x7f05001a;
+        public static final int need_update_text=0x7f05001c;
+        public static final int ok_button=0x7f050013;
+        public static final int password_edit=0x7f050019;
         public static final int playlist=0x7f05000d;
-        public static final int playlistAddedBy=0x7f05001c;
-        public static final int playlistArtistName=0x7f05001b;
-        public static final int playlistSongName=0x7f05001a;
+        public static final int playlistAddedBy=0x7f05001f;
+        public static final int playlistArtistName=0x7f05001e;
+        public static final int playlistSongName=0x7f05001d;
         public static final int pullDownFromTop=0x7f050000;
         public static final int pullUpFromBottom=0x7f050001;
-        public static final int pull_to_refresh_image=0x7f05001f;
-        public static final int pull_to_refresh_listview=0x7f050020;
-        public static final int pull_to_refresh_progress=0x7f05001e;
-        public static final int pull_to_refresh_text=0x7f05001d;
+        public static final int pull_to_refresh_image=0x7f050022;
+        public static final int pull_to_refresh_listview=0x7f050023;
+        public static final int pull_to_refresh_progress=0x7f050021;
+        public static final int pull_to_refresh_text=0x7f050020;
         public static final int realtabcontent=0x01010000;
-        public static final int remove_song=0x7f050026;
-        public static final int share=0x7f050021;
-        public static final int signup_text=0x7f050018;
-        public static final int username_edit=0x7f050015;
-        public static final int vote_down=0x7f050023;
-        public static final int vote_up=0x7f050022;
+        public static final int remove_song=0x7f050029;
+        public static final int share=0x7f050024;
+        public static final int signup_text=0x7f05001b;
+        public static final int username_edit=0x7f050018;
+        public static final int vote_down=0x7f050026;
+        public static final int vote_up=0x7f050025;
         public static final int webview=0x7f05000a;
     }
     public static final class layout {
@@ -140,12 +144,14 @@ containing a value of this type.
         public static final int actionbar_indeterminate_progress=0x7f030001;
         public static final int event=0x7f030002;
         public static final int event_list_item=0x7f030003;
-        public static final int library_list_item=0x7f030004;
-        public static final int login_activity=0x7f030005;
-        public static final int playlist_list_item=0x7f030006;
-        public static final int pull_to_refresh_header=0x7f030007;
-        public static final int pull_to_refresh_listview=0x7f030008;
-        public static final int tablayout=0x7f030009;
+        public static final int event_password=0x7f030004;
+        public static final int library_list_item=0x7f030005;
+        public static final int login_activity=0x7f030006;
+        public static final int needsupdate=0x7f030007;
+        public static final int playlist_list_item=0x7f030008;
+        public static final int pull_to_refresh_header=0x7f030009;
+        public static final int pull_to_refresh_listview=0x7f03000a;
+        public static final int tablayout=0x7f03000b;
     }
     public static final class menu {
         public static final int all_vote_context=0x7f0a0000;
@@ -159,19 +165,23 @@ containing a value of this type.
         public static final int already_in_event_join_fail_message=0x7f080035;
         /**  Stuff for action bar compatibility 
          */
-        public static final int alternate_title=0x7f08003c;
+        public static final int alternate_title=0x7f080041;
+        public static final int api_version_error_message=0x7f08003c;
         public static final int app_name=0x7f080000;
         public static final int auth_join_fail_message=0x7f080027;
         public static final int authenticating=0x7f080007;
         public static final int bad_password=0x7f080014;
         public static final int bad_username_and_password=0x7f080015;
         public static final int by=0x7f08001c;
+        public static final int check_updates=0x7f080040;
         public static final int dont_have_account=0x7f080038;
         public static final int event_ended_message=0x7f080022;
         public static final int event_ended_title=0x7f080021;
         public static final int event_host_label=0x7f08002a;
         public static final int event_join_fail_title=0x7f080024;
+        public static final int event_label=0x7f08003d;
         public static final int event_over_join_fail_message=0x7f080028;
+        public static final int event_password=0x7f08003e;
         public static final int event_search_hint=0x7f080012;
         public static final int events_load_error=0x7f08000e;
         public static final int joining_event=0x7f080008;
@@ -180,9 +190,9 @@ containing a value of this type.
         public static final int login_text=0x7f080006;
         public static final int logout_of_other_event=0x7f080034;
         public static final int menu_random=0x7f080036;
-        public static final int menu_refresh=0x7f08003e;
-        public static final int menu_search=0x7f08003f;
-        public static final int menu_share=0x7f080040;
+        public static final int menu_refresh=0x7f080043;
+        public static final int menu_search=0x7f080044;
+        public static final int menu_share=0x7f080045;
         public static final int need_password=0x7f080017;
         public static final int new_account_text=0x7f080016;
         public static final int no_account_error=0x7f08001a;
@@ -197,10 +207,10 @@ containing a value of this type.
         public static final int password_text=0x7f080004;
         /**  Pull to Refresh 
          */
-        public static final int pull_to_refresh_pull_label=0x7f080041;
-        public static final int pull_to_refresh_refreshing_label=0x7f080043;
-        public static final int pull_to_refresh_release_label=0x7f080042;
-        public static final int pull_to_refresh_tap_label=0x7f080044;
+        public static final int pull_to_refresh_pull_label=0x7f080046;
+        public static final int pull_to_refresh_refreshing_label=0x7f080048;
+        public static final int pull_to_refresh_release_label=0x7f080047;
+        public static final int pull_to_refresh_tap_label=0x7f080049;
         public static final int quit_message=0x7f08000c;
         public static final int quit_title=0x7f08000b;
         public static final int remove_song=0x7f080032;
@@ -216,9 +226,10 @@ containing a value of this type.
         public static final int song_search_hint=0x7f080011;
         public static final int song_share_1=0x7f08002e;
         public static final int song_share_2=0x7f08002f;
-        public static final int toggle_title=0x7f08003d;
+        public static final int toggle_title=0x7f080042;
         public static final int total_votes=0x7f080033;
         public static final int udj_name=0x7f080001;
+        public static final int unknown_auth_error=0x7f08003f;
         public static final int unknown_error_message=0x7f080025;
         public static final int username_hint=0x7f080003;
         public static final int username_text=0x7f080002;

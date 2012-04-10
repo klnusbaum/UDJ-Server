@@ -98,7 +98,7 @@ void MetaWindow::addSongToLibrary(){
       this,
       tr("Pick song to add"),
       QDir::homePath(),
-      tr("Audio Files (*.mp3 *.ogg)"));
+      tr("Audio Files ") + MusicFinder::getMusicFileExtFilter());
   dataStore->addSongToLibrary(Phonon::MediaSource(fileName));
 }
 

@@ -20,6 +20,7 @@ from udj.models import PlaylistEntryTimePlayed
 from udj.models import LibraryEntry
 from udj.models import Event
 from udj.models import Vote
+from udj.models import AvailableSong
 from udj.JSONCodecs import getActivePlaylistArray
 from udj.JSONCodecs import getActivePlaylistEntryDictionary
 from udj.headers import getGoneResourceHeader
@@ -51,16 +52,24 @@ def getActivePlaylist(request, event_id):
       "active_playlist" : activePlaylist
     }
   ))
-  
+
 def addSong2ActivePlaylist(song_request, event_id, adding_user):
   event = Event.objects.get(pk=event_id)
-  songToAdd = LibraryEntry.objects.get(
-      host_lib_song_id=song_request['lib_id'], owning_user=event.host)
+  #songToAdd = LibraryEntry.objects.get(
+  #    host_lib_song_id=song_request['lib_id'], owning_user=event.host)
+  songToAdd = get_object_or_404(AvailableSong, song__host_lib_song_id=song_request['lib_id'],
+      event__id=event_id)
+
+  entryDefaults = {'song': songToAdd.song}
+
+  if songToAdd.state == u'RM':
+    entryDefaults['state'] = u'RM'
+
   added , created = ActivePlaylistEntry.objects.get_or_create(
     adder=adding_user,
     event=event,
     client_request_id=song_request['client_request_id'],
-    defaults={'song' : songToAdd})
+    defaults=entryDefaults)
   if created:
     Vote(user=adding_user, playlist_entry=added, weight=1).save()
 
@@ -75,7 +84,7 @@ def addToPlaylist(request, event_id):
   songsToAdd = json.loads(request.raw_post_data)
   for song_request in songsToAdd:
     addSong2ActivePlaylist(song_request, event_id, user)
-  
+
   return HttpResponse(status = 201)
 
 @csrf_exempt

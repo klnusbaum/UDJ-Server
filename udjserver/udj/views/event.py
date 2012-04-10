@@ -43,6 +43,8 @@ from udj.JSONCodecs import getActivePlaylistEntryDictionary
 from udj.utils import getJSONResponse
 from udj.headers import getGoneResourceHeader
 from udj.headers import getDjangoUUIDHeader
+from udj.headers import getEventPasswordHeader
+from udj.headers import getDjangoEventPasswordHeader;
 
 
 def getEventHost(event_id):
@@ -58,7 +60,7 @@ def getEvents(request):
     state=u'AC')
   events_json = getJSONForEvents(events)
   return getJSONResponse(events_json)
-  
+
 
 @NeedsAuth
 @AcceptsMethods('GET')
@@ -93,9 +95,9 @@ def createEvent(request):
 
   if 'password' in event:
     m = hashlib.sha1()
-    m.update(event[password])
+    m.update(event['password'])
     EventPassword(event=newEvent, password_hash=m.hexdigest()).save()
-  
+
   hostInsert = EventGoer(user=user, event=newEvent)
   hostInsert.save()
   return getJSONResponse('{"event_id" : ' + str(newEvent.id) + '}', status=201)
@@ -134,8 +136,27 @@ def joinOrLeaveEvent(request, event_id, user_id):
   elif request.method == 'DELETE':
     return leaveEvent(request, event_id=event_id, user_id=user_id)
 
+def authEvent(request, event_id):
+  password = EventPassword.objects.filter(event__id=event_id)
+
+  if password.exists():
+    if getDjangoEventPasswordHeader() in request.META:
+      givenPassword = request.META[getDjangoEventPasswordHeader()]
+      m = hashlib.sha1()
+      m.update(givenPassword)
+      hashedPassword = m.hexdigest()
+      if hashedPassword == password[0].password_hash:
+        return True, None
+    return False, HttpResponseNotFound()
+  else:
+    return True, None
+
 @IsntInOtherEvent
 def joinEvent(request, event_id, user_id):
+
+  authSuccessfull, httpResponse = authEvent(request, event_id)
+  if not authSuccessfull:
+    return httpResponse
 
   event_to_join = Event.objects.get(pk=event_id)
   if event_to_join.state == u'FN':
@@ -146,7 +167,7 @@ def joinEvent(request, event_id, user_id):
   joining_user = User.objects.get(pk=user_id)
   event_goer , created = EventGoer.objects.get_or_create(
     user=joining_user, event=event_to_join)
-  
+
   #needed in case the user has logged out and is now logging back in
   if not created:
     event_goer.state=u'IE'
@@ -180,15 +201,17 @@ def getAvailableMusic(request, event_id):
   if(not request.GET.__contains__('query')):
     return HttpResponseBadRequest('Must specify query')
   query = request.GET.__getitem__('query')
+  if query=='':
+    return HttpResponseBadRequest('Blank searches not allowed')
   available_songs = AvailableSong.objects.filter(
-    event__id=event_id, song__owning_user=event.host)
+    event__id=event_id, song__owning_user=event.host).exclude(state=u'RM')
   available_songs = available_songs.filter(
     Q(song__title__icontains=query) |
     Q(song__artist__icontains=query) |
     Q(song__album__icontains=query))
   if(request.GET.__contains__('max_results')):
     available_songs = available_songs[:request.GET['max_results']]
-    
+
   return getJSONResponse(getJSONForAvailableSongs(available_songs))
 
 @NeedsAuth
@@ -212,7 +235,7 @@ def addToAvailableMusic(request, event_id):
     songToAdd = LibraryEntry.objects.get(
       host_lib_song_id=song_id, owning_user=event.host, machine_uuid=uuid)
     addedSong , created = AvailableSong.objects.get_or_create(
-      event=event, song=songToAdd)
+        event=event, song=songToAdd, defaults={'state': u'AC'})
     added.append(song_id)
 
   return getJSONResponse(json.dumps(added), status=201)
@@ -221,14 +244,10 @@ def addToAvailableMusic(request, event_id):
 @AcceptsMethods('DELETE')
 @IsEventHost
 def removeFromAvailableMusic(request, event_id, song_id):
-  host = getUserForTicket(request)
-  try:
-    AvailableSong.objects.get(
-      song__host_lib_song_id=song_id,
-      song__owning_user=host,
-      event__id=event_id).delete()
-  except ObjectDoesNotExist:
-    return HttpResponseNotFound("id " + str(song_id) + " doesn't exist")
+  toRemove = get_object_or_404(AvailableSong, song__host_lib_song_id=song_id, event__id=event_id)
+  toRemove.state = u'RM'
+  toRemove.save()
+  ActivePlaylistEntry.objects.filter(song__host_lib_song_id=song_id, event__id=event_id).update(state=u'RM')
   return HttpResponse()
 
 

@@ -38,10 +38,16 @@ import android.view.Window;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 
+import org.apache.http.auth.AuthenticationException;
+
+import java.io.IOException;
+
 import org.klnusbaum.udj.R;
 import org.klnusbaum.udj.Utils;
 import org.klnusbaum.udj.Constants;
 import org.klnusbaum.udj.network.ServerConnection;
+import org.klnusbaum.udj.exceptions.APIVersionException;
+import org.klnusbaum.udj.NeedUpdateActivity;
 
 
 /**
@@ -91,6 +97,24 @@ public class AuthActivity extends AccountAuthenticatorActivity{
 
     private EditText mUsernameEdit;
 
+    private enum AuthError{NO_ERROR, AUTH_ERROR, API_VERSION_ERROR, SERVER_ERROR}
+
+    private static class ServerAuthResult{
+      public AuthError authError;
+      public ServerConnection.AuthResult serverResult;
+
+      public ServerAuthResult(ServerConnection.AuthResult serverResult){
+        this.authError = AuthError.NO_ERROR;
+        this.serverResult = serverResult;
+      }
+
+      public ServerAuthResult(AuthError authError){
+        this.authError = authError;
+        this.serverResult = null;
+      }
+    }
+
+
     /**
      * {@inheritDoc}
      */
@@ -115,9 +139,6 @@ public class AuthActivity extends AccountAuthenticatorActivity{
         mMessage.setText(getMessage());
 
         TextView signUp = (TextView) findViewById(R.id.signup_text);
-    /*    String text =
-          "Don't have an account? "+
-          "<a href=\"https://www.udjevents.com/registration/register/\">Sign up here</a>";*/
         signUp.setText(Html.fromHtml(getString(R.string.dont_have_account)));
         signUp.setMovementMethod(LinkMovementMethod.getInstance());
     }
@@ -232,37 +253,47 @@ public class AuthActivity extends AccountAuthenticatorActivity{
      * @param authToken the authentication token returned by the server, or NULL if
      *            authentication failed.
      */
-    public void onAuthenticationResult(ServerConnection.AuthResult authResult) {
+    public void onAuthenticationResult(ServerAuthResult authResult){
+      boolean success = (authResult.authError == AuthError.NO_ERROR);
+      Log.i(TAG, "onAuthenticationResult(" + success + ")");
 
-        boolean success = ((authResult != null ) 
-          && (authResult.ticketHash != null) 
-          && (authResult.ticketHash.length() > 0));
-        Log.i(TAG, "onAuthenticationResult(" + success + ")");
+      // Our task is complete, so clear it out
+      mAuthTask = null;
 
-        // Our task is complete, so clear it out
-        mAuthTask = null;
+      // Hide the progress dialog
+      hideProgress();
 
-        // Hide the progress dialog
-        hideProgress();
-
-        if (success) {
-            if (!mConfirmCredentials) {
-                finishLogin(authResult);
-            } else {
-                finishConfirmCredentials(success);
-            }
-        } else {
+      if(success){
+        if(!mConfirmCredentials){
+          finishLogin(authResult.serverResult);
+        }
+        else{
+          finishConfirmCredentials(success);
+        }
+      }
+      else{
+        switch(authResult.authError){
+          case AUTH_ERROR:
             Log.e(TAG, "onAuthenticationResult: failed to authenticate");
             if (mRequestNewAccount) {
-                // "Please enter a valid username/password.
-                mMessage.setText(getText(R.string.bad_username_and_password));
-            } else {
-                // "Please enter a valid password." (Used when the
-                // account is already in the database but the password
-                // doesn't work.)
-                mMessage.setText(getText(R.string.bad_password));
+              // "Please enter a valid username/password.
+              mMessage.setText(getText(R.string.bad_username_and_password));
             }
+            else{
+              // "Please enter a valid password." (Used when the
+              // account is already in the database but the password
+              // doesn't work.)
+              mMessage.setText(getText(R.string.bad_password));
+            }
+            break;
+          case API_VERSION_ERROR:
+            Intent needUpdateIntent = new Intent(this, NeedUpdateActivity.class);
+            startActivity(needUpdateIntent);
+            break;
+          default:
+            mMessage.setText(getText(R.string.unknown_auth_error));
         }
+      }
     }
 
     public void onAuthenticationCancel() {
@@ -313,24 +344,29 @@ public class AuthActivity extends AccountAuthenticatorActivity{
      * Represents an asynchronous task used to authenticate a user against the
      * SampleSync Service
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, ServerConnection.AuthResult> {
+    public class UserLoginTask extends AsyncTask<Void, Void, ServerAuthResult> {
 
         @Override
-        protected ServerConnection.AuthResult doInBackground(Void... params) {
+        protected ServerAuthResult doInBackground(Void... params) {
             // We do the actual work of authenticating the user
             // in the NetworkUtilities class.
             try {
-                return ServerConnection.authenticate(mUsername, mPassword);
-            } catch (Exception ex) {
-                Log.e(TAG, "UserLoginTask.doInBackground: failed to authenticate");
-                Log.i(TAG, ex.toString());
-                return null;
+                return new ServerAuthResult(ServerConnection.authenticate(mUsername, mPassword));
+            } catch (AuthenticationException ex) {
+                Log.d(TAG, "Actual Auth error");
+                return new ServerAuthResult(AuthError.AUTH_ERROR);
+            } catch (APIVersionException ex) {
+                Log.d(TAG, "API version error");
+                return new ServerAuthResult(AuthError.API_VERSION_ERROR);
+            } catch (IOException ex) {
+                Log.d(TAG, "Unknonw server error");
+                return new ServerAuthResult(AuthError.SERVER_ERROR);
             }
         }
 
         @Override
         protected void onPostExecute(
-          final ServerConnection.AuthResult authResult)
+          final ServerAuthResult authResult)
         {
             // On a successful authentication, call back into the Activity to
             // communicate the authToken (or null for an error).

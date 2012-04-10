@@ -5,6 +5,7 @@ from udj.tests.testhelpers import User3TestCase
 from udj.tests.testhelpers import User4TestCase
 from udj.tests.testhelpers import User5TestCase
 from udj.tests.testhelpers import User8TestCase
+from udj.models import EventPassword
 from udj.models import Event
 from udj.models import EventEndTime
 from udj.models import LibraryEntry
@@ -14,7 +15,7 @@ from udj.models import ActivePlaylistEntry
 from udj.models import AvailableSong
 from decimal import Decimal
 from datetime import datetime
-from udj.headers import getGoneResourceHeader, getDjangoUUIDHeader
+from udj.headers import getGoneResourceHeader, getDjangoUUIDHeader, getDjangoEventPasswordHeader
 
 class GetEventsTest(User5TestCase):
   def testGetNearbyEvents(self):
@@ -25,7 +26,6 @@ class GetEventsTest(User5TestCase):
     self.verifyJSONResponse(response)
     events = json.loads(response.content)
     self.assertEqual(len(events), 2)
-
 
   def testGetEvents(self):
     response = self.doGet('/udj/events?name=empty')
@@ -52,6 +52,23 @@ class CreateEventTest(User5TestCase):
     addedEvent = Event.objects.get(pk=givenEventId)
     self.assertEqual(addedEvent.name, partyName)
     partyHost = EventGoer.objects.get(event=addedEvent, user__id=self.user_id)
+
+  def testCreatePasswordEvent(self):
+    eventName = "A Bitchn' Party"
+    eventPassword = 'dog'
+    event = {
+      'name' : eventName,
+      'password' : eventPassword
+    }
+    response = self.doJSONPut('/udj/events/event', json.dumps(event))
+    self.assertEqual(response.status_code, 201, "Error: " + response.content)
+    self.verifyJSONResponse(response)
+    givenEventId = json.loads(response.content)['event_id']
+    addedEvent = Event.objects.get(pk=givenEventId)
+    self.assertEqual(addedEvent.name, eventName)
+    partyHost = EventGoer.objects.get(event=addedEvent, user__id=self.user_id)
+    password = EventPassword.objects.get(event__id=givenEventId)
+
 
 
 
@@ -110,7 +127,20 @@ class JoinEventTest(User5TestCase):
     self.assertEqual(response[getGoneResourceHeader()], "event")
     shouldntBeThere = EventGoer.objects.filter(event__id=1, user__id=5)
     self.assertFalse(shouldntBeThere.exists())
-    
+
+  def testPassword(self):
+    response = self.doPut(
+      '/udj/events/6/users/5',
+      headers={getDjangoEventPasswordHeader() : 'udj'})
+    self.assertEqual(response.status_code, 201, response.content)
+
+  def testBadPassword(self):
+    response = self.doPut(
+      '/udj/events/6/users/5',
+      headers={getDjangoEventPasswordHeader() : 'wrong'})
+    self.assertEqual(response.status_code, 404, response.content)
+
+
 class LeaveEventTest(User3TestCase):
   def testLeaveEvent(self):
     response = self.doDelete('/udj/events/2/users/3')
@@ -124,8 +154,6 @@ class LeaveEndedEventTest(User8TestCase):
     self.assertEqual(response.status_code, 200, response.content)
     event_goer_entries = EventGoer.objects.get(
       event__id=1, user__id=8, state=u'LE')
-  
-    
 
 
 #Disabling this for now. We'll come back to it later.
@@ -205,6 +233,11 @@ class TestGetAvailableMusic(User3TestCase):
     self.verifyJSONResponse(response)
     results = json.loads(response.content)
 
+  def testBlankSearch(self):
+    response = self.doGet(
+      '/udj/events/2/available_music?query=')
+    self.assertEqual(response.status_code, 400, response.content)
+
 class TestPutAvailableMusic(User2TestCase):
   def testSimplePut(self): 
     toAdd=[6]
@@ -263,6 +296,15 @@ class TestPutAvailableMusic(User2TestCase):
     AvailableSong.objects.get(
       song__host_lib_song_id=8, song__owning_user__id=2)
 
+  def testReaddDeleted(self):
+    toAdd = [11]
+    response = self.doJSONPut(
+      '/udj/events/2/available_music', json.dumps(toAdd),
+      headers={getDjangoUUIDHeader() : "20000000000000000000000000000000"})
+    readdedSong = AvailableSong.objects.get(
+      song__host_lib_song_id=11, event__id=2)
+    self.assertTrue(readdedSong.state, u'AC')
+
 class TestCantPutAvailableMusic(User3TestCase):
   def testPut(self):
    toAdd=[7]
@@ -273,9 +315,11 @@ class TestDeleteAvailableMusic(User2TestCase):
   def testRemove(self):
     response = self.doDelete('/udj/events/2/available_music/3')
     self.assertEqual(response.status_code, 200, response.content)
-    foundSongs = AvailableSong.objects.filter(
+    foundSongs = AvailableSong.objects.get(
       song__host_lib_song_id=3, song__owning_user__id=2)
-    self.assertFalse(foundSongs.exists())
+    self.assertTrue(foundSongs.state, 'RM')
+    shouldBeRemoved = ActivePlaylistEntry.objects.get(pk=4)
+    self.assertTrue(shouldBeRemoved.state, u'RM')
 
   def testBadRemove(self):
     response = self.doDelete('/udj/events/2/available_music/400')
@@ -284,6 +328,9 @@ class TestDeleteAvailableMusic(User2TestCase):
   def testRemoveSongAlsoUsedInPreviousEvent(self):
     response = self.doDelete('/udj/events/2/available_music/1')
     self.assertEqual(response.status_code, 200, response.content)
+    foundSongs = AvailableSong.objects.get(
+      song__host_lib_song_id=1, event__id=2)
+    self.assertTrue(foundSongs.state, 'RM')
 
 
 
