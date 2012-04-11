@@ -148,6 +148,7 @@ public class EventListFragment extends RefreshableListFragment implements
   private Account account = null;
   private EventSearch lastSearch = null;
   private AccountManager am;
+  private Runnable onResumeRunnable = null;
 
   private BroadcastReceiver eventJoinedReceiver = new BroadcastReceiver(){
     public void onReceive(Context context, Intent intent){
@@ -224,7 +225,7 @@ public class EventListFragment extends RefreshableListFragment implements
   }
 
   public void onActivityResult(
-    int requestCode, int resultCode, Intent data)
+    final int requestCode, final int resultCode, final Intent data)
   {
     switch(requestCode){
     case ACCOUNT_CREATION_REQUEST_CODE:
@@ -240,16 +241,25 @@ public class EventListFragment extends RefreshableListFragment implements
       Log.d(TAG, "Got Password request back");
       if(resultCode == Activity.RESULT_OK){
         Log.d(TAG, "request code was ok");
-        String eventPassword = data.getStringExtra(Constants.EVENT_PASSWORD_EXTRA);
-        Event toJoin = Event.unbundle(data.getBundleExtra(Constants.EVENT_EXTRA));
-        joinEvent(toJoin, eventPassword);
+        final String eventPassword = data.getStringExtra(Constants.EVENT_PASSWORD_EXTRA);
+        final Event toJoin = Event.unbundle(data.getBundleExtra(Constants.EVENT_EXTRA));
+        onResumeRunnable = new Runnable() { public void run() {
+          joinEvent(toJoin, eventPassword);
+        }};
       }
       break;
+    default:
+      super.onActivityResult(requestCode, resultCode, data);
     }
+
   }
 
   public void onResume(){
     super.onResume();
+    if (onResumeRunnable != null) {
+      onResumeRunnable.run();
+      onResumeRunnable = null;
+    }
     if(account != null){
       int eventState = Utils.getEventState(getActivity(), account);
       Log.d(TAG, "Checking Event State");
@@ -493,6 +503,7 @@ public class EventListFragment extends RefreshableListFragment implements
       return dialog;
     }
   }
+
 
   private void handleEventJoinFail(){
     DialogFragment newFrag = new EventJoinFailDialog();
