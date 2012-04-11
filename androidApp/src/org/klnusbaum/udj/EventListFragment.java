@@ -18,34 +18,35 @@
  */
 package org.klnusbaum.udj;
 
-import android.os.Bundle;
-import android.app.Activity;
-import android.content.ContentResolver;
-import android.content.BroadcastReceiver;
+import java.util.List;
+
+import org.klnusbaum.udj.PullToRefresh.RefreshableListFragment;
+import org.klnusbaum.udj.auth.AuthActivity;
+import org.klnusbaum.udj.containers.Event;
+import org.klnusbaum.udj.network.EventCommService;
+import org.klnusbaum.udj.network.EventCommService.EventJoinError;
+
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.location.LocationManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.content.DialogInterface;
-import android.app.ProgressDialog;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
-import android.widget.ListView;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.view.View;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.util.Log;
-import android.app.AlertDialog;
-
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.FragmentManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.ListFragment;
-import android.support.v4.content.Loader;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
+import android.util.Log;
+import android.view.View;
+import android.widget.ListView;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -62,7 +63,7 @@ import org.klnusbaum.udj.auth.AuthActivity;
 import org.klnusbaum.udj.network.EventCommService.EventJoinError;
 
 
-public class EventListFragment extends ListFragment implements 
+public class EventListFragment extends RefreshableListFragment implements 
   LoaderManager.LoaderCallbacks<EventsLoader.EventsLoaderResult>,
   LocationListener
 {
@@ -87,6 +88,11 @@ public class EventListFragment extends ListFragment implements
     public abstract Bundle getLoaderArgs();
     public abstract int getSearchType();
   }
+
+	@Override
+	protected void doRefreshWork() {
+		refreshList();
+	}
 
   public static class LocationEventSearch implements EventSearch{
     Location givenLocation;
@@ -413,6 +419,7 @@ public class EventListFragment extends ListFragment implements
   public void onLoadFinished(Loader<EventsLoader.EventsLoaderResult> loader, 
     EventsLoader.EventsLoaderResult data)
   {
+    refreshDone();
     switch(data.getError()){
     case NO_ERROR:
       eventAdapter = 

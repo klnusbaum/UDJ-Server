@@ -82,7 +82,10 @@ public class EventSelectorActivity extends FragmentActivity{
   public boolean onOptionsItemSelected(MenuItem item){
     switch (item.getItemId()) {
     case R.id.menu_refresh:
-      getEventList().refreshList();
+    EventListFragment list= getEventList();
+    list.setListShown(false);
+      list.refreshList();
+      
       return true;
     case R.id.menu_search:
       startSearch(null, false, null, false);

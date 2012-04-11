@@ -147,6 +147,7 @@ public class ServerConnection{
     return httpClient;
   }
 
+
   public static class AuthResult{
     public String ticketHash;
     public long userId;
@@ -179,6 +180,9 @@ public class ServerConnection{
     post.addHeader(API_VERSION_HEADER, API_VERSION);
     post.setEntity(entity);
     final HttpResponse resp = getHttpClient().execute(post);
+    Log.d(TAG, "Auth Status code was " + resp.getStatusLine().getStatusCode());
+    final String response = EntityUtils.toString(resp.getEntity());
+    Log.d(TAG, "Auth Response was " + response);
     if(resp.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_IMPLEMENTED){
       throw new APIVersionException();
     }

@@ -35,6 +35,7 @@ import android.text.TextUtils;
 import org.klnusbaum.udj.R;
 import org.klnusbaum.udj.Constants;
 import org.klnusbaum.udj.network.ServerConnection;
+import org.klnusbaum.udj.NeedUpdateActivity;
 import org.klnusbaum.udj.exceptions.APIVersionException;
 
 /**
