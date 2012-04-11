@@ -1,3 +1,4 @@
 class RemoteAddrMiddleware(object):
   def process_request(self, request):
-    request.META['REMOTE_ADDR'] = request.META['HTTP_X_REAL_IP']
+    if 'HTTP_X_REAL_IP' in request.META:
+      request.META['REMOTE_ADDR'] = request.META['HTTP_X_REAL_IP']

@@ -14,7 +14,9 @@ from datetime import timedelta
 from udj.headers import getTicketHeader
 from udj.headers import getUserIdHeader
 from udj.headers import getDjangoTicketHeader
+from udj.headers import getDjangoApiVersionHeader
 import logging
+from settings import UDJ_API_VERSION
 
 def getUserForTicket(request):
   return Ticket.objects.get(
@@ -38,11 +40,7 @@ def isValidTicket(provided_hash, ip_address):
   else:
     return False
 
-def validAuthRequest(request):
-  return request.method == 'POST' and \
-    request.POST.__contains__("username") and \
-    request.POST.__contains__("password")
-  
+
 
 def generateRandomHash():
   rand_hash = random.getrandbits(128)
@@ -70,8 +68,19 @@ def getTicketForUser(userRequestingTicket, givenIpAddress):
 @csrf_exempt
 def authenticate(request):
   logging.debug("in authenticate, checking for valid auth request") 
-  if not validAuthRequest(request):
-    return HttpResponseBadRequest()
+  if request.method != 'POST':
+    return HttpResponseBadRequest('Must send post')
+  elif not request.POST.__contains__("username"):
+    return HttpResponseBadRequest('Must send username')
+  elif not request.POST.__contains__("password"):
+    return HttpResponseBadRequest('Must send password')
+  elif not getDjangoApiVersionHeader() in request.META:
+    return HttpResponseBadRequest('Must specify api version in the header')
+  elif request.META[getDjangoApiVersionHeader()] != UDJ_API_VERSION:
+    return HttpResponse('Unsupported api version', status=501)
+ 
+			
+
 
   userToAuth = get_object_or_404(User, username=request.POST['username'])
   logging.debug("In auth, past getting user") 
