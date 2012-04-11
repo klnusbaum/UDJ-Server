@@ -21,3 +21,9 @@ def getEventPasswordHeader():
 
 def getDjangoEventPasswordHeader():
   return "HTTP_X_UDJ_EVENT_PASSWORD";
+
+def getApiVersionHeader():
+  return "X-Udj-Api-Version"
+
+def getDjangoApiVersionHeader():
+  return "HTTP_X_UDJ_API_VERSION"
