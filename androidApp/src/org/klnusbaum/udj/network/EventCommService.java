@@ -217,6 +217,10 @@ public class EventCommService extends IntentService{
     EventJoinError error)
   {
     am.setUserData(
+      account,
+      Constants.EVENT_STATE_DATA,
+      String.valueOf(Constants.EVENT_JOIN_FAILED));
+    am.setUserData(
       account, 
       Constants.EVENT_JOIN_ERROR, 
       error.toString());
