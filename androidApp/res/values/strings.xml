@@ -86,6 +86,7 @@
   <string name="event_password">Event Password</string>
   <string name="unknown_auth_error">We\'re currently having difficulties.</string>
   <string name="check_updates">Check For Updates</string>
+  <string name="password_required">Password Required</string>
 
     <!-- Stuff for action bar compatibility -->
     <string name="alternate_title">An alternate title that is long</string>

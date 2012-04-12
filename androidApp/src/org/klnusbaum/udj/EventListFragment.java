@@ -47,6 +47,11 @@ import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.EditText;
+import android.widget.Button;
+import android.view.ViewGroup;
+import android.view.LayoutInflater;
+
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -72,6 +77,7 @@ public class EventListFragment extends RefreshableListFragment implements
   private static final String TAG = "EventListFragment";
   private static final String PROG_DIALOG_TAG = "prog_dialog";
   private static final String EVENT_JOIN_FAIL_TAG = "prog_dialog";
+  private static final String PASSWORD_TAG = "password_dialog";
   private static final String LOCATION_EXTRA = "location";
   private static final String EVENT_SEARCH_QUERY = 
     "org.klnusbaum.udj.EventSearchQuery";
@@ -82,17 +88,16 @@ public class EventListFragment extends RefreshableListFragment implements
   private static final String LAST_SEARCH_TYPE_EXTRA = 
     "org.klnusbaum.udj.LastSearchType";
   private static final int ACCOUNT_CREATION_REQUEST_CODE = 0;
-  private static final int GET_PASSWORD_REQUEST_CODE = 1;
 
   private interface EventSearch{
     public abstract Bundle getLoaderArgs();
     public abstract int getSearchType();
   }
 
-	@Override
-	protected void doRefreshWork() {
-		refreshList();
-	}
+  @Override
+  protected void doRefreshWork() {
+    refreshList();
+  }
 
   public static class LocationEventSearch implements EventSearch{
     Location givenLocation;
@@ -114,7 +119,7 @@ public class EventListFragment extends RefreshableListFragment implements
     }
 
     public int getSearchType(){
-      return SEARCH_TYPE; 
+      return SEARCH_TYPE;
     }
   }
 
@@ -148,7 +153,6 @@ public class EventListFragment extends RefreshableListFragment implements
   private Account account = null;
   private EventSearch lastSearch = null;
   private AccountManager am;
-  private Runnable onResumeRunnable = null;
 
   private BroadcastReceiver eventJoinedReceiver = new BroadcastReceiver(){
     public void onReceive(Context context, Intent intent){
@@ -237,17 +241,6 @@ public class EventListFragment extends RefreshableListFragment implements
         getActivity().finish();
       }
       break;
-    case GET_PASSWORD_REQUEST_CODE: 
-      Log.d(TAG, "Got Password request back");
-      if(resultCode == Activity.RESULT_OK){
-        Log.d(TAG, "request code was ok");
-        final String eventPassword = data.getStringExtra(Constants.EVENT_PASSWORD_EXTRA);
-        final Event toJoin = Event.unbundle(data.getBundleExtra(Constants.EVENT_EXTRA));
-        onResumeRunnable = new Runnable() { public void run() {
-          joinEvent(toJoin, eventPassword);
-        }};
-      }
-      break;
     default:
       super.onActivityResult(requestCode, resultCode, data);
     }
@@ -256,10 +249,12 @@ public class EventListFragment extends RefreshableListFragment implements
 
   public void onResume(){
     super.onResume();
-    if (onResumeRunnable != null) {
-      onResumeRunnable.run();
-      onResumeRunnable = null;
+    EventPasswordFragment pFrag =
+      (EventPasswordFragment)getActivity().getSupportFragmentManager().findFragmentByTag(PASSWORD_TAG);
+    if(pFrag != null){
+      pFrag.registerPasswordEnteredListener(this);
     }
+
     if(account != null){
       int eventState = Utils.getEventState(getActivity(), account);
       Log.d(TAG, "Checking Event State");
@@ -300,6 +295,11 @@ public class EventListFragment extends RefreshableListFragment implements
       if(eventState == Constants.JOINING_EVENT){
         getActivity().unregisterReceiver(eventJoinedReceiver);
       }
+    }
+
+    EventPasswordFragment pFrag = (EventPasswordFragment)getActivity().getSupportFragmentManager().findFragmentByTag(PASSWORD_TAG);
+    if(pFrag != null){
+      pFrag.unregisterPasswordEnteredListener();
     }
   }
 
@@ -360,9 +360,10 @@ public class EventListFragment extends RefreshableListFragment implements
 
   public void getPasswordForEvent(Event toJoin){
     Bundle eventBundle = toJoin.bundleUp();
-    Intent getPasswordIntent = new Intent(getActivity(), EventPasswordActivity.class);
-    getPasswordIntent.putExtra(Constants.EVENT_EXTRA, eventBundle);
-    startActivityForResult(getPasswordIntent, GET_PASSWORD_REQUEST_CODE);
+    EventPasswordFragment passwordFragment = new EventPasswordFragment();
+    passwordFragment.registerPasswordEnteredListener(this);
+    passwordFragment.setArguments(eventBundle);
+    passwordFragment.show(getActivity().getSupportFragmentManager(), PASSWORD_TAG);
   }
 
   public void joinEvent(Event toJoin){
@@ -506,10 +507,14 @@ public class EventListFragment extends RefreshableListFragment implements
 
 
   private void handleEventJoinFail(){
-    DialogFragment newFrag = new EventJoinFailDialog();
-    AccountManager am = AccountManager.get(getActivity());
     EventJoinError joinError = EventJoinError.valueOf(
       am.getUserData(account, Constants.EVENT_JOIN_ERROR));
+    am.setUserData(
+      account,
+      Constants.EVENT_STATE_DATA,
+      String.valueOf(Constants.NOT_IN_EVENT));
+    DialogFragment newFrag = new EventJoinFailDialog();
+    AccountManager am = AccountManager.get(getActivity());
     Bundle args = new Bundle();
     args.putInt(Constants.EVENT_JOIN_ERROR_EXTRA, joinError.ordinal());
     newFrag.setArguments(args);
@@ -556,4 +561,44 @@ public class EventListFragment extends RefreshableListFragment implements
         .create();
     }
   }
-} 
+
+  public static class EventPasswordFragment extends DialogFragment{
+
+    Event toJoin;
+    EditText passwordEdit;
+    Button okButton;
+    EventListFragment eventListFragment = null;
+
+    public void onCreate(Bundle icicle){
+      super.onCreate(icicle);
+      toJoin = Event.unbundle(getArguments());
+    }
+
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle icicle){
+        View v = inflater.inflate(R.layout.event_password, container, false);
+        passwordEdit = (EditText)v.findViewById(R.id.event_password_edit);
+        okButton = (Button)v.findViewById(R.id.ok_button);
+        okButton.setOnClickListener(new View.OnClickListener(){
+          public void onClick(View v){
+            passwordEntered();
+          }
+        });
+        getDialog().setTitle(R.string.password_required);
+        return v;
+    }
+
+    public void passwordEntered(){
+      //TODO handle if they didn't type anything in
+      eventListFragment.joinEvent(toJoin, passwordEdit.getText().toString());
+      dismiss();
+    }
+
+    public void registerPasswordEnteredListener(EventListFragment eventListFragment){
+      this.eventListFragment = eventListFragment;
+    }
+
+    public void unregisterPasswordEnteredListener(){
+      this.eventListFragment = null;
+    }
+  }
+}
