@@ -1,8 +1,0 @@
-When changing the state of the event follow these two rules:
-
-1. If the event change occurs before the actions that need to happen as
- a result of the state change in a service, the state should be changed in 
- the calling activity/fragment.
-
-2. If state changes after a service has completed a requested action, the
-   state is changed by the service itself.
