@@ -5,7 +5,7 @@ SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 UDJ_API_VERSION = "0.2"
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
