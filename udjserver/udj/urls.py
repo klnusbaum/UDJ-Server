@@ -4,6 +4,8 @@ urlpatterns = patterns('udj.auth',
     (r'^auth?$', 'authenticate'),
 )
 
+"""
+
 urlpatterns += patterns('udj.views.library',
   (r'^users/(?P<user_id>\d+)/library/songs$', 'addSongsToLibrary'),
   (
@@ -44,3 +46,5 @@ urlpatterns += patterns('udj.views.activeplaylist',
   (r'^events/(?P<event_id>\d+)/active_playlist/users/(?P<user_id>\d+)/votes$', 
     'getVotes'),
 )
+
+"""

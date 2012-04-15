@@ -8,65 +8,57 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'Event'
-        db.create_table('udj_event', (
+        # Adding model 'State'
+        db.create_table('udj_state', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=2)),
+        ))
+        db.send_create_signal('udj', ['State'])
+
+        # Adding model 'Player'
+        db.create_table('udj_player', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('owning_user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=200)),
-            ('host', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('time_started', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('state', self.gf('django.db.models.fields.CharField')(default=u'AC', max_length=2)),
         ))
-        db.send_create_signal('udj', ['Event'])
+        db.send_create_signal('udj', ['Player'])
 
-        # Adding model 'EventEndTime'
-        db.create_table('udj_eventendtime', (
+        # Adding model 'PlayerPassword'
+        db.create_table('udj_playerpassword', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('event', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['udj.Event'], unique=True)),
-            ('time_ended', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-        ))
-        db.send_create_signal('udj', ['EventEndTime'])
-
-        # Adding model 'EventPassword'
-        db.create_table('udj_eventpassword', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('event', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['udj.Event'], unique=True)),
+            ('player', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['udj.Player'], unique=True)),
             ('password_hash', self.gf('django.db.models.fields.CharField')(max_length=32)),
+            ('time_set', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, auto_now_add=True, blank=True)),
         ))
-        db.send_create_signal('udj', ['EventPassword'])
+        db.send_create_signal('udj', ['PlayerPassword'])
 
-        # Adding model 'EventLocation'
-        db.create_table('udj_eventlocation', (
+        # Adding model 'PlayerLocation'
+        db.create_table('udj_playerlocation', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('event', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['udj.Event'], unique=True)),
+            ('player', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['udj.Player'], unique=True)),
+            ('address', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('city', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('state', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['udj.State'])),
+            ('zipcode', self.gf('django.db.models.fields.IntegerField')()),
             ('latitude', self.gf('django.db.models.fields.FloatField')()),
             ('longitude', self.gf('django.db.models.fields.FloatField')()),
         ))
-        db.send_create_signal('udj', ['EventLocation'])
+        db.send_create_signal('udj', ['PlayerLocation'])
 
         # Adding model 'LibraryEntry'
         db.create_table('udj_libraryentry', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('host_lib_song_id', self.gf('django.db.models.fields.IntegerField')()),
+            ('player', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['udj.Player'])),
+            ('player_lib_song_id', self.gf('django.db.models.fields.IntegerField')()),
             ('title', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('artist', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('album', self.gf('django.db.models.fields.CharField')(max_length=200)),
+            ('track', self.gf('django.db.models.fields.IntegerField')()),
+            ('genre', self.gf('django.db.models.fields.CharField')(max_length=50)),
             ('duration', self.gf('django.db.models.fields.IntegerField')()),
-            ('owning_user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
             ('is_deleted', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('machine_uuid', self.gf('django.db.models.fields.CharField')(max_length=32)),
         ))
         db.send_create_signal('udj', ['LibraryEntry'])
-
-        # Adding model 'AvailableSong'
-        db.create_table('udj_availablesong', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('song', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['udj.LibraryEntry'])),
-            ('event', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['udj.Event'])),
-        ))
-        db.send_create_signal('udj', ['AvailableSong'])
-
-        # Adding unique constraint on 'AvailableSong', fields ['song', 'event']
-        db.create_unique('udj_availablesong', ['song_id', 'event_id'])
 
         # Adding model 'ActivePlaylistEntry'
         db.create_table('udj_activeplaylistentry', (
@@ -74,14 +66,9 @@ class Migration(SchemaMigration):
             ('song', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['udj.LibraryEntry'])),
             ('time_added', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('adder', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('event', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['udj.Event'])),
-            ('client_request_id', self.gf('django.db.models.fields.IntegerField')()),
             ('state', self.gf('django.db.models.fields.CharField')(default=u'QE', max_length=2)),
         ))
         db.send_create_signal('udj', ['ActivePlaylistEntry'])
-
-        # Adding unique constraint on 'ActivePlaylistEntry', fields ['adder', 'client_request_id', 'event']
-        db.create_unique('udj_activeplaylistentry', ['adder_id', 'client_request_id', 'event_id'])
 
         # Adding model 'PlaylistEntryTimePlayed'
         db.create_table('udj_playlistentrytimeplayed', (
@@ -97,25 +84,26 @@ class Migration(SchemaMigration):
             ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
             ('ticket_hash', self.gf('django.db.models.fields.CharField')(unique=True, max_length=32)),
             ('source_ip_addr', self.gf('django.db.models.fields.IPAddressField')(max_length=15)),
+            ('source_port', self.gf('django.db.models.fields.IntegerField')()),
             ('time_issued', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
         ))
         db.send_create_signal('udj', ['Ticket'])
 
-        # Adding unique constraint on 'Ticket', fields ['user', 'ticket_hash', 'source_ip_addr']
-        db.create_unique('udj_ticket', ['user_id', 'ticket_hash', 'source_ip_addr'])
+        # Adding unique constraint on 'Ticket', fields ['user', 'ticket_hash', 'source_ip_addr', 'source_port']
+        db.create_unique('udj_ticket', ['user_id', 'ticket_hash', 'source_ip_addr', 'source_port'])
 
-        # Adding model 'EventGoer'
-        db.create_table('udj_eventgoer', (
+        # Adding model 'Participant'
+        db.create_table('udj_participant', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('event', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['udj.Event'])),
+            ('player', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['udj.Player'])),
             ('time_joined', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('state', self.gf('django.db.models.fields.CharField')(default=u'IE', max_length=2)),
+            ('time_last_interaction', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
         ))
-        db.send_create_signal('udj', ['EventGoer'])
+        db.send_create_signal('udj', ['Participant'])
 
-        # Adding unique constraint on 'EventGoer', fields ['user', 'event']
-        db.create_unique('udj_eventgoer', ['user_id', 'event_id'])
+        # Adding unique constraint on 'Participant', fields ['user', 'player']
+        db.create_unique('udj_participant', ['user_id', 'player_id'])
 
         # Adding model 'Vote'
         db.create_table('udj_vote', (
@@ -133,35 +121,26 @@ class Migration(SchemaMigration):
         # Removing unique constraint on 'Vote', fields ['user', 'playlist_entry']
         db.delete_unique('udj_vote', ['user_id', 'playlist_entry_id'])
 
-        # Removing unique constraint on 'EventGoer', fields ['user', 'event']
-        db.delete_unique('udj_eventgoer', ['user_id', 'event_id'])
+        # Removing unique constraint on 'Participant', fields ['user', 'player']
+        db.delete_unique('udj_participant', ['user_id', 'player_id'])
 
-        # Removing unique constraint on 'Ticket', fields ['user', 'ticket_hash', 'source_ip_addr']
-        db.delete_unique('udj_ticket', ['user_id', 'ticket_hash', 'source_ip_addr'])
+        # Removing unique constraint on 'Ticket', fields ['user', 'ticket_hash', 'source_ip_addr', 'source_port']
+        db.delete_unique('udj_ticket', ['user_id', 'ticket_hash', 'source_ip_addr', 'source_port'])
 
-        # Removing unique constraint on 'ActivePlaylistEntry', fields ['adder', 'client_request_id', 'event']
-        db.delete_unique('udj_activeplaylistentry', ['adder_id', 'client_request_id', 'event_id'])
+        # Deleting model 'State'
+        db.delete_table('udj_state')
 
-        # Removing unique constraint on 'AvailableSong', fields ['song', 'event']
-        db.delete_unique('udj_availablesong', ['song_id', 'event_id'])
+        # Deleting model 'Player'
+        db.delete_table('udj_player')
 
-        # Deleting model 'Event'
-        db.delete_table('udj_event')
+        # Deleting model 'PlayerPassword'
+        db.delete_table('udj_playerpassword')
 
-        # Deleting model 'EventEndTime'
-        db.delete_table('udj_eventendtime')
-
-        # Deleting model 'EventPassword'
-        db.delete_table('udj_eventpassword')
-
-        # Deleting model 'EventLocation'
-        db.delete_table('udj_eventlocation')
+        # Deleting model 'PlayerLocation'
+        db.delete_table('udj_playerlocation')
 
         # Deleting model 'LibraryEntry'
         db.delete_table('udj_libraryentry')
-
-        # Deleting model 'AvailableSong'
-        db.delete_table('udj_availablesong')
 
         # Deleting model 'ActivePlaylistEntry'
         db.delete_table('udj_activeplaylistentry')
@@ -172,8 +151,8 @@ class Migration(SchemaMigration):
         # Deleting model 'Ticket'
         db.delete_table('udj_ticket')
 
-        # Deleting model 'EventGoer'
-        db.delete_table('udj_eventgoer')
+        # Deleting model 'Participant'
+        db.delete_table('udj_participant')
 
         # Deleting model 'Vote'
         db.delete_table('udj_vote')
@@ -216,67 +195,57 @@ class Migration(SchemaMigration):
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
         'udj.activeplaylistentry': {
-            'Meta': {'unique_together': "(('adder', 'client_request_id', 'event'),)", 'object_name': 'ActivePlaylistEntry'},
+            'Meta': {'object_name': 'ActivePlaylistEntry'},
             'adder': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
-            'client_request_id': ('django.db.models.fields.IntegerField', [], {}),
-            'event': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.Event']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'song': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.LibraryEntry']"}),
             'state': ('django.db.models.fields.CharField', [], {'default': "u'QE'", 'max_length': '2'}),
             'time_added': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'})
-        },
-        'udj.availablesong': {
-            'Meta': {'unique_together': "(('song', 'event'),)", 'object_name': 'AvailableSong'},
-            'event': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.Event']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'song': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.LibraryEntry']"})
-        },
-        'udj.event': {
-            'Meta': {'object_name': 'Event'},
-            'host': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
-            'state': ('django.db.models.fields.CharField', [], {'default': "u'AC'", 'max_length': '2'}),
-            'time_started': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'})
-        },
-        'udj.eventendtime': {
-            'Meta': {'object_name': 'EventEndTime'},
-            'event': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.Event']", 'unique': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'time_ended': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'})
-        },
-        'udj.eventgoer': {
-            'Meta': {'unique_together': "(('user', 'event'),)", 'object_name': 'EventGoer'},
-            'event': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.Event']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'state': ('django.db.models.fields.CharField', [], {'default': "u'IE'", 'max_length': '2'}),
-            'time_joined': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
-        },
-        'udj.eventlocation': {
-            'Meta': {'object_name': 'EventLocation'},
-            'event': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.Event']", 'unique': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'latitude': ('django.db.models.fields.FloatField', [], {}),
-            'longitude': ('django.db.models.fields.FloatField', [], {})
-        },
-        'udj.eventpassword': {
-            'Meta': {'object_name': 'EventPassword'},
-            'event': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.Event']", 'unique': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'password_hash': ('django.db.models.fields.CharField', [], {'max_length': '32'})
         },
         'udj.libraryentry': {
             'Meta': {'object_name': 'LibraryEntry'},
             'album': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             'artist': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             'duration': ('django.db.models.fields.IntegerField', [], {}),
-            'host_lib_song_id': ('django.db.models.fields.IntegerField', [], {}),
+            'genre': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'machine_uuid': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
-            'owning_user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '200'})
+            'player': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.Player']"}),
+            'player_lib_song_id': ('django.db.models.fields.IntegerField', [], {}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
+            'track': ('django.db.models.fields.IntegerField', [], {})
+        },
+        'udj.participant': {
+            'Meta': {'unique_together': "(('user', 'player'),)", 'object_name': 'Participant'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'player': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.Player']"}),
+            'time_joined': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'time_last_interaction': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
+        },
+        'udj.player': {
+            'Meta': {'object_name': 'Player'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
+            'owning_user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
+        },
+        'udj.playerlocation': {
+            'Meta': {'object_name': 'PlayerLocation'},
+            'address': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'city': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'latitude': ('django.db.models.fields.FloatField', [], {}),
+            'longitude': ('django.db.models.fields.FloatField', [], {}),
+            'player': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.Player']", 'unique': 'True'}),
+            'state': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.State']"}),
+            'zipcode': ('django.db.models.fields.IntegerField', [], {})
+        },
+        'udj.playerpassword': {
+            'Meta': {'object_name': 'PlayerPassword'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'password_hash': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
+            'player': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.Player']", 'unique': 'True'}),
+            'time_set': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'auto_now_add': 'True', 'blank': 'True'})
         },
         'udj.playlistentrytimeplayed': {
             'Meta': {'object_name': 'PlaylistEntryTimePlayed'},
@@ -284,10 +253,16 @@ class Migration(SchemaMigration):
             'playlist_entry': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.ActivePlaylistEntry']", 'unique': 'True'}),
             'time_played': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'})
         },
+        'udj.state': {
+            'Meta': {'object_name': 'State'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '2'})
+        },
         'udj.ticket': {
-            'Meta': {'unique_together': "(('user', 'ticket_hash', 'source_ip_addr'),)", 'object_name': 'Ticket'},
+            'Meta': {'unique_together': "(('user', 'ticket_hash', 'source_ip_addr', 'source_port'),)", 'object_name': 'Ticket'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'source_ip_addr': ('django.db.models.fields.IPAddressField', [], {'max_length': '15'}),
+            'source_port': ('django.db.models.fields.IntegerField', [], {}),
             'ticket_hash': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '32'}),
             'time_issued': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})

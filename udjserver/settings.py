@@ -1,18 +1,13 @@
-import udjdb
 import os
 # Django settings for udjserver project.
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
-UDJ_API_VERSION = "0.2"
-
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
-
-DATABASES = udjdb.getUDJDbSettings()
 
 MANAGERS = ADMINS
 
