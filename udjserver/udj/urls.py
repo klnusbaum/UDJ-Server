@@ -4,6 +4,10 @@ urlpatterns = patterns('udj.auth',
     (r'^auth?$', 'authenticate'),
 )
 
+urlpatterns += patterns('udj.views.player',
+  (r'^player/(?P<latitude>-?\d+\.\d+)/(?P<longitude>-?\d+\.\d+)$', 'getNearbyPlayers'),
+)
+
 """
 
 urlpatterns += patterns('udj.views.library',

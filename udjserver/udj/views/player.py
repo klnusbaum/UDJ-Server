@@ -1,4 +1,28 @@
+def getDistanceToLocation(eventLocation, lat2, lon2):
+  lat1 = eventLocation.latitude
+  lon1 = eventLocation.longitude
+  radius = 6371 # km
+  dlat = math.radians(lat2-lat1)
+  dlon = math.radians(lon2-lon1)
+  a = math.sin(dlat/2) * math.sin(dlat/2) + math.cos(math.radians(lat1)) \
+      * math.cos(math.radians(lat2)) * math.sin(dlon/2) * math.sin(dlon/2)
+  c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+  d = radius * c
+  return d
 
+def getNearbyPlayers(request, latitude, longitude):
+  playerLocations = PlayerLocation.objects.all()
+  nearbyLocations = []
+  lat2 = float(latitude)
+  lon2 = float(longitude)
+  for location in playerLocations:
+    distance = getDistanceToLocation(location, lat2, lon2)
+    if distance < 5:
+      nearbyLocations.append(location)
+
+  nearbyPlayers = [location.player for location in nearbyLocations]
+
+  return HttpResponse(json.dumps(nearbyPlayers, cls=UDJEncoder))
 
 
 
