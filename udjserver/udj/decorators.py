@@ -25,6 +25,19 @@ def HasNZParams(necessaryParams):
     return wrapper
   return decorator
 
+def NeedsJSON(function):
+  def wrapper(*args, **kwargs):
+    request = args[0]
+    if not request.META.has_key('CONTENT_TYPE'):
+      return HttpResponseBadRequest("must specify content type")
+    elif request.META['CONTENT_TYPE'] != 'text/json':
+      return HttpResponse("must send json", status=415)
+    elif request.raw_post_data == '':
+      return HttpResponseBadRequest("Bad JSON")
+    else:
+      return function(*args, **kwargs)
+  return wrapper
+
 
 
 """

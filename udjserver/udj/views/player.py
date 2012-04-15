@@ -4,12 +4,30 @@ import math
 from udj.models import PlayerLocation
 from udj.models import Player
 from udj.decorators import AcceptsMethods
+from udj.decorators import NeedsJSON
 from udj.authdecorators import NeedsAuth
+from udj.authdecorators import TicketUserMatch
 from udj.decorators import HasNZParams
 from udj.JSONCodecs import UDJEncoder
 
 from django.http import HttpRequest
 from django.http import HttpResponse
+from django.http import HttpResponseBadRequest
+from django.contrib.auth.models import User
+from udj.exceptions import LocationNotFoundError
+
+from httplib import HTTPConnection
+from httplib import HTTPResponse
+
+from settings import geocodeLocation
+
+def isValidLocation(location):
+  return \
+    'address' in location and \
+    'city' in location and \
+    'state' in locaiton and \
+    State.objects.filter(name__iexact=location['state']).exists() and \
+    'zipcode' in location
 
 def getDistanceToLocation(eventLocation, lat2, lon2):
   lat1 = eventLocation.latitude
@@ -45,6 +63,65 @@ def getNearbyPlayers(request, latitude, longitude):
 def getPlayers(request):
   players = Player.objects.filter(name__icontains=request.GET['name'])
   return HttpResponse(json.dumps(players, cls=UDJEncoder), content_type="text/json")
+
+@NeedsAuth
+@TicketUserMatch
+@AcceptsMethods(['PUT'])
+@NeedsJSON
+def createPlayer(request, user_id):
+  user = User.objects.get(pk=user_id)
+  try:
+    newPlayerJSON = json.loads(request.raw_post_data)
+  except ValueError:
+    return HttpResponseBadRequest('Bad JSON')
+
+  #Ensure the name attribute was provided with the JSON
+  newPlayerName = ""
+  try:
+    newPlayerName = newPlayerJSON['name']
+  except KeyError:
+    return HttpResponseBadRequest('No name given')
+
+  #Ensure that the suers doesn't already have a player with the given name
+  conflictingPlayer = Player.objects.filter(owning_user=user, name=newPlayerName)
+  if conflictingPlayer.exists():
+    return HttpResponse('A player with that name already exists', status=409)
+
+  #Create and save new player
+  newPlayer = Player(owning_user=user, name=newPlayerName)
+  newPlayer.save()
+
+  #If password provided, create and save password
+  if newPlayerJSON.__contains__('password'):
+    m = hashlib.sha1()
+    m.update(newPlayerJSON['password'])
+    PlayerPassword(player=newPlayer, password_hash=m.hexdigest()).save()
+
+  #If locaiton provided, geocode it and save it
+  if newPlayerJSON.__contains__('location'):
+    if isValidLocation(newPlayerJSON['location']):
+      location = newPlayerJSON['location']
+      try:
+        lat, lon = geocodeLocation(location)
+        PlayerLocation(
+          player=newPlayer,
+          address=location['address'],
+          city=location['city'],
+          state=location['state'],
+          zipcode=location['zipcode'],
+          latitude=lat,
+          longitude=lon
+        ).save()
+      except LocationNotFoundError:
+        return HttpResponseBadRequest('Location not found')
+    else:
+      return HttpResponseBadRequest('Bad location')
+
+  return HttpResponse(json.dumps({'player_id' : newPlayer.id}))
+
+
+
+
 
 
 

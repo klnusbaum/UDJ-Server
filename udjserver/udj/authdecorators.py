@@ -1,5 +1,11 @@
 from udj.auth import isValidTicket
+from udj.auth import ticketMatchesUser
 from udj.headers import DJANGO_TICKET_HEADER
+from django.http import HttpRequest
+from django.http import HttpResponse
+from django.http import HttpResponseBadRequest
+from django.http import HttpResponseForbidden
+
 
 def NeedsAuth(function):
   def wrapper(*args, **kwargs):
@@ -17,3 +23,14 @@ def NeedsAuth(function):
       return function(*args, **kwargs)
   return wrapper
 
+def TicketUserMatch(function):
+  def wrapper(*args, **kwargs):
+    request = args[0]
+    user_id = kwargs['user_id']
+    if not ticketMatchesUser(request, user_id):
+      return HttpResponseForbidden("The ticket doesn't match the given user\n" +
+        "Give Ticket: \"" + request.META[getDjangoTicketHeader()] + "\"\n" +
+        "Given User id: \"" + user_id + "\"")
+    else:
+      return function(*args, **kwargs)
+  return wrapper

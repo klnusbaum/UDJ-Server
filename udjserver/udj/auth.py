@@ -18,10 +18,15 @@ def getUserForTicket(request):
     ticket_hash=request.META[DJANGO_TICKET_HEADER]).user
 
 def ticketMatchesUser(request, provided_user_id):
-  matchingTickets = Ticket.objects.filter(
-    ticket_hash=request.META[DJANGO_TICKET_HEADER],
-    user__id=provided_user_id)
-  return len(matchingTickets) > 0
+  try:
+    matchingTickets = Ticket.objects.get(
+      ticket_hash=request.META[DJANGO_TICKET_HEADER],
+      source_ip_addr=request.META['REMOTE_ADDR'],
+      source_port=request.META['REMOTE_PORT'],
+      user__id=provided_user_id)
+  except ObjectDoesNotExist:
+    return False
+  return True
 
 def isValidTicket(provided_hash, ip_address, port):
   try:
