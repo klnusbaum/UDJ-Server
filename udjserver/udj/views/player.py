@@ -2,8 +2,10 @@ import json
 import math
 
 from udj.models import PlayerLocation
+from udj.models import Player
 from udj.decorators import AcceptsMethods
-from udj.decorators import NeedsAuth
+from udj.authdecorators import NeedsAuth
+from udj.decorators import HasNZParams
 from udj.JSONCodecs import UDJEncoder
 
 from django.http import HttpRequest
@@ -22,7 +24,7 @@ def getDistanceToLocation(eventLocation, lat2, lon2):
   return d
 
 @NeedsAuth
-@AcceptsMethods('GET')
+@AcceptsMethods(['GET'])
 def getNearbyPlayers(request, latitude, longitude):
   playerLocations = PlayerLocation.objects.filter(player__state='AC')
   nearbyLocations = []
@@ -36,6 +38,13 @@ def getNearbyPlayers(request, latitude, longitude):
   nearbyPlayers = [location.player for location in nearbyLocations]
 
   return HttpResponse(json.dumps(nearbyPlayers, cls=UDJEncoder), content_type="text/json")
+
+@NeedsAuth
+@AcceptsMethods(['GET'])
+@HasNZParams(['name'])
+def getPlayers(request):
+  players = Player.objects.filter(name__icontains=request.GET['name'])
+  return HttpResponse(json.dumps(players, cls=UDJEncoder), content_type="text/json")
 
 
 

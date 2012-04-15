@@ -1,7 +1,6 @@
 from udj.headers import DJANGO_TICKET_HEADER
 from django.http import HttpResponse
 from django.http import HttpResponseNotAllowed
-from udj.auth import isValidTicket
 
 def AcceptsMethods(acceptedMethods):
   def decorator(target):
@@ -14,21 +13,19 @@ def AcceptsMethods(acceptedMethods):
     return wrapper
   return decorator
 
-def NeedsAuth(function):
-  def wrapper(*args, **kwargs):
-    request = args[0]
-    if DJANGO_TICKET_HEADER not in request.META:
-      responseString = "Must provide the " + getTicketHeader() + " header. "
-      return HttpResponseBadRequest(responseString)
-    elif not isValidTicket(
-      request.META[DJANGO_TICKET_HEADER],
-      request.META['REMOTE_ADDR'],
-      request.META['REMOTE_PORT']):
-      return HttpResponseForbidden("Invalid ticket: \"" + 
-        request.META[getDjangoTicketHeader()] + "\"")
-    else:
-      return function(*args, **kwargs)
-  return wrapper
+
+def HasNZParams(necessaryParams):
+  def decorator(target):
+    def wrapper(*args, **kwargs):
+      request = args[0]
+      for param in necessaryParams:
+        if not request.REQUEST.__contains__(param) or request.REQUEST[param] == "":
+          return HttpResponseBadRequest("Must include non-blank " + param + " parameter")
+      return target(*args, **kwargs)
+    return wrapper
+  return decorator
+
+
 
 """
 import json

@@ -9,6 +9,8 @@ from django.core.exceptions import ObjectDoesNotExist
 import random
 from udj.models import Ticket
 from udj.headers import DJANGO_TICKET_HEADER
+from udj.decorators import AcceptsMethods
+from udj.decorators import HasNZParams
 from datetime import datetime
 
 def getUserForTicket(request):
@@ -57,6 +59,8 @@ def obtainTicketForUser(userRequestingTicket, givenIpAddress, givenPort):
 
 
 @csrf_exempt
+@AcceptsMethods(['POST'])
+@HasNZParams(['username', 'password'])
 def authenticate(request):
   if request.method != 'POST':
     return HttpResponse('Must send post', status=405)
