@@ -70,6 +70,30 @@ class CreatePlayerTest(YunYoungTestCase):
     addedPassword = PlayerPassword.objects.get(player=addedPlayer)
     self.assertEqual(addedPassword.password_hash, passwordHash)
 
+  def testCreateLocationPlayer(self):
+    playerName = "Yunyoung Player"
+    payload = {'name' : playerName } 
+    location = {
+        'address' : '201 N Goodwin Ave',
+        'city' : 'Urbana',
+        'state' : 'MN',
+        'zipcode' : 61801
+    }
+    payload['location'] = location
+
+    response = self.doJSONPut('/udj/users/7/players/player', json.dumps(payload))
+    self.assertEqual(response.status_code, 201, "Error: " + response.content)
+    self.isJSONResponse(response)
+    givenPlayerId = json.loads(response.content)['player_id']
+    addedPlayer = Player.objects.get(pk=givenPlayerId)
+    self.assertEqual(addedPlayer.name, playerName)
+    self.assertEqual(addedPlayer.owning_user.id, 7)
+    self.assertFalse(PlayerPassword.objects.filter(player=addedPlayer).exists())
+
+    createdLocation = PlayerLocation.objects.get(player__id=givenPlayerId)
+
+
+
 
   """
   def testCreatePasswordEvent(self):

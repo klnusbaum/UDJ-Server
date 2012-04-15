@@ -4,6 +4,7 @@ import math
 from udj.models import Player
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
+from udj.models import State
 from udj.decorators import AcceptsMethods
 from udj.decorators import NeedsJSON
 from udj.authdecorators import NeedsAuth
@@ -28,7 +29,7 @@ def isValidLocation(location):
   return \
     'address' in location and \
     'city' in location and \
-    'state' in locaiton and \
+    'state' in location and \
     State.objects.filter(name__iexact=location['state']).exists() and \
     'zipcode' in location
 
@@ -110,7 +111,7 @@ def createPlayer(request, user_id):
           player=newPlayer,
           address=location['address'],
           city=location['city'],
-          state=location['state'],
+          state=State.objects.get(name__iexact=location['state']),
           zipcode=location['zipcode'],
           latitude=lat,
           longitude=lon
