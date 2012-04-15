@@ -1,3 +1,36 @@
+from udj.headers import DJANGO_TICKET_HEADER
+from django.http import HttpResponse
+from django.http import HttpResponseNotAllowed
+from udj.auth import isValidTicket
+
+def AcceptsMethods(acceptedMethods):
+  def decorator(target):
+    def wrapper(*args, **kwargs):
+      request = args[0]
+      if request.method in acceptedMethods:
+        return target(*args, **kwargs)
+      else:
+        return HttpResponseNotAllowed(acceptedMethods)
+    return wrapper
+  return decorator
+
+def NeedsAuth(function):
+  def wrapper(*args, **kwargs):
+    request = args[0]
+    if DJANGO_TICKET_HEADER not in request.META:
+      responseString = "Must provide the " + getTicketHeader() + " header. "
+      return HttpResponseBadRequest(responseString)
+    elif not isValidTicket(
+      request.META[DJANGO_TICKET_HEADER],
+      request.META['REMOTE_ADDR'],
+      request.META['REMOTE_PORT']):
+      return HttpResponseForbidden("Invalid ticket: \"" + 
+        request.META[getDjangoTicketHeader()] + "\"")
+    else:
+      return function(*args, **kwargs)
+  return wrapper
+
+"""
 import json
 from udj.auth import isValidTicket
 from udj.auth import ticketMatchesUser
@@ -5,9 +38,7 @@ from django.http import HttpResponse
 from django.http import HttpResponseNotAllowed
 from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
-from udj.models import Event
 from udj.models import ActivePlaylistEntry
-from udj.models import EventGoer
 from udj.auth import getUserForTicket
 from django.shortcuts import get_object_or_404
 from udj.headers import getTicketHeader
@@ -191,3 +222,4 @@ def NeedsUUID(function):
     else:
       return function(*args, **kwargs)
   return wrapper
+"""

@@ -1,3 +1,4 @@
+"""
 import json
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
@@ -162,4 +163,4 @@ def getVotes(request, event_id, user_id):
   downvoteIds = [vote.playlist_entry.id for vote in votes if vote.weight==-1]
   return getJSONResponse(json.dumps(
     {'up_vote_ids' : upvoteIds, 'down_vote_ids' : downvoteIds}))
-  
+""" 

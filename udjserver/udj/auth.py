@@ -9,6 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 import random
 from udj.models import Ticket
 from udj.headers import DJANGO_TICKET_HEADER
+from datetime import datetime
 
 def getUserForTicket(request):
   return Ticket.objects.get(

@@ -1,3 +1,14 @@
+import json
+import math
+
+from udj.models import PlayerLocation
+from udj.decorators import AcceptsMethods
+from udj.decorators import NeedsAuth
+from udj.JSONCodecs import UDJEncoder
+
+from django.http import HttpRequest
+from django.http import HttpResponse
+
 def getDistanceToLocation(eventLocation, lat2, lon2):
   lat1 = eventLocation.latitude
   lon1 = eventLocation.longitude
@@ -10,8 +21,10 @@ def getDistanceToLocation(eventLocation, lat2, lon2):
   d = radius * c
   return d
 
+@NeedsAuth
+@AcceptsMethods('GET')
 def getNearbyPlayers(request, latitude, longitude):
-  playerLocations = PlayerLocation.objects.all()
+  playerLocations = PlayerLocation.objects.filter(player__state='AC')
   nearbyLocations = []
   lat2 = float(latitude)
   lon2 = float(longitude)
@@ -22,7 +35,7 @@ def getNearbyPlayers(request, latitude, longitude):
 
   nearbyPlayers = [location.player for location in nearbyLocations]
 
-  return HttpResponse(json.dumps(nearbyPlayers, cls=UDJEncoder))
+  return HttpResponse(json.dumps(nearbyPlayers, cls=UDJEncoder), content_type="text/json")
 
 
 

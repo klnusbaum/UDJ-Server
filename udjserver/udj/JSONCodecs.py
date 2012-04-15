@@ -1,6 +1,9 @@
 import json
 from udj.models import Player
 from udj.models import PlayerLocation
+from udj.models import PlayerPassword
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models.query import QuerySet
 
 
 class UDJEncoder(json.JSONEncoder):
@@ -9,7 +12,28 @@ class UDJEncoder(json.JSONEncoder):
     if isinstance(obj, QuerySet):
       return [x for x in obj]
     elif isinstance(obj, Player):
-      return
+      location = None
+      try:
+        location = PlayerLocation.objects.get(player=obj)
+      except ObjectDoesNotExist:
+        pass
+
+      toReturn = {
+        "id" : obj.id,
+        "name" : obj.name,
+        "owner_username" : obj.owning_user.username,
+        "owner_id" : obj.owning_user.id,
+        "has_password" : True if PlayerPassword.objects.filter(player=obj).exists() else False
+      }
+
+      if location != None:
+        toReturn['latitude'] = location.latitude
+        toReturn['longitude'] = location.longitude
+
+      return toReturn
+
+    return json.JSONEncoder.default(self, obj)
+
 
 """
 import json
