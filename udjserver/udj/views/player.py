@@ -117,7 +117,7 @@ def createPlayer(request, user_id):
     else:
       return HttpResponseBadRequest('Bad location')
 
-  return HttpResponse(json.dumps({'player_id' : newPlayer.id}))
+  return HttpResponse(json.dumps({'player_id' : newPlayer.id}), status=201, content_type="text/json")
 
 
 

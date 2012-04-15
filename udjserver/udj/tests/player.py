@@ -1,5 +1,10 @@
 import json
 from udj.tests.testhelpers import JeffTestCase
+from udj.tests.testhelpers import YunYoungTestCase
+from udj.models import Player
+from udj.models import PlayerLocation
+from udj.models import PlayerPassword
+
 
 class GetPlayersTests(JeffTestCase):
   def testGetNearbyPlayers(self):
@@ -29,6 +34,38 @@ class GetPlayersTests(JeffTestCase):
     self.assertEqual("kurtis", firstPlayer['owner_username'])
     self.assertEqual(2, firstPlayer['owner_id'])
     self.assertEqual(False, firstPlayer['has_password'])
+
+class CreateEventTest(YunYoungTestCase):
+  def testCreateEvent(self):
+    playerName = "Yunyoung Player"
+    payload = {'name' : playerName } 
+    response = self.doJSONPut('/udj/users/7/players/player', json.dumps(payload))
+    self.assertEqual(response.status_code, 201, "Error: " + response.content)
+    self.isJSONResponse(response)
+    givenPlayerId = json.loads(response.content)['player_id']
+    addedPlayer = Player.objects.get(pk=givenPlayerId)
+    self.assertEqual(addedPlayer.name, playerName)
+    self.assertEqual(addedPlayer.owning_user.id, 7)
+    self.assertFalse(PlayerLocation.objects.filter(player=addedPlayer).exists())
+    self.assertFalse(PlayerPassword.objects.filter(player=addedPlayer).exists())
+
+  """
+  def testCreatePasswordEvent(self):
+    eventName = "A Bitchn' Party"
+    eventPassword = 'dog'
+    event = {
+      'name' : eventName,
+      'password' : eventPassword
+    }
+    response = self.doJSONPut('/udj/events/event', json.dumps(event))
+    self.assertEqual(response.status_code, 201, "Error: " + response.content)
+    self.verifyJSONResponse(response)
+    givenEventId = json.loads(response.content)['event_id']
+    addedEvent = Event.objects.get(pk=givenEventId)
+    self.assertEqual(addedEvent.name, eventName)
+    partyHost = EventGoer.objects.get(event=addedEvent, user__id=self.user_id)
+    password = EventPassword.objects.get(event__id=givenEventId)
+  """
 
 
 

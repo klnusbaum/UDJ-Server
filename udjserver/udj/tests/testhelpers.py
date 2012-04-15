@@ -22,8 +22,8 @@ class DoesServerOpsTestCase(TestCase):
     self.user_id = ticket_and_user_id['user_id']
 
   def doJSONPut(self, url, payload, headers={}):
-    headers = dict(headers.items + DoesServerOpsTestCase.machine_headers.items)
-    headers[DJANGO_TICKET_HEADER] = ticket_hash
+    headers = dict(headers.items() + DoesServerOpsTestCase.machine_headers.items())
+    headers[DJANGO_TICKET_HEADER] = self.ticket_hash
     return self.client.put(
       url,
       data=payload, content_type='text/json',
@@ -59,3 +59,7 @@ class KurtisTestCase(DoesServerOpsTestCase):
 class JeffTestCase(DoesServerOpsTestCase):
   username = "jeff"
   userpass = "testjeff"
+
+class YunYoungTestCase(DoesServerOpsTestCase):
+  username = "yunyoung"
+  userpass = "testyunyoung"
