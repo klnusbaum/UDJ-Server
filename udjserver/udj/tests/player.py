@@ -5,6 +5,8 @@ from udj.models import Player
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
 
+import hashlib
+
 
 class GetPlayersTests(JeffTestCase):
   def testGetNearbyPlayers(self):
@@ -35,8 +37,8 @@ class GetPlayersTests(JeffTestCase):
     self.assertEqual(2, firstPlayer['owner_id'])
     self.assertEqual(False, firstPlayer['has_password'])
 
-class CreateEventTest(YunYoungTestCase):
-  def testCreateEvent(self):
+class CreatePlayerTest(YunYoungTestCase):
+  def testCreatePlayer(self):
     playerName = "Yunyoung Player"
     payload = {'name' : playerName } 
     response = self.doJSONPut('/udj/users/7/players/player', json.dumps(payload))
@@ -48,6 +50,26 @@ class CreateEventTest(YunYoungTestCase):
     self.assertEqual(addedPlayer.owning_user.id, 7)
     self.assertFalse(PlayerLocation.objects.filter(player=addedPlayer).exists())
     self.assertFalse(PlayerPassword.objects.filter(player=addedPlayer).exists())
+
+  def testCreatePasswordPlayer(self):
+    playerName = "Yunyoung Player"
+    password = 'playerpassword'
+    m = hashlib.sha1()
+    m.update(password)
+    passwordHash = m.hexdigest()
+    payload = {'name' : playerName, 'password' : password}
+    response = self.doJSONPut('/udj/users/7/players/player', json.dumps(payload))
+    self.assertEqual(response.status_code, 201, "Error: " + response.content)
+    self.isJSONResponse(response)
+    givenPlayerId = json.loads(response.content)['player_id']
+    addedPlayer = Player.objects.get(pk=givenPlayerId)
+    self.assertEqual(addedPlayer.name, playerName)
+    self.assertEqual(addedPlayer.owning_user.id, 7)
+    self.assertFalse(PlayerLocation.objects.filter(player=addedPlayer).exists())
+
+    addedPassword = PlayerPassword.objects.get(player=addedPlayer)
+    self.assertEqual(addedPassword.password_hash, passwordHash)
+
 
   """
   def testCreatePasswordEvent(self):

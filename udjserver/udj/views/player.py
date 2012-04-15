@@ -1,8 +1,9 @@
 import json
 import math
 
-from udj.models import PlayerLocation
 from udj.models import Player
+from udj.models import PlayerLocation
+from udj.models import PlayerPassword
 from udj.decorators import AcceptsMethods
 from udj.decorators import NeedsJSON
 from udj.authdecorators import NeedsAuth
@@ -18,6 +19,8 @@ from udj.exceptions import LocationNotFoundError
 
 from httplib import HTTPConnection
 from httplib import HTTPResponse
+
+import hashlib
 
 from settings import geocodeLocation
 
