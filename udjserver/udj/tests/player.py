@@ -76,7 +76,7 @@ class CreatePlayerTest(YunYoungTestCase):
     location = {
         'address' : '201 N Goodwin Ave',
         'city' : 'Urbana',
-        'state' : 'MN',
+        'state' : 'IL',
         'zipcode' : 61801
     }
     payload['location'] = location
@@ -91,6 +91,12 @@ class CreatePlayerTest(YunYoungTestCase):
     self.assertFalse(PlayerPassword.objects.filter(player=addedPlayer).exists())
 
     createdLocation = PlayerLocation.objects.get(player__id=givenPlayerId)
+    self.assertEqual(createdLocation.address, location['address'])
+    self.assertEqual(createdLocation.city, location['city'])
+    self.assertEqual(createdLocation.state.name, location['state'])
+    self.assertEqual(createdLocation.zipcode, location['zipcode'])
+    self.assertEqual(createdLocation.latitude, 40.1135372574038)
+    self.assertEqual(createdLocation.longitude, -88.2240781569526)
 
 
 
