@@ -1,4 +1,28 @@
 [
+
+  {
+    "pk": 1,
+    "model": "udj.player",
+    "fields": {
+      "owning_user": 2,
+      "name": "Kurtis Player"
+    }
+  },
+
+  {
+    "pk": 1,
+    "model": "udj.playerlocation",
+    "fields": {
+      "player" : 1,
+      "address" : "1901 N Lincoln Ave",
+      "city": "Urbana",
+      "state": 13,
+      "zipcode": 61801,
+      "latitude": 40.129839,
+      "longitude": -88.219584
+    }
+  },
+
   {
     "pk": 1, 
     "model": "auth.user", 
@@ -123,6 +147,357 @@
       "password": "sha1$ba6e8$1a1a9583d77c053b7de164ac418b853d52620d49", 
       "email": "", 
       "date_joined": "2012-04-14 23:57:48"
+    }
+  },
+
+  {
+    "pk": 1,
+    "model": "udj.state",
+    "fields":{
+      "name": "AL"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "udj.state",
+    "fields": {
+      "name": "AK"
+    }
+  },
+  {
+    "pk": 3,
+    "model": "udj.state",
+    "fields": {
+      "name": "AZ"
+    }
+  },
+  {
+    "pk": 4,
+    "model": "udj.state",
+    "fields": {
+      "name": "AR"
+    }
+  },
+  {
+    "pk": 5,
+    "model": "udj.state",
+    "fields": {
+      "name": "CA"
+    }
+  },
+  {
+    "pk": 6,
+    "model": "udj.state",
+    "fields": {
+      "name": "CO"
+    }
+  },
+  {
+    "pk": 7,
+    "model": "udj.state",
+    "fields": {
+      "name": "CT"
+    }
+  },
+  {
+    "pk": 8,
+    "model": "udj.state",
+    "fields": {
+      "name": "DE"
+    }
+  },
+  {
+    "pk": 9,
+    "model": "udj.state",
+    "fields": {
+      "name": "FL"
+    }
+  },
+  {
+    "pk": 10,
+    "model": "udj.state",
+    "fields": {
+      "name": "GA"
+    }
+  },
+  {
+    "pk": 11,
+    "model": "udj.state",
+    "fields": {
+      "name": "HI"
+    }
+  },
+  {
+    "pk": 12,
+    "model": "udj.state",
+    "fields": {
+      "name": "ID"
+    }
+  },
+  {
+    "pk": 13,
+    "model": "udj.state",
+    "fields": {
+      "name": "IL"
+    }
+  },
+  {
+    "pk": 14,
+    "model": "udj.state",
+    "fields": {
+      "name": "IN"
+    }
+  },
+  {
+    "pk": 15,
+    "model": "udj.state",
+    "fields": {
+      "name": "IA"
+    }
+  },
+  {
+    "pk": 16,
+    "model": "udj.state",
+    "fields": {
+      "name": "KS"
+    }
+  },
+  {
+    "pk": 17,
+    "model": "udj.state",
+    "fields": {
+      "name": "KY"
+    }
+  },
+  {
+    "pk": 18,
+    "model": "udj.state",
+    "fields": {
+      "name": "LA"
+    }
+  },
+  {
+    "pk": 19,
+    "model": "udj.state",
+    "fields": {
+      "name": "ME"
+    }
+  },
+  {
+    "pk": 20,
+    "model": "udj.state",
+    "fields": {
+      "name": "MD"
+    }
+  },
+  {
+    "pk": 21,
+    "model": "udj.state",
+    "fields": {
+      "name": "MA"
+    }
+  },
+  {
+    "pk": 22,
+    "model": "udj.state",
+    "fields": {
+      "name": "MI"
+    }
+  },
+  {
+    "pk": 23,
+    "model": "udj.state",
+    "fields": {
+      "name": "MN"
+    }
+  },
+  {
+    "pk": 24,
+    "model": "udj.state",
+    "fields": {
+      "name": "MS"
+    }
+  },
+  {
+    "pk": 25,
+    "model": "udj.state",
+    "fields": {
+      "name": "MO"
+    }
+  },
+  {
+    "pk": 26,
+    "model": "udj.state",
+    "fields": {
+      "name": "MT"
+    }
+  },
+  {
+    "pk": 27,
+    "model": "udj.state",
+    "fields": {
+      "name": "NE"
+    }
+  },
+  {
+    "pk": 28,
+    "model": "udj.state",
+    "fields": {
+      "name": "NV"
+    }
+  },
+  {
+    "pk": 29,
+    "model": "udj.state",
+    "fields": {
+      "name": "NH"
+    }
+  },
+  {
+    "pk": 30,
+    "model": "udj.state",
+    "fields": {
+      "name": "NJ"
+    }
+  },
+  {
+    "pk": 31,
+    "model": "udj.state",
+    "fields": {
+      "name": "NM"
+    }
+  },
+  {
+    "pk": 32,
+    "model": "udj.state",
+    "fields": {
+      "name": "NY"
+    }
+  },
+  {
+    "pk": 33,
+    "model": "udj.state",
+    "fields": {
+      "name": "NC"
+    }
+  },
+  {
+    "pk": 34,
+    "model": "udj.state",
+    "fields": {
+      "name": "ND"
+    }
+  },
+  {
+    "pk": 35,
+    "model": "udj.state",
+    "fields": {
+      "name": "OH"
+    }
+  },
+  {
+    "pk": 36,
+    "model": "udj.state",
+    "fields": {
+      "name": "OK"
+    }
+  },
+  {
+    "pk": 37,
+    "model": "udj.state",
+    "fields": {
+      "name": "OR"
+    }
+  },
+  {
+    "pk": 38,
+    "model": "udj.state",
+    "fields": {
+      "name": "PA"
+    }
+  },
+  {
+    "pk": 39,
+    "model": "udj.state",
+    "fields": {
+      "name": "RI"
+    }
+  },
+  {
+    "pk": 40,
+    "model": "udj.state",
+    "fields": {
+      "name": "SC"
+    }
+  },
+  {
+    "pk": 41,
+    "model": "udj.state",
+    "fields": {
+      "name": "SD"
+    }
+  },
+  {
+    "pk": 42,
+    "model": "udj.state",
+    "fields": {
+      "name": "TN"
+    }
+  },
+  {
+    "pk": 43,
+    "model": "udj.state",
+    "fields": {
+      "name": "TX"
+    }
+  },
+  {
+    "pk": 44,
+    "model": "udj.state",
+    "fields": {
+      "name": "UT"
+    }
+  },
+  {
+    "pk": 45,
+    "model": "udj.state",
+    "fields": {
+      "name": "VT"
+    }
+  },
+  {
+    "pk": 46,
+    "model": "udj.state",
+    "fields": {
+      "name": "VA"
+    }
+  },
+  {
+    "pk": 47,
+    "model": "udj.state",
+    "fields": {
+      "name": "WA"
+    }
+  },
+  {
+    "pk": 48,
+    "model": "udj.state",
+    "fields": {
+      "name": "WV"
+    }
+  },
+  {
+    "pk": 49,
+    "model": "udj.state",
+    "fields": {
+      "name": "WI"
+    }
+  },
+  {
+    "pk": 50,
+    "model": "udj.state",
+    "fields": {
+      "name": "WY"
     }
   }
 ]

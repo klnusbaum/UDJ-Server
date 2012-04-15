@@ -1,3 +1,9 @@
+
+
+
+
+
+"""
 import json
 import hashlib
 from datetime import datetime
@@ -288,4 +294,4 @@ def setCurrentSong(request, event_id):
 def getEventGoers(request, event_id):
   eventGoers = EventGoer.objects.filter(event__id=event_id)
   return getJSONResponse(getJSONForEventGoers(eventGoers))
-
+"""
