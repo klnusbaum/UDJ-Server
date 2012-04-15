@@ -5,11 +5,19 @@ class GetEventsTest(JeffTestCase):
   def testGetNearbyEvents(self):
     #TODO This needs to be more robust, however the location functionality
     # isn't fully working just yet
-    response = self.doGet('/udj/players/40.11381/-88.224083')
+    response = self.doGet('/udj/players/40.11241/-88.222053')
     self.assertEqual(response.status_code, 200, response.content)
     self.isJSONResponse(response)
     players = json.loads(response.content)
     self.assertEqual(len(players), 1)
+    firstPlayer = players[0]
+    self.assertEqual(1, firstPlayer['id'])
+    self.assertEqual("Kurtis Player", firstPlayer['name'])
+    self.assertEqual("kurtis", firstPlayer['owner_username'])
+    self.assertEqual(2, firstPlayer['owner_id'])
+    self.assertEqual(False, firstPlayer['has_password'])
+
+
 
 
 """

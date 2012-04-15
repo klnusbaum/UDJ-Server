@@ -9,18 +9,64 @@
       "state": "AC"
     }
   },
+  {
+    "pk": 2,
+    "model": "udj.player",
+    "fields": {
+      "owning_user": 2,
+      "name": "Minnesota Player",
+      "state": "IN"
+    }
+  },
+  {
+    "pk": 3,
+    "model": "udj.player",
+    "fields": {
+      "owning_user": 6,
+      "name": "Alejandro Player",
+      "state": "AC"
+    }
+  },
 
   {
     "pk": 1,
     "model": "udj.playerlocation",
     "fields": {
       "player" : 1,
-      "address" : "1901 N Lincoln Ave",
+      "address" : "201 N Goodwin Ave",
       "city": "Urbana",
       "state": 13,
       "zipcode": 61801,
-      "latitude": 40.129839,
-      "longitude": -88.219584
+      "latitude": 40.113331,
+      "longitude": -88.223948
+    }
+  },
+
+  {
+    "pk": 2,
+    "model": "udj.playerlocation",
+    "fields": {
+      "player" : 2,
+      "address" : "305 Vicksburg Lane",
+      "city": "Plymouth",
+      "state": 23,
+      "zipcode": 55447,
+      "latitude": 44.981822,
+      "longitude": -93.481330
+    }
+  },
+
+  {
+    "pk": 3,
+    "model": "udj.playerlocation",
+    "fields": {
+      "player" : 3,
+      "address" : "1365 Memorial Drive",
+      "city": "Coral Gables",
+      "state": 9,
+      "zipcode": 33146,
+      "latitude": 25.721439,
+      "longitude": -80.27994
     }
   },
 
