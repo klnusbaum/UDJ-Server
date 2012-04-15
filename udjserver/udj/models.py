@@ -5,8 +5,11 @@ class State(models.Model):
   name = models.CharField(max_length=2)
 
 class Player(models.Model):
+  PLAYER_STATE_CHOICES = (('IN', u'Inactive'), ('AC', u'Active'),)
+
   owning_user = models.ForeignKey(User)
   name = models.CharField(max_length=200)
+  state = models.CharField(max_length=2, default='IN')
 
   def __unicode__(self):
     return self.event.name + " password" 
@@ -20,6 +23,7 @@ class PlayerPassword(models.Model):
     return self.player.name + " password"
 
 class PlayerLocation(models.Model):
+
   player = models.ForeignKey(Player, unique=True)
   address = models.CharField(max_length=50)
   city = models.CharField(max_length=50)

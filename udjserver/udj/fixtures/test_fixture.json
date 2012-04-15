@@ -5,7 +5,8 @@
     "model": "udj.player",
     "fields": {
       "owning_user": 2,
-      "name": "Kurtis Player"
+      "name": "Kurtis Player",
+      "state": "AC"
     }
   },
 
