@@ -17,8 +17,6 @@ import hashlib
 
 class GetPlayersTests(JeffTestCase):
   def testGetNearbyPlayers(self):
-    #TODO This needs to be more robust, however the location functionality
-    # isn't fully working just yet
     response = self.doGet('/udj/players/40.11241/-88.222053')
     self.assertEqual(response.status_code, 200, response.content)
     self.isJSONResponse(response)
@@ -210,6 +208,18 @@ class PlayerQueryTests(YunYoungTestCase):
     response = self.doGet('/udj/players/1/users')
     self.assertEqual(response.status_code, 401)
     self.assertEqual(response['WWW-Authenticate'], 'begin-participating')
+
+  def testSimpleGetMusic(self):
+
+    Participant.objects.filter(player__id=1, user__id=7).update(time_last_interaction=datetime.now())
+
+    response = self.doGet('/udj/players/1/users/available_music?query=Third+Eye+Blind')
+    self.assertEqual(response.status_code, 200)
+    songResults = json.loads(response.content)
+    self.assertEquals(5, len(songResults))
+    expectedLibIds =[1,2,3,4,5]
+    for song in songResults:
+      self.assertTrue(song.id in expectedLibIds)
 
 
 

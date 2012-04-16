@@ -216,6 +216,32 @@ def getActiveUsersForPlayer(request, player_id, activePlayer):
     json.dumps(Participant.activeParticipants(activePlayer),
     cls=UDJEncoder))
 
+@NeedsAuth
+@AcceptsMethods(['GET'])
+@ActivePlayerExists
+@IsOwnerOrParticipates
+@HasNZParams(['query'])
+def getAvailableMusic(request, player_id, activePlayer):
+
+
+  event = Event.objects.get(pk=event_id)
+  if(not request.GET.__contains__('query')):
+    return HttpResponseBadRequest('Must specify query')
+  query = request.GET.__getitem__('query')
+  if query=='':
+    return HttpResponseBadRequest('Blank searches not allowed')
+  available_songs = AvailableSong.objects.filter(
+    event__id=event_id, song__owning_user=event.host).exclude(state=u'RM')
+  available_songs = available_songs.filter(
+    Q(song__title__icontains=query) |
+    Q(song__artist__icontains=query) |
+    Q(song__album__icontains=query))
+  if(request.GET.__contains__('max_results')):
+    available_songs = available_songs[:request.GET['max_results']]
+
+  return getJSONResponse(getJSONForAvailableSongs(available_songs))
+
+
 """
 import json
 import hashlib

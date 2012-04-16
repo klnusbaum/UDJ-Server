@@ -25,7 +25,7 @@ def HasNZParams(necessaryParams):
     def wrapper(*args, **kwargs):
       request = args[0]
       for param in necessaryParams:
-        if not request.REQUEST.__contains__(param) or request.REQUEST[param] == "":
+        if not (param in request.REQUEST) or request.REQUEST[param] == "":
           return HttpResponseBadRequest("Must include non-blank " + param + " parameter")
       return target(*args, **kwargs)
     return wrapper
