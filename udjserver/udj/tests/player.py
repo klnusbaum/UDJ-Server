@@ -151,7 +151,7 @@ class ParticipateTests(YunYoungTestCase):
 
   def testBadPassword(self):
     response = self.doPut('/udj/players/3/users/7', 
-        headers={DJANGO_PLAYER_PASSWORD_HEADER : 'wrongpassword'})
+        headers={DJANGO_PLAYER_PASSWORD_HEADER : 'wrong password'})
     self.assertEqual(response.status_code, 401, "Error: " + response.content)
     self.assertEqual(response['WWW-Authenticate'], 'player-password')
     newParticipant = Participant.objects.filter(user__id=7, player__id=3)
