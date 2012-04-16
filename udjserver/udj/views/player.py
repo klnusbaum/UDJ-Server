@@ -3,6 +3,7 @@ import math
 
 from django.views.decorators.csrf import csrf_exempt
 from udj.headers import MISSING_RESOURCE_HEADER
+from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER
 from udj.models import Player
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
@@ -105,8 +106,8 @@ def createPlayer(request, user_id):
 
   #If locaiton provided, geocode it and save it
   if 'location' in newPlayerJSON:
-    if isValidLocation(newPlayerJSON['location']):
-      location = newPlayerJSON['location']
+    location = newPlayerJSON['location']
+    if isValidLocation(location):
       try:
         lat, lon = geocodeLocation(location)
         PlayerLocation(
@@ -179,9 +180,17 @@ def deletePlayerPassword(request, user_id, player_id, playerToChange):
     toReturn[MISSING_RESOURCE_HEADER] = 'password'
     return toReturn
 
-
-
-
+@AcceptsMethods(['PUT'])
+@NeedsAuth
+@TicketUserMatch
+@ActivePlayerExists
+def participateWithPlayer(request, player_id, user_id, activePlayer):
+  playerPassword = PlayerPassword.objects.filter(player=activePlayer)
+  if playerPassword.exists():
+    if DJANGO_PLAYER_PASSWORD_HEADER in request.META:
+      hashedPassword = hashPlayerPassword(request.META[DJANGO_PLAYER_PASSWORD_HEADER])
+      if hashedPassword == playerPassword.password_hash:
+        Participant.
 
 
 """
@@ -468,7 +477,7 @@ def setCurrentSong(request, event_id):
 
   return HttpResponse("Song changed")
 
-  
+
 @NeedsAuth
 @AcceptsMethods('GET')
 @InParty

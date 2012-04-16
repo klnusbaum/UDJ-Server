@@ -108,7 +108,7 @@ class Participant(models.Model):
   user = models.ForeignKey(User)
   player = models.ForeignKey(Player)
   time_joined = models.DateTimeField(auto_now_add=True)
-  time_last_interaction = models.DateTimeField(auto_now_add=True)
+  time_last_interaction = models.DateTimeField(auto_now=True, auto_now_add=True)
 
   class Meta:
     unique_together = ("user", "player")

@@ -1,4 +1,6 @@
 from udj.headers import DJANGO_TICKET_HEADER
+from udj.headers import MISSING_RESOURCE_HEADER
+from udj.headers import MISSING_REASON_HEADER
 from django.http import HttpResponse
 from django.http import HttpResponseNotAllowed
 from django.core.exceptions import ObjectDoesNotExist
@@ -49,6 +51,27 @@ def PlayerExists(function):
       toChange = Player.objects.get(owning_user__id=user_id, id=player_id)
       kwargs['playerToChange'] = toChange
       return function(*args, **kwargs)
+    except ObjectDoesNotExist:
+      toReturn =  HttpResponseNotFound()
+      toReturn[MISSING_RESOURCE_HEADER] = 'player'
+      return toReturn
+  return wrapper
+
+def ActivePlayerExists(function):
+  def wrapper(*args, **kwargs):
+    request = args[0]
+    user_id = kwargs['user_id']
+    player_id = kwargs['player_id']
+    try:
+      potentialPlayer = Player.objects.get(owning_user__id=user_id, id=player_id)
+      if potentialPlayer.state == 'AC':
+        kwargs['activePlayer'] = potentialPlayer
+        return function(*args, **kwargs)
+      else:
+        toReturn =  HttpResponseNotFound()
+        toReturn[MISSING_RESOURCE_HEADER] = 'player'
+        toReturn[MISSING_REASON_HEADER] = 'inactive'
+        return toReturn
     except ObjectDoesNotExist:
       toReturn =  HttpResponseNotFound()
       toReturn[MISSING_RESOURCE_HEADER] = 'player'
