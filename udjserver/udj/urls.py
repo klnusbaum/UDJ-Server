@@ -9,7 +9,7 @@ urlpatterns += patterns('udj.views.player',
   (r'^players$', 'getPlayers'),
   (r'^users/(?P<user_id>\d+)/players/player$', 'createPlayer'),
   (r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/name$', 'changePlayerName'),
-  (r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/password$', 'setPlayerPassword'),
+  (r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/password$', 'modifyPlayerPassword'),
 )
 
 """

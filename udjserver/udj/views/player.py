@@ -2,6 +2,7 @@ import json
 import math
 
 from django.views.decorators.csrf import csrf_exempt
+from udj.headers import MISSING_RESOURCE_HEADER
 from udj.models import Player
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
@@ -100,7 +101,7 @@ def createPlayer(request, user_id):
 
   #If password provided, create and save password
   if 'password' in newPlayerJSON:
-    PlayerPassword(player=newPlayer, password_hash=hashPlayerPassword(newPlayer['password'])).save()
+    PlayerPassword(player=newPlayer, password_hash=hashPlayerPassword(newPlayerJSON['password'])).save()
 
   #If locaiton provided, geocode it and save it
   if 'location' in newPlayerJSON:
@@ -142,10 +143,16 @@ def changePlayerName(request, user_id, player_id, playerToChange):
   return HttpResponse()
 
 @csrf_exempt
-@AcceptsMethods(['POST'])
+@AcceptsMethods(['POST', 'DELETE'])
 @NeedsAuth
 @TicketUserMatch
 @PlayerExists
+def modifyPlayerPassword(request, user_id, player_id, playerToChange):
+  if request.method == 'POST':
+    return setPlayerPassword(request, user_id, player_id, playerToChange)
+  elif request.method == 'DELETE':
+    return deletePlayerPassword(request, user_id, player_id, playerToChange)
+
 def setPlayerPassword(request, user_id, player_id, playerToChange):
   givenPassword = request.raw_post_data
   if givenPassword == '':
@@ -160,10 +167,17 @@ def setPlayerPassword(request, user_id, player_id, playerToChange):
     playerPassword.password_hash = hashedPassword
     playerPassword.save()
 
-
   return HttpResponse()
 
-
+def deletePlayerPassword(request, user_id, player_id, playerToChange):
+  try:
+    toDelete = PlayerPassword.objects.get(player=playerToChange)
+    toDelete.delete()
+    return HttpResponse()
+  except ObjectDoesNotExist:
+    toReturn = HttpResponseNotFound()
+    toReturn[MISSING_RESOURCE_HEADER] = 'password'
+    return toReturn
 
 
 

@@ -130,6 +130,12 @@ class PlayerModificationTests2(AlejandroTestCase):
     self.assertEqual(playerPassword.password_hash, hashPlayerPassword(newPassword))
     self.assertTrue(oldTime < playerPassword.time_set)
 
+  def testDeletePassword(self):
+    response = self.doDelete('/udj/users/6/players/3/password')
+    self.assertEqual(response.status_code, 200, "Error: " + response.content)
+    playerPassword = PlayerPassword.objects.filter(player__id=3)
+    self.assertFalse(playerPassword.exists())
+
 
 
 """
