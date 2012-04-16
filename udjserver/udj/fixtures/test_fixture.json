@@ -80,6 +80,37 @@
     }
   },
 
+  {
+    "pk": 1,
+    "model": "udj.participant",
+    "fields": {
+      "player": 1,
+      "user": 3,
+      "time_joined": "2012-04-14 11:54:22",
+      "time_last_interaction" : "2012-04-14 12:30:33"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "udj.participant",
+    "fields": {
+      "player": 1,
+      "user": 4,
+      "time_joined": "2012-04-14 12:54:22",
+      "time_last_interaction" : "2012-04-14 13:30:33"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "udj.participant",
+    "fields": {
+      "player": 1,
+      "user": 7,
+      "time_joined": "2012-04-14 12:34:22",
+      "time_last_interaction" : "2012-04-14 13:27:33"
+    }
+  },
+
 
 
   {

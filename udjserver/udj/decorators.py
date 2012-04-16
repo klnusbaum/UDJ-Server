@@ -7,6 +7,7 @@ from django.http import HttpResponseNotFound
 from django.core.exceptions import ObjectDoesNotExist
 from udj.models import Player
 
+
 def AcceptsMethods(acceptedMethods):
   def decorator(target):
     def wrapper(*args, **kwargs):
@@ -61,7 +62,6 @@ def PlayerExists(function):
 def ActivePlayerExists(function):
   def wrapper(*args, **kwargs):
     request = args[0]
-    user_id = kwargs['user_id']
     player_id = kwargs['player_id']
     try:
       potentialPlayer = Player.objects.get(id=player_id)

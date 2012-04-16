@@ -9,6 +9,7 @@ from udj.models import PlayerPassword
 from udj.models import Participant
 from udj.auth import hashPlayerPassword
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER
+from datetime import datetime
 
 import hashlib
 
@@ -137,7 +138,7 @@ class PlayerModificationTests2(AlejandroTestCase):
     playerPassword = PlayerPassword.objects.filter(player__id=3)
     self.assertFalse(playerPassword.exists())
 
-class ParticipateTests(YunYoungTestCase):
+class BeginParticipateTests(YunYoungTestCase):
   def testSimplePlayer(self):
     response = self.doPut('/udj/players/1/users/7')
     self.assertEqual(response.status_code, 201, "Error: " + response.content)
@@ -164,6 +165,18 @@ class ParticipateTests(YunYoungTestCase):
     newParticipant = Participant.objects.filter(user__id=7, player__id=3)
     self.assertFalse(newParticipant.exists())
 
+class PlayerAdminTests(KurtisTestCase):
+
+  def testGetUser(self):
+    participants = Participant.objects.filter(player__id=1)
+    participants.update(time_last_interaction=datetime.now())
+    response = self.doGet('/udj/players/1/users')
+    self.assertEqual(response.status_code, 200)
+    jsonUsers = json.loads(response.content)
+    self.assertTrue(len(jsonUsers), 2) 
+    possibleUsers = ['jeff', 'vilas', 'yunyoung']
+    for user in jsonUsers:
+      self.assertTrue(user['username'] in possibleUsers)
 
 """
 import json

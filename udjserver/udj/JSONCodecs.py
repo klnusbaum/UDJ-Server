@@ -2,6 +2,7 @@ import json
 from udj.models import Player
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
+from udj.models import Participant
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.query import QuerySet
 
@@ -11,6 +12,12 @@ class UDJEncoder(json.JSONEncoder):
   def default(self, obj):
     if isinstance(obj, QuerySet):
       return [x for x in obj]
+    elif isinstance(obj, Participant):
+      return {
+          'username' : obj.user.username,
+          'first_name' : obj.user.first_name,
+          'last_name' : obj.user.last_name
+      }
     elif isinstance(obj, Player):
       location = None
       try:

@@ -1,10 +1,32 @@
 from udj.auth import isValidTicket
 from udj.auth import ticketMatchesUser
+from udj.auth import getUserForTicket
 from udj.headers import DJANGO_TICKET_HEADER
+
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
+
+from datetime import datetime
+from datetime import timedelta
+
+
+def userParticipates(player, user):
+  return Participant.objects.filter(player=player, user=user, 
+    time_last_interaction__gt=(datetime.now() - timedelta(hours=1)))
+
+def IsOwnerOrParticipates(function):
+  def wrapper(*args, **kwargs):
+    request = args[0]
+    user = getUserForTicket(request)
+    activePlayer = kwargs['activePlayer']
+    if activePlayer.owning_user==user or userParticipates(activePlayer, user):
+      return function(*args, **kwargs)
+    else:
+      toReturn = HttpResponse(status=401)
+      toReturn['WWW-Authenticate'] = 'being-participating'
+  return wrapper
 
 
 def NeedsAuth(function):
@@ -18,7 +40,7 @@ def NeedsAuth(function):
       request.META['REMOTE_ADDR'],
       request.META['REMOTE_PORT']):
       return HttpResponseForbidden("Invalid ticket: \"" + 
-        request.META[getDjangoTicketHeader()] + "\"")
+        request.META[DJANGO_TICKET_HEADER] + "\"")
     else:
       return function(*args, **kwargs)
   return wrapper

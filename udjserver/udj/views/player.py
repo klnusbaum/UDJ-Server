@@ -15,19 +15,23 @@ from udj.decorators import PlayerExists
 from udj.decorators import ActivePlayerExists
 from udj.authdecorators import NeedsAuth
 from udj.authdecorators import TicketUserMatch
+from udj.authdecorators import IsOwnerOrParticipates
 from udj.decorators import HasNZParams
 from udj.JSONCodecs import UDJEncoder
+from udj.exceptions import LocationNotFoundError
+from udj.auth import hashPlayerPassword
+
+from datetime import datetime
+from datetime import timedelta
 
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
 from django.contrib.auth.models import User
-from udj.exceptions import LocationNotFoundError
 
 from httplib import HTTPConnection
 from httplib import HTTPResponse
 
-from udj.auth import hashPlayerPassword
 
 from settings import geocodeLocation
 
@@ -204,7 +208,15 @@ def participateWithPlayer(request, player_id, user_id, activePlayer):
   else: 
     return onSuccessfulPlayerAuth(activePlayer, user_id)
 
-
+@NeedsAuth
+@AcceptsMethods(['GET'])
+@ActivePlayerExists
+@IsOwnerOrParticipates
+def getActiveUsersForPlayer(request, player_id, activePlayer):
+  participants = Participant.objects.filter(
+    player__id=player_id,
+    time_last_interaction__gt=(datetime.now() - timedelta(hours=1)))
+  return HttpResponse(json.dumps(participants, cls=UDJEncoder))
 
 
 
