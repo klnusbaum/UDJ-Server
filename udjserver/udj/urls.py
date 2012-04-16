@@ -16,6 +16,7 @@ urlpatterns += patterns('udj.views.player',
 
 urlpatterns += patterns('udj.views.library',
   (r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/library/song$', 'addSong2Library'),
+  (r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/library/(?P<lib_id>\d+)$', 'deleteSongFromLibrary'),
 )
 
 

@@ -7,10 +7,13 @@ from udj.authdecorators import NeedsAuth
 from udj.authdecorators import TicketUserMatch
 from udj.models import LibraryEntry
 from udj.models import Player
+from udj.headers import MISSING_RESOURCE_HEADER
 
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
+from django.http import HttpResponseNotFound
+from django.core.exceptions import ObjectDoesNotExist
 
 def isValidLibraryEntryJSON(libraryEntry):
   return "id" in libraryEntry \
@@ -21,8 +24,8 @@ def isValidLibraryEntryJSON(libraryEntry):
     and "track" in libraryEntry \
     and "duration" in libraryEntry \
 
-@TicketUserMatch
 @NeedsAuth
+@TicketUserMatch
 @AcceptsMethods(['PUT'])
 @NeedsJSON
 @PlayerExists
@@ -50,6 +53,22 @@ def addSong2Library(request, user_id, player_id, player):
     return HttpResponseBadRequest('Bad JSON')
 
   return HttpResponse(status=201)
+
+@NeedsAuth
+@TicketUserMatch
+@AcceptsMethods(['DELETE'])
+@PlayerExists
+def deleteSongFromLibrary(request, user_id, player_id, lib_id, player):
+  try:
+    libEntry = LibraryEntry.objects.get(player=player, player_lib_song_id=lib_id)
+    libEntry.is_deleted = True
+    libEntry.save()
+  except ObjectDoesNotExist:
+    toReturn = HttpResponseNotFound()
+    toReturn[MISSING_RESOURCE_HEADER] = 'song'
+    return toReturn
+
+  return HttpResponse()
 
 
 

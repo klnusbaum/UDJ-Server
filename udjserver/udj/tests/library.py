@@ -1,6 +1,7 @@
 import json
 from udj.models import LibraryEntry
 from udj.tests.testhelpers import KurtisTestCase
+from udj.headers import MISSING_RESOURCE_HEADER
 
 class LibTestCases(KurtisTestCase):
 
@@ -41,6 +42,17 @@ class LibTestCases(KurtisTestCase):
 
     response = self.doJSONPut('/udj/users/2/players/1/library/song', json.dumps(payload))
     self.assertEqual(409, response.status_code, response.content)
+
+  def testDelete(self):
+    response = self.doDelete('/udj/users/2/players/1/library/10')
+    self.assertEqual(200, response.status_code, response.content)
+    self.assertEqual(True, LibraryEntry.objects.get(player__id=1, player_lib_song_id=10).is_deleted)
+
+  def testBadDelete(self):
+    response = self.doDelete('/udj/users/2/players/1/library/12')
+    self.assertEqual(404, response.status_code, response.content)
+    self.assertEqual(response[MISSING_RESOURCE_HEADER], 'song')
+
 
 
 """
