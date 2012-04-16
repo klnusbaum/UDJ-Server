@@ -28,6 +28,20 @@ class LibTestCases(KurtisTestCase):
     self.assertEqual(201, response.status_code, response.content)
     self.verifySongAdded(payload)
 
+  def testDuplicateAdd(self):
+    payload = {
+      "id" : 10,
+      "title" : "My Name Is Skrillex",
+      "artist" : "Skrillex",
+      "album" : "My Name Is Skirllex",
+      "track" : 1,
+      "genre" : "Dubstep",
+      "duration" : 291
+    }
+
+    response = self.doJSONPut('/udj/users/2/players/1/library/song', json.dumps(payload))
+    self.assertEqual(409, response.status_code, response.content)
+
 
 """
 import json
