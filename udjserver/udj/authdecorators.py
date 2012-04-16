@@ -50,7 +50,7 @@ def TicketUserMatch(function):
     user_id = kwargs['user_id']
     if not ticketMatchesUser(request, user_id):
       return HttpResponseForbidden("The ticket doesn't match the given user\n" +
-        "Give Ticket: \"" + request.META[getDjangoTicketHeader()] + "\"\n" +
+        "Given Ticket: \"" + request.META[DJANGO_TICKET_HEADER] + "\"\n" +
         "Given User id: \"" + user_id + "\"")
     else:
       return function(*args, **kwargs)

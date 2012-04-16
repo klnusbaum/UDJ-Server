@@ -2,6 +2,171 @@
 
   {
     "pk": 1,
+    "model": "udj.libraryentry",
+    "fields": {
+      "player": 1,
+      "player_lib_song_id": 1,
+      "title": "Semi-Charmed Life",
+      "artist": "Third Eye Blind",
+      "album": "Third Eye Blind",
+      "track": 3,
+      "genre": "Rock",
+      "duration": 268,
+      "is_deleted": false
+    }
+  },
+
+  {
+    "pk": 2,
+    "model": "udj.libraryentry",
+    "fields": {
+      "player": 1,
+      "player_lib_song_id": 2,
+      "title": "Narcolepsy",
+      "artist": "Third Eye Blind",
+      "album": "Third Eye Blind",
+      "track": 2,
+      "genre": "Rock",
+      "duration": 228,
+      "is_deleted": false
+    }
+  },
+
+  {
+    "pk": 3,
+    "model": "udj.libraryentry",
+    "fields": {
+      "player": 1,
+      "player_lib_song_id": 3,
+      "title": "Narcolepsy",
+      "artist": "Third Eye Blind",
+      "album": "Graduate",
+      "track": 5,
+      "genre": "Rock",
+      "duration": 189,
+      "is_deleted": false
+    }
+  },
+
+  {
+    "pk": 4,
+    "model": "udj.libraryentry",
+    "fields": {
+      "player": 1,
+      "player_lib_song_id": 4,
+      "title": "Losing A Whole Year",
+      "artist": "Third Eye Blind",
+      "album": "Third Eye Blind",
+      "track": 1,
+      "genre": "Rock",
+      "duration": 200,
+      "is_deleted": false
+    }
+  },
+
+  {
+    "pk": 5,
+    "model": "udj.libraryentry",
+    "fields": {
+      "player": 1,
+      "player_lib_song_id": 5,
+      "title": "Never Let You Go",
+      "artist": "Third Eye Blind",
+      "album": "Blue",
+      "track": 3,
+      "genre": "Rock",
+      "duration": 237,
+      "is_deleted": false
+    }
+  },
+
+
+  {
+    "pk": 6,
+    "model": "udj.libraryentry",
+    "fields": {
+      "player": 1,
+      "player_lib_song_id": 6,
+      "title": "Ilyena",
+      "artist": "The Mars Volta",
+      "album": "The Bedlam in Goliath",
+      "track": 3,
+      "genre": "Rock",
+      "duration": 335,
+      "is_deleted": false
+    }
+  },
+
+  {
+    "pk": 7,
+    "model": "udj.libraryentry",
+    "fields": {
+      "player": 1,
+      "player_lib_song_id": 7,
+      "title": "Metatron",
+      "artist": "The Mars Volta",
+      "album": "The Bedlam in Goliath",
+      "track": 2,
+      "genre": "Rock",
+      "duration": 471,
+      "is_deleted": false
+    }
+  },
+
+  {
+    "pk": 8,
+    "model": "udj.libraryentry",
+    "fields": {
+      "player": 1,
+      "player_lib_song_id": 8,
+      "title": "Tourniquet Man",
+      "artist": "The Mars Volta",
+      "album": "The Bedlam in Goliath",
+      "track": 5,
+      "genre": "Rock",
+      "duration": 158,
+      "is_deleted": true
+    }
+  },
+
+  {
+    "pk": 9,
+    "model": "udj.libraryentry",
+    "fields": {
+      "player": 1,
+      "player_lib_song_id": 9,
+      "title": "Bangarang Feat. Sarah (Original Mix)",
+      "artist": "Skrillex",
+      "album": "Bangarang",
+      "track": 2,
+      "genre": "Dubstep",
+      "duration": 215,
+      "is_deleted": false
+    }
+  },
+
+  {
+    "pk": 10,
+    "model": "udj.libraryentry",
+    "fields": {
+      "player": 1,
+      "player_lib_song_id": 10,
+      "title": "My Name Is Skrillex",
+      "artist": "Skrillex",
+      "album": "My Name Is Skrillex",
+      "track": 1,
+      "genre": "Dubstep",
+      "duration": 291,
+      "is_deleted": false
+    }
+  },
+
+
+
+
+
+  {
+    "pk": 1,
     "model": "udj.player",
     "fields": {
       "owning_user": 2,

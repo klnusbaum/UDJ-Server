@@ -1,11 +1,11 @@
 import json
 from django.http import HttpRequest
 from django.http import HttpResponse
-from udj.decorators import TicketUserMatch
 from udj.decorators import NeedsJSON
+from udj.decorators import AcceptsMethods
 from udj.decorators import PlayerExists
 from udj.authdecorators import NeedsAuth
-from udj.authdecorators import AcceptsMethods
+from udj.authdecorators import TicketUserMatch
 
 def isValidLibraryEntryJSON(libraryEntry):
   return "id" in libraryEntry \
@@ -16,23 +16,36 @@ def isValidLibraryEntryJSON(libraryEntry):
     and "track_number" in libraryEntry \
     and "duration" in libraryEntry \
 
-@AcceptsMethods['PUT']
+@NeedsAuth
+@AcceptsMethods(['PUT'])
 @TicketUserMatch
 @PlayerExists
 @NeedsJSON
-def addSongToLibrary(request, user_id, player_id, player):
+def addSong2Library(request, user_id, player_id, player):
 
   try:
-    libraryEntryJSON = json.loads(request.raw_post_data)
+    libJSON = json.loads(request.raw_post_data)
   except ValueError:
     return HttpResponseBadRequest('Bad JSON')
 
-  if not isValidLibraryEntryJSON(libraryEntryJSON)
+
+  try:
+    if LibraryEntry.objets.filter(player=player, player_lib_song_id=libJSON['id']).exists():
+      return HttpResponse(status=409)
+    LibraryEntry(
+      player=player,
+      player_lib_song_id=libJSON['id'],
+      title=libJSON['title'],
+      artist=libJSON['artist'],
+      album=libJSON['album'],
+      genre=libJSON['genre'],
+      track_number=libJSON['track_number'],
+      duration=libJSON['duration']).save()
+  except KeyError:
     return HttpResponseBadRequest('Bad JSON')
 
-  LibraryEntry(
-    player=player,
-    player_lib_song_id=
+  return HttpResponse(status=201)
+
 
 
 

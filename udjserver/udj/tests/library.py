@@ -1,4 +1,36 @@
 import json
+from udj.models import LibraryEntry
+from udj.tests.testhelpers import KurtisTestCase
+
+class LibTestCases(KurtisTestCase):
+
+  def verifySongAdded(self, jsonSong):
+    addedSong = LibraryEntry.objects.get(player__id=1, player_lib_song_id=jsonSong['id'])
+    self.assertEqual(addedSong.title, jsonSong['title'])
+    self.assertEqual(addedSong.artist, jsonSong['artist'])
+    self.assertEqual(addedSong.album, jsonSong['album'])
+    self.assertEqual(addedSong.track, jsonSong['track'])
+    self.assertEqual(addedSong.genre, jsonSong['genre'])
+    self.assertEqual(addedSong.duration, jsonSong['duration'])
+
+  def testSimpleAdd(self):
+    payload = {
+      "id" : 11,
+      "title" : "Zero",
+      "artist" : "The Smashing Pumpkins",
+      "album" : "Mellon Collie And The Infinite Sadness",
+      "track_number" : 4,
+      "genre" : "Rock",
+      "duration" : 160
+    }
+
+    response = self.doJSONPut('/udj/users/1/players/1/library/song', json.dumps(payload))
+    self.assertEqual(201, response.status_code, response.content)
+    verifySongAdded(payload)
+
+
+"""
+import json
 from udj.headers import getDjangoUUIDHeader
 from udj.tests.testhelpers import User2TestCase
 from udj.tests.testhelpers import User3TestCase
@@ -115,3 +147,4 @@ class LibTestCases(User2TestCase):
     deletedEntries = LibraryEntry.objects.filter(
       host_lib_song_id=10, owning_user__id=2, is_deleted=True)
     self.assertEqual(len(deletedEntries), 1)
+"""
