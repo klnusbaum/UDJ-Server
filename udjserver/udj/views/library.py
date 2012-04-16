@@ -1,4 +1,32 @@
-# Create your views here.
+import json
+from django.http import HttpRequest
+from django.http import HttpResponse
+from udj.decorators import TicketUserMatch
+from udj.decorators import NeedsJSON
+from udj.decorators import PlayerExists
+from udj.authdecorators import NeedsAuth
+from udj.authdecorators import AcceptsMethods
+
+def isValidLibraryEntryJSON(libraryEntry):
+  return "id" in libraryEntry and "song" in libraryEntry and
+
+@AcceptsMethods['PUT']
+@TicketUserMatch
+@PlayerExists
+@NeedsJSON
+def addSongToLibrary(request, user_id, player_id, player):
+  try:
+    libraryEntryJSON = json.loads(request.raw_post_data)
+  except ValueError:
+    return HttpResponseBadRequest('Bad JSON')
+
+  if not isValidLibraryEntryJSON(libraryEntryJSON)
+    return HttpResponseBadRequest('Bad JSON')
+
+
+
+
+"""
 import json
 from udj.headers import getDjangoUUIDHeader
 from django.http import HttpRequest
@@ -58,3 +86,4 @@ def deleteSongFromLibrary(request, user_id, lib_id):
   except ObjectDoesNotExist:
     return HttpResponseNotFound()
   return HttpResponse("Deleted item: " + lib_id)
+"""

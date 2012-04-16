@@ -206,6 +206,10 @@ class PlayerQueryTests(YunYoungTestCase):
     for user in jsonUsers:
       self.assertTrue(user['username'] in possibleUsers)
 
+  def testBadGetUsers(self):
+    response = self.doGet('/udj/players/1/users')
+    self.assertEqual(response.status_code, 401)
+    self.assertEqual(response['WWW-Authenticate'], 'begin-participating')
 
 
 
