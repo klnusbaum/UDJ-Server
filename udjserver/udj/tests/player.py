@@ -136,6 +136,10 @@ class PlayerModificationTests2(AlejandroTestCase):
     playerPassword = PlayerPassword.objects.filter(player__id=3)
     self.assertFalse(playerPassword.exists())
 
+class ParticipateTests(YunYoungTestCase):
+  def testSimplePlayer(self):
+    response = self.doPut('/udj/players/1/users/7')
+    self.assertEqual(response.status_code, 201, "Error: " + response.content)
 
 
 """

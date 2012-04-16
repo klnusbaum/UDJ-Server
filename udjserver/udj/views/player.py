@@ -8,9 +8,11 @@ from udj.models import Player
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
 from udj.models import State
+from udj.models import Participant
 from udj.decorators import AcceptsMethods
 from udj.decorators import NeedsJSON
 from udj.decorators import PlayerExists
+from udj.decorators import ActivePlayerExists
 from udj.authdecorators import NeedsAuth
 from udj.authdecorators import TicketUserMatch
 from udj.decorators import HasNZParams
@@ -180,6 +182,10 @@ def deletePlayerPassword(request, user_id, player_id, playerToChange):
     toReturn[MISSING_RESOURCE_HEADER] = 'password'
     return toReturn
 
+def onSuccessfulPlayerAuth(activePlayer, user_id):
+  Participant.objects.get_or_create(player=activePlayer, user=User.objects.get(pk=user_id))
+  return HttpResponse(status=201)
+
 @AcceptsMethods(['PUT'])
 @NeedsAuth
 @TicketUserMatch
@@ -190,7 +196,15 @@ def participateWithPlayer(request, player_id, user_id, activePlayer):
     if DJANGO_PLAYER_PASSWORD_HEADER in request.META:
       hashedPassword = hashPlayerPassword(request.META[DJANGO_PLAYER_PASSWORD_HEADER])
       if hashedPassword == playerPassword.password_hash:
-        Participant.
+        return onSuccessfulPlayerAuth(activePlayer, user_id)
+
+    toReturn = HttpResponse(status=401)
+    toReturn['WWW-Authenticate'] = 'player-password'
+  else: 
+    return onSuccessfulPlayerAuth(activePlayer, user_id)
+
+
+
 
 
 """

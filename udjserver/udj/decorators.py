@@ -3,6 +3,7 @@ from udj.headers import MISSING_RESOURCE_HEADER
 from udj.headers import MISSING_REASON_HEADER
 from django.http import HttpResponse
 from django.http import HttpResponseNotAllowed
+from django.http import HttpResponseNotFound
 from django.core.exceptions import ObjectDoesNotExist
 from udj.models import Player
 
@@ -63,12 +64,12 @@ def ActivePlayerExists(function):
     user_id = kwargs['user_id']
     player_id = kwargs['player_id']
     try:
-      potentialPlayer = Player.objects.get(owning_user__id=user_id, id=player_id)
+      potentialPlayer = Player.objects.get(id=player_id)
       if potentialPlayer.state == 'AC':
         kwargs['activePlayer'] = potentialPlayer
         return function(*args, **kwargs)
       else:
-        toReturn =  HttpResponseNotFound()
+        toReturn =  HttpResponseNotFound("Player inactive")
         toReturn[MISSING_RESOURCE_HEADER] = 'player'
         toReturn[MISSING_REASON_HEADER] = 'inactive'
         return toReturn
