@@ -180,6 +180,35 @@ class PlayerAdminTests(KurtisTestCase):
     for user in jsonUsers:
       self.assertTrue(user['username'] in possibleUsers)
 
+  def testGetUsers2(self):
+    participants = Participant.objects.filter(player__id=1)
+    participants.update(time_last_interaction=datetime.now())
+
+    response = self.doGet('/udj/players/1/users')
+    self.assertEqual(response.status_code, 200)
+    jsonUsers = json.loads(response.content)
+    self.assertEquals(len(jsonUsers), 3)
+    possibleUsers = ['jeff', 'vilas', 'yunyoung']
+    for user in jsonUsers:
+      self.assertTrue(user['username'] in possibleUsers)
+
+
+class PlayerQueryTests(YunYoungTestCase):
+
+  def testGetUsers(self):
+    Participant.objects.filter(player__id=1).update(time_last_interaction=datetime.now())
+
+    response = self.doGet('/udj/players/1/users')
+    self.assertEqual(response.status_code, 200)
+    jsonUsers = json.loads(response.content)
+    self.assertEquals(len(jsonUsers), 3)
+    possibleUsers = ['jeff', 'vilas', 'yunyoung']
+    for user in jsonUsers:
+      self.assertTrue(user['username'] in possibleUsers)
+
+
+
+
 
 """
 import json

@@ -2,6 +2,7 @@ import json
 import math
 
 from django.views.decorators.csrf import csrf_exempt
+from django.db import transaction
 from udj.headers import MISSING_RESOURCE_HEADER
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER
 from udj.models import Player
@@ -80,6 +81,7 @@ def getPlayers(request):
 @TicketUserMatch
 @AcceptsMethods(['PUT'])
 @NeedsJSON
+@transaction.commit_on_success
 def createPlayer(request, user_id):
   user = User.objects.get(pk=user_id)
   try:

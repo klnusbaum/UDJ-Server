@@ -1,3 +1,4 @@
+from udj.models import Participant
 from udj.auth import isValidTicket
 from udj.auth import ticketMatchesUser
 from udj.auth import getUserForTicket
@@ -23,6 +24,7 @@ def IsOwnerOrParticipates(function):
     else:
       toReturn = HttpResponse(status=401)
       toReturn['WWW-Authenticate'] = 'begin-participating'
+      return toReturn
   return wrapper
 
 
