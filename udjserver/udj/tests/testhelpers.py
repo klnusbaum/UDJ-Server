@@ -30,7 +30,7 @@ class DoesServerOpsTestCase(TestCase):
       **headers)
 
   def doPut(self, url, headers={}):
-    headers = dict(headers.items + DoesServerOpsTestCase.machine_headers.items)
+    headers = dict(headers.items() + DoesServerOpsTestCase.machine_headers.items())
     headers[DJANGO_TICKET_HEADER] = self.ticket_hash
     return self.client.put(url, **headers)
 
@@ -40,14 +40,14 @@ class DoesServerOpsTestCase(TestCase):
     return self.client.get(url, **headers)
 
   def doDelete(self, url, headers={}):
-    headers = dict(headers.items + DoesServerOpsTestCase.machine_headers.items)
+    headers = dict(headers.items() + DoesServerOpsTestCase.machine_headers.items())
     headers[DJANGO_TICKET_HEADER] = self.ticket_hash
     return self.client.delete(url, **headers)
 
-  def doPost(self, url, args):
-    headers = dict(headers.items + DoesServerOpsTestCase.machine_headers.items)
+  def doPost(self, url, args, content_type="multipart/form-data"):
+    headers = dict(DoesServerOpsTestCase.machine_headers.items())
     headers[DJANGO_TICKET_HEADER] = self.ticket_hash
-    return self.client.post(url, args, **headers)
+    return self.client.post(url, args, content_type=content_type, **headers)
 
   def isJSONResponse(self, response):
     self.assertEqual(response['Content-Type'], 'text/json')

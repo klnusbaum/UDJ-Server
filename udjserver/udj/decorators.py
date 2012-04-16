@@ -1,6 +1,8 @@
 from udj.headers import DJANGO_TICKET_HEADER
 from django.http import HttpResponse
 from django.http import HttpResponseNotAllowed
+from django.core.exceptions import ObjectDoesNotExist
+from udj.models import Player
 
 def AcceptsMethods(acceptedMethods):
   def decorator(target):
@@ -37,6 +39,22 @@ def NeedsJSON(function):
     else:
       return function(*args, **kwargs)
   return wrapper
+
+def PlayerExists(function):
+  def wrapper(*args, **kwargs):
+    request = args[0]
+    user_id = kwargs['user_id']
+    player_id = kwargs['player_id']
+    try:
+      toChange = Player.objects.get(owning_user__id=user_id, id=player_id)
+      kwargs['playerToChange'] = toChange
+      return function(*args, **kwargs)
+    except ObjectDoesNotExist:
+      toReturn =  HttpResponseNotFound()
+      toReturn[MISSING_RESOURCE_HEADER] = 'player'
+      return toReturn
+  return wrapper
+
 
 
 

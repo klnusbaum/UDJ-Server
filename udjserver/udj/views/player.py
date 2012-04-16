@@ -1,12 +1,14 @@
 import json
 import math
 
+from django.views.decorators.csrf import csrf_exempt
 from udj.models import Player
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
 from udj.models import State
 from udj.decorators import AcceptsMethods
 from udj.decorators import NeedsJSON
+from udj.decorators import PlayerExists
 from udj.authdecorators import NeedsAuth
 from udj.authdecorators import TicketUserMatch
 from udj.decorators import HasNZParams
@@ -122,6 +124,23 @@ def createPlayer(request, user_id):
       return HttpResponseBadRequest('Bad location')
 
   return HttpResponse(json.dumps({'player_id' : newPlayer.id}), status=201, content_type="text/json")
+
+@csrf_exempt
+@AcceptsMethods(['POST'])
+@NeedsAuth
+@TicketUserMatch
+@PlayerExists
+def changePlayerName(request, user_id, player_id, playerToChange):
+  givenName = request.raw_post_data
+  if givenName == '':
+    return HttpResponseBadRequest("Bad name")
+  if Player.objects.filter(owning_user__id=user_id, name=givenName).exists():
+    return HttpResponse(status=409)
+
+  playerToChange.name=givenName
+  playerToChange.save()
+
+  return HttpResponse()
 
 
 

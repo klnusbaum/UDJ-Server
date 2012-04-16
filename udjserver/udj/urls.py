@@ -8,6 +8,7 @@ urlpatterns += patterns('udj.views.player',
   (r'^players/(?P<latitude>-?\d+\.\d+)/(?P<longitude>-?\d+\.\d+)$', 'getNearbyPlayers'),
   (r'^players$', 'getPlayers'),
   (r'^users/(?P<user_id>\d+)/players/player$', 'createPlayer'),
+  (r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/name$', 'changePlayerName'),
 )
 
 """

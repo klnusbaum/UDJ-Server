@@ -1,6 +1,7 @@
 import json
 from udj.tests.testhelpers import JeffTestCase
 from udj.tests.testhelpers import YunYoungTestCase
+from udj.tests.testhelpers import KurtisTestCase
 from udj.models import Player
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
@@ -98,6 +99,15 @@ class CreatePlayerTest(YunYoungTestCase):
     self.assertEqual(createdLocation.latitude, 40.1135372574038)
     self.assertEqual(createdLocation.longitude, -88.2240781569526)
 
+
+class PlayerModificationTests(KurtisTestCase):
+
+  def testChangeName(self):
+    newName = "A Bitchn' Player"
+    response = self.doPost('/udj/users/2/players/1/name', newName, content_type="text/html")
+    self.assertEqual(response.status_code, 200, "Error: " + response.content)
+    player = Player.objects.get(pk=1)
+    self.assertEqual(player.name, newName)
 
 
 
