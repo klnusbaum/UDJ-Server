@@ -58,7 +58,7 @@ class LibraryEntry(models.Model):
     return "Library Entry " + str(self.player_lib_song_id) + ": " + self.title
 
 class BannedSong(models.Model):
-  lib_entry = models.ForeignKey(LibraryEntry)
+  lib_entry = models.OneToOneField(LibraryEntry)
 
   def __unicode__(self):
     return "Banned Library Entry " + str(self.lib_entry.title)
