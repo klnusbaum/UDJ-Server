@@ -44,11 +44,11 @@ class LibraryEntry(models.Model):
   player = models.ForeignKey(Player)
   player_lib_song_id = models.IntegerField()
   title = models.CharField(max_length=200)
-  artist = models.CharField(max_length=200)
-  album = models.CharField(max_length=200)
-  track = models.IntegerField()
-  genre = models.CharField(max_length=50)
-  duration = models.IntegerField()
+  artist = models.CharField(max_length=200, blank=True, default="")
+  album = models.CharField(max_length=200, blank=True, default="")
+  track = models.IntegerField(null=True, default=None)
+  genre = models.CharField(max_length=50, blank=True, default="")
+  duration = models.IntegerField(null=True, default=None)
   is_deleted = models.BooleanField(default=False)
 
   def validate_unique(self, exclude=None):
