@@ -19,14 +19,14 @@ class LibTestCases(KurtisTestCase):
       "title" : "Zero",
       "artist" : "The Smashing Pumpkins",
       "album" : "Mellon Collie And The Infinite Sadness",
-      "track_number" : 4,
+      "track" : 4,
       "genre" : "Rock",
       "duration" : 160
     }
 
-    response = self.doJSONPut('/udj/users/1/players/1/library/song', json.dumps(payload))
+    response = self.doJSONPut('/udj/users/2/players/1/library/song', json.dumps(payload))
     self.assertEqual(201, response.status_code, response.content)
-    verifySongAdded(payload)
+    self.verifySongAdded(payload)
 
 
 """

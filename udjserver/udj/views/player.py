@@ -136,15 +136,15 @@ def createPlayer(request, user_id):
 @NeedsAuth
 @TicketUserMatch
 @PlayerExists
-def changePlayerName(request, user_id, player_id, playerToChange):
+def changePlayerName(request, user_id, player_id, player):
   givenName = request.raw_post_data
   if givenName == '':
     return HttpResponseBadRequest("Bad name")
   if Player.objects.filter(owning_user__id=user_id, name=givenName).exists():
     return HttpResponse(status=409)
 
-  playerToChange.name=givenName
-  playerToChange.save()
+  player.name=givenName
+  player.save()
 
   return HttpResponse()
 
@@ -153,13 +153,13 @@ def changePlayerName(request, user_id, player_id, playerToChange):
 @NeedsAuth
 @TicketUserMatch
 @PlayerExists
-def modifyPlayerPassword(request, user_id, player_id, playerToChange):
+def modifyPlayerPassword(request, user_id, player_id, player):
   if request.method == 'POST':
-    return setPlayerPassword(request, user_id, player_id, playerToChange)
+    return setPlayerPassword(request, user_id, player_id, player)
   elif request.method == 'DELETE':
-    return deletePlayerPassword(request, user_id, player_id, playerToChange)
+    return deletePlayerPassword(request, user_id, player_id, player)
 
-def setPlayerPassword(request, user_id, player_id, playerToChange):
+def setPlayerPassword(request, user_id, player_id, player):
   givenPassword = request.raw_post_data
   if givenPassword == '':
     return HttpResponseBadRequest("Bad password")
@@ -167,7 +167,7 @@ def setPlayerPassword(request, user_id, player_id, playerToChange):
   hashedPassword = hashPlayerPassword(givenPassword)
 
   playerPassword , created = PlayerPassword.objects.get_or_create(
-      player=playerToChange,
+      player=player,
       defaults={'password_hash': hashedPassword})
   if not created:
     playerPassword.password_hash = hashedPassword
@@ -175,9 +175,9 @@ def setPlayerPassword(request, user_id, player_id, playerToChange):
 
   return HttpResponse()
 
-def deletePlayerPassword(request, user_id, player_id, playerToChange):
+def deletePlayerPassword(request, user_id, player_id, player):
   try:
-    toDelete = PlayerPassword.objects.get(player=playerToChange)
+    toDelete = PlayerPassword.objects.get(player=player)
     toDelete.delete()
     return HttpResponse()
   except ObjectDoesNotExist:

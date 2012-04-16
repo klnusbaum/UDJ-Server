@@ -50,8 +50,8 @@ def PlayerExists(function):
     user_id = kwargs['user_id']
     player_id = kwargs['player_id']
     try:
-      toChange = Player.objects.get(owning_user__id=user_id, id=player_id)
-      kwargs['playerToChange'] = toChange
+      actualPlayer = Player.objects.get(owning_user__id=user_id, id=player_id)
+      kwargs['player'] = actualPlayer
       return function(*args, **kwargs)
     except ObjectDoesNotExist:
       toReturn =  HttpResponseNotFound()

@@ -1,11 +1,16 @@
 import json
-from django.http import HttpRequest
-from django.http import HttpResponse
+
 from udj.decorators import NeedsJSON
 from udj.decorators import AcceptsMethods
 from udj.decorators import PlayerExists
 from udj.authdecorators import NeedsAuth
 from udj.authdecorators import TicketUserMatch
+from udj.models import LibraryEntry
+from udj.models import Player
+
+from django.http import HttpRequest
+from django.http import HttpResponse
+from django.http import HttpResponseBadRequest
 
 def isValidLibraryEntryJSON(libraryEntry):
   return "id" in libraryEntry \
@@ -13,14 +18,14 @@ def isValidLibraryEntryJSON(libraryEntry):
     and "artist" in libraryEntry \
     and "album" in libraryEntry \
     and "genre" in libraryEntry \
-    and "track_number" in libraryEntry \
+    and "track" in libraryEntry \
     and "duration" in libraryEntry \
 
+@TicketUserMatch
 @NeedsAuth
 @AcceptsMethods(['PUT'])
-@TicketUserMatch
-@PlayerExists
 @NeedsJSON
+@PlayerExists
 def addSong2Library(request, user_id, player_id, player):
 
   try:
@@ -30,7 +35,7 @@ def addSong2Library(request, user_id, player_id, player):
 
 
   try:
-    if LibraryEntry.objets.filter(player=player, player_lib_song_id=libJSON['id']).exists():
+    if LibraryEntry.objects.filter(player=player, player_lib_song_id=libJSON['id']).exists():
       return HttpResponse(status=409)
     LibraryEntry(
       player=player,
@@ -39,7 +44,7 @@ def addSong2Library(request, user_id, player_id, player):
       artist=libJSON['artist'],
       album=libJSON['album'],
       genre=libJSON['genre'],
-      track_number=libJSON['track_number'],
+      track=libJSON['track'],
       duration=libJSON['duration']).save()
   except KeyError:
     return HttpResponseBadRequest('Bad JSON')
