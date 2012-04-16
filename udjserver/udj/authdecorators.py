@@ -8,13 +8,10 @@ from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
 
-from datetime import datetime
-from datetime import timedelta
 
 
 def userParticipates(player, user):
-  return Participant.objects.filter(player=player, user=user, 
-    time_last_interaction__gt=(datetime.now() - timedelta(hours=1)))
+  return Participant.activeParticipants(player).filter(user=user).exists()
 
 def IsOwnerOrParticipates(function):
   def wrapper(*args, **kwargs):
@@ -25,7 +22,7 @@ def IsOwnerOrParticipates(function):
       return function(*args, **kwargs)
     else:
       toReturn = HttpResponse(status=401)
-      toReturn['WWW-Authenticate'] = 'being-participating'
+      toReturn['WWW-Authenticate'] = 'begin-participating'
   return wrapper
 
 

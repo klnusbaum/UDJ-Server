@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import datetime
+from datetime import timedelta
 
 class State(models.Model):
   name = models.CharField(max_length=2)
@@ -112,6 +114,11 @@ class Participant(models.Model):
 
   class Meta:
     unique_together = ("user", "player")
+
+  @staticmethod
+  def activeParticipants(player):
+    return Participant.objects.filter(player=player,
+      time_last_interaction__gt=(datetime.now() - timedelta(hours=1)))
 
   def __unicode__(self):
     return "User " + str(self.user.id) + " is participating with player " + str(self.player.name)

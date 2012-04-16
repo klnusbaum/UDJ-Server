@@ -3,6 +3,7 @@ from udj.tests.testhelpers import JeffTestCase
 from udj.tests.testhelpers import YunYoungTestCase
 from udj.tests.testhelpers import KurtisTestCase
 from udj.tests.testhelpers import AlejandroTestCase
+from django.test.client import Client
 from udj.models import Player
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
@@ -167,16 +168,18 @@ class BeginParticipateTests(YunYoungTestCase):
 
 class PlayerAdminTests(KurtisTestCase):
 
-  def testGetUser(self):
-    participants = Participant.objects.filter(player__id=1)
+  def testGetUsers(self):
+    participants = Participant.objects.filter(player__id=1).exclude(user__id=7)
     participants.update(time_last_interaction=datetime.now())
+
     response = self.doGet('/udj/players/1/users')
     self.assertEqual(response.status_code, 200)
     jsonUsers = json.loads(response.content)
-    self.assertTrue(len(jsonUsers), 2) 
-    possibleUsers = ['jeff', 'vilas', 'yunyoung']
+    self.assertEquals(len(jsonUsers), 2)
+    possibleUsers = ['jeff', 'vilas']
     for user in jsonUsers:
       self.assertTrue(user['username'] in possibleUsers)
+
 
 """
 import json
