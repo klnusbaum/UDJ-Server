@@ -195,11 +195,12 @@ def participateWithPlayer(request, player_id, user_id, activePlayer):
   if playerPassword.exists():
     if DJANGO_PLAYER_PASSWORD_HEADER in request.META:
       hashedPassword = hashPlayerPassword(request.META[DJANGO_PLAYER_PASSWORD_HEADER])
-      if hashedPassword == playerPassword.password_hash:
+      if hashedPassword == playerPassword[0].password_hash:
         return onSuccessfulPlayerAuth(activePlayer, user_id)
 
     toReturn = HttpResponse(status=401)
     toReturn['WWW-Authenticate'] = 'player-password'
+    return toReturn
   else: 
     return onSuccessfulPlayerAuth(activePlayer, user_id)
 

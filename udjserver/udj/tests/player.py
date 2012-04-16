@@ -6,8 +6,9 @@ from udj.tests.testhelpers import AlejandroTestCase
 from udj.models import Player
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
-
+from udj.models import Participant
 from udj.auth import hashPlayerPassword
+from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER
 
 import hashlib
 
@@ -140,6 +141,28 @@ class ParticipateTests(YunYoungTestCase):
   def testSimplePlayer(self):
     response = self.doPut('/udj/players/1/users/7')
     self.assertEqual(response.status_code, 201, "Error: " + response.content)
+    newParticipant = Participant.objects.get(user__id=7, player__id=1)
+
+  def testPasswordPlayer(self):
+    response = self.doPut('/udj/players/3/users/7', 
+        headers={DJANGO_PLAYER_PASSWORD_HEADER : 'alejandro'})
+    self.assertEqual(response.status_code, 201, "Error: " + response.content)
+    newParticipant = Participant.objects.get(user__id=7, player__id=3)
+
+  def testBadPassword(self):
+    response = self.doPut('/udj/players/3/users/7', 
+        headers={DJANGO_PLAYER_PASSWORD_HEADER : 'wrongpassword'})
+    self.assertEqual(response.status_code, 401, "Error: " + response.content)
+    self.assertEqual(response['WWW-Authenticate'], 'player-password')
+    newParticipant = Participant.objects.filter(user__id=7, player__id=3)
+    self.assertFalse(newParticipant.exists())
+
+  def testBadNoPassword(self):
+    response = self.doPut('/udj/players/3/users/7')
+    self.assertEqual(response.status_code, 401, "Error: " + response.content)
+    self.assertEqual(response['WWW-Authenticate'], 'player-password')
+    newParticipant = Participant.objects.filter(user__id=7, player__id=3)
+    self.assertFalse(newParticipant.exists())
 
 
 """
