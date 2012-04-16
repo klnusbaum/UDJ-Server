@@ -8,19 +8,13 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Adding unique constraint on 'LibraryEntry', fields ['player', 'player_lib_song_id']
+        db.create_unique('udj_libraryentry', ['player_id', 'player_lib_song_id'])
 
-        # Changing field 'LibraryEntry.track'
-        db.alter_column('udj_libraryentry', 'track', self.gf('django.db.models.fields.IntegerField')(null=True))
-
-        # Changing field 'LibraryEntry.duration'
-        db.alter_column('udj_libraryentry', 'duration', self.gf('django.db.models.fields.IntegerField')(null=True))
     def backwards(self, orm):
+        # Removing unique constraint on 'LibraryEntry', fields ['player', 'player_lib_song_id']
+        db.delete_unique('udj_libraryentry', ['player_id', 'player_lib_song_id'])
 
-        # Changing field 'LibraryEntry.track'
-        db.alter_column('udj_libraryentry', 'track', self.gf('django.db.models.fields.IntegerField')(default=-1))
-
-        # Changing field 'LibraryEntry.duration'
-        db.alter_column('udj_libraryentry', 'duration', self.gf('django.db.models.fields.IntegerField')(default=-1))
     models = {
         'auth.group': {
             'Meta': {'object_name': 'Group'},
@@ -67,17 +61,17 @@ class Migration(SchemaMigration):
             'time_added': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'})
         },
         'udj.libraryentry': {
-            'Meta': {'object_name': 'LibraryEntry'},
-            'album': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '200', 'blank': 'True'}),
-            'artist': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '200', 'blank': 'True'}),
-            'duration': ('django.db.models.fields.IntegerField', [], {'default': 'None', 'null': 'True'}),
-            'genre': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '50', 'blank': 'True'}),
+            'Meta': {'unique_together': "(('player', 'player_lib_song_id'),)", 'object_name': 'LibraryEntry'},
+            'album': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
+            'artist': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
+            'duration': ('django.db.models.fields.IntegerField', [], {}),
+            'genre': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'player': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.Player']"}),
             'player_lib_song_id': ('django.db.models.fields.IntegerField', [], {}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
-            'track': ('django.db.models.fields.IntegerField', [], {'default': 'None', 'null': 'True'})
+            'track': ('django.db.models.fields.IntegerField', [], {})
         },
         'udj.participant': {
             'Meta': {'unique_together': "(('user', 'player'),)", 'object_name': 'Participant'},

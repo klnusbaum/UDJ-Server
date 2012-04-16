@@ -8,13 +8,20 @@ from udj.authdecorators import NeedsAuth
 from udj.authdecorators import AcceptsMethods
 
 def isValidLibraryEntryJSON(libraryEntry):
-  return "id" in libraryEntry and "song" in libraryEntry and
+  return "id" in libraryEntry \
+    and "title" in libraryEntry \
+    and "artist" in libraryEntry \
+    and "album" in libraryEntry \
+    and "genre" in libraryEntry \
+    and "track_number" in libraryEntry \
+    and "duration" in libraryEntry \
 
 @AcceptsMethods['PUT']
 @TicketUserMatch
 @PlayerExists
 @NeedsJSON
 def addSongToLibrary(request, user_id, player_id, player):
+
   try:
     libraryEntryJSON = json.loads(request.raw_post_data)
   except ValueError:
@@ -22,6 +29,11 @@ def addSongToLibrary(request, user_id, player_id, player):
 
   if not isValidLibraryEntryJSON(libraryEntryJSON)
     return HttpResponseBadRequest('Bad JSON')
+
+  LibraryEntry(
+    player=player,
+    player_lib_song_id=
+
 
 
 

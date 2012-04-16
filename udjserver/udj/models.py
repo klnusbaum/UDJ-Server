@@ -44,22 +44,15 @@ class LibraryEntry(models.Model):
   player = models.ForeignKey(Player)
   player_lib_song_id = models.IntegerField()
   title = models.CharField(max_length=200)
-  artist = models.CharField(max_length=200, blank=True, default="")
-  album = models.CharField(max_length=200, blank=True, default="")
-  track = models.IntegerField(null=True, default=None)
-  genre = models.CharField(max_length=50, blank=True, default="")
-  duration = models.IntegerField(null=True, default=None)
+  artist = models.CharField(max_length=200)
+  album = models.CharField(max_length=200)
+  track = models.IntegerField()
+  genre = models.CharField(max_length=50)
+  duration = models.IntegerField()
   is_deleted = models.BooleanField(default=False)
 
-  def validate_unique(self, exclude=None):
-    if not self.is_deleted and \
-      LibraryEntry.objects.exclude(pk=self.pk).filter(
-      player_lib_song_id=self.player_lib_song_id,
-      player=self.player).exists()\
-    :
-      raise ValidationError(
-        'Non-unique player_lib_song_id, and player combination')
-    super(LibraryEntry, self).validate_unique(exclude=exclude)
+  class Meta:
+    unique_together = ("player", "player_lib_song_id")
 
   def __unicode__(self):
     return "Library Entry " + str(self.player_lib_song_id) + ": " + self.title
