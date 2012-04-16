@@ -226,13 +226,10 @@ def getActiveUsersForPlayer(request, player_id, activePlayer):
 @HasNZParams(['query'])
 def getAvailableMusic(request, player_id, activePlayer):
   query = request.REQUEST['query']
-  banned_song_ids = BannedSong.objects.filter(lib_entry__player=activePlayer)\
-      .values_list('lib_entry',flat=True);
-
   available_songs = LibraryEntry.objects.filter(player=activePlayer).filter(
     Q(title__icontains=query) |
     Q(artist__icontains=query) |
-    Q(album__icontains=query)).exclude(is_deleted=True).exclude(id__in = banned_song_ids)
+    Q(album__icontains=query)).exclude(is_deleted=True).filter(bannedsong__isnull = True)
 
   if 'max_results' in request.GET:
     available_songs = available_songs[:request.GET['max_results']]
