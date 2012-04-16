@@ -38,9 +38,9 @@
     "fields": {
       "player": 1,
       "player_lib_song_id": 3,
-      "title": "Narcolepsy",
+      "title": "Graduate",
       "artist": "Third Eye Blind",
-      "album": "Graduate",
+      "album": "Third Eye Blind",
       "track": 5,
       "genre": "Rock",
       "duration": 189,
@@ -162,6 +162,13 @@
   },
 
 
+  {
+    "pk" : 1,
+    "model": "udj.bannedsong",
+    "fields" : {
+      "lib_entry" : 4
+    }
+  },
 
 
 

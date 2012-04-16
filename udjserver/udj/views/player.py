@@ -1,15 +1,15 @@
 import json
 import math
 
-from django.views.decorators.csrf import csrf_exempt
-from django.db import transaction
 from udj.headers import MISSING_RESOURCE_HEADER
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER
 from udj.models import Player
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
 from udj.models import State
+from udj.models import BannedSong
 from udj.models import Participant
+from udj.models import LibraryEntry
 from udj.decorators import AcceptsMethods
 from udj.decorators import NeedsJSON
 from udj.decorators import PlayerExists
@@ -26,6 +26,9 @@ from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
 from django.contrib.auth.models import User
+from django.db.models import Q
+from django.views.decorators.csrf import csrf_exempt
+from django.db import transaction
 
 from httplib import HTTPConnection
 from httplib import HTTPResponse
@@ -222,24 +225,19 @@ def getActiveUsersForPlayer(request, player_id, activePlayer):
 @IsOwnerOrParticipates
 @HasNZParams(['query'])
 def getAvailableMusic(request, player_id, activePlayer):
+  query = request.REQUEST['query']
+  banned_song_ids = BannedSong.objects.filter(lib_entry__player=activePlayer)\
+      .values_list('lib_entry',flat=True);
 
+  available_songs = LibraryEntry.objects.filter(player=activePlayer).filter(
+    Q(title__icontains=query) |
+    Q(artist__icontains=query) |
+    Q(album__icontains=query)).exclude(is_deleted=True).exclude(id__in = banned_song_ids)
 
-  event = Event.objects.get(pk=event_id)
-  if(not request.GET.__contains__('query')):
-    return HttpResponseBadRequest('Must specify query')
-  query = request.GET.__getitem__('query')
-  if query=='':
-    return HttpResponseBadRequest('Blank searches not allowed')
-  available_songs = AvailableSong.objects.filter(
-    event__id=event_id, song__owning_user=event.host).exclude(state=u'RM')
-  available_songs = available_songs.filter(
-    Q(song__title__icontains=query) |
-    Q(song__artist__icontains=query) |
-    Q(song__album__icontains=query))
-  if(request.GET.__contains__('max_results')):
+  if 'max_results' in request.GET:
     available_songs = available_songs[:request.GET['max_results']]
 
-  return getJSONResponse(getJSONForAvailableSongs(available_songs))
+  return HttpResponse(json.dumps(available_songs, cls=UDJEncoder))
 
 
 """

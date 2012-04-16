@@ -3,6 +3,8 @@ from udj.models import Player
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
 from udj.models import Participant
+from udj.models import LibraryEntry
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.query import QuerySet
 
@@ -12,6 +14,17 @@ class UDJEncoder(json.JSONEncoder):
   def default(self, obj):
     if isinstance(obj, QuerySet):
       return [x for x in obj]
+    elif isinstance(obj, LibraryEntry):
+      return {
+          'id' : obj.player_lib_song_id,
+          'title' : obj.title,
+          'artist' : obj.artist,
+          'album' : obj.album,
+          'track' : obj.track,
+          'genre' : obj.genre,
+          'duration' : obj.duration
+      }
+
     elif isinstance(obj, Participant):
       return {
           'username' : obj.user.username,

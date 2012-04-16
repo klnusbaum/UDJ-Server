@@ -213,13 +213,13 @@ class PlayerQueryTests(YunYoungTestCase):
 
     Participant.objects.filter(player__id=1, user__id=7).update(time_last_interaction=datetime.now())
 
-    response = self.doGet('/udj/players/1/users/available_music?query=Third+Eye+Blind')
+    response = self.doGet('/udj/players/1/available_music?query=Third+Eye+Blind')
     self.assertEqual(response.status_code, 200)
     songResults = json.loads(response.content)
-    self.assertEquals(5, len(songResults))
-    expectedLibIds =[1,2,3,4,5]
+    self.assertEquals(4, len(songResults))
+    expectedLibIds =[1,2,3,5]
     for song in songResults:
-      self.assertTrue(song.id in expectedLibIds)
+      self.assertTrue(song['id'] in expectedLibIds)
 
 
 

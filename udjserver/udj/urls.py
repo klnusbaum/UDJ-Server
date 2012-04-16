@@ -12,6 +12,8 @@ urlpatterns += patterns('udj.views.player',
   (r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/password$', 'modifyPlayerPassword'),
   (r'^players/(?P<player_id>\d+)/users/(?P<user_id>\d+)', 'participateWithPlayer'),
   (r'^players/(?P<player_id>\d+)/users', 'getActiveUsersForPlayer'),
+  (r'^players/(?P<player_id>\d+)/available_music', 'getAvailableMusic'),
+
 )
 
 urlpatterns += patterns('udj.views.library',
