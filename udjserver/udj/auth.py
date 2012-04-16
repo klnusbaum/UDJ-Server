@@ -1,4 +1,5 @@
 import json
+import hashlib
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.http import HttpRequest
@@ -12,6 +13,12 @@ from udj.headers import DJANGO_TICKET_HEADER
 from udj.decorators import AcceptsMethods
 from udj.decorators import HasNZParams
 from datetime import datetime
+
+def hashPlayerPassword(password):
+  m = hashlib.sha1()
+  m.update(password)
+  return m.hexdigest()
+
 
 def getUserForTicket(request):
   return Ticket.objects.get(

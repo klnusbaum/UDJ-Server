@@ -71,6 +71,18 @@
   },
 
   {
+    "pk": 1,
+    "model": "udj.playerpassword",
+    "fields": {
+      "player": 3,
+      "password_hash" : "8b8e92d17af4f1fcd02ecf281f6cf80b796b596a",
+      "time_set": "2012-04-14 23:54:11"
+    }
+  },
+
+
+
+  {
     "pk": 1, 
     "model": "auth.user", 
     "fields": {

@@ -2,9 +2,12 @@ import json
 from udj.tests.testhelpers import JeffTestCase
 from udj.tests.testhelpers import YunYoungTestCase
 from udj.tests.testhelpers import KurtisTestCase
+from udj.tests.testhelpers import AlejandroTestCase
 from udj.models import Player
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
+
+from udj.auth import hashPlayerPassword
 
 import hashlib
 
@@ -109,26 +112,23 @@ class PlayerModificationTests(KurtisTestCase):
     player = Player.objects.get(pk=1)
     self.assertEqual(player.name, newName)
 
+  def testSetPassword(self):
+    newPassword = "nudepassword"
+    response = self.doPost('/udj/users/2/players/1/password', newPassword, content_type="text/html")
+    self.assertEqual(response.status_code, 200, "Error: " + response.content)
+    playerPassword = PlayerPassword.objects.get(player__id=1)
+    self.assertEqual(playerPassword.password_hash, hashPlayerPassword(newPassword))
 
+class PlayerModificationTests2(AlejandroTestCase):
 
-  """
-  def testCreatePasswordEvent(self):
-    eventName = "A Bitchn' Party"
-    eventPassword = 'dog'
-    event = {
-      'name' : eventName,
-      'password' : eventPassword
-    }
-    response = self.doJSONPut('/udj/events/event', json.dumps(event))
-    self.assertEqual(response.status_code, 201, "Error: " + response.content)
-    self.verifyJSONResponse(response)
-    givenEventId = json.loads(response.content)['event_id']
-    addedEvent = Event.objects.get(pk=givenEventId)
-    self.assertEqual(addedEvent.name, eventName)
-    partyHost = EventGoer.objects.get(event=addedEvent, user__id=self.user_id)
-    password = EventPassword.objects.get(event__id=givenEventId)
-  """
-
+  def testChangePassword(self):
+    oldTime = PlayerPassword.objects.get(player__id=3).time_set
+    newPassword = "nudepassword"
+    response = self.doPost('/udj/users/6/players/3/password', newPassword, content_type="text/html")
+    self.assertEqual(response.status_code, 200, "Error: " + response.content)
+    playerPassword = PlayerPassword.objects.get(player__id=3)
+    self.assertEqual(playerPassword.password_hash, hashPlayerPassword(newPassword))
+    self.assertTrue(oldTime < playerPassword.time_set)
 
 
 

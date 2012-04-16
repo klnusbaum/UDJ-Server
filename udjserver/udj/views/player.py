@@ -23,9 +23,10 @@ from udj.exceptions import LocationNotFoundError
 from httplib import HTTPConnection
 from httplib import HTTPResponse
 
-import hashlib
+from udj.auth import hashPlayerPassword
 
 from settings import geocodeLocation
+
 
 def isValidLocation(location):
   return \
@@ -98,13 +99,11 @@ def createPlayer(request, user_id):
   newPlayer.save()
 
   #If password provided, create and save password
-  if newPlayerJSON.__contains__('password'):
-    m = hashlib.sha1()
-    m.update(newPlayerJSON['password'])
-    PlayerPassword(player=newPlayer, password_hash=m.hexdigest()).save()
+  if 'password' in newPlayerJSON:
+    PlayerPassword(player=newPlayer, password_hash=hashPlayerPassword(newPlayer['password'])).save()
 
   #If locaiton provided, geocode it and save it
-  if newPlayerJSON.__contains__('location'):
+  if 'location' in newPlayerJSON:
     if isValidLocation(newPlayerJSON['location']):
       location = newPlayerJSON['location']
       try:
@@ -139,6 +138,28 @@ def changePlayerName(request, user_id, player_id, playerToChange):
 
   playerToChange.name=givenName
   playerToChange.save()
+
+  return HttpResponse()
+
+@csrf_exempt
+@AcceptsMethods(['POST'])
+@NeedsAuth
+@TicketUserMatch
+@PlayerExists
+def setPlayerPassword(request, user_id, player_id, playerToChange):
+  givenPassword = request.raw_post_data
+  if givenPassword == '':
+    return HttpResponseBadRequest("Bad password")
+
+  hashedPassword = hashPlayerPassword(givenPassword)
+
+  playerPassword , created = PlayerPassword.objects.get_or_create(
+      player=playerToChange,
+      defaults={'password_hash': hashedPassword})
+  if not created:
+    playerPassword.password_hash = hashedPassword
+    playerPassword.save()
+
 
   return HttpResponse()
 

@@ -63,3 +63,7 @@ class JeffTestCase(DoesServerOpsTestCase):
 class YunYoungTestCase(DoesServerOpsTestCase):
   username = "yunyoung"
   userpass = "testyunyoung"
+
+class AlejandroTestCase(DoesServerOpsTestCase):
+  username = "alejandro"
+  userpass = "testalejandro"
