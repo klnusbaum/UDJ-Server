@@ -170,6 +170,173 @@
     }
   },
 
+  {
+    "pk": 1,
+    "model": "udj.activeplaylistentry",
+    "fields": {
+      "song": 1,
+      "time_added": "2012-04-15 11:54:11"
+      "adder": 7,
+      "state": "QE"
+    }
+  },
+
+  {
+    "pk": 2,
+    "model": "udj.activeplaylistentry",
+    "fields": {
+      "song": 2,
+      "time_added": "2012-04-15 11:55:11"
+      "adder": 7,
+      "state": "QE"
+    }
+  },
+
+  {
+    "pk": 3,
+    "model": "udj.activeplaylistentry",
+    "fields": {
+      "song": 3,
+      "time_added": "2012-04-15 11:57:40"
+      "adder": 3,
+      "state": "QE"
+    }
+  },
+
+  {
+    "pk": 4,
+    "model": "udj.activeplaylistentry",
+    "fields": {
+      "song": 5,
+      "time_added": "2012-04-15 11:57:50"
+      "adder": 3,
+      "state": "QE"
+    }
+  },
+
+  {
+    "pk": 5,
+    "model": "udj.activeplaylistentry",
+    "fields": {
+      "song": 6,
+      "time_added": "2012-04-15 11:53:50"
+      "adder": 2,
+      "state": "PL"
+    }
+  },
+
+  {
+    "pk": 6,
+    "model": "udj.activeplaylistentry",
+    "fields": {
+      "song": 7,
+      "time_added": "2012-04-15 11:50:50"
+      "adder": 2,
+      "state": "FN"
+    }
+  },
+
+  {
+    "pk": 7,
+    "model": "udj.activeplaylistentry",
+    "fields": {
+      "song": 10,
+      "time_added": "2012-04-15 11:49:50"
+      "adder": 2,
+      "state": "RM"
+    }
+  },
+
+  {
+    "pk": 1,
+    "model": "udj.playlistentrytimeplayed",
+    "fields": {
+      "playlist_entry": 6,
+      "time_played": "2012-04-15 11:52:50"
+  },
+
+  {
+    "pk": 1,
+    "model": "udj.vote",
+    "fields": {
+      "playlist_entry": 1,
+      "user": 7,
+      "weight": 1
+    }
+  },
+
+  {
+    "pk": 2,
+    "model": "udj.vote",
+    "fields": {
+      "playlist_entry": 2,
+      "user": 7,
+      "weight": 1
+    }
+  },
+
+  {
+    "pk": 3,
+    "model": "udj.vote",
+    "fields": {
+      "playlist_entry": 3,
+      "user": 3,
+      "weight": 1
+    }
+  },
+
+  {
+    "pk": 4,
+    "model": "udj.vote",
+    "fields": {
+      "playlist_entry": 4,
+      "user": 3,
+      "weight": 1
+    }
+  },
+
+  {
+    "pk": 5,
+    "model": "udj.vote",
+    "fields": {
+      "playlist_entry": 5,
+      "user": 2,
+      "weight": 1
+    }
+  },
+
+  {
+    "pk": 6,
+    "model": "udj.vote",
+    "fields": {
+      "playlist_entry": 5,
+      "user": 2,
+      "weight": 1
+    }
+  },
+
+  {
+    "pk": 7,
+    "model": "udj.vote",
+    "fields": {
+      "playlist_entry": 1,
+      "user": 2,
+      "weight": 1
+    }
+  },
+
+  {
+    "pk": 8,
+    "model": "udj.vote",
+    "fields": {
+      "playlist_entry": 2,
+      "user": 3,
+      "weight": -1
+    }
+  },
+
+
+
 
 
   {
