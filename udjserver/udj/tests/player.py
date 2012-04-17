@@ -1,18 +1,22 @@
 import json
+
 from udj.tests.testhelpers import JeffTestCase
 from udj.tests.testhelpers import YunYoungTestCase
 from udj.tests.testhelpers import KurtisTestCase
 from udj.tests.testhelpers import AlejandroTestCase
-from django.test.client import Client
+from udj.models import LibraryEntry
+from udj.models import BannedSong
 from udj.models import Player
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
 from udj.models import Participant
 from udj.auth import hashPlayerPassword
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER
+
+from django.test.client import Client
+
 from datetime import datetime
 
-import hashlib
 
 
 class GetPlayersTests(JeffTestCase):
@@ -59,9 +63,7 @@ class CreatePlayerTest(YunYoungTestCase):
   def testCreatePasswordPlayer(self):
     playerName = "Yunyoung Player"
     password = 'playerpassword'
-    m = hashlib.sha1()
-    m.update(password)
-    passwordHash = m.hexdigest()
+    passwordHash = hashPlayerPassword(password)
     payload = {'name' : playerName, 'password' : password}
     response = self.doJSONPut('/udj/users/7/players/player', json.dumps(payload))
     self.assertEqual(response.status_code, 201, "Error: " + response.content)
@@ -220,6 +222,30 @@ class PlayerQueryTests(YunYoungTestCase):
     expectedLibIds =[1,2,3,5]
     for song in songResults:
       self.assertTrue(song['id'] in expectedLibIds)
+
+  def testAlbumGet(self):
+    Participant.objects.filter(player__id=1, user__id=7).update(time_last_interaction=datetime.now())
+
+    response = self.doGet('/udj/players/1/available_music?query=Bedlam+in+Goliath')
+    self.assertEqual(response.status_code, 200)
+    songResults = json.loads(response.content)
+    self.assertEquals(2, len(songResults))
+    expectedLibIds =[6,7]
+    for song in songResults:
+      self.assertTrue(song['id'] in expectedLibIds)
+
+  def testGetRandom(self):
+    Participant.objects.filter(player__id=1, user__id=7).update(time_last_interaction=datetime.now())
+
+    response = self.doGet('/udj/players/1/available_music/random_songs?max_randoms=2')
+    self.assertEqual(response.status_code, 200)
+    songResults = json.loads(response.content)
+    self.assertEquals(2, len(songResults))
+    for song in songResults:
+      self.assertFalse(LibraryEntry.objects.get(
+        player__id=1, player_lib_song_id=song['id']).is_deleted)
+      self.assertFalse(BannedSong.objects.filter(
+        lib_entry__player__id=1, lib_entry__player_lib_song_id=song['id']).exists())
 
 
 

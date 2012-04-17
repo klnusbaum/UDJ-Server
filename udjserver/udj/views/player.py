@@ -236,6 +236,19 @@ def getAvailableMusic(request, player_id, activePlayer):
 
   return HttpResponse(json.dumps(available_songs, cls=UDJEncoder))
 
+@NeedsAuth
+@AcceptsMethods(['GET'])
+@ActivePlayerExists
+@IsOwnerOrParticipates
+def getRandomMusic(request, player_id, activePlayer):
+  rand_limit = request.GET.get('max_randoms',20)
+  rand_limit = max(rand_limit,100)
+  randomSongs = LibraryEntry.objects.filter(player=activePlayer)\
+      .exclude(is_deleted=True) \
+      .filter(bannedsong__isnull = True)
+  randomSongs = randomSongs.order_by('?')[:rand_limit]
+
+  return HttpResponse(json.dumps(randomSongs, cls=UDJEncoder))
 
 """
 import json
