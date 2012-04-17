@@ -346,7 +346,7 @@
     "fields": {
       "owning_user": 2,
       "name": "Kurtis Player",
-      "state": "AC"
+      "state": "PL"
     }
   },
   {
@@ -364,7 +364,7 @@
     "fields": {
       "owning_user": 6,
       "name": "Alejandro Player",
-      "state": "AC"
+      "state": "PL"
     }
   },
 

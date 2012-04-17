@@ -7,7 +7,7 @@ class State(models.Model):
   name = models.CharField(max_length=2)
 
 class Player(models.Model):
-  PLAYER_STATE_CHOICES = (('IN', u'Inactive'), ('AC', u'Active'),)
+  PLAYER_STATE_CHOICES = (('IN', u'Inactive'), ('PL', u'Playing'), ('PA', u'Paused'))
 
   owning_user = models.ForeignKey(User)
   name = models.CharField(max_length=200)

@@ -65,7 +65,7 @@ def ActivePlayerExists(function):
     player_id = kwargs['player_id']
     try:
       potentialPlayer = Player.objects.get(id=player_id)
-      if potentialPlayer.state == 'AC':
+      if potentialPlayer.state != 'IN':
         kwargs['activePlayer'] = potentialPlayer
         return function(*args, **kwargs)
       else:

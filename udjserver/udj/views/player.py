@@ -64,7 +64,7 @@ def getDistanceToLocation(eventLocation, lat2, lon2):
 @NeedsAuth
 @AcceptsMethods(['GET'])
 def getNearbyPlayers(request, latitude, longitude):
-  playerLocations = PlayerLocation.objects.filter(player__state='AC')
+  playerLocations = PlayerLocation.objects.exclude(player__state='IN')
   nearbyLocations = []
   lat2 = float(latitude)
   lon2 = float(longitude)
@@ -81,7 +81,7 @@ def getNearbyPlayers(request, latitude, longitude):
 @AcceptsMethods(['GET'])
 @HasNZParams(['name'])
 def getPlayers(request):
-  players = Player.objects.filter(name__icontains=request.GET['name'])
+  players = Player.objects.filter(name__icontains=request.GET['name']).exclude(state='IN')
   return HttpResponse(json.dumps(players, cls=UDJEncoder), content_type="text/json")
 
 @NeedsAuth
