@@ -6,7 +6,6 @@ from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
-from django.core.exceptions import ObjectDoesNotExist
 import random
 from udj.models import Ticket
 from udj.headers import DJANGO_TICKET_HEADER

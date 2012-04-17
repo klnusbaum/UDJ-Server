@@ -10,6 +10,8 @@ from udj.models import State
 from udj.models import BannedSong
 from udj.models import Participant
 from udj.models import LibraryEntry
+from udj.models import ActivePlaylistEntry
+from udj.models import PlaylistEntryTimePlayed
 from udj.decorators import AcceptsMethods
 from udj.decorators import NeedsJSON
 from udj.decorators import PlayerExists
@@ -17,6 +19,7 @@ from udj.decorators import ActivePlayerExists
 from udj.authdecorators import NeedsAuth
 from udj.authdecorators import TicketUserMatch
 from udj.authdecorators import IsOwnerOrParticipates
+from udj.authdecorators import IsOwner
 from udj.decorators import HasNZParams
 from udj.JSONCodecs import UDJEncoder
 from udj.exceptions import LocationNotFoundError
@@ -29,6 +32,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
+from django.core.exceptions import ObjectDoesNotExist
 
 from httplib import HTTPConnection
 from httplib import HTTPResponse
@@ -252,16 +256,13 @@ def getRandomMusic(request, player_id, activePlayer):
 
 
 @NeedsAuth
-@AcceptsMethods(['GET'])
+@AcceptsMethods(['POST'])
 @ActivePlayerExists
 @IsOwner
 @HasNZParams(['lib_id'])
 def setCurrentSong(request, player_id, activePlayer):
-
-  currentSong = None
   try:
-    currentSong = ActivePlaylistEntry.objects.get(
-    player=activePlayer, state=u'PL')
+    currentSong = ActivePlaylistEntry.objects.get(song__player=activePlayer, state=u'PL')
     currentSong.state=u'FN'
     currentSong.save()
   except ObjectDoesNotExist:
@@ -269,8 +270,8 @@ def setCurrentSong(request, player_id, activePlayer):
 
   try:
     newCurrentSong = ActivePlaylistEntry.objects.get(
-      player_lib_song_id=request.POST['lib_id'], 
-      player=activePlayer,
+      song__player_lib_song_id=request.POST['lib_id'], 
+      song__player=activePlayer,
       state=u'QE')
     newCurrentSong.state = u'PL'
     newCurrentSong.save()

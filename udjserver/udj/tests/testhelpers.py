@@ -49,6 +49,11 @@ class DoesServerOpsTestCase(TestCase):
     headers[DJANGO_TICKET_HEADER] = self.ticket_hash
     return self.client.post(url, args, content_type=content_type, **headers)
 
+  def doRegularPost(self, url, args):
+    headers = dict(DoesServerOpsTestCase.machine_headers.items())
+    headers[DJANGO_TICKET_HEADER] = self.ticket_hash
+    return self.client.post(url, args, **headers)
+
   def isJSONResponse(self, response):
     self.assertEqual(response['Content-Type'], 'text/json')
 

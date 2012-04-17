@@ -27,6 +27,17 @@ def IsOwnerOrParticipates(function):
       return toReturn
   return wrapper
 
+def IsOwner(function):
+  def wrapper(*args, **kwargs):
+    request = args[0]
+    user = getUserForTicket(request)
+    activePlayer = kwargs['activePlayer']
+    if activePlayer.owning_user==user:
+      return function(*args, **kwargs)
+    else:
+      return HttpResponseForbidden()
+  return wrapper
+
 
 def NeedsAuth(function):
   def wrapper(*args, **kwargs):

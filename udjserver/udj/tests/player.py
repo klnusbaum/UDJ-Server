@@ -10,6 +10,8 @@ from udj.models import Player
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
 from udj.models import Participant
+from udj.models import ActivePlaylistEntry
+from udj.models import PlaylistEntryTimePlayed
 from udj.auth import hashPlayerPassword
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER
 
@@ -192,6 +194,14 @@ class PlayerAdminTests(KurtisTestCase):
     for user in jsonUsers:
       self.assertTrue(user['username'] in possibleUsers)
 
+  def testSetCurrentSong(self):
+    response = self.doRegularPost('/udj/players/1/current_song', {'lib_id' : 1})
+    self.assertEqual(response.status_code, 200, response.content)
+
+    self.assertEqual('FN',ActivePlaylistEntry.objects.get(pk=5).state)
+    self.assertEqual('PL',ActivePlaylistEntry.objects.get(pk=1).state)
+    PlaylistEntryTimePlayed.objects.get(playlist_entry__id=1)
+
 
 class PlayerQueryTests(YunYoungTestCase):
 
@@ -212,7 +222,6 @@ class PlayerQueryTests(YunYoungTestCase):
     self.assertEqual(response['WWW-Authenticate'], 'begin-participating')
 
   def testSimpleGetMusic(self):
-
     Participant.objects.filter(player__id=1, user__id=7).update(time_last_interaction=datetime.now())
 
     response = self.doGet('/udj/players/1/available_music?query=Third+Eye+Blind')
