@@ -243,12 +243,45 @@ def getAvailableMusic(request, player_id, activePlayer):
 def getRandomMusic(request, player_id, activePlayer):
   rand_limit = request.GET.get('max_randoms',20)
   rand_limit = max(rand_limit,100)
-  randomSongs = LibraryEntry.objects.filter(player=activePlayer)\
+  randomSongs = LibraryEntry.objects.filter(player=activePlayer) \
       .exclude(is_deleted=True) \
       .filter(bannedsong__isnull = True)
   randomSongs = randomSongs.order_by('?')[:rand_limit]
 
   return HttpResponse(json.dumps(randomSongs, cls=UDJEncoder))
+
+
+@NeedsAuth
+@AcceptsMethods(['GET'])
+@ActivePlayerExists
+@IsOwner
+@HasNZParams(['lib_id'])
+def setCurrentSong(request, player_id, activePlayer):
+
+  currentSong = None
+  try:
+    currentSong = ActivePlaylistEntry.objects.get(
+    player=activePlayer, state=u'PL')
+    currentSong.state=u'FN'
+    currentSong.save()
+  except ObjectDoesNotExist:
+    pass
+
+  try:
+    newCurrentSong = ActivePlaylistEntry.objects.get(
+      player_lib_song_id=request.POST['lib_id'], 
+      player=activePlayer,
+      state=u'QE')
+    newCurrentSong.state = u'PL'
+    newCurrentSong.save()
+    PlaylistEntryTimePlayed(playlist_entry=newCurrentSong).save() 
+    return HttpResponse("Song changed")
+  except ObjectDoesNotExist:
+    toReturn = HttpResponseNotFound()
+    toReturn[MISSING_RESOURCE_HEADER] = 'song'
+    return toReturn
+
+
 
 """
 import json
