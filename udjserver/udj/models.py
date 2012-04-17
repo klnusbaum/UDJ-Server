@@ -1,7 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from datetime import datetime
 from datetime import timedelta
+
+def zero_ten_validator(value):
+  if value < 0 or value > 10:
+    raise ValidationError(u'%s is not between 0 and 10' % value)
 
 class State(models.Model):
   name = models.CharField(max_length=2)
@@ -12,6 +17,7 @@ class Player(models.Model):
   owning_user = models.ForeignKey(User)
   name = models.CharField(max_length=200)
   state = models.CharField(max_length=2, default='IN')
+  volume = models.IntegerField(default=0, validators=[zero_ten_validator])
 
   def __unicode__(self):
     return self.event.name + " password" 
