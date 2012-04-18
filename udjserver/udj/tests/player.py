@@ -124,6 +124,23 @@ class PlayerModificationTests(KurtisTestCase):
     playerPassword = PlayerPassword.objects.get(player__id=1)
     self.assertEqual(playerPassword.password_hash, hashPlayerPassword(newPassword))
 
+  def testSetLocation(self):
+    newLocation = {
+      'address' : '305 Vicksburg Lane',
+      'city' : 'Plymouth',
+      'state' : 'MN',
+      'zipcode' : 55447
+    }
+
+    response = self.doPost('/udj/users/2/players/1/location', newLocation)
+    self.assertEqual(response.status_code, 200, "Error: " + response.content)
+    playerLocation = PlayerLocation.objects.get(player__id=1)
+    self.assertEqual(playerLocation.address, '305 Vicksburg Lane')
+    self.assertEqual(playerLocation.city, 'Plymouth')
+    self.assertEqual(playerLocation.state.id, 23)
+    self.assertEqual(playerLocation.zipcode, 55447)
+
+
 class PlayerModificationTests2(AlejandroTestCase):
 
   def testChangePassword(self):

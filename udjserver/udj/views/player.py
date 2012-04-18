@@ -199,14 +199,30 @@ def deletePlayerPassword(request, user_id, player_id, player):
     toReturn[MISSING_RESOURCE_HEADER] = 'password'
     return toReturn
 
-"""
 @csrf_exempt
 @AcceptsMethods(['POST', 'DELETE'])
 @NeedsAuth
 @TicketUserMatch
 @PlayerExists
+@HasNZParams(['address','city','state','zipcode'])
 def setLocation(request, user_id, player_id, player):
-"""
+  try:
+    address = request.POST['address']
+    city = request.POST['city']
+    state = request.POST['state']
+    zipcode = request.POST['zipcode']
+    lat, lon = geocodeLocation(address, city, state, zipcode)
+    playerLocation = PlayerLocation.objects.get(player=player)
+    playerLocation.address = address
+    playerLocation.city = city
+    playerLocation.state = State.objects.get(name=state)
+    playerLocation.zipcode = zipcode
+    playerLocation.latitude = lat
+    playerLocation.longitude = lon
+    playerLocation.save()
+    return HttpResponse()
+  except LocationNotFoundError:
+    return HttpResponseBadRequest('Bad location')
 
 
 @NeedsAuth
