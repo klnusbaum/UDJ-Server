@@ -111,15 +111,15 @@ class CreatePlayerTest(YunYoungTestCase):
 class PlayerModificationTests(KurtisTestCase):
 
   def testChangeName(self):
-    newName = "A Bitchn' Player"
-    response = self.doPost('/udj/users/2/players/1/name', newName, content_type="text/html")
+    newName = "A Bitchn' name"
+    response = self.doPost('/udj/users/2/players/1/name', {'name': newName})
     self.assertEqual(response.status_code, 200, "Error: " + response.content)
     player = Player.objects.get(pk=1)
     self.assertEqual(player.name, newName)
 
   def testSetPassword(self):
-    newPassword = "nudepassword"
-    response = self.doPost('/udj/users/2/players/1/password', newPassword, content_type="text/html")
+    newPassword = 'nudepassword'
+    response = self.doPost('/udj/users/2/players/1/password', {'password': newPassword})
     self.assertEqual(response.status_code, 200, "Error: " + response.content)
     playerPassword = PlayerPassword.objects.get(player__id=1)
     self.assertEqual(playerPassword.password_hash, hashPlayerPassword(newPassword))
@@ -129,7 +129,7 @@ class PlayerModificationTests2(AlejandroTestCase):
   def testChangePassword(self):
     oldTime = PlayerPassword.objects.get(player__id=3).time_set
     newPassword = "nudepassword"
-    response = self.doPost('/udj/users/6/players/3/password', newPassword, content_type="text/html")
+    response = self.doPost('/udj/users/6/players/3/password', {'password': newPassword})
     self.assertEqual(response.status_code, 200, "Error: " + response.content)
     playerPassword = PlayerPassword.objects.get(player__id=3)
     self.assertEqual(playerPassword.password_hash, hashPlayerPassword(newPassword))
@@ -195,21 +195,44 @@ class PlayerAdminTests(KurtisTestCase):
       self.assertTrue(user['username'] in possibleUsers)
 
   def testSetCurrentSong(self):
-    response = self.doRegularPost('/udj/players/1/current_song', {'lib_id' : 1})
+    response = self.doPost('/udj/players/1/current_song', {'lib_id' : 1})
     self.assertEqual(response.status_code, 200, response.content)
 
     self.assertEqual('FN',ActivePlaylistEntry.objects.get(pk=5).state)
     self.assertEqual('PL',ActivePlaylistEntry.objects.get(pk=1).state)
     PlaylistEntryTimePlayed.objects.get(playlist_entry__id=1)
 
+  def testSetPaused(self):
+    response = self.doPost('/udj/users/2/players/1/state', {'state': 'paused'})
+    response = self.assertEqual(response.status_code, 200)
+
+    self.assertEqual(Player.objects.get(pk=1).state, 'PA')
+
+  def testSetInactive(self):
+    response = self.doPost('/udj/users/2/players/1/state', {'state': 'inactive'})
+    response = self.assertEqual(response.status_code, 200)
+
+    self.assertEqual(Player.objects.get(pk=1).state, 'IN')
+
+  def testSetPlaying(self):
+    response = self.doPost('/udj/users/2/players/1/state', {'state': 'playing'})
+    response = self.assertEqual(response.status_code, 200)
+
+    self.assertEqual(Player.objects.get(pk=1).state, 'PL')
+
+  def testBadStateRequest(self):
+    response = self.doPost('/udj/users/2/players/1/state', {'state': 'wrong'})
+    response = self.assertEqual(response.status_code, 400)
+
+    self.assertEqual(Player.objects.get(pk=1).state, 'PL')
+
 class PlayerAdminTests2(AlejandroTestCase):
   def testSetCurrentSongWithBlank(self):
-    response = self.doRegularPost('/udj/players/3/current_song', {'lib_id' : 1})
+    response = self.doPost('/udj/players/3/current_song', {'lib_id' : 1})
     self.assertEqual(response.status_code, 200, response.content)
 
     self.assertEqual('PL',ActivePlaylistEntry.objects.get(pk=8).state)
     PlaylistEntryTimePlayed.objects.get(playlist_entry__id=8)
-
 
 
 class PlayerQueryTests(YunYoungTestCase):

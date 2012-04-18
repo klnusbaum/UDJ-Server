@@ -44,12 +44,7 @@ class DoesServerOpsTestCase(TestCase):
     headers[DJANGO_TICKET_HEADER] = self.ticket_hash
     return self.client.delete(url, **headers)
 
-  def doPost(self, url, args, content_type="multipart/form-data"):
-    headers = dict(DoesServerOpsTestCase.machine_headers.items())
-    headers[DJANGO_TICKET_HEADER] = self.ticket_hash
-    return self.client.post(url, args, content_type=content_type, **headers)
-
-  def doRegularPost(self, url, args):
+  def doPost(self, url, args):
     headers = dict(DoesServerOpsTestCase.machine_headers.items())
     headers[DJANGO_TICKET_HEADER] = self.ticket_hash
     return self.client.post(url, args, **headers)

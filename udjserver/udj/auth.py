@@ -1,6 +1,7 @@
 import json
 import hashlib
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from django.http import HttpRequest
 from django.http import HttpResponse

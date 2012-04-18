@@ -143,8 +143,9 @@ def createPlayer(request, user_id):
 @NeedsAuth
 @TicketUserMatch
 @PlayerExists
+@HasNZParams(['name'])
 def changePlayerName(request, user_id, player_id, player):
-  givenName = request.raw_post_data
+  givenName = request.POST['name']
   if givenName == '':
     return HttpResponseBadRequest("Bad name")
   if Player.objects.filter(owning_user__id=user_id, name=givenName).exists():
@@ -166,8 +167,9 @@ def modifyPlayerPassword(request, user_id, player_id, player):
   elif request.method == 'DELETE':
     return deletePlayerPassword(request, user_id, player_id, player)
 
+@HasNZParams(['password'])
 def setPlayerPassword(request, user_id, player_id, player):
-  givenPassword = request.raw_post_data
+  givenPassword = request.POST['password']
   if givenPassword == '':
     return HttpResponseBadRequest("Bad password")
 
@@ -281,6 +283,27 @@ def setCurrentSong(request, player_id, activePlayer):
     toReturn = HttpResponseNotFound()
     toReturn[MISSING_RESOURCE_HEADER] = 'song'
     return toReturn
+
+@NeedsAuth
+@AcceptsMethods(['POST'])
+@TicketUserMatch
+@PlayerExists
+@HasNZParams(['state'])
+def setPlayerState(request, user_id, player_id, player):
+  givenState = request.POST['state']
+
+  if givenState == u'paused':
+    player.state = u'PA'
+  elif givenState == u'playing':
+    player.state = u'PL'
+  elif givenState == u'inactive':
+    player.state = u'IN'
+  else:
+    return HttpResponseBadRequest()
+
+  player.save()
+  return HttpResponse()
+
 
 
 
