@@ -163,6 +163,41 @@
 
 
   {
+    "pk": 11,
+    "model": "udj.libraryentry",
+    "fields": {
+      "player": 3,
+      "player_lib_song_id": 1,
+      "title": "Californication",
+      "artist": "Red Hot Chili Peppers",
+      "album": "Californication",
+      "track": 6,
+      "genre": "Rock",
+      "duration": 321,
+      "is_deleted": false
+    }
+  },
+
+  {
+    "pk": 12,
+    "model": "udj.libraryentry",
+    "fields": {
+      "player": 3,
+      "player_lib_song_id": 2,
+      "title": "Otherside",
+      "artist": "Red Hot Chili Peppers",
+      "album": "Californication",
+      "track": 4,
+      "genre": "Rock",
+      "duration": 255,
+      "is_deleted": false
+    }
+  },
+
+
+
+
+  {
     "pk" : 1,
     "model": "udj.bannedsong",
     "fields" : {
@@ -246,6 +281,18 @@
       "state": "RM"
     }
   },
+
+  {
+    "pk": 8,
+    "model": "udj.activeplaylistentry",
+    "fields": {
+      "song": 11,
+      "time_added": "2012-04-15 11:54:11",
+      "adder": 6,
+      "state": "QE"
+    }
+  },
+
 
   {
     "pk": 1,
@@ -346,25 +393,30 @@
     "fields": {
       "owning_user": 2,
       "name": "Kurtis Player",
-      "state": "PL"
+      "state": "PL",
+      "volume": 5
     }
   },
+
   {
     "pk": 2,
     "model": "udj.player",
     "fields": {
       "owning_user": 2,
       "name": "Minnesota Player",
-      "state": "IN"
+      "state": "IN",
+      "volume": 2
     }
   },
+
   {
     "pk": 3,
     "model": "udj.player",
     "fields": {
       "owning_user": 6,
       "name": "Alejandro Player",
-      "state": "PL"
+      "state": "PL",
+      "volume": 3
     }
   },
 

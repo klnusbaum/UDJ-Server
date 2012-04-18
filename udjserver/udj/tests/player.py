@@ -202,6 +202,15 @@ class PlayerAdminTests(KurtisTestCase):
     self.assertEqual('PL',ActivePlaylistEntry.objects.get(pk=1).state)
     PlaylistEntryTimePlayed.objects.get(playlist_entry__id=1)
 
+class PlayerAdminTests2(AlejandroTestCase):
+  def testSetCurrentSongWithBlank(self):
+    response = self.doRegularPost('/udj/players/3/current_song', {'lib_id' : 1})
+    self.assertEqual(response.status_code, 200, response.content)
+
+    self.assertEqual('PL',ActivePlaylistEntry.objects.get(pk=8).state)
+    PlaylistEntryTimePlayed.objects.get(playlist_entry__id=8)
+
+
 
 class PlayerQueryTests(YunYoungTestCase):
 
