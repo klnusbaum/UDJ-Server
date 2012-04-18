@@ -304,6 +304,16 @@ def setPlayerState(request, user_id, player_id, player):
   player.save()
   return HttpResponse()
 
+@NeedsAuth
+@AcceptsMethods(['POST'])
+@TicketUserMatch
+@PlayerExists
+@HasNZParams(['volume'])
+def setPlayerVolume(request, user_id, player_id, player):
+  player.volume = request.POST['volume']
+  player.save()
+  return HttpResponse()
+
 
 
 

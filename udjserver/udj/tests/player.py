@@ -226,6 +226,14 @@ class PlayerAdminTests(KurtisTestCase):
 
     self.assertEqual(Player.objects.get(pk=1).state, 'PL')
 
+
+  def testSetVolume(self):
+    response = self.doPost('/udj/users/2/players/1/volume', {'volume': '1'})
+    response = self.assertEqual(response.status_code, 200)
+
+    self.assertEqual(Player.objects.get(pk=1).volume, 1)
+
+
 class PlayerAdminTests2(AlejandroTestCase):
   def testSetCurrentSongWithBlank(self):
     response = self.doPost('/udj/players/3/current_song', {'lib_id' : 1})
