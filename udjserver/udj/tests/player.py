@@ -226,12 +226,24 @@ class PlayerAdminTests(KurtisTestCase):
 
     self.assertEqual(Player.objects.get(pk=1).state, 'PL')
 
-
   def testSetVolume(self):
     response = self.doPost('/udj/users/2/players/1/volume', {'volume': '1'})
     response = self.assertEqual(response.status_code, 200)
 
     self.assertEqual(Player.objects.get(pk=1).volume, 1)
+
+  def testBadSetVolume(self):
+    response = self.doPost('/udj/users/2/players/1/volume', {'volume': 'a'})
+    response = self.assertEqual(response.status_code, 400)
+
+    self.assertEqual(Player.objects.get(pk=1).volume, 5)
+
+  def testBadSetVolume2(self):
+    response = self.doPost('/udj/users/2/players/1/volume', {'volume': '11'})
+    response = self.assertEqual(response.status_code, 400)
+
+    self.assertEqual(Player.objects.get(pk=1).volume, 5)
+
 
 
 class PlayerAdminTests2(AlejandroTestCase):

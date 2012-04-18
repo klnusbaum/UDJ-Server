@@ -2,15 +2,18 @@ from httplib import HTTPSConnection
 from udj.exceptions import LocationNotFoundError
 from urllib import urlencode
 
-def USCWebGISGeocoder(location, apiKey):
+def USCWebGISGeocoder(address, city, state, zipcode, apiKey):
   uscwebgisUrl = "/Services/Geocode/WebService/GeocoderWebServiceHttpNonParsed_V02_96.aspx?"
   #TODO Need to scrub location values. could be vulnerable to a url redirect
-  queryParams = dict(location.items())
-  del queryParams['address']
-  queryParams['streetAddress'] = location['address']
-  queryParams['apiKey'] = apiKey
-  queryParams['version'] = '2.96'
-  queryParams['format'] = 'csv'
+  queryParams = {
+    'streetAddress' : address,
+    'city' : city,
+    'state' : state,
+    'zip' : zipcode,
+    'apiKey' : apiKey,
+    'version' : '2.96',
+    'format' : 'csv',
+  }
   requestUrl = uscwebgisUrl + urlencode(queryParams)
 
   conn = HTTPSConnection('webgis.usc.edu')

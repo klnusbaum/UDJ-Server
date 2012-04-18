@@ -84,6 +84,19 @@ def getPlayers(request):
   players = Player.objects.filter(name__icontains=request.GET['name']).exclude(state='IN')
   return HttpResponse(json.dumps(players, cls=UDJEncoder), content_type="text/json")
 
+
+def doLocationSet(address, city, state, zipcode, player):
+  lat, lon = geocodeLocation(address, city, state, zipcode)
+  PlayerLocation(
+    player=player,
+    address=address,
+    city=city,
+    state=State.objects.get(name__iexact=state),
+    zipcode=zipcode,
+    latitude=lat,
+    longitude=lon
+  ).save()
+
 @NeedsAuth
 @TicketUserMatch
 @AcceptsMethods(['PUT'])
@@ -121,16 +134,8 @@ def createPlayer(request, user_id):
     location = newPlayerJSON['location']
     if isValidLocation(location):
       try:
-        lat, lon = geocodeLocation(location)
-        PlayerLocation(
-          player=newPlayer,
-          address=location['address'],
-          city=location['city'],
-          state=State.objects.get(name__iexact=location['state']),
-          zipcode=location['zipcode'],
-          latitude=lat,
-          longitude=lon
-        ).save()
+        doLocationSet(location['address'], location['city'],
+            location['state'], location['zipcode'], newPlayer)
       except LocationNotFoundError:
         return HttpResponseBadRequest('Location not found')
     else:
@@ -194,6 +199,80 @@ def deletePlayerPassword(request, user_id, player_id, player):
     toReturn[MISSING_RESOURCE_HEADER] = 'password'
     return toReturn
 
+"""
+@csrf_exempt
+@AcceptsMethods(['POST', 'DELETE'])
+@NeedsAuth
+@TicketUserMatch
+@PlayerExists
+def setLocation(request, user_id, player_id, player):
+"""
+
+
+@NeedsAuth
+@AcceptsMethods(['POST'])
+@ActivePlayerExists
+@IsOwner
+@HasNZParams(['lib_id'])
+def setCurrentSong(request, player_id, activePlayer):
+  try:
+    currentSong = ActivePlaylistEntry.objects.get(song__player=activePlayer, state=u'PL')
+    currentSong.state=u'FN'
+    currentSong.save()
+  except ObjectDoesNotExist:
+    pass
+
+  try:
+    newCurrentSong = ActivePlaylistEntry.objects.get(
+      song__player_lib_song_id=request.POST['lib_id'], 
+      song__player=activePlayer,
+      state=u'QE')
+    newCurrentSong.state = u'PL'
+    newCurrentSong.save()
+    PlaylistEntryTimePlayed(playlist_entry=newCurrentSong).save() 
+    return HttpResponse("Song changed")
+  except ObjectDoesNotExist:
+    toReturn = HttpResponseNotFound()
+    toReturn[MISSING_RESOURCE_HEADER] = 'song'
+    return toReturn
+
+@NeedsAuth
+@AcceptsMethods(['POST'])
+@TicketUserMatch
+@PlayerExists
+@HasNZParams(['state'])
+def setPlayerState(request, user_id, player_id, player):
+  givenState = request.POST['state']
+
+  if givenState == u'paused':
+    player.state = u'PA'
+  elif givenState == u'playing':
+    player.state = u'PL'
+  elif givenState == u'inactive':
+    player.state = u'IN'
+  else:
+    return HttpResponseBadRequest()
+
+  player.save()
+  return HttpResponse()
+
+@NeedsAuth
+@AcceptsMethods(['POST'])
+@TicketUserMatch
+@PlayerExists
+@HasNZParams(['volume'])
+def setPlayerVolume(request, user_id, player_id, player):
+  try:
+    newVolume = int(request.POST['volume'])
+    if newVolume > 10 or newVolume < 0:
+      return HttpResponseBadRequest()
+    player.volume = newVolume
+    player.save()
+    return HttpResponse()
+  except ValueError:
+    return HttpResponseBadRequest()
+
+
 def onSuccessfulPlayerAuth(activePlayer, user_id):
   Participant.objects.get_or_create(player=activePlayer, user=User.objects.get(pk=user_id))
   return HttpResponse(status=201)
@@ -255,65 +334,6 @@ def getRandomMusic(request, player_id, activePlayer):
   randomSongs = randomSongs.order_by('?')[:rand_limit]
 
   return HttpResponse(json.dumps(randomSongs, cls=UDJEncoder))
-
-
-@NeedsAuth
-@AcceptsMethods(['POST'])
-@ActivePlayerExists
-@IsOwner
-@HasNZParams(['lib_id'])
-def setCurrentSong(request, player_id, activePlayer):
-  try:
-    currentSong = ActivePlaylistEntry.objects.get(song__player=activePlayer, state=u'PL')
-    currentSong.state=u'FN'
-    currentSong.save()
-  except ObjectDoesNotExist:
-    pass
-
-  try:
-    newCurrentSong = ActivePlaylistEntry.objects.get(
-      song__player_lib_song_id=request.POST['lib_id'], 
-      song__player=activePlayer,
-      state=u'QE')
-    newCurrentSong.state = u'PL'
-    newCurrentSong.save()
-    PlaylistEntryTimePlayed(playlist_entry=newCurrentSong).save() 
-    return HttpResponse("Song changed")
-  except ObjectDoesNotExist:
-    toReturn = HttpResponseNotFound()
-    toReturn[MISSING_RESOURCE_HEADER] = 'song'
-    return toReturn
-
-@NeedsAuth
-@AcceptsMethods(['POST'])
-@TicketUserMatch
-@PlayerExists
-@HasNZParams(['state'])
-def setPlayerState(request, user_id, player_id, player):
-  givenState = request.POST['state']
-
-  if givenState == u'paused':
-    player.state = u'PA'
-  elif givenState == u'playing':
-    player.state = u'PL'
-  elif givenState == u'inactive':
-    player.state = u'IN'
-  else:
-    return HttpResponseBadRequest()
-
-  player.save()
-  return HttpResponse()
-
-@NeedsAuth
-@AcceptsMethods(['POST'])
-@TicketUserMatch
-@PlayerExists
-@HasNZParams(['volume'])
-def setPlayerVolume(request, user_id, player_id, player):
-  player.volume = request.POST['volume']
-  player.save()
-  return HttpResponse()
-
 
 
 
