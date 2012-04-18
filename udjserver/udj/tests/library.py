@@ -53,6 +53,21 @@ class LibTestCases(KurtisTestCase):
     self.assertEqual(404, response.status_code, response.content)
     self.assertEqual(response[MISSING_RESOURCE_HEADER], 'song')
 
+  def testAddSong2BanList(self):
+    response = self.doPut('/udj/users/2/players/1/ban_music/1')
+    self.assertEqual(200, response.status_code, response.content)
+    self.assertEqual(LibraryEntry.objects.get(player__id=1, player_lib_song_id=1).is_banned, True)
+
+  def testUnbanSong(self):
+    response = self.doDelete('/udj/users/2/players/1/ban_music/4')
+    self.assertEqual(200, response.status_code, response.content)
+    self.assertEqual(LibraryEntry.objects.get(player__id=1, player_lib_song_id=4).is_banned, False)
+
+  def testBadSongBan(self):
+    response = self.doDelete('/udj/users/2/players/1/ban_music/12')
+    self.assertEqual(404, response.status_code, response.content)
+    self.assertEqual(response[MISSING_RESOURCE_HEADER], 'song')
+
 
 
 """

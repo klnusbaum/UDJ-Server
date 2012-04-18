@@ -5,7 +5,6 @@ from udj.tests.testhelpers import YunYoungTestCase
 from udj.tests.testhelpers import KurtisTestCase
 from udj.tests.testhelpers import AlejandroTestCase
 from udj.models import LibraryEntry
-from udj.models import BannedSong
 from udj.models import Player
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
@@ -320,10 +319,10 @@ class PlayerQueryTests(YunYoungTestCase):
     songResults = json.loads(response.content)
     self.assertEquals(2, len(songResults))
     for song in songResults:
-      self.assertFalse(LibraryEntry.objects.get(
-        player__id=1, player_lib_song_id=song['id']).is_deleted)
-      self.assertFalse(BannedSong.objects.filter(
-        lib_entry__player__id=1, lib_entry__player_lib_song_id=song['id']).exists())
+      self.assertFalse(
+          LibraryEntry.objects.get(player__id=1, player_lib_song_id=song['id']).is_deleted)
+      self.assertFalse(
+          LibraryEntry.objects.get(player__id=1, player_lib_song_id=song['id']).is_banned)
 
 
 

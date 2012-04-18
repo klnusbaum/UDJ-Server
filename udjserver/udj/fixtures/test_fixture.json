@@ -12,7 +12,8 @@
       "track": 3,
       "genre": "Rock",
       "duration": 268,
-      "is_deleted": false
+      "is_deleted": false,
+      "is_banned": false
     }
   },
 
@@ -28,7 +29,8 @@
       "track": 2,
       "genre": "Rock",
       "duration": 228,
-      "is_deleted": false
+      "is_deleted": false,
+      "is_banned": false
     }
   },
 
@@ -44,7 +46,8 @@
       "track": 5,
       "genre": "Rock",
       "duration": 189,
-      "is_deleted": false
+      "is_deleted": false,
+      "is_banned": false
     }
   },
 
@@ -60,7 +63,8 @@
       "track": 1,
       "genre": "Rock",
       "duration": 200,
-      "is_deleted": false
+      "is_deleted": false,
+      "is_banned" : true
     }
   },
 
@@ -76,7 +80,8 @@
       "track": 3,
       "genre": "Rock",
       "duration": 237,
-      "is_deleted": false
+      "is_deleted": false,
+      "is_banned": false
     }
   },
 
@@ -93,7 +98,8 @@
       "track": 3,
       "genre": "Rock",
       "duration": 335,
-      "is_deleted": false
+      "is_deleted": false,
+      "is_banned": false
     }
   },
 
@@ -109,7 +115,8 @@
       "track": 2,
       "genre": "Rock",
       "duration": 471,
-      "is_deleted": false
+      "is_deleted": false,
+      "is_banned": false
     }
   },
 
@@ -125,7 +132,8 @@
       "track": 5,
       "genre": "Rock",
       "duration": 158,
-      "is_deleted": true
+      "is_deleted": true,
+      "is_banned": false
     }
   },
 
@@ -141,7 +149,8 @@
       "track": 2,
       "genre": "Dubstep",
       "duration": 215,
-      "is_deleted": false
+      "is_deleted": false,
+      "is_banned": false
     }
   },
 
@@ -157,7 +166,8 @@
       "track": 1,
       "genre": "Dubstep",
       "duration": 291,
-      "is_deleted": false
+      "is_deleted": false,
+      "is_banned": false
     }
   },
 
@@ -174,7 +184,8 @@
       "track": 6,
       "genre": "Rock",
       "duration": 321,
-      "is_deleted": false
+      "is_deleted": false,
+      "is_banned": false
     }
   },
 
@@ -190,20 +201,12 @@
       "track": 4,
       "genre": "Rock",
       "duration": 255,
-      "is_deleted": false
+      "is_deleted": false,
+      "is_banned": false
     }
   },
 
 
-
-
-  {
-    "pk" : 1,
-    "model": "udj.bannedsong",
-    "fields" : {
-      "lib_entry" : 4
-    }
-  },
 
   {
     "pk": 1,

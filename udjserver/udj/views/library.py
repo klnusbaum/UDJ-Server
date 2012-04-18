@@ -70,36 +70,21 @@ def deleteSongFromLibrary(request, user_id, player_id, lib_id, player):
 
   return HttpResponse()
 
-
-"""
 @NeedsAuth
 @TicketUserMatch
-@AcceptsMethods(['PUT'])
 @PlayerExists
-def addSong2BanList(request, user_id, player_id, lib_id, player):
+@AcceptsMethods(['PUT', 'DELETE'])
+def modifyBanList(request, user_id, player_id, lib_id, player):
   try:
-    libEntry = LibraryEntry.objets.get(player=player, player_lib_song_id=lib_id)
-    BannedSong(lib_entry=libEntry).save()
-    return HttpReponse()
+    libEntry = LibraryEntry.objects.get(player=player, player_lib_song_id=lib_id)
+    libEntry.is_banned=True if request.method == 'PUT' else False
+    libEntry.save()
+    return HttpResponse()
   except ObjectDoesNotExist:
     toReturn = HttpResponseNotFound()
     toReturn[MISSING_RESOURCE_HEADER] = 'song'
     return toReturn
 
-@NeedsAuth
-@TicketUserMatch
-@AcceptsMethods(['PUT'])
-@PlayerExists
-def removeSongFromBanlist(request, user_id, player_id, lib_id, player):
-  try:
-    BannedSong.objects.get(lib_entry__player_lib_song_id=lib_id).delete()
-    return HttpReponse()
-  except ObjectDoesNotExist:
-    toReturn = HttpResponseNotFound()
-    toReturn[MISSING_RESOURCE_HEADER] = 'song'
-    return toReturn
-
-"""
 
 
 

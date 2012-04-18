@@ -7,7 +7,6 @@ from udj.models import Player
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
 from udj.models import State
-from udj.models import BannedSong
 from udj.models import Participant
 from udj.models import LibraryEntry
 from udj.models import ActivePlaylistEntry
@@ -330,7 +329,9 @@ def getAvailableMusic(request, player_id, activePlayer):
   available_songs = LibraryEntry.objects.filter(player=activePlayer).filter(
     Q(title__icontains=query) |
     Q(artist__icontains=query) |
-    Q(album__icontains=query)).exclude(is_deleted=True).filter(bannedsong__isnull = True)
+    Q(album__icontains=query)).exclude(
+        Q(is_deleted=True)|
+        Q(is_banned=True))
 
   if 'max_results' in request.GET:
     available_songs = available_songs[:request.GET['max_results']]
@@ -345,8 +346,7 @@ def getRandomMusic(request, player_id, activePlayer):
   rand_limit = request.GET.get('max_randoms',20)
   rand_limit = max(rand_limit,100)
   randomSongs = LibraryEntry.objects.filter(player=activePlayer) \
-      .exclude(is_deleted=True) \
-      .filter(bannedsong__isnull = True)
+      .exclude(Q(is_deleted=True) | Q(is_banned=True))
   randomSongs = randomSongs.order_by('?')[:rand_limit]
 
   return HttpResponse(json.dumps(randomSongs, cls=UDJEncoder))
