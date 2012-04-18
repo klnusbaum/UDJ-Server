@@ -56,19 +56,13 @@ class LibraryEntry(models.Model):
   genre = models.CharField(max_length=50)
   duration = models.IntegerField()
   is_deleted = models.BooleanField(default=False)
+  is_banned = models.BooleanField(default=False)
 
   class Meta:
     unique_together = ("player", "player_lib_song_id")
 
   def __unicode__(self):
     return "Library Entry " + str(self.player_lib_song_id) + ": " + self.title
-
-class BannedSong(models.Model):
-  lib_entry = models.OneToOneField(LibraryEntry)
-
-  def __unicode__(self):
-    return "Banned Library Entry " + str(self.lib_entry.title)
-
 
 class ActivePlaylistEntry(models.Model):
   STATE_CHOICES = (
