@@ -85,7 +85,7 @@ class ActivePlaylistEntry(models.Model):
     return self.song.title + " added by " + self.adder.username
 
 class PlaylistEntryTimePlayed(models.Model):
-  playlist_entry = models.ForeignKey(ActivePlaylistEntry, unique=True)
+  playlist_entry = models.OneToOneField(ActivePlaylistEntry)
   time_played = models.DateTimeField(auto_now_add=True)
 
   def __unicode__(self):

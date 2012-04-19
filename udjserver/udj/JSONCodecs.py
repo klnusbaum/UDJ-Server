@@ -4,6 +4,7 @@ from udj.models import PlayerLocation
 from udj.models import PlayerPassword
 from udj.models import Participant
 from udj.models import LibraryEntry
+from udj.models import ActivePlaylistEntry
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.query import QuerySet
@@ -14,6 +15,22 @@ class UDJEncoder(json.JSONEncoder):
   def default(self, obj):
     if isinstance(obj, QuerySet):
       return [x for x in obj]
+
+    elif isinstance(obj, ActivePlaylistEntry):
+      toReturn =  {
+        'song' : obj.song,
+        'up_votes' : obj.upvote_count(),
+        'down_votes' : obj.downvote_count(),
+        'time_added' : obj.time_added.replace(microsecond=0).isoformat(),
+        'adder' : obj.adder
+      }
+
+      if obj.state == 'PL':
+        toReturned['time_player'] = obj.playlistentrytimeplayed
+      return toReturn
+
+
+
     elif isinstance(obj, LibraryEntry):
       return {
           'id' : obj.player_lib_song_id,

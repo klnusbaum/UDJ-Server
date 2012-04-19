@@ -352,6 +352,23 @@ def getRandomMusic(request, player_id, activePlayer):
   return HttpResponse(json.dumps(randomSongs, cls=UDJEncoder))
 
 
+@NeedsAuth
+@AcceptsMethods(['GET'])
+@ActivePlayerExists
+@IsOwnerOrParticipates
+def getActivePlaylist(request, player_id, activePlayer):
+  queuedEntries = ActivePlaylistEntry.objects.filter(song__player=activePlayer, state='QE')
+  playlist={'active_playlist' : queuedEntries}
+
+  try:
+    currentPlaying = ActivePlaylistEntry.objects.get(song__player=activePlayer, state='PL')
+    playlist['current_song'] = currentPlaying
+  except ObjectDoesNotExist:
+    playlist['current_song'] = {}
+
+  return HttpResponse(json.dumps(playlist, cls=UDJEncoder))
+
+
 
 """
 import json
