@@ -368,6 +368,41 @@ class PlaylistModTests(JeffTestCase):
       song__player__id=1, song__player_lib_song_id=9, state='QE')
     vote = Vote.objects.get(playlist_entry=added)
 
+  @EnsureParticipationUpdated(3, 1)
+  def testAddRemovedSong(self):
+    response = self.doPut('/udj/players/1/active_playlist/songs/10')
+    self.assertEqual(response.status_code, 201)
+
+    added = ActivePlaylistEntry.objects.get(
+      song__player__id=1, song__player_lib_song_id=10, state='QE')
+    vote = Vote.objects.get(playlist_entry=added)
+
+  @EnsureParticipationUpdated(3, 1)
+  def testAddBannedSong(self):
+    response = self.doPut('/udj/players/1/active_playlist/songs/4')
+    self.assertEqual(response.status_code, 404)
+
+    self.assertFalse( ActivePlaylistEntry.objects.filter(
+      song__player__id=1, song__player_lib_song_id=4, state='QE').exists())
+
+  @EnsureParticipationUpdated(3, 1)
+  def testAddDeletedSong(self):
+    response = self.doPut('/udj/players/1/active_playlist/songs/8')
+    self.assertEqual(response.status_code, 404)
+
+    self.assertFalse( ActivePlaylistEntry.objects.filter(
+      song__player__id=1, song__player_lib_song_id=8, state='QE').exists())
+
+  @EnsureParticipationUpdated(3, 1)
+  def testAddQueuedSong(self):
+    response = self.doPut('/udj/players/1/active_playlist/songs/1')
+    self.assertEqual(response.status_code, 409)
+
+  @EnsureParticipationUpdated(3, 1)
+  def testAddPlayingSong(self):
+    response = self.doPut('/udj/players/1/active_playlist/songs/6')
+    self.assertEqual(response.status_code, 409)
+
 
 
 

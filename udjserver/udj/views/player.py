@@ -25,8 +25,10 @@ from udj.JSONCodecs import UDJEncoder
 from udj.exceptions import LocationNotFoundError
 from udj.auth import hashPlayerPassword
 from udj.decorators import UpdatePlayerActivity
+
 from django.http import HttpRequest
 from django.http import HttpResponse
+from django.http import HttpResponseNotFound
 from django.http import HttpResponseBadRequest
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -388,7 +390,8 @@ def add2ActivePlaylist(request, user, player_id, lib_id, activePlayer):
     toReturn[MISSING_RESOURCE_HEADER] = 'song'
     return toReturn
 
-  if ActivePlaylistEntry.objects.filter(song=libEntry, state='QE'):
+  if ActivePlaylistEntry.objects.filter(song=libEntry)\
+      .exclude(state='RM').exclude(state='FN').exists():
     return HttpResponse(status=409)
 
   addedEntry = ActivePlaylistEntry(song=libEntry, adder=user)
