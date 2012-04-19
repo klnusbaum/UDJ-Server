@@ -3,6 +3,7 @@ import math
 
 from udj.headers import MISSING_RESOURCE_HEADER
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER
+from udj.models import Vote
 from udj.models import Player
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
@@ -371,6 +372,31 @@ def getActivePlaylist(request, user, player_id, activePlayer):
     playlist['current_song'] = {}
 
   return HttpResponse(json.dumps(playlist, cls=UDJEncoder))
+
+@NeedsAuth
+@AcceptsMethods(['PUT', 'DELETE'])
+@ActivePlayerExists
+@IsOwnerOrParticipates
+@UpdatePlayerActivity
+@transaction.commit_on_success
+def add2ActivePlaylist(request, user, player_id, lib_id, activePlayer):
+  try:
+    libEntry = LibraryEntry.objects.get(player=activePlayer, player_lib_song_id=lib_id,
+      is_deleted=False, is_banned=False)
+  except ObjectDoesNotExist:
+    toReturn = HttpResponseNotFound()
+    toReturn[MISSING_RESOURCE_HEADER] = 'song'
+    return toReturn
+
+  if ActivePlaylistEntry.objects.filter(song=libEntry, state='QE'):
+    return HttpResponse(status=409)
+
+  addedEntry = ActivePlaylistEntry(song=libEntry, adder=user)
+  addedEntry.save()
+
+  Vote(playlist_entry=addedEntry, user=user, weight=1).save()
+
+  return HttpResponse(status=201)
 
 
 

@@ -4,6 +4,7 @@ from udj.tests.testhelpers import JeffTestCase
 from udj.tests.testhelpers import YunYoungTestCase
 from udj.tests.testhelpers import KurtisTestCase
 from udj.tests.testhelpers import AlejandroTestCase
+from udj.models import Vote
 from udj.models import LibraryEntry
 from udj.models import Player
 from udj.models import PlayerLocation
@@ -351,6 +352,19 @@ class PlayerQueryTests(YunYoungTestCase):
     for plSong in jsonResponse['active_playlist']:
       self.assertTrue(plSong['song']['id'] in plSongIds)
     self.assertEqual(len(jsonResponse['active_playlist']), len(plSongIds))
+
+
+class PlaylistModTests(JeffTestCase):
+
+  def testSimpleAdd(self):
+    Participant.objects.filter(player__id=1, user__id=3).update(time_last_interaction=datetime.now())
+
+    response = self.doPut('/udj/players/1/active_playlist/songs/9')
+    self.assertEqual(response.status_code, 201)
+
+    added = ActivePlaylistEntry.objects.get(
+      song__player__id=1, song__player_lib_song_id=9, state='QE')
+    vote = Vote.objects.get(playlist_entry=added)
 
 
 

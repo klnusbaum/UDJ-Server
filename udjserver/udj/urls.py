@@ -19,6 +19,7 @@ urlpatterns += patterns('udj.views.player',
   (r'^players/(?P<player_id>\d+)/available_music/random_songs$', 'getRandomMusic'),
   (r'^players/(?P<player_id>\d+)/current_song$', 'setCurrentSong'),
   (r'^players/(?P<player_id>\d+)/active_playlist$', 'getActivePlaylist'),
+  (r'^players/(?P<player_id>\d+)/active_playlist/songs/(?P<lib_id>\d+)$', 'add2ActivePlaylist'),
 
 )
 
