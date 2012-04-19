@@ -97,6 +97,44 @@ def removeFromActivePlaylist(user, lib_id, activePlayer):
   playlistEntry.save()
   return HttpResponse()
 
+@csrf_exempt
+@NeedsAuth
+@ActivePlayerExists
+@IsOwnerOrParticipates
+@UpdatePlayerActivity
+@AcceptsMethods(['POST'])
+def voteSongDown(request, player_id, activePlayer, user_id, user, lib_id):
+  return voteSong(activePlayer, user, lib_id, -1)
+
+@csrf_exempt
+@NeedsAuth
+@ActivePlayerExists
+@IsOwnerOrParticipates
+@UpdatePlayerActivity
+@AcceptsMethods(['POST'])
+def voteSongUp(request, player_id, activePlayer, user_id, user, lib_id):
+  return voteSong(activePlayer, user, lib_id, 1)
+
+def voteSong(activePlayer, user, lib_id, weight):
+
+  try:
+    playlistEntry = ActivePlaylistEntry.objects.get(
+        song__player=activePlayer,
+        song__player_lib_song_id=lib_id,
+        state='QE')
+  except ObjectDoesNotExist:
+    toReturn = HttpResponseNotFound()
+    toReturn[MISSING_RESOURCE_HEADER] = 'song'
+    return toReturn
+
+  vote, created = Vote.objects.get_or_create(playlist_entry=playlistEntry, user=user,
+      defaults={'weight': weight})
+
+  if not created:
+    vote.weight = weight
+    vote.save()
+
+  return HttpResponse()
 
 
 

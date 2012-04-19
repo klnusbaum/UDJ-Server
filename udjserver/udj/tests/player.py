@@ -434,6 +434,13 @@ class PlaylistModTests(JeffTestCase):
     shouldntBeRemoved = ActivePlaylistEntry.objects.get(pk=2)
     self.assertEqual('QE', shouldntBeRemoved.state)
 
+  @EnsureParticipationUpdated(3, 1)
+  def testVoteSongUp(self):
+    response = self.doPost('/udj/players/1/active_playlist/songs/1/users/3/upvote')
+    self.assertEqual(response.status_code, 200)
+
+    upvote = Vote.objects.get(user__id=3, playlist_entry__song__id=1, weight=1)
+
 
 
 
