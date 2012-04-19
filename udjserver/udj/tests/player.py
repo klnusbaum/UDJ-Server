@@ -262,6 +262,21 @@ class PlayerAdminTests(KurtisTestCase):
 
     self.assertEqual(Player.objects.get(pk=1).volume, 5)
 
+  def testSongRemove(self):
+    response = self.doDelete('/udj/players/1/active_playlist/songs/2')
+    self.assertEqual(response.status_code, 200)
+
+    shouldntBeRemoved = ActivePlaylistEntry.objects.get(pk=2)
+    self.assertEqual('RM', shouldntBeRemoved.state)
+
+  def testOtherSongRemove(self):
+    response = self.doDelete('/udj/players/1/active_playlist/songs/2')
+    self.assertEqual(response.status_code, 200)
+
+    shouldntBeRemoved = ActivePlaylistEntry.objects.get(pk=2)
+    self.assertEqual('RM', shouldntBeRemoved.state)
+
+
 
 
 class PlayerAdminTests2(AlejandroTestCase):
@@ -403,6 +418,21 @@ class PlaylistModTests(JeffTestCase):
     response = self.doPut('/udj/players/1/active_playlist/songs/6')
     self.assertEqual(response.status_code, 409)
 
+  @EnsureParticipationUpdated(3, 1)
+  def testRemoveQueuedSong(self):
+    response = self.doDelete('/udj/players/1/active_playlist/songs/3')
+    self.assertEqual(response.status_code, 200)
+
+    removedSong = ActivePlaylistEntry.objects.get(pk=3)
+    self.assertEqual('RM', removedSong.state)
+
+  @EnsureParticipationUpdated(3, 1)
+  def testUnauthorizedRemove(self):
+    response = self.doDelete('/udj/players/1/active_playlist/songs/2')
+    self.assertEqual(response.status_code, 403)
+
+    shouldntBeRemoved = ActivePlaylistEntry.objects.get(pk=2)
+    self.assertEqual('QE', shouldntBeRemoved.state)
 
 
 

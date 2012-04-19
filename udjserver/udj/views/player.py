@@ -30,6 +30,7 @@ from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseNotFound
 from django.http import HttpResponseBadRequest
+from django.http import HttpResponseForbidden
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
@@ -380,8 +381,14 @@ def getActivePlaylist(request, user, player_id, activePlayer):
 @ActivePlayerExists
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
+def modActivePlaylist(request, user, player_id, lib_id, activePlayer):
+  if request.method == 'PUT':
+    return add2ActivePlaylist(user, lib_id, activePlayer)
+  elif request.method == 'DELETE':
+    return removeFromActivePlaylist(user, lib_id, activePlayer)
+
 @transaction.commit_on_success
-def add2ActivePlaylist(request, user, player_id, lib_id, activePlayer):
+def add2ActivePlaylist(user, lib_id, activePlayer):
   try:
     libEntry = LibraryEntry.objects.get(player=activePlayer, player_lib_song_id=lib_id,
       is_deleted=False, is_banned=False)
@@ -400,6 +407,26 @@ def add2ActivePlaylist(request, user, player_id, lib_id, activePlayer):
   Vote(playlist_entry=addedEntry, user=user, weight=1).save()
 
   return HttpResponse(status=201)
+
+def removeFromActivePlaylist(user, lib_id, activePlayer):
+  try:
+    playlistEntry = ActivePlaylistEntry.objects.get(
+        song__player=activePlayer,
+        song__player_lib_song_id=lib_id,
+        state='QE')
+  except ObjectDoesNotExist:
+    toReturn = HttpResponseNotFound()
+    toReturn[MISSING_RESOURCE_HEADER] = 'song'
+    return toReturn
+
+  if user!=activePlayer.owning_user and user!=playlistEntry.adder:
+    return HttpResponseForbidden()
+
+  playlistEntry.state='RM'
+  playlistEntry.save()
+  return HttpResponse()
+
+
 
 
 
