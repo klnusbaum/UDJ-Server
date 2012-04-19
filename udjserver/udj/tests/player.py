@@ -371,6 +371,17 @@ class PlayerQueryTests(YunYoungTestCase):
       self.assertTrue(plSong['song']['id'] in plSongIds)
     self.assertEqual(len(jsonResponse['active_playlist']), len(plSongIds))
 
+  @EnsureParticipationUpdated(7, 1)
+  def testGetStatus(self):
+
+    response = self.doGet('/udj/players/1/status')
+    self.assertEqual(response.status_code, 200)
+    jsonResponse = json.loads(response.content)
+    self.assertEqual('playing', jsonResponse['state'])
+    self.assertEqual(6, jsonResponse['current_song']['song']['id'])
+    self.assertEqual(5, jsonResponse['volume'])
+
+
 
 class PlaylistModTests(JeffTestCase):
 
