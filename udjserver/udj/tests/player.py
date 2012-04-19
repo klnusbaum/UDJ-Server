@@ -270,6 +270,19 @@ class PlayerAdminTests2(AlejandroTestCase):
     self.assertEqual('PL',ActivePlaylistEntry.objects.get(pk=8).state)
     PlaylistEntryTimePlayed.objects.get(playlist_entry__id=8)
 
+  def testGetPlaylistWithBlankCurrent(self):
+    response = self.doGet('/udj/players/3/active_playlist')
+    self.assertEqual(response.status_code, 200)
+    jsonResponse = json.loads(response.content)
+    current_song = jsonResponse['current_song']
+    self.assertEqual(current_song,{})
+    plSongs = ActivePlaylistEntry.objects.filter(song__player__id=3, state='QE')
+    plSongIds = [x.song.player_lib_song_id for x in plSongs]
+    for plSong in jsonResponse['active_playlist']:
+      self.assertTrue(plSong['song']['id'] in plSongIds)
+    self.assertEqual(len(jsonResponse['active_playlist']), len(plSongIds))
+
+
 
 class PlayerQueryTests(YunYoungTestCase):
 
@@ -323,6 +336,22 @@ class PlayerQueryTests(YunYoungTestCase):
           LibraryEntry.objects.get(player__id=1, player_lib_song_id=song['id']).is_deleted)
       self.assertFalse(
           LibraryEntry.objects.get(player__id=1, player_lib_song_id=song['id']).is_banned)
+
+  def testGetPlaylist(self):
+    Participant.objects.filter(player__id=1, user__id=7).update(time_last_interaction=datetime.now())
+
+    response = self.doGet('/udj/players/1/active_playlist')
+    self.assertEqual(response.status_code, 200)
+    jsonResponse = json.loads(response.content)
+    current_song = jsonResponse['current_song']
+    realCurrentSong = ActivePlaylistEntry.objects.get(song__player__id=1, state='PL')
+    self.assertEqual(current_song['song']['id'], realCurrentSong.song.player_lib_song_id)
+    plSongs = ActivePlaylistEntry.objects.filter(song__player__id=1, state='QE')
+    plSongIds = [x.song.player_lib_song_id for x in plSongs]
+    for plSong in jsonResponse['active_playlist']:
+      self.assertTrue(plSong['song']['id'] in plSongIds)
+    self.assertEqual(len(jsonResponse['active_playlist']), len(plSongIds))
+
 
 
 

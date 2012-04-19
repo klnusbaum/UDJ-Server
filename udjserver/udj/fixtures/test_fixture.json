@@ -301,7 +301,7 @@
     "pk": 1,
     "model": "udj.playlistentrytimeplayed",
     "fields": {
-      "playlist_entry": 6,
+      "playlist_entry": 5,
       "time_played": "2012-04-15 11:52:50"
     }
   },
