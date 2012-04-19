@@ -1,29 +1,7 @@
-def getDjangoTicketHeader():
-  return "HTTP_X_UDJ_TICKET_HASH"
+TICKET_HEADER = "X-Udj-Ticket-Hash"
+MISSING_RESOURCE_HEADER = "X-Udj-Missing-Resource"
+MISSING_REASON_HEADER = "X-Udj-Missing-Reason"
+PLAYER_PASSWORD_HEADER = "X-Udj-Player-Password"
 
-def getTicketHeader():
-  return "X-Udj-Ticket-Hash"
-
-def getUserIdHeader():
-  return "X-Udj-User-Id"
-
-def getGoneResourceHeader():
-  return "X-Udj-Gone-Resource"
-
-def getUUIDHeader():
-  return "X-UDJ-Machine-UUID"
-
-def getDjangoUUIDHeader():
-  return "HTTP_X_UDJ_MACHINE_UUID"
-
-def getEventPasswordHeader():
-  return "X-Udj-Event-Password";
-
-def getDjangoEventPasswordHeader():
-  return "HTTP_X_UDJ_EVENT_PASSWORD";
-
-def getApiVersionHeader():
-  return "X-Udj-Api-Version"
-
-def getDjangoApiVersionHeader():
-  return "HTTP_X_UDJ_API_VERSION"
+DJANGO_TICKET_HEADER = "HTTP_X_UDJ_TICKET_HASH"
+DJANGO_PLAYER_PASSWORD_HEADER = "HTTP_X_UDJ_PLAYER_PASSWORD"

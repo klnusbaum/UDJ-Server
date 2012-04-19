@@ -1,75 +1,86 @@
-"""
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
-
-Replace this with more appropriate tests for your application.
-"""
-
 import json
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
-from udj.headers import getTicketHeader
-from udj.headers import getDjangoTicketHeader
-from udj.headers import getUserIdHeader
-from udj.headers import getDjangoApiVersionHeader
 from udj.models import Ticket
+from udj.headers import DJANGO_TICKET_HEADER
+from udj.models import Participant
+
+from datetime import datetime
+from datetime import timedelta
 
 class DoesServerOpsTestCase(TestCase):
   fixtures = ['test_fixture.json']
   client = Client()
+  port = 4034
+  address = "55.33.44.22"
+  machine_headers = {"REMOTE_PORT" : port , "REMOTE_ADDR" : address}
 
   def setUp(self):
-    headers = {}
-    headers[getDjangoApiVersionHeader()] = "0.2"
     response = self.client.post(
       '/udj/auth', {'username': self.username, 'password' : self.userpass},
-      **headers)
+      **DoesServerOpsTestCase.machine_headers)
     self.assertEqual(response.status_code, 200)
-    self.ticket_hash = response.__getitem__(getTicketHeader())
-    self.user_id = response.__getitem__(getUserIdHeader())
+    ticket_and_user_id = json.loads(response.content)
+    self.ticket_hash = ticket_and_user_id['ticket_hash']
+    self.user_id = ticket_and_user_id['user_id']
 
   def doJSONPut(self, url, payload, headers={}):
-    headers[getDjangoTicketHeader()] = self.ticket_hash
+    headers = dict(headers.items() + DoesServerOpsTestCase.machine_headers.items())
+    headers[DJANGO_TICKET_HEADER] = self.ticket_hash
     return self.client.put(
       url,
       data=payload, content_type='text/json',
       **headers)
 
   def doPut(self, url, headers={}):
-    headers[getDjangoTicketHeader()] = self.ticket_hash
+    headers = dict(headers.items() + DoesServerOpsTestCase.machine_headers.items())
+    headers[DJANGO_TICKET_HEADER] = self.ticket_hash
     return self.client.put(url, **headers)
 
   def doGet(self, url):
-    return self.client.get(url, **{getDjangoTicketHeader() : self.ticket_hash})
+    headers = DoesServerOpsTestCase.machine_headers
+    headers[DJANGO_TICKET_HEADER] = self.ticket_hash
+    return self.client.get(url, **headers)
 
   def doDelete(self, url, headers={}):
-    headers[getDjangoTicketHeader()] = self.ticket_hash
+    headers = dict(headers.items() + DoesServerOpsTestCase.machine_headers.items())
+    headers[DJANGO_TICKET_HEADER] = self.ticket_hash
     return self.client.delete(url, **headers)
 
-  def doPost(self, url, args):
-    return self.client.post(url, args, **{getDjangoTicketHeader() : self.ticket_hash})
+  def doPost(self, url, args={}):
+    headers = dict(DoesServerOpsTestCase.machine_headers.items())
+    headers[DJANGO_TICKET_HEADER] = self.ticket_hash
+    return self.client.post(url, args, **headers)
 
-  def verifyJSONResponse(self, response):
+  def isJSONResponse(self, response):
     self.assertEqual(response['Content-Type'], 'text/json')
 
-class User2TestCase(DoesServerOpsTestCase):
-  username = "test2"
-  userpass = "twotest"
+class KurtisTestCase(DoesServerOpsTestCase):
+  username = "kurtis"
+  userpass = "testkurtis"
 
-class User3TestCase(DoesServerOpsTestCase):
-  username = "test3"
-  userpass = "threetest"
+class JeffTestCase(DoesServerOpsTestCase):
+  username = "jeff"
+  userpass = "testjeff"
 
-class User4TestCase(DoesServerOpsTestCase):
-  username = "test4"
-  userpass = "fourtest"
+class YunYoungTestCase(DoesServerOpsTestCase):
+  username = "yunyoung"
+  userpass = "testyunyoung"
 
-class User5TestCase(DoesServerOpsTestCase):
-  username = "test5"
-  userpass = "fivetest"
+class AlejandroTestCase(DoesServerOpsTestCase):
+  username = "alejandro"
+  userpass = "testalejandro"
 
-class User8TestCase(DoesServerOpsTestCase):
-  username = "test8"
-  userpass = "eighttest"
-
+def EnsureParticipationUpdated(user_id, player_id):
+  def decorator(target):
+    def wrapper(*args, **kwargs):
+      participant = Participant.objects.get(user__id=user_id, player__id=player_id)
+      participant.time_last_interaction = (datetime.now() - timedelta(minutes=30))
+      oldTime = participant.time_last_interaction
+      participant.save()
+      target(*args, **kwargs)
+      newTime = Participant.objects.get(user__id=user_id, player__id=player_id).time_last_interaction
+      (args[0]).assertTrue(newTime > oldTime)
+    return wrapper
+  return decorator

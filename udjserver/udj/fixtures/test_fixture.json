@@ -1,666 +1,513 @@
 [
-  {
-    "pk": 1, 
-    "model": "udj.event", 
-    "fields": {
-      "time_started": "2011-12-28 01:03:43", 
-      "state": "FN", 
-      "host": 3, 
-      "name": "Finished Event"
-    }
-  }, 
-  {
-    "pk": 2, 
-    "model": "udj.event", 
-    "fields": {
-      "time_started": "2011-12-28 01:22:04", 
-      "state": "AC", 
-      "host": 2, 
-      "name": "Ongoing event"
-    }
-  }, 
-  {
-    "pk": 3, 
-    "model": "udj.event", 
-    "fields": {
-      "time_started": "2011-12-28 01:56:17", 
-      "state": "AC", 
-      "host": 4, 
-      "name": "Empty Event"
-    }
-  }, 
-  {
-    "pk": 4, 
-    "model": "udj.event", 
-    "fields": {
-      "host": 7, 
-      "state": "AC", 
-      "name": "Minnesota Event", 
-      "time_started": "2012-01-08 20:39:41"
-    }
-  }, 
-  {
-    "pk": 5, 
-    "model": "udj.event", 
-    "fields": {
-      "host": 2, 
-      "state": "FN", 
-      "name": "Previous ongoing event", 
-      "time_started": "2011-12-18 20:39:41"
-    }
-  }, 
-  {
-    "pk": 6, 
-    "model": "udj.event", 
-    "fields": {
-      "host": 11, 
-      "state": "AC", 
-      "name": "Password protected event", 
-      "time_started": "2011-12-18 20:39:41"
-    }
-  }, 
+
   {
     "pk": 1,
-    "model": "udj.eventpassword",
-    "fields":{
-      "event": 6,
-      "password_hash": "db73ddfeff891c664ef226caf202c52a9aa651f9"
+    "model": "udj.libraryentry",
+    "fields": {
+      "player": 1,
+      "player_lib_song_id": 1,
+      "title": "Semi-Charmed Life",
+      "artist": "Third Eye Blind",
+      "album": "Third Eye Blind",
+      "track": 3,
+      "genre": "Rock",
+      "duration": 268,
+      "is_deleted": false,
+      "is_banned": false
     }
   },
+
   {
-    "pk" : 1,
-    "model" : "udj.eventlocation",
-    "fields":{
-      "event" : 1,
-      "longitude": -88.224006, 
-      "latitude": 40.113523
+    "pk": 2,
+    "model": "udj.libraryentry",
+    "fields": {
+      "player": 1,
+      "player_lib_song_id": 2,
+      "title": "Narcolepsy",
+      "artist": "Third Eye Blind",
+      "album": "Third Eye Blind",
+      "track": 2,
+      "genre": "Rock",
+      "duration": 228,
+      "is_deleted": false,
+      "is_banned": false
     }
   },
+
   {
-    "pk" : 2,
-    "model" : "udj.eventlocation",
-    "fields":{
-      "event" : 2,
-      "longitude": -88.224006, 
-      "latitude": 40.113523
+    "pk": 3,
+    "model": "udj.libraryentry",
+    "fields": {
+      "player": 1,
+      "player_lib_song_id": 3,
+      "title": "Graduate",
+      "artist": "Third Eye Blind",
+      "album": "Third Eye Blind",
+      "track": 5,
+      "genre": "Rock",
+      "duration": 189,
+      "is_deleted": false,
+      "is_banned": false
     }
   },
+
   {
-    "pk" : 3,
-    "model" : "udj.eventlocation",
-    "fields":{
-      "event" : 3,
-      "longitude": -88.224006, 
-      "latitude": 40.113523
+    "pk": 4,
+    "model": "udj.libraryentry",
+    "fields": {
+      "player": 1,
+      "player_lib_song_id": 4,
+      "title": "Losing A Whole Year",
+      "artist": "Third Eye Blind",
+      "album": "Third Eye Blind",
+      "track": 1,
+      "genre": "Rock",
+      "duration": 200,
+      "is_deleted": false,
+      "is_banned" : true
     }
   },
+
   {
-    "pk": 4, 
-    "model": "udj.eventlocation", 
+    "pk": 5,
+    "model": "udj.libraryentry",
     "fields": {
-      "latitude": 45.586393, 
-      "event": 4, 
-      "longitude": -94.395722
-    }
-  }, 
-  {
-    "pk" : 1,
-    "model" : "udj.eventendtime",
-    "fields":{
-      "event": 1,
-      "time_ended": "2011-12-28 01:20:55"
+      "player": 1,
+      "player_lib_song_id": 5,
+      "title": "Never Let You Go",
+      "artist": "Third Eye Blind",
+      "album": "Blue",
+      "track": 3,
+      "genre": "Rock",
+      "duration": 237,
+      "is_deleted": false,
+      "is_banned": false
     }
   },
+
+
   {
-    "pk": 1, 
-    "model": "udj.libraryentry", 
+    "pk": 6,
+    "model": "udj.libraryentry",
     "fields": {
-      "album": "Blue", 
-      "is_deleted": false, 
-      "host_lib_song_id": 1, 
-      "artist": "Third Eye Blind", 
-      "title": "Never Let You Go", 
-      "duration": 237, 
-      "owning_user": 2,
-      "machine_uuid" : "20000000000000000000000000000000"
+      "player": 1,
+      "player_lib_song_id": 6,
+      "title": "Ilyena",
+      "artist": "The Mars Volta",
+      "album": "The Bedlam in Goliath",
+      "track": 3,
+      "genre": "Rock",
+      "duration": 335,
+      "is_deleted": false,
+      "is_banned": false
     }
-  }, 
+  },
+
   {
-    "pk": 2, 
-    "model": "udj.libraryentry", 
+    "pk": 7,
+    "model": "udj.libraryentry",
     "fields": {
-      "album": "Blue", 
-      "is_deleted": false, 
-      "host_lib_song_id": 2, 
-      "artist": "Third Eye Blind", 
-      "title": "10 Days Late", 
-      "duration": 185, 
-      "owning_user": 2,
-      "machine_uuid" : "20000000000000000000000000000000"
+      "player": 1,
+      "player_lib_song_id": 7,
+      "title": "Metatron",
+      "artist": "The Mars Volta",
+      "album": "The Bedlam in Goliath",
+      "track": 2,
+      "genre": "Rock",
+      "duration": 471,
+      "is_deleted": false,
+      "is_banned": false
     }
-  }, 
+  },
+
   {
-    "pk": 3, 
-    "model": "udj.libraryentry", 
+    "pk": 8,
+    "model": "udj.libraryentry",
     "fields": {
-      "album": "Third Eye Blind", 
-      "is_deleted": false, 
-      "host_lib_song_id": 3, 
-      "artist": "Third Eye Blind", 
-      "title": "Semi-Charmed Life", 
-      "duration": 268, 
-      "owning_user": 2,
-      "machine_uuid" : "20000000000000000000000000000000"
+      "player": 1,
+      "player_lib_song_id": 8,
+      "title": "Tourniquet Man",
+      "artist": "The Mars Volta",
+      "album": "The Bedlam in Goliath",
+      "track": 5,
+      "genre": "Rock",
+      "duration": 158,
+      "is_deleted": true,
+      "is_banned": false
     }
-  }, 
+  },
+
   {
-    "pk": 4, 
-    "model": "udj.libraryentry", 
+    "pk": 9,
+    "model": "udj.libraryentry",
     "fields": {
-      "album": "My Name Is Skrillex", 
-      "is_deleted": false, 
-      "host_lib_song_id": 4, 
-      "artist": "Skrillex", 
-      "title": "My Name Is Skrillex", 
-      "duration": 271, 
-      "owning_user": 2,
-      "machine_uuid" : "20000000000000000000000000000000"
+      "player": 1,
+      "player_lib_song_id": 9,
+      "title": "Bangarang Feat. Sarah (Original Mix)",
+      "artist": "Skrillex",
+      "album": "Bangarang",
+      "track": 2,
+      "genre": "Dubstep",
+      "duration": 215,
+      "is_deleted": false,
+      "is_banned": false
     }
-  }, 
+  },
+
   {
-    "pk": 5, 
-    "model": "udj.libraryentry", 
+    "pk": 10,
+    "model": "udj.libraryentry",
     "fields": {
-      "album": "My Name Is Skrillex", 
-      "is_deleted": false, 
-      "host_lib_song_id": 5, 
-      "artist": "Skirllex", 
-      "title": "With You Friends", 
-      "duration": 382, 
-      "owning_user": 2,
-      "machine_uuid" : "20000000000000000000000000000000"
+      "player": 1,
+      "player_lib_song_id": 10,
+      "title": "My Name Is Skrillex",
+      "artist": "Skrillex",
+      "album": "My Name Is Skrillex",
+      "track": 1,
+      "genre": "Dubstep",
+      "duration": 291,
+      "is_deleted": false,
+      "is_banned": false
     }
-  }, 
+  },
+
+
   {
-    "pk": 6, 
-    "model": "udj.libraryentry", 
+    "pk": 11,
+    "model": "udj.libraryentry",
     "fields": {
-      "album": "Deloused in the Comatorium", 
-      "is_deleted": false, 
-      "host_lib_song_id": 6, 
-      "artist": "The Mars Volta", 
-      "title": "Inertiatic Esp", 
-      "duration": 264, 
-      "owning_user": 2,
-      "machine_uuid" : "20000000000000000000000000000000"
+      "player": 3,
+      "player_lib_song_id": 1,
+      "title": "Californication",
+      "artist": "Red Hot Chili Peppers",
+      "album": "Californication",
+      "track": 6,
+      "genre": "Rock",
+      "duration": 321,
+      "is_deleted": false,
+      "is_banned": false
     }
-  }, 
+  },
+
   {
-    "pk": 7, 
-    "model": "udj.libraryentry", 
+    "pk": 12,
+    "model": "udj.libraryentry",
     "fields": {
-      "album": "The Bedlam In Goliath", 
-      "is_deleted": false, 
-      "host_lib_song_id": 7, 
-      "artist": "The Mars Volta", 
-      "title": "Ilyena", 
-      "duration": 335, 
-      "owning_user": 2,
-      "machine_uuid" : "20000000000000000000000000000000"
+      "player": 3,
+      "player_lib_song_id": 2,
+      "title": "Otherside",
+      "artist": "Red Hot Chili Peppers",
+      "album": "Californication",
+      "track": 4,
+      "genre": "Rock",
+      "duration": 255,
+      "is_deleted": false,
+      "is_banned": false
     }
-  }, 
+  },
+
+
+
   {
-    "pk": 8, 
-    "model": "udj.libraryentry", 
+    "pk": 1,
+    "model": "udj.activeplaylistentry",
     "fields": {
-      "album": "Octahedron", 
-      "is_deleted": false, 
-      "host_lib_song_id": 8, 
-      "artist": "The Mars Volta", 
-      "title": "Teflon", 
-      "duration": 304, 
-      "owning_user": 2,
-      "machine_uuid" : "20000000000000000000000000000000"
-    }
-  }, 
-  {
-    "pk": 9, 
-    "model": "udj.libraryentry", 
-    "fields": {
-      "album": "Homework", 
-      "is_deleted": false, 
-      "host_lib_song_id": 9, 
-      "artist": "Daft Punk", 
-      "title": "Around The World", 
-      "duration": 428, 
-      "owning_user": 2,
-      "machine_uuid" : "20000000000000000000000000000000"
-    }
-  }, 
-  {
-    "pk": 10, 
-    "model": "udj.libraryentry", 
-    "fields": {
-      "album": "For Lack Of A Better Name", 
-      "is_deleted": false, 
-      "host_lib_song_id": 10, 
-      "artist": "Deadmau5", 
-      "title": "Moar Ghosts 'n' Stuff", 
-      "duration": 297, 
-      "owning_user": 2,
-      "machine_uuid" : "20000000000000000000000000000000"
-    }
-  }, 
-  {
-    "pk": 11, 
-    "model": "udj.libraryentry", 
-    "fields": {
-      "album": "Mellon Collie And The Infinite Sadness", 
-      "is_deleted": false, 
-      "host_lib_song_id": 1, 
-      "artist": "The Smashing Pumpkins", 
-      "title": "Tonight, Tonight", 
-      "duration": 255, 
-      "owning_user": 3,
-      "machine_uuid" : "30000000000000000000000000000000"
-    }
-  }, 
-  {
-    "pk": 12, 
-    "model": "udj.libraryentry", 
-    "fields": {
-      "album": "Mellon Collie And The Infinite Sadness", 
-      "is_deleted": false, 
-      "host_lib_song_id": 2, 
-      "artist": "The Smashing Pumpkins", 
-      "title": "Zero", 
-      "duration": 160, 
-      "owning_user": 3,
-      "machine_uuid" : "30000000000000000000000000000000"
-    }
-  }, 
-  {
-    "pk": 13, 
-    "model": "udj.libraryentry", 
-    "fields": {
-      "album": "Mellon Collie And The Infinite Sadness", 
-      "is_deleted": false, 
-      "host_lib_song_id": 3, 
-      "artist": "The Smashing Pumpkins", 
-      "title": "1979", 
-      "duration": 266, 
-      "owning_user": 3,
-      "machine_uuid" : "30000000000000000000000000000000"
-    }
-  }, 
-  {
-    "pk": 14, 
-    "model": "udj.libraryentry", 
-    "fields": {
-      "album": "Third Eye Blind", 
-      "is_deleted": false, 
-      "host_lib_song_id": 11, 
-      "artist": "Third Eye Blind", 
-      "title": "Graduate", 
-      "duration": 189, 
-      "owning_user": 2,
-      "machine_uuid" : "20000000000000000000000000000000"
-    }
-  }, 
-  {
-    "pk": 15, 
-    "model": "udj.libraryentry", 
-    "fields": {
-      "album": "Ursa Major", 
-      "is_deleted": false, 
-      "host_lib_song_id": 12, 
-      "artist": "Third Eye Blind", 
-      "title": "Water Landing", 
-      "duration": 269, 
-      "owning_user": 2,
-      "machine_uuid" : "20000000000000000000000000000000"
-    }
-  }, 
-  {
-    "pk": 1, 
-    "model": "udj.availablesong", 
-    "fields": {
-      "event": 2, 
       "song": 1,
-      "state": "AC"
+      "time_added": "2012-04-15 11:54:11",
+      "adder": 7,
+      "state": "QE"
     }
-  }, 
+  },
+
   {
-    "pk": 2, 
-    "model": "udj.availablesong", 
+    "pk": 2,
+    "model": "udj.activeplaylistentry",
     "fields": {
-      "event": 2, 
       "song": 2,
-      "state": "AC"
+      "time_added": "2012-04-15 11:55:11",
+      "adder": 7,
+      "state": "QE"
     }
-  }, 
+  },
+
   {
-    "pk": 3, 
-    "model": "udj.availablesong", 
+    "pk": 3,
+    "model": "udj.activeplaylistentry",
     "fields": {
-      "event": 2, 
       "song": 3,
-      "state": "AC"
+      "time_added": "2012-04-15 11:57:40",
+      "adder": 3,
+      "state": "QE"
     }
-  }, 
+  },
+
   {
-    "pk": 4, 
-    "model": "udj.availablesong", 
+    "pk": 4,
+    "model": "udj.activeplaylistentry",
     "fields": {
-      "event": 2, 
-      "song": 4,
-      "state": "AC"
-    }
-  }, 
-  {
-    "pk": 5, 
-    "model": "udj.availablesong", 
-    "fields": {
-      "event": 2, 
       "song": 5,
-      "state": "AC"
+      "time_added": "2012-04-15 11:57:50",
+      "adder": 3,
+      "state": "QE"
     }
-  }, 
+  },
+
   {
-    "pk": 6, 
-    "model": "udj.availablesong", 
+    "pk": 5,
+    "model": "udj.activeplaylistentry",
     "fields": {
-      "event": 2, 
-      "song": 9,
-      "state": "AC"
+      "song": 6,
+      "time_added": "2012-04-15 11:53:50",
+      "adder": 2,
+      "state": "PL"
     }
-  }, 
+  },
+
   {
-    "pk": 7, 
-    "model": "udj.availablesong", 
+    "pk": 6,
+    "model": "udj.activeplaylistentry",
     "fields": {
-      "event": 2, 
+      "song": 7,
+      "time_added": "2012-04-15 11:50:50",
+      "adder": 2,
+      "state": "FN"
+    }
+  },
+
+  {
+    "pk": 7,
+    "model": "udj.activeplaylistentry",
+    "fields": {
       "song": 10,
-      "state": "AC"
-    }
-  }, 
-  {
-    "pk": 8, 
-    "model": "udj.availablesong", 
-    "fields": {
-      "event": 5, 
-      "song": 1,
-      "state": "AC"
-    }
-  }, 
-  {
-    "pk": 9, 
-    "model": "udj.availablesong", 
-    "fields": {
-      "event": 2, 
-      "song": 15,
+      "time_added": "2012-04-15 11:49:50",
+      "adder": 2,
       "state": "RM"
     }
-  }, 
+  },
+
   {
-    "pk": 10, 
-    "model": "udj.availablesong", 
+    "pk": 8,
+    "model": "udj.activeplaylistentry",
     "fields": {
-      "event": 2, 
-      "song": 8,
-      "state": "RM"
+      "song": 11,
+      "time_added": "2012-04-15 11:54:11",
+      "adder": 6,
+      "state": "QE"
     }
-  }, 
+  },
+
+
   {
-    "pk": 11, 
-    "model": "udj.availablesong", 
-    "fields": {
-      "event": 2, 
-      "song": 14,
-      "state": "RM"
-    }
-  }, 
-  {
-    "pk": 1, 
-    "model": "udj.activeplaylistentry", 
-    "fields": {
-      "song": 1, 
-      "client_request_id": 2, 
-      "state": "QE", 
-      "adder": 2, 
-      "time_added": "2011-12-28 01:36:51", 
-      "event": 2
-    }
-  }, 
-  {
-    "pk": 2, 
-    "model": "udj.activeplaylistentry", 
-    "fields": {
-      "song": 5, 
-      "client_request_id": 2, 
-      "state": "QE", 
-      "adder": 3, 
-      "time_added": "2011-12-28 01:37:26", 
-      "event": 2
-    }
-  }, 
-  {
-    "pk": 3, 
-    "model": "udj.activeplaylistentry", 
-    "fields": {
-      "song": 10, 
-      "client_request_id": 3, 
-      "state": "QE", 
-      "adder": 2, 
-      "time_added": "2011-12-28 01:40:46", 
-      "event": 2
-    }
-  }, 
-  {
-    "pk": 4, 
-    "model": "udj.activeplaylistentry", 
-    "fields": {
-      "song": 3, 
-      "client_request_id": 4, 
-      "state": "QE", 
-      "adder": 2, 
-      "time_added": "2011-12-28 01:43:39", 
-      "event": 2
-    }
-  }, 
-  {
-    "pk": 5, 
-    "model": "udj.activeplaylistentry", 
-    "fields": {
-      "song": 4, 
-      "client_request_id": 1, 
-      "state": "PL", 
-      "adder": 2, 
-      "time_added": "2011-12-28 01:46:07", 
-      "event": 2
-    }
-  }, 
-  {
-    "pk": 6, 
-    "model": "udj.activeplaylistentry", 
-    "fields": {
-      "song": 14, 
-      "client_request_id": 1, 
-      "state": "FN", 
-      "adder": 3, 
-      "time_added": "2011-12-28 01:48:17", 
-      "event": 2
-    }
-  }, 
-  {
-    "pk": 7, 
-    "model": "udj.activeplaylistentry", 
-    "fields": {
-      "song": 15, 
-      "client_request_id": 5, 
-      "state": "RM", 
-      "adder": 2, 
-      "time_added": "2011-12-28 01:51:05", 
-      "event": 2
-    }
-  }, 
-  {
-    "pk" : 1,
+    "pk": 1,
     "model": "udj.playlistentrytimeplayed",
-    "fields" :{
-      "playlist_entry" : 5,
-      "time_played": "2011-12-28 01:46:25"
+    "fields": {
+      "playlist_entry": 5,
+      "time_played": "2012-04-15 11:52:50"
+    }
+  },
+
+  {
+    "pk": 1,
+    "model": "udj.vote",
+    "fields": {
+      "playlist_entry": 1,
+      "user": 7,
+      "weight": 1
+    }
+  },
+
+  {
+    "pk": 2,
+    "model": "udj.vote",
+    "fields": {
+      "playlist_entry": 2,
+      "user": 7,
+      "weight": 1
+    }
+  },
+
+  {
+    "pk": 3,
+    "model": "udj.vote",
+    "fields": {
+      "playlist_entry": 3,
+      "user": 3,
+      "weight": 1
+    }
+  },
+
+  {
+    "pk": 4,
+    "model": "udj.vote",
+    "fields": {
+      "playlist_entry": 4,
+      "user": 3,
+      "weight": 1
+    }
+  },
+
+  {
+    "pk": 5,
+    "model": "udj.vote",
+    "fields": {
+      "playlist_entry": 5,
+      "user": 2,
+      "weight": 1
+    }
+  },
+
+  {
+    "pk": 6,
+    "model": "udj.vote",
+    "fields": {
+      "playlist_entry": 6,
+      "user": 2,
+      "weight": 1
+    }
+  },
+
+  {
+    "pk": 7,
+    "model": "udj.vote",
+    "fields": {
+      "playlist_entry": 1,
+      "user": 2,
+      "weight": 1
+    }
+  },
+
+  {
+    "pk": 8,
+    "model": "udj.vote",
+    "fields": {
+      "playlist_entry": 2,
+      "user": 3,
+      "weight": -1
+    }
+  },
+
+
+
+
+
+  {
+    "pk": 1,
+    "model": "udj.player",
+    "fields": {
+      "owning_user": 2,
+      "name": "Kurtis Player",
+      "state": "PL",
+      "volume": 5
+    }
+  },
+
+  {
+    "pk": 2,
+    "model": "udj.player",
+    "fields": {
+      "owning_user": 2,
+      "name": "Minnesota Player",
+      "state": "IN",
+      "volume": 2
+    }
+  },
+
+  {
+    "pk": 3,
+    "model": "udj.player",
+    "fields": {
+      "owning_user": 6,
+      "name": "Alejandro Player",
+      "state": "PL",
+      "volume": 3
+    }
+  },
+
+  {
+    "pk": 1,
+    "model": "udj.playerlocation",
+    "fields": {
+      "player" : 1,
+      "address" : "201 N Goodwin Ave",
+      "city": "Urbana",
+      "state": 13,
+      "zipcode": 61801,
+      "latitude": 40.113331,
+      "longitude": -88.223948
+    }
+  },
+
+  {
+    "pk": 2,
+    "model": "udj.playerlocation",
+    "fields": {
+      "player" : 2,
+      "address" : "305 Vicksburg Lane",
+      "city": "Plymouth",
+      "state": 23,
+      "zipcode": 55447,
+      "latitude": 44.981822,
+      "longitude": -93.481330
+    }
+  },
+
+  {
+    "pk": 3,
+    "model": "udj.playerlocation",
+    "fields": {
+      "player" : 3,
+      "address" : "1365 Memorial Drive",
+      "city": "Coral Gables",
+      "state": 9,
+      "zipcode": 33146,
+      "latitude": 25.721439,
+      "longitude": -80.27994
+    }
+  },
+
+  {
+    "pk": 1,
+    "model": "udj.playerpassword",
+    "fields": {
+      "player": 3,
+      "password_hash" : "8b8e92d17af4f1fcd02ecf281f6cf80b796b596a",
+      "time_set": "2012-04-14 23:54:11"
+    }
+  },
+
+  {
+    "pk": 1,
+    "model": "udj.participant",
+    "fields": {
+      "player": 1,
+      "user": 3,
+      "time_joined": "2012-04-14 11:54:22",
+      "time_last_interaction" : "2012-04-14 12:30:33"
     }
   },
   {
-    "pk" : 2,
-    "model": "udj.playlistentrytimeplayed",
-    "fields" :{
-      "playlist_entry" : 6,
-      "time_played": "2011-12-28 01:40:50"
+    "pk": 2,
+    "model": "udj.participant",
+    "fields": {
+      "player": 1,
+      "user": 4,
+      "time_joined": "2012-04-14 12:54:22",
+      "time_last_interaction" : "2012-04-14 13:30:33"
     }
   },
   {
-    "pk": 1, 
-    "model": "udj.eventgoer", 
+    "pk": 3,
+    "model": "udj.participant",
     "fields": {
-      "user": 3, 
-      "time_joined": "2011-12-28 01:34:25", 
-      "event": 1,
-      "state" : "LE"
+      "player": 1,
+      "user": 7,
+      "time_joined": "2012-04-14 12:34:22",
+      "time_last_interaction" : "2012-04-14 13:27:33"
     }
-  }, 
-  {
-    "pk": 2, 
-    "model": "udj.eventgoer", 
-    "fields": {
-      "user": 8, 
-      "time_joined": "2011-12-28 01:34:25", 
-      "event": 1,
-      "state" : "IE"
-    }
-  }, 
-  {
-    "pk": 3, 
-    "model": "udj.eventgoer", 
-    "fields": {
-      "user": 2, 
-      "time_joined": "2011-12-28 01:34:25", 
-      "event": 2,
-      "state" : "IE"
-    }
-  }, 
-  {
-    "pk": 4, 
-    "model": "udj.eventgoer", 
-    "fields": {
-      "user": 3, 
-      "time_joined": "2011-12-28 01:35:40", 
-      "event": 2,
-      "state" : "IE"
-    }
-  }, 
-  {
-    "pk": 5, 
-    "model": "udj.eventgoer", 
-    "fields": {
-      "user": 4, 
-      "time_joined": "2011-12-28 01:35:40", 
-      "event": 3,
-      "state" : "IE"
-    }
-  }, 
-  {
-    "pk": 6, 
-    "model": "udj.eventgoer", 
-    "fields": {
-      "user": 11, 
-      "time_joined": "2011-12-18 20:39:41",
-      "event": 6,
-      "state" : "IE"
-    }
-  }, 
-  {
-    "pk": 1, 
-    "model": "udj.vote", 
-    "fields": {
-      "playlist_entry": 1, 
-      "user": 2,
-      "weight" : 1
-    }
-  }, 
-  {
-    "pk": 2, 
-    "model": "udj.vote", 
-    "fields": {
-      "playlist_entry": 2, 
-      "user": 3,
-      "weight" : 1
-    }
-  }, 
-  {
-    "pk": 3, 
-    "model": "udj.vote", 
-    "fields": {
-      "playlist_entry": 3, 
-      "user": 2,
-      "weight" : 1
-    }
-  }, 
-  {
-    "pk": 4, 
-    "model": "udj.vote", 
-    "fields": {
-      "playlist_entry": 4, 
-      "user": 3,
-      "weight" : 1
-    }
-  }, 
-  {
-    "pk": 5, 
-    "model": "udj.vote", 
-    "fields": {
-      "playlist_entry": 5, 
-      "user": 2,
-      "weight" : 1
-    }
-  }, 
-  {
-    "pk": 6, 
-    "model": "udj.vote", 
-    "fields": {
-      "playlist_entry": 7, 
-      "user": 2,
-      "weight" : 1
-    }
-  }, 
-  {
-    "pk": 7, 
-    "model": "udj.vote", 
-    "fields": {
-      "playlist_entry": 6, 
-      "user": 3,
-      "weight" : 1
-    }
-  }, 
-  {
-    "pk": 8, 
-    "model": "udj.vote", 
-    "fields": {
-      "playlist_entry": 1, 
-      "user": 3,
-      "weight" : 1
-    }
-  }, 
-  {
-    "pk": 9, 
-    "model": "udj.vote", 
-    "fields": {
-      "playlist_entry": 3, 
-      "user": 3,
-      "weight" : -1
-    }
-  }, 
+  },
+
+
+
   {
     "pk": 1, 
     "model": "auth.user", 
@@ -671,88 +518,16 @@
       "is_active": true, 
       "is_superuser": true, 
       "is_staff": true, 
-      "last_login": "2011-12-28 01:25:41", 
+      "last_login": "2012-04-14 23:54:11", 
       "groups": [], 
       "user_permissions": [], 
-      "password": "sha1$e8825$8cb243d4cce92deb46626021aebb9ceee2d1b5c6", 
-      "email": "admin@udj.com", 
-      "date_joined": "2011-12-27 23:06:55"
+      "password": "sha1$a0f1a$42e612dbfd53e7b348512b21b487123043373938", 
+      "email": "admin@admin.com", 
+      "date_joined": "2012-04-14 23:51:32"
     }
   }, 
   {
     "pk": 2, 
-    "model": "auth.user", 
-    "fields": {
-      "username": "test2", 
-      "first_name": "", 
-      "last_name": "", 
-      "is_active": true, 
-      "is_superuser": false, 
-      "is_staff": false, 
-      "last_login": "2011-12-28 00:36:15", 
-      "groups": [], 
-      "user_permissions": [], 
-      "password": "sha1$d175e$3340747e48f85a38ef8ef68274db2d650a814858", 
-      "email": "", 
-      "date_joined": "2011-12-28 00:36:15"
-    }
-  }, 
-  {
-    "pk": 3, 
-    "model": "auth.user", 
-    "fields": {
-      "username": "test3", 
-      "first_name": "", 
-      "last_name": "", 
-      "is_active": true, 
-      "is_superuser": false, 
-      "is_staff": false, 
-      "last_login": "2011-12-28 00:36:26", 
-      "groups": [], 
-      "user_permissions": [], 
-      "password": "sha1$88165$bacd00560a0993962779b9695c3072b6bd86947d", 
-      "email": "", 
-      "date_joined": "2011-12-28 00:36:26"
-    }
-  }, 
-  {
-    "pk": 4, 
-    "model": "auth.user", 
-    "fields": {
-      "username": "test4", 
-      "first_name": "", 
-      "last_name": "", 
-      "is_active": true, 
-      "is_superuser": false, 
-      "is_staff": false, 
-      "last_login": "2011-12-28 00:36:45", 
-      "groups": [], 
-      "user_permissions": [], 
-      "password": "sha1$965d4$f2eb32e5ac174d0a1c4e8d648cc2f41f52746f7c", 
-      "email": "", 
-      "date_joined": "2011-12-28 00:36:45"
-    }
-  }, 
-  {
-    "pk": 5, 
-    "model": "auth.user", 
-    "fields": {
-      "username": "test5", 
-      "first_name": "", 
-      "last_name": "", 
-      "is_active": true, 
-      "is_superuser": false, 
-      "is_staff": false, 
-      "last_login": "2011-12-28 01:55:38", 
-      "groups": [], 
-      "user_permissions": [], 
-      "password": "sha1$57395$0f02e645996f7d80b24ff13f78db53346672621a", 
-      "email": "", 
-      "date_joined": "2011-12-28 01:55:38"
-    }
-  },
-  {
-    "pk": 6, 
     "model": "auth.user", 
     "fields": {
       "username": "kurtis", 
@@ -761,102 +536,453 @@
       "is_active": true, 
       "is_superuser": false, 
       "is_staff": false, 
-      "last_login": "2011-12-28 00:36:55", 
+      "last_login": "2012-04-14 23:56:13", 
       "groups": [], 
       "user_permissions": [], 
-      "password": "sha1$3e8fb$867e713230d15a88f3f217db569e2409b688109b", 
+      "password": "sha1$7ac36$e69f2dcf0865404017a8f060afc678cb3a5fbd98", 
       "email": "", 
-      "date_joined": "2011-12-28 00:36:55"
+      "date_joined": "2012-04-14 23:56:13"
     }
-  },
+  }, 
+  {
+    "pk": 3, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "jeff", 
+      "first_name": "", 
+      "last_name": "", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "last_login": "2012-04-14 23:56:31", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$788e0$5dc51d3f95bc4e98cd36f493321d8a8563d3013b", 
+      "email": "", 
+      "date_joined": "2012-04-14 23:56:31"
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "vilas", 
+      "first_name": "", 
+      "last_name": "", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "last_login": "2012-04-14 23:56:53", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$ef0df$bd774a640e961848b2adf17ed1052ea1ba861438", 
+      "email": "", 
+      "date_joined": "2012-04-14 23:56:53"
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "lucas", 
+      "first_name": "", 
+      "last_name": "", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "last_login": "2012-04-14 23:57:08", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$f9735$4ecc50c6d8d49b7da721ca59f09038b25f6faf55", 
+      "email": "", 
+      "date_joined": "2012-04-14 23:57:08"
+    }
+  }, 
+  {
+    "pk": 6, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "alejandro", 
+      "first_name": "", 
+      "last_name": "", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "last_login": "2012-04-14 23:57:24", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$097ff$6a6c54d8f5d1ce7a828dc71a2fce6f3669c9a089", 
+      "email": "", 
+      "date_joined": "2012-04-14 23:57:24"
+    }
+  }, 
   {
     "pk": 7, 
     "model": "auth.user", 
     "fields": {
-      "username": "mnuser", 
+      "username": "yunyoung", 
       "first_name": "", 
       "last_name": "", 
       "is_active": true, 
       "is_superuser": false, 
       "is_staff": false, 
-      "last_login": "2012-01-08 20:39:10", 
+      "last_login": "2012-04-14 23:57:48", 
       "groups": [], 
       "user_permissions": [], 
-      "password": "sha1$5460b$1a7e9aca87bcccfb8903dfb6b9f0f7d58a7abf6d", 
+      "password": "sha1$ba6e8$1a1a9583d77c053b7de164ac418b853d52620d49", 
       "email": "", 
-      "date_joined": "2012-01-08 20:39:10"
+      "date_joined": "2012-04-14 23:57:48"
+    }
+  },
+
+  {
+    "pk": 1,
+    "model": "udj.state",
+    "fields":{
+      "name": "AL"
     }
   },
   {
-    "pk": 8, 
-    "model": "auth.user", 
+    "pk": 2,
+    "model": "udj.state",
     "fields": {
-      "username": "test8", 
-      "first_name": "", 
-      "last_name": "", 
-      "is_active": true, 
-      "is_superuser": false, 
-      "is_staff": false, 
-      "last_login": "2012-01-09 05:13:39", 
-      "groups": [], 
-      "user_permissions": [], 
-      "password": "sha1$c6f72$c9f98c19073e5a87d67fb16c82216bdae8a5cc5d", 
-      "email": "", 
-      "date_joined": "2012-01-09 05:13:39"
+      "name": "AK"
     }
   },
   {
-    "pk": 9, 
-    "model": "auth.user", 
+    "pk": 3,
+    "model": "udj.state",
     "fields": {
-      "username": "matt", 
-      "first_name": "", 
-      "last_name": "", 
-      "is_active": true, 
-      "is_superuser": false, 
-      "is_staff": false, 
-      "last_login": "2012-01-16 05:08:26", 
-      "groups": [], 
-      "user_permissions": [], 
-      "password": "sha1$663b1$700f6a232aee11bee0a2b6f58d1a56152a2e59dc", 
-      "email": "", 
-      "date_joined": "2012-01-16 05:08:26"
-    }
-  }, 
-  {
-    "pk": 10, 
-    "model": "auth.user", 
-    "fields": {
-      "username": "lee", 
-      "first_name": "", 
-      "last_name": "", 
-      "is_active": true, 
-      "is_superuser": false, 
-      "is_staff": false, 
-      "last_login": "2012-01-16 05:08:37", 
-      "groups": [], 
-      "user_permissions": [], 
-      "password": "sha1$d5ff2$eb66ce3c2cc022a5fdc5747a9b2800a444e9d443", 
-      "email": "", 
-      "date_joined": "2012-01-16 05:08:37"
+      "name": "AZ"
     }
   },
   {
-    "pk": 11, 
-    "model": "auth.user", 
+    "pk": 4,
+    "model": "udj.state",
     "fields": {
-      "username": "EventPasswordUser", 
-      "first_name": "", 
-      "last_name": "", 
-      "is_active": true, 
-      "is_superuser": false, 
-      "is_staff": false, 
-      "last_login": "2012-04-06 17:52:18", 
-      "groups": [], 
-      "user_permissions": [], 
-      "password": "sha1$f61df$a259b8d40be1103d4344d08c2af2763ebf2430a9", 
-      "email": "", 
-      "date_joined": "2012-04-06 17:52:18"
+      "name": "AR"
+    }
+  },
+  {
+    "pk": 5,
+    "model": "udj.state",
+    "fields": {
+      "name": "CA"
+    }
+  },
+  {
+    "pk": 6,
+    "model": "udj.state",
+    "fields": {
+      "name": "CO"
+    }
+  },
+  {
+    "pk": 7,
+    "model": "udj.state",
+    "fields": {
+      "name": "CT"
+    }
+  },
+  {
+    "pk": 8,
+    "model": "udj.state",
+    "fields": {
+      "name": "DE"
+    }
+  },
+  {
+    "pk": 9,
+    "model": "udj.state",
+    "fields": {
+      "name": "FL"
+    }
+  },
+  {
+    "pk": 10,
+    "model": "udj.state",
+    "fields": {
+      "name": "GA"
+    }
+  },
+  {
+    "pk": 11,
+    "model": "udj.state",
+    "fields": {
+      "name": "HI"
+    }
+  },
+  {
+    "pk": 12,
+    "model": "udj.state",
+    "fields": {
+      "name": "ID"
+    }
+  },
+  {
+    "pk": 13,
+    "model": "udj.state",
+    "fields": {
+      "name": "IL"
+    }
+  },
+  {
+    "pk": 14,
+    "model": "udj.state",
+    "fields": {
+      "name": "IN"
+    }
+  },
+  {
+    "pk": 15,
+    "model": "udj.state",
+    "fields": {
+      "name": "IA"
+    }
+  },
+  {
+    "pk": 16,
+    "model": "udj.state",
+    "fields": {
+      "name": "KS"
+    }
+  },
+  {
+    "pk": 17,
+    "model": "udj.state",
+    "fields": {
+      "name": "KY"
+    }
+  },
+  {
+    "pk": 18,
+    "model": "udj.state",
+    "fields": {
+      "name": "LA"
+    }
+  },
+  {
+    "pk": 19,
+    "model": "udj.state",
+    "fields": {
+      "name": "ME"
+    }
+  },
+  {
+    "pk": 20,
+    "model": "udj.state",
+    "fields": {
+      "name": "MD"
+    }
+  },
+  {
+    "pk": 21,
+    "model": "udj.state",
+    "fields": {
+      "name": "MA"
+    }
+  },
+  {
+    "pk": 22,
+    "model": "udj.state",
+    "fields": {
+      "name": "MI"
+    }
+  },
+  {
+    "pk": 23,
+    "model": "udj.state",
+    "fields": {
+      "name": "MN"
+    }
+  },
+  {
+    "pk": 24,
+    "model": "udj.state",
+    "fields": {
+      "name": "MS"
+    }
+  },
+  {
+    "pk": 25,
+    "model": "udj.state",
+    "fields": {
+      "name": "MO"
+    }
+  },
+  {
+    "pk": 26,
+    "model": "udj.state",
+    "fields": {
+      "name": "MT"
+    }
+  },
+  {
+    "pk": 27,
+    "model": "udj.state",
+    "fields": {
+      "name": "NE"
+    }
+  },
+  {
+    "pk": 28,
+    "model": "udj.state",
+    "fields": {
+      "name": "NV"
+    }
+  },
+  {
+    "pk": 29,
+    "model": "udj.state",
+    "fields": {
+      "name": "NH"
+    }
+  },
+  {
+    "pk": 30,
+    "model": "udj.state",
+    "fields": {
+      "name": "NJ"
+    }
+  },
+  {
+    "pk": 31,
+    "model": "udj.state",
+    "fields": {
+      "name": "NM"
+    }
+  },
+  {
+    "pk": 32,
+    "model": "udj.state",
+    "fields": {
+      "name": "NY"
+    }
+  },
+  {
+    "pk": 33,
+    "model": "udj.state",
+    "fields": {
+      "name": "NC"
+    }
+  },
+  {
+    "pk": 34,
+    "model": "udj.state",
+    "fields": {
+      "name": "ND"
+    }
+  },
+  {
+    "pk": 35,
+    "model": "udj.state",
+    "fields": {
+      "name": "OH"
+    }
+  },
+  {
+    "pk": 36,
+    "model": "udj.state",
+    "fields": {
+      "name": "OK"
+    }
+  },
+  {
+    "pk": 37,
+    "model": "udj.state",
+    "fields": {
+      "name": "OR"
+    }
+  },
+  {
+    "pk": 38,
+    "model": "udj.state",
+    "fields": {
+      "name": "PA"
+    }
+  },
+  {
+    "pk": 39,
+    "model": "udj.state",
+    "fields": {
+      "name": "RI"
+    }
+  },
+  {
+    "pk": 40,
+    "model": "udj.state",
+    "fields": {
+      "name": "SC"
+    }
+  },
+  {
+    "pk": 41,
+    "model": "udj.state",
+    "fields": {
+      "name": "SD"
+    }
+  },
+  {
+    "pk": 42,
+    "model": "udj.state",
+    "fields": {
+      "name": "TN"
+    }
+  },
+  {
+    "pk": 43,
+    "model": "udj.state",
+    "fields": {
+      "name": "TX"
+    }
+  },
+  {
+    "pk": 44,
+    "model": "udj.state",
+    "fields": {
+      "name": "UT"
+    }
+  },
+  {
+    "pk": 45,
+    "model": "udj.state",
+    "fields": {
+      "name": "VT"
+    }
+  },
+  {
+    "pk": 46,
+    "model": "udj.state",
+    "fields": {
+      "name": "VA"
+    }
+  },
+  {
+    "pk": 47,
+    "model": "udj.state",
+    "fields": {
+      "name": "WA"
+    }
+  },
+  {
+    "pk": 48,
+    "model": "udj.state",
+    "fields": {
+      "name": "WV"
+    }
+  },
+  {
+    "pk": 49,
+    "model": "udj.state",
+    "fields": {
+      "name": "WI"
+    }
+  },
+  {
+    "pk": 50,
+    "model": "udj.state",
+    "fields": {
+      "name": "WY"
     }
   }
 ]

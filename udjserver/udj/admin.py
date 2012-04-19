@@ -1,6 +1,7 @@
 from udj.models import *
 from django.contrib import admin
 
+"""
 def removeSongFromActivePlaylist(modeladmin, request, queryset):
   queryset.update(state='RM')
 
@@ -61,3 +62,4 @@ admin.site.register(EventGoer, EventGoerAdmin)
 admin.site.register(AvailableSong, AvailableSongAdmin)
 admin.site.register(Vote, VoteAdmin)
 admin.site.register(PlaylistEntryTimePlayed)
+"""

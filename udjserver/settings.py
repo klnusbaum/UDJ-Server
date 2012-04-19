@@ -1,9 +1,7 @@
-import udjdb
 import os
+from django.core.exceptions import ImproperlyConfigured
 # Django settings for udjserver project.
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
-
-UDJ_API_VERSION = "0.2"
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -11,8 +9,6 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
-
-DATABASES = udjdb.getUDJDbSettings()
 
 MANAGERS = ADMINS
 
@@ -146,6 +142,12 @@ LOGGING = {
         },
     }
 }
+
+def geocodeLocation(address, city, state, zipcode):
+  raise ImproperlyConfigured('Must specifiy a function for geocoding')
+
+def sortActivePlaylist(queuedEntries):
+  raise ImproperlyConfigured('Must specifiy a function for sorting active playlists')
 
 try:
   from settings_local import *

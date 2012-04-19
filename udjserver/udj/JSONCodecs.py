@@ -1,4 +1,87 @@
 import json
+from udj.models import Player
+from udj.models import PlayerLocation
+from udj.models import PlayerPassword
+from udj.models import PlaylistEntryTimePlayed
+from udj.models import Participant
+from udj.models import LibraryEntry
+from udj.models import ActivePlaylistEntry
+
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models.query import QuerySet
+from django.contrib.auth.models import User
+
+
+class UDJEncoder(json.JSONEncoder):
+
+  def default(self, obj):
+    if isinstance(obj, QuerySet):
+      return [x for x in obj]
+
+    elif isinstance(obj, User):
+      return {
+        'username' : obj.username,
+        'first_name' : obj.first_name,
+        'last_name' : obj.last_name
+      }
+    elif isinstance(obj, ActivePlaylistEntry):
+      toReturn =  {
+        'song' : obj.song,
+        'up_votes' : obj.upvote_count(),
+        'down_votes' : obj.downvote_count(),
+        'time_added' : obj.time_added.replace(microsecond=0).isoformat(),
+        'adder' : obj.adder
+      }
+
+      if obj.state == 'PL':
+        toReturn['time_player'] = PlaylistEntryTimePlayed.objects.get(playlist_entry=obj).time_played.replace(microsecond=0).isoformat()
+      return toReturn
+
+
+
+    elif isinstance(obj, LibraryEntry):
+      return {
+          'id' : obj.player_lib_song_id,
+          'title' : obj.title,
+          'artist' : obj.artist,
+          'album' : obj.album,
+          'track' : obj.track,
+          'genre' : obj.genre,
+          'duration' : obj.duration
+      }
+
+    elif isinstance(obj, Participant):
+      return {
+          'username' : obj.user.username,
+          'first_name' : obj.user.first_name,
+          'last_name' : obj.user.last_name
+      }
+    elif isinstance(obj, Player):
+      location = None
+      try:
+        location = PlayerLocation.objects.get(player=obj)
+      except ObjectDoesNotExist:
+        pass
+
+      toReturn = {
+        "id" : obj.id,
+        "name" : obj.name,
+        "owner_username" : obj.owning_user.username,
+        "owner_id" : obj.owning_user.id,
+        "has_password" : True if PlayerPassword.objects.filter(player=obj).exists() else False
+      }
+
+      if location != None:
+        toReturn['latitude'] = location.latitude
+        toReturn['longitude'] = location.longitude
+
+      return toReturn
+
+    return json.JSONEncoder.default(self, obj)
+
+
+"""
+import json
 from udj.models import LibraryEntry
 from udj.models import Event
 from udj.models import EventLocation
@@ -112,6 +195,6 @@ def getJSONForEventsByLocation(latitude, longitude, eventLocations):
     if distance < 5:
       toReturn.append(getEventDictionary(eventLocation.event))
   return json.dumps(toReturn)
-
+"""
 
 
