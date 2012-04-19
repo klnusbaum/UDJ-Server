@@ -1,4 +1,5 @@
 import os
+from django.core.exceptions import ImproperlyConfigured
 # Django settings for udjserver project.
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
@@ -142,6 +143,11 @@ LOGGING = {
     }
 }
 
+def geocodeLocation(address, city, state, zipcode):
+  raise ImproperlyConfigured('Must specifiy a function for geocoding')
+
+def sortActivePlaylist(queuedEntries):
+  raise ImproperlyConfigured('Must specifiy a function for sorting active playlists')
 
 try:
   from settings_local import *

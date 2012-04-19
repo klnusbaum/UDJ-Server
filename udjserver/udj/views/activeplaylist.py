@@ -16,8 +16,6 @@ from udj.authdecorators import TicketUserMatch
 from udj.authdecorators import IsOwnerOrParticipates
 from udj.JSONCodecs import UDJEncoder
 
-from django.db.models import Count
-from django.db.models import Sum
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseNotFound
@@ -29,14 +27,16 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
 
+from settings import sortActivePlaylist
+
 @NeedsAuth
 @AcceptsMethods(['GET'])
 @ActivePlayerExists
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
 def getActivePlaylist(request, user, player_id, activePlayer):
-  queuedEntries = ActivePlaylistEntry.objects.filter(song__player=activePlayer, state='QE').annotate(
-      totalvotes=Sum('vote__weight')).order_by('-totalvotes','time_added')
+  queuedEntries = ActivePlaylistEntry.objects.filter(song__player=activePlayer, state='QE')
+  queuedEntries = sortActivePlaylist(queuedEntries)
   playlist={'active_playlist' : queuedEntries}
 
   try:
