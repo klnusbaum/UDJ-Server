@@ -15,6 +15,7 @@ from udj.models import ActivePlaylistEntry
 from udj.models import PlaylistEntryTimePlayed
 from udj.auth import hashPlayerPassword
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER
+from udj.headers import MISSING_RESOURCE_HEADER
 
 from django.test.client import Client
 
@@ -441,6 +442,25 @@ class PlaylistModTests(JeffTestCase):
 
     upvote = Vote.objects.get(user__id=3, playlist_entry__song__id=1, weight=1)
 
+  @EnsureParticipationUpdated(3, 1)
+  def testVoteDownSong(self):
+    response = self.doPost('/udj/players/1/active_playlist/songs/1/users/3/downvote')
+    self.assertEqual(response.status_code, 200)
+
+    upvote = Vote.objects.get(user__id=3, playlist_entry__song__id=1, weight=-1)
+
+  @EnsureParticipationUpdated(3, 1)
+  def testBadSongVote(self):
+    response = self.doPost('/udj/players/1/active_playlist/songs/50/users/3/downvote')
+    self.assertEqual(response.status_code, 404)
+    self.assertEqual(response[MISSING_RESOURCE_HEADER], 'song')
+
+  @EnsureParticipationUpdated(3, 1)
+  def testDuplicateVote(self):
+    response = self.doPost('/udj/players/1/active_playlist/songs/2/users/3/downvote')
+    self.assertEqual(response.status_code, 200)
+
+    upvote = Vote.objects.get(user__id=3, playlist_entry__song__id=2, weight=-1)
 
 
 
