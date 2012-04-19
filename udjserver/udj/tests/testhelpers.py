@@ -4,6 +4,10 @@ from django.test.client import Client
 from django.contrib.auth.models import User
 from udj.models import Ticket
 from udj.headers import DJANGO_TICKET_HEADER
+from udj.models import Participant
+
+from datetime import datetime
+from datetime import timedelta
 
 class DoesServerOpsTestCase(TestCase):
   fixtures = ['test_fixture.json']
@@ -67,3 +71,16 @@ class YunYoungTestCase(DoesServerOpsTestCase):
 class AlejandroTestCase(DoesServerOpsTestCase):
   username = "alejandro"
   userpass = "testalejandro"
+
+def EnsureParticipationUpdated(user_id, player_id):
+  def decorator(target):
+    def wrapper(*args, **kwargs):
+      participant = Participant.objects.get(user__id=user_id, player__id=player_id)
+      participant.time_last_interaction = (datetime.now() - timedelta(minutes=30))
+      oldTime = participant.time_last_interaction
+      participant.save()
+      target(*args, **kwargs)
+      newTime = Participant.objects.get(user__id=user_id, player__id=player_id).time_last_interaction
+      (args[0]).assertTrue(newTime > oldTime)
+    return wrapper
+  return decorator

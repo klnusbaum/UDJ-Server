@@ -4,6 +4,7 @@ from udj.tests.testhelpers import JeffTestCase
 from udj.tests.testhelpers import YunYoungTestCase
 from udj.tests.testhelpers import KurtisTestCase
 from udj.tests.testhelpers import AlejandroTestCase
+from udj.tests.testhelpers import EnsureParticipationUpdated
 from udj.models import Vote
 from udj.models import LibraryEntry
 from udj.models import Player
@@ -287,9 +288,10 @@ class PlayerAdminTests2(AlejandroTestCase):
 
 class PlayerQueryTests(YunYoungTestCase):
 
+  @EnsureParticipationUpdated(7, 1)
   def testGetUsers(self):
-    Participant.objects.filter(player__id=1).update(time_last_interaction=datetime.now())
-
+    otherUsers = Participant.objects.filter(player__id=1).exclude(user__id=7)
+    otherUsers.update(time_last_interaction=datetime.now())
     response = self.doGet('/udj/players/1/users')
     self.assertEqual(response.status_code, 200)
     jsonUsers = json.loads(response.content)
@@ -303,8 +305,8 @@ class PlayerQueryTests(YunYoungTestCase):
     self.assertEqual(response.status_code, 401)
     self.assertEqual(response['WWW-Authenticate'], 'begin-participating')
 
+  @EnsureParticipationUpdated(7, 1)
   def testSimpleGetMusic(self):
-    Participant.objects.filter(player__id=1, user__id=7).update(time_last_interaction=datetime.now())
 
     response = self.doGet('/udj/players/1/available_music?query=Third+Eye+Blind')
     self.assertEqual(response.status_code, 200)
@@ -314,8 +316,8 @@ class PlayerQueryTests(YunYoungTestCase):
     for song in songResults:
       self.assertTrue(song['id'] in expectedLibIds)
 
+  @EnsureParticipationUpdated(7, 1)
   def testAlbumGet(self):
-    Participant.objects.filter(player__id=1, user__id=7).update(time_last_interaction=datetime.now())
 
     response = self.doGet('/udj/players/1/available_music?query=Bedlam+in+Goliath')
     self.assertEqual(response.status_code, 200)
@@ -325,8 +327,8 @@ class PlayerQueryTests(YunYoungTestCase):
     for song in songResults:
       self.assertTrue(song['id'] in expectedLibIds)
 
+  @EnsureParticipationUpdated(7, 1)
   def testGetRandom(self):
-    Participant.objects.filter(player__id=1, user__id=7).update(time_last_interaction=datetime.now())
 
     response = self.doGet('/udj/players/1/available_music/random_songs?max_randoms=2')
     self.assertEqual(response.status_code, 200)
@@ -338,8 +340,8 @@ class PlayerQueryTests(YunYoungTestCase):
       self.assertFalse(
           LibraryEntry.objects.get(player__id=1, player_lib_song_id=song['id']).is_banned)
 
+  @EnsureParticipationUpdated(7, 1)
   def testGetPlaylist(self):
-    Participant.objects.filter(player__id=1, user__id=7).update(time_last_interaction=datetime.now())
 
     response = self.doGet('/udj/players/1/active_playlist')
     self.assertEqual(response.status_code, 200)
@@ -356,8 +358,8 @@ class PlayerQueryTests(YunYoungTestCase):
 
 class PlaylistModTests(JeffTestCase):
 
+  @EnsureParticipationUpdated(3, 1)
   def testSimpleAdd(self):
-    Participant.objects.filter(player__id=1, user__id=3).update(time_last_interaction=datetime.now())
 
     response = self.doPut('/udj/players/1/active_playlist/songs/9')
     self.assertEqual(response.status_code, 201)
