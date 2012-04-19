@@ -23,7 +23,7 @@ from udj.decorators import HasNZParams
 from udj.JSONCodecs import UDJEncoder
 from udj.exceptions import LocationNotFoundError
 from udj.auth import hashPlayerPassword
-
+from udj.decorators import UpdatePlayerActivity
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
@@ -314,7 +314,8 @@ def participateWithPlayer(request, player_id, user_id, activePlayer):
 @AcceptsMethods(['GET'])
 @ActivePlayerExists
 @IsOwnerOrParticipates
-def getActiveUsersForPlayer(request, player_id, activePlayer):
+@UpdatePlayerActivity
+def getActiveUsersForPlayer(request, user, player_id, activePlayer):
   return HttpResponse(
     json.dumps(Participant.activeParticipants(activePlayer),
     cls=UDJEncoder))
@@ -324,7 +325,8 @@ def getActiveUsersForPlayer(request, player_id, activePlayer):
 @ActivePlayerExists
 @IsOwnerOrParticipates
 @HasNZParams(['query'])
-def getAvailableMusic(request, player_id, activePlayer):
+@UpdatePlayerActivity
+def getAvailableMusic(request, user, player_id, activePlayer):
   query = request.REQUEST['query']
   available_songs = LibraryEntry.objects.filter(player=activePlayer).filter(
     Q(title__icontains=query) |
@@ -342,7 +344,8 @@ def getAvailableMusic(request, player_id, activePlayer):
 @AcceptsMethods(['GET'])
 @ActivePlayerExists
 @IsOwnerOrParticipates
-def getRandomMusic(request, player_id, activePlayer):
+@UpdatePlayerActivity
+def getRandomMusic(request, user, player_id, activePlayer):
   rand_limit = request.GET.get('max_randoms',20)
   rand_limit = max(rand_limit,100)
   randomSongs = LibraryEntry.objects.filter(player=activePlayer) \
@@ -356,7 +359,8 @@ def getRandomMusic(request, player_id, activePlayer):
 @AcceptsMethods(['GET'])
 @ActivePlayerExists
 @IsOwnerOrParticipates
-def getActivePlaylist(request, player_id, activePlayer):
+@UpdatePlayerActivity
+def getActivePlaylist(request, user, player_id, activePlayer):
   queuedEntries = ActivePlaylistEntry.objects.filter(song__player=activePlayer, state='QE')
   playlist={'active_playlist' : queuedEntries}
 

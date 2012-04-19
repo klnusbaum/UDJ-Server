@@ -1,11 +1,15 @@
 from udj.headers import DJANGO_TICKET_HEADER
 from udj.headers import MISSING_RESOURCE_HEADER
 from udj.headers import MISSING_REASON_HEADER
+from udj.models import Player
+from udj.models import Participant
+
 from django.http import HttpResponse
 from django.http import HttpResponseNotAllowed
 from django.http import HttpResponseNotFound
 from django.core.exceptions import ObjectDoesNotExist
-from udj.models import Player
+
+from datetime import datetime
 
 
 def AcceptsMethods(acceptedMethods):
@@ -78,6 +82,19 @@ def ActivePlayerExists(function):
       toReturn[MISSING_RESOURCE_HEADER] = 'player'
       return toReturn
   return wrapper
+
+def UpdatePlayerActivity(function):
+  def wrapper(*args, **kwargs):
+    user = kwargs['user']
+    activePlayer = kwargs['activePlayer']
+    if user != activePlayer.owning_user:
+      participant = Participant.objects.get(user=user, player=activePlayer)
+      participant.time_last_interaction = datetime.now()
+      participant.save()
+    return function(*args, **kwargs)
+  return wrapper
+
+
 
 
 

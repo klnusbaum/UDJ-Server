@@ -20,6 +20,7 @@ def IsOwnerOrParticipates(function):
     user = getUserForTicket(request)
     activePlayer = kwargs['activePlayer']
     if activePlayer.owning_user==user or userParticipates(activePlayer, user):
+      kwargs['user'] = user
       return function(*args, **kwargs)
     else:
       toReturn = HttpResponse(status=401)
