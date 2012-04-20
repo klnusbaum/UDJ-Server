@@ -46,13 +46,9 @@ def NeedsAuth(function):
     if DJANGO_TICKET_HEADER not in request.META:
       responseString = "Must provide the " + getTicketHeader() + " header. "
       return HttpResponseBadRequest(responseString)
-    elif not isValidTicket(
-      request.META[DJANGO_TICKET_HEADER],
-      request.META['REMOTE_ADDR'],
-      request.META['REMOTE_PORT']):
+    elif not isValidTicket(request.META[DJANGO_TICKET_HEADER]):
       return HttpResponseForbidden("Invalid ticket: \"" + 
-        request.META[DJANGO_TICKET_HEADER] + "\"\n"+
-	"Given port :" + request.META['REMOTE_PORT'])
+        request.META[DJANGO_TICKET_HEADER] + "\"")
     else:
       return function(*args, **kwargs)
   return wrapper

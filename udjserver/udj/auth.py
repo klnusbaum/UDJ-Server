@@ -33,7 +33,7 @@ def ticketMatchesUser(request, provided_user_id):
     return False
   return True
 
-def isValidTicket(provided_hash, ip_address, port):
+def isValidTicket(provided_hash):
   try:
     matchingTicket = Ticket.objects.get(ticket_hash=provided_hash)
   except ObjectDoesNotExist:
@@ -59,7 +59,7 @@ def obtainTicketForUser(userRequestingTicket):
   ticket , created = Ticket.objects.get_or_create(
     user=userRequestingTicket,
     defaults={'ticket_hash' : getUniqueRandHash()})
-  if not created and (datetime.now() - matchingTicket.time_issued).days > 1:
+  if not created and (datetime.now() - ticket.time_issued).days > 1:
     ticket.ticket_hash=getUniqueRandHash()
     ticket.save()
   return ticket
