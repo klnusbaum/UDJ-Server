@@ -51,7 +51,8 @@ def NeedsAuth(function):
       request.META['REMOTE_ADDR'],
       request.META['REMOTE_PORT']):
       return HttpResponseForbidden("Invalid ticket: \"" + 
-        request.META[DJANGO_TICKET_HEADER] + "\"")
+        request.META[DJANGO_TICKET_HEADER] + "\"\n"+
+	"Given port :" + request.META['REMOTE_PORT'])
     else:
       return function(*args, **kwargs)
   return wrapper

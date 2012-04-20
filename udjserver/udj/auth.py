@@ -28,8 +28,6 @@ def ticketMatchesUser(request, provided_user_id):
   try:
     matchingTickets = Ticket.objects.get(
       ticket_hash=request.META[DJANGO_TICKET_HEADER],
-      source_ip_addr=request.META['REMOTE_ADDR'],
-      source_port=request.META['REMOTE_PORT'],
       user__id=provided_user_id)
   except ObjectDoesNotExist:
     return False
@@ -37,8 +35,7 @@ def ticketMatchesUser(request, provided_user_id):
 
 def isValidTicket(provided_hash, ip_address, port):
   try:
-    matchingTicket = Ticket.objects.get(ticket_hash=provided_hash,
-      source_ip_addr=ip_address, source_port=port)
+    matchingTicket = Ticket.objects.get(ticket_hash=provided_hash)
   except ObjectDoesNotExist:
     return False
   if(datetime.now() - matchingTicket.time_issued).days < 1:
@@ -58,13 +55,11 @@ def getUniqueRandHash():
   return rand_hash
 
 
-def obtainTicketForUser(userRequestingTicket, givenIpAddress, givenPort):
+def obtainTicketForUser(userRequestingTicket):
   ticket , created = Ticket.objects.get_or_create(
     user=userRequestingTicket,
-    source_ip_addr=givenIpAddress,
-    source_port=givenPort,
     defaults={'ticket_hash' : getUniqueRandHash()})
-  if not created:
+  if not created and (datetime.now() - matchingTicket.time_issued).days > 1:
     ticket.ticket_hash=getUniqueRandHash()
     ticket.save()
   return ticket
@@ -77,8 +72,7 @@ def authenticate(request):
 
   userToAuth = get_object_or_404(User, username=request.POST['username'])
   if userToAuth.check_password(request.POST['password']):
-    ticket = obtainTicketForUser(
-        userToAuth, request.META['REMOTE_ADDR'], request.META['REMOTE_PORT'])
+    ticket = obtainTicketForUser(userToAuth)
     ticket_and_id = {"ticket_hash" : ticket.ticket_hash, "user_id" : userToAuth.id}
     response = HttpResponse(json.dumps(ticket_and_id), content_type='text/json')
     return response
