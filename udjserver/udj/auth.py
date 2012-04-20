@@ -62,8 +62,8 @@ def obtainTicketForUser(userRequestingTicket, givenIpAddress, givenPort):
   ticket , created = Ticket.objects.get_or_create(
     user=userRequestingTicket,
     source_ip_addr=givenIpAddress,
-    source_port=givenPort)
-  defaults={'ticket_hash' : getUniqueRandHash()}
+    source_port=givenPort,
+    defaults={'ticket_hash' : getUniqueRandHash()})
   if not created:
     ticket.ticket_hash=getUniqueRandHash()
     ticket.save()
@@ -74,13 +74,6 @@ def obtainTicketForUser(userRequestingTicket, givenIpAddress, givenPort):
 @AcceptsMethods(['POST'])
 @HasNZParams(['username', 'password'])
 def authenticate(request):
-  if request.method != 'POST':
-    return HttpResponse('Must send post', status=405)
-  elif not request.POST.__contains__("username"):
-    return HttpResponseBadRequest('Must send username')
-  elif not request.POST.__contains__("password"):
-    return HttpResponseBadRequest('Must send password')
-
 
   userToAuth = get_object_or_404(User, username=request.POST['username'])
   if userToAuth.check_password(request.POST['password']):

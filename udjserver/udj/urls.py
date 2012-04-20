@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import patterns, include, url
 
 urlpatterns = patterns('udj.auth',
-    (r'^auth?$', 'authenticate'),
+    (r'^auth$', 'authenticate'),
 )
 
 urlpatterns += patterns('udj.views.activeplaylist',
