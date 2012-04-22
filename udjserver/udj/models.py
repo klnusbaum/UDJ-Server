@@ -81,6 +81,12 @@ class ActivePlaylistEntry(models.Model):
   def downvote_count(self):
     return self.vote_set.filter(weight=-1).count()
 
+  def upvoters(self):
+    return  [vote.user for vote in  Vote.objects.filter(playlist_entry=self, weight=1 )]
+
+  def downvoters(self):
+    return  [vote.user for vote in  Vote.objects.filter(playlist_entry=self, weight=-1 )]
+
   def __unicode__(self):
     return self.song.title + " added by " + self.adder.username
 
