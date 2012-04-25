@@ -12,7 +12,7 @@ class ParticipantAdmin(admin.ModelAdmin):
 
 class ActivePlaylistEntryAdmin(admin.ModelAdmin):
   list_display = ('song', 'time_added', 'adder', 'state')
-  list_filter = ('state','player',)
+  list_filter = ('state','adder', 'song__player')
   actions = [removeSongFromActivePlaylist]
 
 class TicketAdmin(admin.ModelAdmin):
@@ -30,7 +30,7 @@ class LibraryAdmin(admin.ModelAdmin):
     'duration', 
     'is_banned', 
     'is_deleted')
-  list_filter = ('owning_user', 'is_deleted', 'is_banned')
+  list_filter = ('player', 'is_deleted', 'is_banned')
 
 
 admin.site.register(Ticket)
