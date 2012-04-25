@@ -40,6 +40,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from httplib import HTTPConnection
 from httplib import HTTPResponse
 
+from datetime import datetime
 
 from settings import geocodeLocation
 
@@ -293,7 +294,10 @@ def setPlayerVolume(request, user_id, player_id, player):
 
 
 def onSuccessfulPlayerAuth(activePlayer, user_id):
-  Participant.objects.get_or_create(player=activePlayer, user=User.objects.get(pk=user_id))
+  obj, created = Participant.objects.get_or_create(player=activePlayer, user=User.objects.get(pk=user_id))
+  if created:
+    obj.time_last_interation = datetime.now()
+    obj.save()
   return HttpResponse(status=201)
 
 @AcceptsMethods(['PUT'])

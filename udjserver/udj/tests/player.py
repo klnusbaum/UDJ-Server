@@ -301,6 +301,13 @@ class PlayerAdminTests2(AlejandroTestCase):
     self.assertEqual(len(jsonResponse['active_playlist']), len(plSongIds))
 
 
+class PlayerReparticipateTest(YunYoungTestCase):
+
+  @EnsureParticipationUpdated(7,1)
+  def testReparticipate(self):
+    response = self.doPut('/udj/players/1/users/7')
+    self.assertEqual(201, response.status_code)
+
 
 class PlayerQueryTests(YunYoungTestCase):
 
