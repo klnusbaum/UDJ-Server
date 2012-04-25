@@ -20,7 +20,7 @@ class Player(models.Model):
   volume = models.IntegerField(default=0, validators=[zero_ten_validator])
 
   def __unicode__(self):
-    return self.event.name + " password" 
+    return self.name + " player" 
 
 class PlayerPassword(models.Model):
   player = models.ForeignKey(Player, unique=True)
