@@ -34,7 +34,7 @@ class LibraryAdmin(admin.ModelAdmin):
 
 class VoteAdmin(admin.ModelAdmin):
   list_display = ('playlist_entry', 'user', 'weight')
-  list_filter = ('playlist_entyr__song__player', 'user', 'weight')
+  list_filter = ('playlist_entry__song__player', 'playlist_entry__state', 'user', 'weight')
 
 
 admin.site.register(Ticket)
