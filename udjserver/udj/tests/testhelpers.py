@@ -67,7 +67,6 @@ def EnsureParticipationUpdated(user_id, player_id):
   def decorator(target):
     def wrapper(*args, **kwargs):
       participant = Participant.objects.get(user__id=user_id, player__id=player_id)
-      participant.time_last_interaction = (datetime.now() - timedelta(minutes=30))
       oldTime = participant.time_last_interaction
       participant.save()
       target(*args, **kwargs)

@@ -306,20 +306,13 @@ class PlayerQueryTests(YunYoungTestCase):
 
   @EnsureParticipationUpdated(7, 1)
   def testGetUsers(self):
-    otherUsers = Participant.objects.filter(player__id=1).exclude(user__id=7)
-    otherUsers.update(time_last_interaction=datetime.now())
     response = self.doGet('/udj/players/1/users')
     self.assertEqual(response.status_code, 200)
     jsonUsers = json.loads(response.content)
-    self.assertEquals(len(jsonUsers), 3)
+    self.assertEquals(len(jsonUsers), 1)
     possibleUsers = ['jeff', 'vilas', 'yunyoung']
     for user in jsonUsers:
       self.assertTrue(user['username'] in possibleUsers)
-
-  def testBadGetUsers(self):
-    response = self.doGet('/udj/players/1/users')
-    self.assertEqual(response.status_code, 401)
-    self.assertEqual(response['WWW-Authenticate'], 'begin-participating')
 
   @EnsureParticipationUpdated(7, 1)
   def testSimpleGetMusic(self):

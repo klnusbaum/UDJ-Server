@@ -12,7 +12,7 @@ from django.http import HttpResponseForbidden
 
 
 def userParticipates(player, user):
-  return Participant.activeParticipants(player).filter(user=user).exists()
+  return Participant.objects.filter(user=user).exists()
 
 def IsOwnerOrParticipates(function):
   def wrapper(*args, **kwargs):
