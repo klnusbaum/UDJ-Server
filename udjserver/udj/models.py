@@ -135,3 +135,7 @@ class Vote(models.Model):
   class Meta:
     unique_together = ("user", "playlist_entry")
 
+  def __unicode__(self):
+    voteFor = "Upvote for " if self.weight ==1 else "Downvote for "
+    return voteFor + self.playlist_entry.song.name
+

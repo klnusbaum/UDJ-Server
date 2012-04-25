@@ -32,6 +32,10 @@ class LibraryAdmin(admin.ModelAdmin):
     'is_deleted')
   list_filter = ('player', 'is_deleted', 'is_banned')
 
+class VoteAdmin(admin.ModelAdmin):
+  list_display = ('playlist_entry', 'user', 'weight')
+  list_filter = ('playlist_entyr__song__player', 'user', 'weight')
+
 
 admin.site.register(Ticket)
 admin.site.register(Player)
@@ -40,5 +44,5 @@ admin.site.register(PlayerLocation)
 admin.site.register(LibraryEntry, LibraryAdmin)
 admin.site.register(ActivePlaylistEntry, ActivePlaylistEntryAdmin)
 admin.site.register(Participant, ParticipantAdmin)
-admin.site.register(Vote)
+admin.site.register(Vote, VoteAdmin)
 admin.site.register(PlaylistEntryTimePlayed)
