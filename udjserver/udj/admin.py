@@ -63,12 +63,16 @@ admin.site.register(AvailableSong, AvailableSongAdmin)
 admin.site.register(Vote, VoteAdmin)
 admin.site.register(PlaylistEntryTimePlayed)
 """
+class ParticipantAdmin(admin.ModelAdmin):
+  list_display=('user', 'player', 'time_joined', 'time_last_interaction')
+  list_filters=('player', 'user',)
+
 admin.site.register(Ticket)
 admin.site.register(Player)
 admin.site.register(PlayerPassword)
 admin.site.register(PlayerLocation)
 admin.site.register(LibraryEntry)
 admin.site.register(ActivePlaylistEntry)
-admin.site.register(Participant)
+admin.site.register(Participant, ParticipantAdmin)
 admin.site.register(Vote)
 admin.site.register(PlaylistEntryTimePlayed)

@@ -20,6 +20,7 @@ class UDJEncoder(json.JSONEncoder):
 
     elif isinstance(obj, User):
       return {
+        'id' : obj.id,
         'username' : obj.username,
         'first_name' : obj.first_name,
         'last_name' : obj.last_name
@@ -27,8 +28,8 @@ class UDJEncoder(json.JSONEncoder):
     elif isinstance(obj, ActivePlaylistEntry):
       toReturn =  {
         'song' : obj.song,
-        'up_votes' : obj.upvote_count(),
-        'down_votes' : obj.downvote_count(),
+        'upvoters' : obj.upvoters(),
+        'downvoters' : obj.downvoters(),
         'time_added' : obj.time_added.replace(microsecond=0).isoformat(),
         'adder' : obj.adder
       }
