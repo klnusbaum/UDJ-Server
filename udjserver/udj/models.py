@@ -11,6 +11,9 @@ def zero_ten_validator(value):
 class State(models.Model):
   name = models.CharField(max_length=2)
 
+  def __unicode__(self):
+    return self.name
+
 class Player(models.Model):
   PLAYER_STATE_CHOICES = (('IN', u'Inactive'), ('PL', u'Playing'), ('PA', u'Paused'))
 
