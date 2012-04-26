@@ -59,8 +59,10 @@ def obtainTicketForUser(userRequestingTicket):
   ticket , created = Ticket.objects.get_or_create(
     user=userRequestingTicket,
     defaults={'ticket_hash' : getUniqueRandHash()})
-  if not created and (datetime.now() - ticket.time_issued).days > 1:
+
+  if not created and (datetime.now() - ticket.time_issued).days >= 1:
     ticket.ticket_hash=getUniqueRandHash()
+    ticket.time_issued=datetime.now()
     ticket.save()
   return ticket
 

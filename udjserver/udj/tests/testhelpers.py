@@ -63,6 +63,10 @@ class AlejandroTestCase(DoesServerOpsTestCase):
   username = "alejandro"
   userpass = "testalejandro"
 
+class LucasTestCase(DoesServerOpsTestCase):
+  username = "lucas"
+  userpass = "testlucas"
+
 def EnsureParticipationUpdated(user_id, player_id):
   def decorator(target):
     def wrapper(*args, **kwargs):

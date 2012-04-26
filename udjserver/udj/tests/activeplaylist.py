@@ -255,6 +255,8 @@ class TestRemoveSong(User2TestCase):
     self.assertEqual(response.status_code, 200)
     self.assertEqual(
       ActivePlaylistEntry.objects.get(id=3).state, u'RM')
+    self.assertEqual(
+      Vote.objects.get(id=3).state, u'RM')
 
   def testDuplicateRemove(self):
     response = self.doDelete('/udj/events/2/active_playlist/songs/7')

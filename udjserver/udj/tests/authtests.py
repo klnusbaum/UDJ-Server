@@ -4,6 +4,35 @@ from django.test.client import Client
 from django.contrib.auth.models import User
 from udj.models import Ticket
 
+class ReissueAuthTest(TestCase):
+  fixtures = ['test_fixture']
+  client = Client()
+  lucas = User.objects.get(username='lucas')
+
+  def issueTicketRequest(self):
+    return self.client.post(
+        '/udj/auth', {'username': 'lucas', 'password' : 'testlucas'})
+
+  @staticmethod
+  def getCurrentTicket():
+    return Ticket.objects.get(user=ReissueAuthTest.lucas)
+
+  def testReissue(self):
+    self.assertTrue(Ticket.objects.filter(user=ReissueAuthTest.lucas).exists())
+    oldTicket = ReissueAuthTest.getCurrentTicket()
+
+    response = self.issueTicketRequest()
+
+    self.assertEqual(response.status_code, 200, response.content)
+    self.assertEqual(response['Content-Type'], 'text/json')
+
+
+    newTicket = ReissueAuthTest.getCurrentTicket()
+
+    self.assertNotEqual(oldTicket.ticket_hash, newTicket.ticket_hash)
+    self.assertTrue(oldTicket.time_issued < newTicket.time_issued)
+
+
 
 class AuthTest(TestCase):
   fixtures = ['test_fixture']
