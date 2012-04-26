@@ -6,6 +6,16 @@ def removeSongFromActivePlaylist(modeladmin, request, queryset):
 
 removeSongFromActivePlaylist.short_description = "Remove song(s) from playlist"
 
+def setPlayerInactive(modeladmin, request, queryset):
+  queryset.update(state='IN')
+
+setPlayerInactive.short_description = "Set player(s) as inactive"
+
+class PlayerAdmin(admin.ModelAdmin):
+  list_display=('name', 'owning_user', 'state', 'volume')
+  list_filters=('owning_user', 'state')
+  actions = [setPlayerInactive]
+
 class ParticipantAdmin(admin.ModelAdmin):
   list_display=('user', 'player', 'time_joined', 'time_last_interaction')
   list_filters=('player', 'user',)
@@ -38,7 +48,7 @@ class VoteAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Ticket)
-admin.site.register(Player)
+admin.site.register(Player, PlayerAdmin)
 admin.site.register(PlayerPassword)
 admin.site.register(PlayerLocation)
 admin.site.register(LibraryEntry, LibraryAdmin)
