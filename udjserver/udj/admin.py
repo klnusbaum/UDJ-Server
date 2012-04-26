@@ -47,7 +47,7 @@ class VoteAdmin(admin.ModelAdmin):
   list_filter = ('playlist_entry__song__player', 'playlist_entry__state', 'user', 'weight')
 
 
-admin.site.register(Ticket)
+admin.site.register(Ticket, TicketAdmin)
 admin.site.register(Player, PlayerAdmin)
 admin.site.register(PlayerPassword)
 admin.site.register(PlayerLocation)
