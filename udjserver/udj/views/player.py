@@ -229,6 +229,7 @@ def setLocation(request, user_id, player_id, player):
     return HttpResponseBadRequest('Bad location')
 
 
+@csrf_exempt
 @NeedsAuth
 @AcceptsMethods(['POST'])
 @ActivePlayerExists
@@ -256,6 +257,7 @@ def setCurrentSong(request, player_id, activePlayer):
     toReturn[MISSING_RESOURCE_HEADER] = 'song'
     return toReturn
 
+@csrf_exempt
 @NeedsAuth
 @AcceptsMethods(['POST'])
 @TicketUserMatch
@@ -276,6 +278,7 @@ def setPlayerState(request, user_id, player_id, player):
   player.save()
   return HttpResponse()
 
+@csrf_exempt
 @NeedsAuth
 @AcceptsMethods(['POST'])
 @TicketUserMatch
