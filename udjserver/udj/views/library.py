@@ -14,6 +14,7 @@ from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
 from django.http import HttpResponseNotFound
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
 
 def isValidLibraryEntryJSON(libraryEntry):
   return "id" in libraryEntry \
@@ -29,7 +30,7 @@ def isValidLibraryEntryJSON(libraryEntry):
 @AcceptsMethods(['PUT'])
 @NeedsJSON
 @PlayerExists
-def addSong2Library(request, user_id, player_id, player):
+def addSongs2Library(request, user_id, player_id, player):
 
   try:
     libJSON = json.loads(request.raw_post_data)
@@ -37,20 +38,21 @@ def addSong2Library(request, user_id, player_id, player):
     return HttpResponseBadRequest('Bad JSON')
 
 
-  try:
-    if LibraryEntry.objects.filter(player=player, player_lib_song_id=libJSON['id']).exists():
-      return HttpResponse(status=409)
-    LibraryEntry(
-      player=player,
-      player_lib_song_id=libJSON['id'],
-      title=libJSON['title'],
-      artist=libJSON['artist'],
-      album=libJSON['album'],
-      genre=libJSON['genre'],
-      track=libJSON['track'],
-      duration=libJSON['duration']).save()
-  except KeyError:
-    return HttpResponseBadRequest('Bad JSON')
+  for libEntry in libJSON:
+    try:
+      if LibraryEntry.objects.filter(player=player, player_lib_song_id=libEntry['id']).exists():
+        return HttpResponse(status=409)
+      LibraryEntry(
+        player=player,
+        player_lib_song_id=libEntry['id'],
+        title=libEntry['title'],
+        artist=libEntry['artist'],
+        album=libEntry['album'],
+        genre=libEntry['genre'],
+        track=libEntry['track'],
+        duration=libEntry['duration']).save()
+    except KeyError:
+      return HttpResponseBadRequest('Bad JSON')
 
   return HttpResponse(status=201)
 
