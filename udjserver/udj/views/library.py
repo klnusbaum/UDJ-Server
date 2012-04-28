@@ -52,9 +52,9 @@ def addSongs2Library(request, user_id, player_id, player):
         track=libEntry['track'],
         duration=libEntry['duration']).save()
     except KeyError:
-      return HttpResponseBadRequest('Bad JSON')
+      return HttpResponseBadRequest('Bad JSON\n' + request.raw_post_data)
     except ValueError:
-      return HttpResponseBadRequest('Bad JSON')
+      return HttpResponseBadRequest('Bad JSON\n' + request.raw_post_data)
 
   return HttpResponse(status=201)
 
