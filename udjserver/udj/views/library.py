@@ -30,6 +30,7 @@ def isValidLibraryEntryJSON(libraryEntry):
 @AcceptsMethods(['PUT'])
 @NeedsJSON
 @PlayerExists
+@transaction.commit_on_success
 def addSongs2Library(request, user_id, player_id, player):
 
   try:
