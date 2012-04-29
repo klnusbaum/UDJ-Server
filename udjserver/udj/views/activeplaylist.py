@@ -57,6 +57,7 @@ def removeSongsFromPlaylist(libIds, activePlayer, user):
     playlistEntry.save()
 
 
+@csrf_exempt
 @NeedsAuth
 @AcceptsMethods(['GET', 'POST'])
 @ActivePlayerExists

@@ -11,6 +11,7 @@ from udj.models import Player
 from udj.headers import MISSING_RESOURCE_HEADER
 from udj.exceptions import AlreadyExistsError
 
+from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
@@ -91,6 +92,7 @@ def modifyBanList(request, user_id, player_id, lib_id, player):
     toReturn[MISSING_RESOURCE_HEADER] = 'song'
     return toReturn
 
+@csrf_exempt
 @NeedsAuth
 @TicketUserMatch
 @PlayerExists
