@@ -3,6 +3,7 @@ from udj.auth import isValidTicket
 from udj.auth import ticketMatchesUser
 from udj.auth import getUserForTicket
 from udj.headers import DJANGO_TICKET_HEADER
+from udj.headers import TICKET_HEADER
 
 from django.http import HttpRequest
 from django.http import HttpResponse
@@ -44,7 +45,7 @@ def NeedsAuth(function):
   def wrapper(*args, **kwargs):
     request = args[0]
     if DJANGO_TICKET_HEADER not in request.META:
-      responseString = "Must provide the " + getTicketHeader() + " header. "
+      responseString = "Must provide the " + TICKET_HEADER + " header. "
       return HttpResponseBadRequest(responseString)
     elif not isValidTicket(request.META[DJANGO_TICKET_HEADER]):
       return HttpResponseForbidden("Invalid ticket: \"" + 
