@@ -5,7 +5,7 @@ urlpatterns = patterns('udj.auth',
 )
 
 urlpatterns += patterns('udj.views.activeplaylist',
-  (r'^players/(?P<player_id>\d+)/active_playlist$', 'getActivePlaylist'),
+  (r'^players/(?P<player_id>\d+)/active_playlist$', 'activePlaylist'),
   (r'^players/(?P<player_id>\d+)/active_playlist/songs/(?P<lib_id>\d+)$', 'modActivePlaylist'),
   (r'^players/(?P<player_id>\d+)/active_playlist/songs/(?P<lib_id>\d+)/users/(?P<user_id>\d+)/upvote$', 
     'voteSongUp'),

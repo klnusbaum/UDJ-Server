@@ -57,14 +57,17 @@ def removeSongsFromPlaylist(libIds, activePlayer, user):
     playlistEntry.save()
 
 
-
-
-
 @NeedsAuth
-@AcceptsMethods(['GET'])
+@AcceptsMethods(['GET', 'POST'])
 @ActivePlayerExists
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
+def activePlaylist(request, user, player_id, activePlayer):
+  if request.method == 'GET':
+    return getActivePlaylist(request, user, player_id, activePlayer)
+  elif request.method == 'POST':
+    return multiModActivePlaylist(request, user, player_id, activePlayer)
+
 def getActivePlaylist(request, user, player_id, activePlayer):
   queuedEntries = ActivePlaylistEntry.objects.filter(song__player=activePlayer, state='QE')
   queuedEntries = sortActivePlaylist(queuedEntries)
@@ -77,6 +80,23 @@ def getActivePlaylist(request, user, player_id, activePlayer):
     playlist['current_song'] = {}
 
   return HttpResponse(json.dumps(playlist, cls=UDJEncoder))
+
+@HasNZParams(['to_add','to_remove'])
+@transaction.commit_on_success
+def multiModActivePlaylist(request, user, player_id, activePlayer):
+  try:
+    toAdd = json.loads(request.POST['to_add'])
+    toRemove = json.loads(request.POST['to_remove'])
+
+    addSongsToPlaylist(toAdd, activePlayer, user)
+    removeSongsFromPlaylist(toRemove, activePlayer, user)
+  except ValueError:
+    return HttpResponseBadRequest('Bad JSON\n' + request.raw_post_data)
+  except AlreadyExistsError:
+    return HttpResponse(status=409)
+
+  return HttpResponse()
+
 
 @NeedsAuth
 @AcceptsMethods(['PUT', 'DELETE'])
@@ -115,29 +135,6 @@ def removeFromActivePlaylist(user, lib_id, activePlayer):
     return HttpResponseForbidden()
 
   return HttpResponse()
-
-"""
-@NeedsAuth
-@AcceptsMethods(['POST'])
-@ActivePlayerExists
-@IsOwnerOrParticipates
-@UpdatePlayerActivity
-@HasNZParams(['to_add','to_remove'])
-@transaction.commit_on_success
-def multiModActivePlaylist(request, user, player_id, activePlayer):
-  try:
-    toAdd = json.loads(request.POST['to_add'])
-    toDelete = json.loads(request.POST['to_remove'])
-
-    addSongsToPlaylist(toAdd)
-    removeSongsFromPlaylist(to_remove)
-  except ValueError:
-    return HttpResponseBadRequest('Bad JSON\n' + request.raw_post_data)
-  except AlreadyExistsError:
-    return HttpResponse(status=409)
-
-  return HttpResponse()
-"""
 
 
 
