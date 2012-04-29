@@ -10,7 +10,6 @@ from udj.models import PlaylistEntryTimePlayed
 from udj.decorators import AcceptsMethods
 from udj.decorators import ActivePlayerExists
 from udj.decorators import UpdatePlayerActivity
-from udj.decorators import HasNZParams
 from udj.authdecorators import NeedsAuth
 from udj.authdecorators import TicketUserMatch
 from udj.authdecorators import IsOwnerOrParticipates
