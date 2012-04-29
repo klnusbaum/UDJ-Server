@@ -10,10 +10,13 @@ from udj.models import PlaylistEntryTimePlayed
 from udj.decorators import AcceptsMethods
 from udj.decorators import ActivePlayerExists
 from udj.decorators import UpdatePlayerActivity
+from udj.decorators import HasNZParams
 from udj.authdecorators import NeedsAuth
 from udj.authdecorators import TicketUserMatch
 from udj.authdecorators import IsOwnerOrParticipates
 from udj.JSONCodecs import UDJEncoder
+from udj.exceptions import AlreadyExistsError
+from udj.exceptions import ForbiddenError
 
 from django.http import HttpRequest
 from django.http import HttpResponse
@@ -27,6 +30,35 @@ from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
 
 from settings import sortActivePlaylist
+
+def addSongsToPlaylist(libIds, activePlayer, user):
+  for lib_id in libIds:
+    libEntry = LibraryEntry.objects.get(player=activePlayer, player_lib_song_id=lib_id,
+      is_deleted=False, is_banned=False)
+
+    if ActivePlaylistEntry.objects.filter(song=libEntry)\
+      .exclude(state='RM').exclude(state='FN').exists():
+      raise AlreadyExistsError("Song already on playlist")
+
+    addedEntry = ActivePlaylistEntry(song=libEntry, adder=user)
+    addedEntry.save()
+
+    Vote(playlist_entry=addedEntry, user=user, weight=1).save()
+
+def removeSongsFromPlaylist(libIds, activePlayer, user):
+  for lib_id in libIds:
+    playlistEntry = ActivePlaylistEntry.objects.get(
+      song__player=activePlayer,
+      song__player_lib_song_id=lib_id,
+      state='QE')
+    if user!=activePlayer.owning_user and user!=playlistEntry.adder:
+      raise ForbiddenError("You're not the owner or adder of this song")
+    playlistEntry.state='RM'
+    playlistEntry.save()
+
+
+
+
 
 @NeedsAuth
 @AcceptsMethods(['GET'])
@@ -57,44 +89,57 @@ def modActivePlaylist(request, user, player_id, lib_id, activePlayer):
   elif request.method == 'DELETE':
     return removeFromActivePlaylist(user, lib_id, activePlayer)
 
+
 @transaction.commit_on_success
 def add2ActivePlaylist(user, lib_id, activePlayer):
+
   try:
-    libEntry = LibraryEntry.objects.get(player=activePlayer, player_lib_song_id=lib_id,
-      is_deleted=False, is_banned=False)
+    addSongsToPlaylist([lib_id], activePlayer, user)
   except ObjectDoesNotExist:
     toReturn = HttpResponseNotFound()
     toReturn[MISSING_RESOURCE_HEADER] = 'song'
     return toReturn
-
-  if ActivePlaylistEntry.objects.filter(song=libEntry)\
-      .exclude(state='RM').exclude(state='FN').exists():
+  except AlreadyExistsError:
     return HttpResponse(status=409)
-
-  addedEntry = ActivePlaylistEntry(song=libEntry, adder=user)
-  addedEntry.save()
-
-  Vote(playlist_entry=addedEntry, user=user, weight=1).save()
 
   return HttpResponse(status=201)
 
 def removeFromActivePlaylist(user, lib_id, activePlayer):
   try:
-    playlistEntry = ActivePlaylistEntry.objects.get(
-        song__player=activePlayer,
-        song__player_lib_song_id=lib_id,
-        state='QE')
+    removeSongsFromPlaylist([lib_id], activePlayer, user)
   except ObjectDoesNotExist:
     toReturn = HttpResponseNotFound()
     toReturn[MISSING_RESOURCE_HEADER] = 'song'
     return toReturn
-
-  if user!=activePlayer.owning_user and user!=playlistEntry.adder:
+  except ForbiddenError:
     return HttpResponseForbidden()
 
-  playlistEntry.state='RM'
-  playlistEntry.save()
   return HttpResponse()
+
+"""
+@NeedsAuth
+@AcceptsMethods(['POST'])
+@ActivePlayerExists
+@IsOwnerOrParticipates
+@UpdatePlayerActivity
+@HasNZParams(['to_add','to_remove'])
+@transaction.commit_on_success
+def multiModActivePlaylist(request, user, player_id, activePlayer):
+  try:
+    toAdd = json.loads(request.POST['to_add'])
+    toDelete = json.loads(request.POST['to_remove'])
+
+    addSongsToPlaylist(toAdd)
+    removeSongsFromPlaylist(to_remove)
+  except ValueError:
+    return HttpResponseBadRequest('Bad JSON\n' + request.raw_post_data)
+  except AlreadyExistsError:
+    return HttpResponse(status=409)
+
+  return HttpResponse()
+"""
+
+
 
 @csrf_exempt
 @NeedsAuth
