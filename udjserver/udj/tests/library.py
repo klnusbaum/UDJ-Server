@@ -29,6 +29,7 @@ class LibTestCases(KurtisTestCase):
     self.assertEqual(201, response.status_code, response.content)
     self.verifySongAdded(payload[0])
 
+
   def testDuplicateAdd(self):
     payload = [{
       "id" : 10,
@@ -67,4 +68,26 @@ class LibTestCases(KurtisTestCase):
     response = self.doDelete('/udj/users/2/players/1/ban_music/12')
     self.assertEqual(404, response.status_code, response.content)
     self.assertEqual(response[MISSING_RESOURCE_HEADER], 'song')
+
+  def testMultiMod(self):
+    to_add = [{
+      "id" : 11,
+      "title" : "Zero",
+      "artist" : "The Smashing Pumpkins",
+      "album" : "Mellon Collie And The Infinite Sadness",
+      "track" : 4,
+      "genre" : "Rock",
+      "duration" : 160
+    }]
+
+    to_delete = [1,2]
+
+    response = self.doPost('/udj/users/2/players/1/library',
+      {'to_add' : json.dumps(to_add), 'to_delete' : json.dumps(to_delete)})
+
+    self.assertEqual(200, response.status_code, response.content)
+    self.verifySongAdded(to_add[0])
+    self.assertEqual(True, LibraryEntry.objects.get(player__id=1, player_lib_song_id=1).is_deleted)
+    self.assertEqual(True, LibraryEntry.objects.get(player__id=1, player_lib_song_id=2).is_deleted)
+
 

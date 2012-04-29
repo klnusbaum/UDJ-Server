@@ -3,6 +3,7 @@ import json
 from udj.decorators import NeedsJSON
 from udj.decorators import AcceptsMethods
 from udj.decorators import PlayerExists
+from udj.decorators import HasNZParams
 from udj.authdecorators import NeedsAuth
 from udj.authdecorators import TicketUserMatch
 from udj.models import LibraryEntry
@@ -90,7 +91,6 @@ def modifyBanList(request, user_id, player_id, lib_id, player):
     toReturn[MISSING_RESOURCE_HEADER] = 'song'
     return toReturn
 
-"""
 @NeedsAuth
 @TicketUserMatch
 @PlayerExists
@@ -101,7 +101,14 @@ def modLibrary(request, user_id, player_id, player):
   try:
     toAdd = json.loads(request.POST['to_add'])
     toDelete = json.loads(request.POST['to_delete'])
-  except ValueError:
-    return HttpResponseBadRequest('Bad JSON')
 
-"""
+    addSongs(toAdd, player)
+    deleteSongs(toDelete, player)
+  except KeyError:
+    return HttpResponseBadRequest('Bad JSON\n' + request.raw_post_data)
+  except ValueError:
+    return HttpResponseBadRequest('Bad JSON\n' + request.raw_post_data)
+  except AlreadyExistsError:
+    return HttpResponse(status=409)
+
+  return HttpResponse()
