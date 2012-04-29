@@ -46,7 +46,7 @@ def NeedsAuth(function):
     request = args[0]
     if DJANGO_TICKET_HEADER not in request.META:
       responseString = "Must provide the " + TICKET_HEADER + " header. "
-      return HttpResponseBadRequest(responseString)
+      return HttpResponse(responseString, status=401)
     elif not isValidTicket(request.META[DJANGO_TICKET_HEADER]):
       return HttpResponseForbidden("Invalid ticket: \"" + 
         request.META[DJANGO_TICKET_HEADER] + "\"")
