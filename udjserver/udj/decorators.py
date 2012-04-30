@@ -7,6 +7,7 @@ from udj.models import Participant
 from django.http import HttpResponse
 from django.http import HttpResponseNotAllowed
 from django.http import HttpResponseNotFound
+from django.http import HttpResponseBadRequest
 from django.core.exceptions import ObjectDoesNotExist
 
 from datetime import datetime
