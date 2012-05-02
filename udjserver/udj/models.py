@@ -140,5 +140,5 @@ class Vote(models.Model):
 
   def __unicode__(self):
     voteFor = "Upvote for " if self.weight ==1 else "Downvote for "
-    return voteFor + self.playlist_entry.song.name
+    return voteFor + self.playlist_entry.song.title
 
