@@ -48,8 +48,8 @@ def NeedsAuth(function):
       responseString = "Must provide the " + TICKET_HEADER + " header. "
       return HttpResponse(responseString, status=401)
     elif not isValidTicket(request.META[DJANGO_TICKET_HEADER]):
-      return HttpResponseForbidden("Invalid ticket: \"" + 
-        request.META[DJANGO_TICKET_HEADER] + "\"")
+      return HttpResponse("Invalid ticket: \"" + 
+        request.META[DJANGO_TICKET_HEADER] + "\"", status=401)
     else:
       return function(*args, **kwargs)
   return wrapper
