@@ -46,10 +46,14 @@ def NeedsAuth(function):
     request = args[0]
     if DJANGO_TICKET_HEADER not in request.META:
       responseString = "Must provide the " + TICKET_HEADER + " header. "
-      return HttpResponse(responseString, status=401)
+      toReturn = HttpResponse(responseString, status=401)
+      toReturn['WWW-Authenticate'] = 'ticket-hash'
+      return toReturn
     elif not isValidTicket(request.META[DJANGO_TICKET_HEADER]):
-      return HttpResponse("Invalid ticket: \"" + 
+      toReturn = HttpResponse("Invalid ticket: \"" + 
         request.META[DJANGO_TICKET_HEADER] + "\"", status=401)
+      toReturn['WWW-Authenticate'] = 'ticket-hash'
+      return toReturn
     else:
       return function(*args, **kwargs)
   return wrapper
