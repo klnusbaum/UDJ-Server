@@ -61,8 +61,12 @@ class LibraryEntry(models.Model):
   is_deleted = models.BooleanField(default=False)
   is_banned = models.BooleanField(default=False)
 
-  class Meta:
-    unique_together = ("player", "player_lib_song_id")
+  def validate_unique(self, exclude=None):
+    if not self.is_deleted and \
+      LibraryEntry.objects.exclude(pk=self.pk).filter(
+      player_lib_song_id=self.player_lib_song_id, player=self.player, is_deleted=False).exists():
+      raise ValidationError('Duplicated non-deleted lib ids for a player')
+    super(LibraryEntry, self).validate_unique(exclude=exclude)
 
   def __unicode__(self):
     return "Library Entry " + str(self.player_lib_song_id) + ": " + self.title
