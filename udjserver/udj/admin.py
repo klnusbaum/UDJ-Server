@@ -18,7 +18,7 @@ def setCurrentSong(modeladmin, request, queryset):
   from udj.views.player import changeCurrentSong
   changeCurrentSong(player, lib_id)
 
-setPlayerInactive.short_description = "Set as current song"
+setCurrentSong.short_description = "Set as current song"
 
 class PlayerAdmin(admin.ModelAdmin):
   list_display=('name', 'owning_user', 'state', 'volume')
@@ -32,7 +32,7 @@ class ParticipantAdmin(admin.ModelAdmin):
 class ActivePlaylistEntryAdmin(admin.ModelAdmin):
   list_display = ('song', 'time_added', 'adder', 'state')
   list_filter = ('state','adder', 'song__player')
-  actions = [removeSongFromActivePlaylist]
+  actions = [removeSongFromActivePlaylist, setCurrentSong]
 
 class TicketAdmin(admin.ModelAdmin):
   list_display = ('user', 'ticket_hash', 'time_issued')
