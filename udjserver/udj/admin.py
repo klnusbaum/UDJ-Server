@@ -55,6 +55,11 @@ class VoteAdmin(admin.ModelAdmin):
   list_display = ('playlist_entry', 'user', 'weight')
   list_filter = ('playlist_entry__song__player', 'playlist_entry__state', 'user', 'weight')
 
+class TimePlayedAdmin(admin.ModelAdmin):
+  list_display = ('playlist_entry', 'time_played', 'playlist_entry__adder', 'playlist_entry__song__player')
+
+  list_display = ('playlist_entry__adder', 'playlist_entry__song__player')
+
 
 admin.site.register(Ticket, TicketAdmin)
 admin.site.register(Player, PlayerAdmin)
@@ -64,4 +69,4 @@ admin.site.register(LibraryEntry, LibraryAdmin)
 admin.site.register(ActivePlaylistEntry, ActivePlaylistEntryAdmin)
 admin.site.register(Participant, ParticipantAdmin)
 admin.site.register(Vote, VoteAdmin)
-admin.site.register(PlaylistEntryTimePlayed)
+admin.site.register(PlaylistEntryTimePlayed, TimePlayedAdmin)
