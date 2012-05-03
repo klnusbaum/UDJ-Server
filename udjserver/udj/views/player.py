@@ -365,24 +365,3 @@ def getRandomMusic(request, user, player_id, activePlayer):
 
   return HttpResponse(json.dumps(randomSongs, cls=UDJEncoder))
 
-
-@NeedsAuth
-@ActivePlayerExists
-@IsOwnerOrParticipates
-@UpdatePlayerActivity
-@AcceptsMethods(['GET'])
-def getPlayerStatus(request, player_id, user, activePlayer):
-  status = {}
-  #status['state'] = 'playing' if activePlayer.state=='PL' else 'paused',
-  if activePlayer.state=='PL':
-    status['state'] = 'playing'
-  else:
-    status['state'] = 'paused'
-
-  try:
-    status['current_song'] = ActivePlaylistEntry.objects.get(song__player=activePlayer, state='PL')
-  except ObjectDoesNotExist:
-    status['current_song'] = {}
-  status['volume'] = activePlayer.volume
-
-  return HttpResponse(json.dumps(status, cls=UDJEncoder))

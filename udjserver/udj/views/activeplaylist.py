@@ -80,6 +80,9 @@ def getActivePlaylist(request, user, player_id, activePlayer):
   except ObjectDoesNotExist:
     playlist['current_song'] = {}
 
+  playlist['volume'] = activePlayer.volume
+  playlist['state'] = 'playing' if activePlayer.state=='PL' else 'paused'
+
   return HttpResponse(json.dumps(playlist, cls=UDJEncoder))
 
 @HasNZParams(['to_add','to_remove'])
