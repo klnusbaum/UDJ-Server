@@ -25,6 +25,7 @@ from udj.JSONCodecs import UDJEncoder
 from udj.exceptions import LocationNotFoundError
 from udj.auth import hashPlayerPassword
 from udj.decorators import UpdatePlayerActivity
+from django.db import transaction
 
 from django.http import HttpRequest
 from django.http import HttpResponse
@@ -230,12 +231,30 @@ def setLocation(request, user_id, player_id, player):
 
 
 @csrf_exempt
+@transaction.commit_on_success
 @NeedsAuth
 @AcceptsMethods(['POST'])
 @ActivePlayerExists
 @IsOwner
 @HasNZParams(['lib_id'])
 def setCurrentSong(request, player_id, activePlayer):
+
+  try:
+    changeCurrentSong(activePlayer, request.POST['lib_id'])
+  except ObjectDoesNotExist:
+    toReturn = HttpResponseNotFound()
+    toReturn[MISSING_RESOURCE_HEADER] = 'song'
+    return toReturn
+  return HttpResponse("Song changed")
+
+
+def changeCurrentSong(activePlayer, lib_id):
+  #Make sure the song to be set exists
+  newCurrentSong = ActivePlaylistEntry.objects.get(
+    song__player_lib_song_id=lib_id, 
+    song__player=activePlayer,
+    state=u'QE')
+
   try:
     currentSong = ActivePlaylistEntry.objects.get(song__player=activePlayer, state=u'PL')
     currentSong.state=u'FN'
@@ -243,19 +262,11 @@ def setCurrentSong(request, player_id, activePlayer):
   except ObjectDoesNotExist:
     pass
 
-  try:
-    newCurrentSong = ActivePlaylistEntry.objects.get(
-      song__player_lib_song_id=request.POST['lib_id'], 
-      song__player=activePlayer,
-      state=u'QE')
-    newCurrentSong.state = u'PL'
-    newCurrentSong.save()
-    PlaylistEntryTimePlayed(playlist_entry=newCurrentSong).save() 
-    return HttpResponse("Song changed")
-  except ObjectDoesNotExist:
-    toReturn = HttpResponseNotFound()
-    toReturn[MISSING_RESOURCE_HEADER] = 'song'
-    return toReturn
+  newCurrentSong.state = u'PL'
+  newCurrentSong.save()
+  PlaylistEntryTimePlayed(playlist_entry=newCurrentSong).save()
+
+
 
 @csrf_exempt
 @NeedsAuth

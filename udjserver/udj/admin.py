@@ -11,6 +11,15 @@ def setPlayerInactive(modeladmin, request, queryset):
 
 setPlayerInactive.short_description = "Set player(s) as inactive"
 
+def setCurrentSong(modeladmin, request, queryset):
+  lib_id = queryset[0].song.player_lib_song_id
+  player = queryset[0].song.player
+
+  from udj.views.player import changeCurrentSong
+  changeCurrentSong(player, lib_id)
+
+setPlayerInactive.short_description = "Set as current song"
+
 class PlayerAdmin(admin.ModelAdmin):
   list_display=('name', 'owning_user', 'state', 'volume')
   list_filters=('owning_user', 'state')
