@@ -4,5 +4,6 @@ boto==2.2.2
 distribute==0.6.24
 django-storages==1.1.4
 gunicorn==0.13.4
+psycopg2==2.4.5
 python-dateutil==1.2
 wsgiref==0.1.2

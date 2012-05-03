@@ -56,9 +56,9 @@ class VoteAdmin(admin.ModelAdmin):
   list_filter = ('playlist_entry__song__player', 'playlist_entry__state', 'user', 'weight')
 
 class TimePlayedAdmin(admin.ModelAdmin):
-  list_display = ('playlist_entry', 'time_played', 'playlist_entry__adder', 'playlist_entry__song__player')
+  list_display = ('playlist_entry', 'time_played', 'playlist_entry',  )
 
-  list_display = ('playlist_entry__adder', 'playlist_entry__song__player')
+  list_filter = ('playlist_entry__adder', 'playlist_entry__song__player', )
 
 
 admin.site.register(Ticket, TicketAdmin)
