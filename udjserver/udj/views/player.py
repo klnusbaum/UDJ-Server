@@ -304,7 +304,7 @@ def setPlayerVolume(request, user_id, player_id, player):
     player.save()
     return HttpResponse()
   except ValueError:
-    return HttpResponseBadRequest()
+    return HttpResponseBadRequest('Bad volume: ' + request.POST['volume'])
 
 
 def onSuccessfulPlayerAuth(activePlayer, user_id):
