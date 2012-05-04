@@ -376,3 +376,15 @@ def getRandomMusic(request, user, player_id, activePlayer):
 
   return HttpResponse(json.dumps(randomSongs, cls=UDJEncoder))
 
+
+@NeedsAuth
+@AcceptsMethods(['GET'])
+@ActivePlayerExists
+@IsOwnerOrParticipates
+@UpdatePlayerActivity
+def getArtists(request, user, player_id, activePlayer):
+  artists = LibraryEntry.objects.filter(player=activePlayer)\
+      .exclude(is_deleted=True)\
+      .exclude(is_banned=True)\
+      .distinct('artist').order_by('artist').values('artist')
+  return HttpResponse(json.dumps([x['artist'] for x in artists]))

@@ -374,6 +374,15 @@ class PlayerQueryTests(YunYoungTestCase):
     self.assertEqual(jsonResponse['volume'], 5)
     self.assertEqual(jsonResponse['state'], 'playing')
 
+  @EnsureParticipationUpdated(7, 1)
+  def testGetArtists(self):
+    response = self.doGet('/udj/players/1/available_music/artists')
+    self.assertEqual(response.status_code, 200)
+    jsonResponse = json.loads(response.content)
+    self.assertEqual(3, len(jsonResponse))
+    requiredArtists = ['Skrillex', 'The Mars Volta', 'Third Eye Blind']
+    for artist in jsonResponse:
+      self.assertTrue(artist in requiredArtists)
 
 
 class PlaylistModTests(JeffTestCase):
