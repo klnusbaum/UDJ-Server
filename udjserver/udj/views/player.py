@@ -386,5 +386,18 @@ def getArtists(request, user, player_id, activePlayer):
   artists = LibraryEntry.objects.filter(player=activePlayer)\
       .exclude(is_deleted=True)\
       .exclude(is_banned=True)\
-      .distinct('artist').order_by('artist').values('artist')
-  return HttpResponse(json.dumps([x['artist'] for x in artists]))
+      .distinct('artist').order_by('artist').values_list('artist', flat=True)
+  return HttpResponse(json.dumps(artists, cls=UDJEncoder))
+
+
+@NeedsAuth
+@AcceptsMethods(['GET'])
+@ActivePlayerExists
+@IsOwnerOrParticipates
+@UpdatePlayerActivity
+def getArtistSongs(request, user, player_id, activePlayer, givenArtist):
+  songs = LibraryEntry.objects.filter(player=activePlayer)\
+      .exclude(is_deleted=True)\
+      .exclude(is_banned=True)\
+      .filter(artist=givenArtist)
+  return HttpResponse(json.dumps(songs, cls=UDJEncoder))
