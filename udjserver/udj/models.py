@@ -20,7 +20,7 @@ class Player(models.Model):
   owning_user = models.ForeignKey(User)
   name = models.CharField(max_length=200)
   state = models.CharField(max_length=2, default='IN')
-  volume = models.IntegerField(default=0, validators=[zero_ten_validator])
+  volume = models.IntegerField(default=5, validators=[zero_ten_validator])
 
   def __unicode__(self):
     return self.name + " player" 
