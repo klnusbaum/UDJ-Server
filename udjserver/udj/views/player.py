@@ -401,3 +401,19 @@ def getArtistSongs(request, user, player_id, activePlayer, givenArtist):
       .exclude(is_banned=True)\
       .filter(artist=givenArtist)
   return HttpResponse(json.dumps(songs, cls=UDJEncoder))
+
+
+@NeedsAuth
+@AcceptsMethods(['GET'])
+@ActivePlayerExists
+@IsOwnerOrParticipates
+@UpdatePlayerActivity
+def getRecentlyPlayed(request, user, player_id, activePlayer):
+  songs_limit = request.GET.get('max_songs',20)
+  songs_limit = max(songs_limit,100)
+  songs = PlaylistEntryTimePlayed.objects.filter(playlist_entry__song__player=activePlayer)\
+    .filter(playlist_entry__state='FN')\
+    .order_by('-time_played')[:songs_limit]
+
+  return HttpResponse(json.dumps(songs, cls=UDJEncoder))
+

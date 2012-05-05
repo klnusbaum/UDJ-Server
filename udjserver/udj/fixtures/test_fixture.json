@@ -296,6 +296,17 @@
     }
   },
 
+  {
+    "pk": 9,
+    "model": "udj.activeplaylistentry",
+    "fields": {
+      "song": 5,
+      "time_added": "2012-04-15 10:54:50",
+      "adder": 2,
+      "state": "FN"
+    }
+  },
+
 
   {
     "pk": 1,
@@ -303,6 +314,23 @@
     "fields": {
       "playlist_entry": 5,
       "time_played": "2012-04-15 11:52:50"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "udj.playlistentrytimeplayed",
+    "fields": {
+      "playlist_entry": 6,
+      "time_played": "2012-04-15 11:52:50"
+    }
+  },
+
+  {
+    "pk": 3,
+    "model": "udj.playlistentrytimeplayed",
+    "fields": {
+      "playlist_entry": 9,
+      "time_played": "2012-04-15 10:52:50"
     }
   },
 

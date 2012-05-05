@@ -394,6 +394,22 @@ class PlayerQueryTests(YunYoungTestCase):
     for songId in [x['id'] for x in jsonResponse]:
       self.assertTrue(songId in requiredIds)
 
+  @EnsureParticipationUpdated(7, 1)
+  def testRecentlyPlayed(self):
+    response = self.doGet('/udj/players/1/recently_played')
+    self.assertEqual(response.status_code, 200)
+    jsonResponse = json.loads(response.content)
+    self.assertEqual(2, len(jsonResponse))
+    self.assertEqual(7, jsonResponse[0]['song']['id'])
+    self.assertEqual(5, jsonResponse[1]['song']['id'])
+
+  @EnsureParticipationUpdated(7, 1)
+  def testRecentlyPlayedWithMax(self):
+    response = self.doGet('/udj/players/1/recently_played?max_songs=1')
+    self.assertEqual(response.status_code, 200)
+    jsonResponse = json.loads(response.content)
+    self.assertEqual(1, len(jsonResponse))
+
 
 class PlaylistModTests(JeffTestCase):
 

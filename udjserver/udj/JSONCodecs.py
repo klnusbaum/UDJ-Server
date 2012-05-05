@@ -6,6 +6,7 @@ from udj.models import PlaylistEntryTimePlayed
 from udj.models import Participant
 from udj.models import LibraryEntry
 from udj.models import ActivePlaylistEntry
+from udj.models import PlaylistEntryTimePlayed
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.query import QuerySet
@@ -17,6 +18,11 @@ class UDJEncoder(json.JSONEncoder):
   def default(self, obj):
     if isinstance(obj, QuerySet):
       return [x for x in obj]
+
+    elif isinstance(obj, PlaylistEntryTimePlayed):
+      toReturn = self.default(obj.playlist_entry)
+      toReturn['time_played'] = obj.time_played.replace(microsecond=0).isoformat()
+      return toReturn
 
     elif isinstance(obj, User):
       return {
