@@ -415,5 +415,5 @@ def getRecentlyPlayed(request, user, player_id, activePlayer):
     .filter(playlist_entry__state='FN')\
     .order_by('-time_played')[:songs_limit]
 
-  return HttpResponse(json.dumps(songs, cls=UDJEncoder))
+  return HttpResponse(json.dumps([song.playlist_entry for song in songs], cls=UDJEncoder))
 

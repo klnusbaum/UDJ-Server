@@ -19,11 +19,6 @@ class UDJEncoder(json.JSONEncoder):
     if isinstance(obj, QuerySet):
       return [x for x in obj]
 
-    elif isinstance(obj, PlaylistEntryTimePlayed):
-      toReturn = self.default(obj.playlist_entry)
-      toReturn['time_played'] = obj.time_played.replace(microsecond=0).isoformat()
-      return toReturn
-
     elif isinstance(obj, User):
       return {
         'id' : obj.id,
@@ -40,8 +35,8 @@ class UDJEncoder(json.JSONEncoder):
         'adder' : obj.adder
       }
 
-      if obj.state == 'PL':
-        toReturn['time_player'] = PlaylistEntryTimePlayed.objects.get(playlist_entry=obj).time_played.replace(microsecond=0).isoformat()
+      if obj.state == 'PL' or obj.state == 'FN':
+        toReturn['time_played'] = PlaylistEntryTimePlayed.objects.get(playlist_entry=obj).time_played.replace(microsecond=0).isoformat()
       return toReturn
 
 
