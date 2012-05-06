@@ -27,7 +27,7 @@ class Player(models.Model):
 
 class PlayerPassword(models.Model):
   player = models.ForeignKey(Player, unique=True)
-  password_hash = models.CharField(max_length=32)
+  password_hash = models.CharField(max_length=40)
   time_set = models.DateTimeField(auto_now=True, auto_now_add=True)
 
   def __unicode__(self):
