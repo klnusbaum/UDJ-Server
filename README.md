@@ -10,10 +10,10 @@ Running The Test Server
 -----------------------
 In order to run the test server, there are several key variables
 that you must provide to the settings.py file. This can easily be
-done by creating a file called settings_local.py. The settings.py
+done by creating a file called `settings_local.py`. The settings.py
 file will load this file and use any variables put in it. A
-skeleton of what a typical settings_local.py can be found in 
-settings_local.skel. Once you have everything setup,
+skeleton of what a typical `settings_local.py` can be found in 
+`settings_local.skel`. Once you have everything setup,
 simply running `python manage.py runserver` should start up a 
 local test server.
 
