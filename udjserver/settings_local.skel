@@ -1,10 +1,8 @@
-from udj.geocoders import USCWebGISGeocoder
-from udj.exceptions import LocationNotFoundError
-
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '50 random characters (anything but spaces)'
 
 
+#standard django database config
 DATABASES = {
     'default': {
         'ENGINE': '',
@@ -17,6 +15,7 @@ DATABASES = {
 }
 
 
+#Turns on debug, useful for testing
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -25,6 +24,7 @@ def geocodeLocation(address, city, state, zipcode):
   """
   Change this if you want to use a different geocoding function
   """
+  from udj.geocoders import USCWebGISGeocoder
   GEOCODER_API_KEY="Geocoding key"
   return USCWebGISGeocoder(address, city, state, zipcode, GEOCODER_API_KEY)
 
