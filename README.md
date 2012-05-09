@@ -53,11 +53,11 @@ UDJ is a team effort lead by [Kurtis Nusbaum][kln].
 I really like computers and programming.
 
 ## License
-UDJ is licensed under the GPLv2. For the full license please
-view klnusbaum/udj/license
+UDJ is licensed under the [GPLv2][gpl].
 
 
 [home]:https://www.udjplayer.com
 [api]:https://github.com/klnusbaum/UDJ/wiki/UDJ-REST-API-0.5
 [kln]:https://github.com/klnusbaum/
 [venv]:http://pypi.python.org/pypi/virtualenv
+[gpl]:https://github.com/klnusbaum/UDJ/blob/master/LICENSE
