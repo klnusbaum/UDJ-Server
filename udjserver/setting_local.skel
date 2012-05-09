@@ -1,0 +1,37 @@
+from udj.geocoders import USCWebGISGeocoder
+from udj.exceptions import LocationNotFoundError
+
+# Make this unique, and don't share it with anybody.
+SECRET_KEY = '50 random characters (anything but spaces)'
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': '',
+        'NAME': '',
+        'USER': '',                      # Not used with sqlite3.
+        'PASSWORD': '',                  # Not used with sqlite3.
+        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+    }
+}
+
+
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+
+
+def geocodeLocation(address, city, state, zipcode):
+  """
+  Change this if you want to use a different geocoding function
+  """
+  GEOCODER_API_KEY="Geocoding key"
+  return USCWebGISGeocoder(address, city, state, zipcode, GEOCODER_API_KEY)
+
+def sortActivePlaylist(queuedEntries):
+  """
+  Change this if you want to use a different playlist sorting algorithm
+  """
+  from udj.playlistalgos import totalVotes
+  return totalVotes(queuedEntries)
+
