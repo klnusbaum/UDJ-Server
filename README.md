@@ -1,6 +1,6 @@
 #UDJ
 
-UDJ is a social music player. It allows many people to controll
+UDJ is a social music player. It allows many people to control
 a single music player democratically. Checkout the
 [UDJ homepage][home] for more information. This is the official
 UDJ server. For details on the API for interacting with this server
@@ -47,10 +47,14 @@ running the following command:
     `python manage.py runserver`
 
 
-Who Are You?
-------------
+## Who Are You?
+
 UDJ is a team effort lead by [Kurtis Nusbaum][kln].
 I really like computers and programming.
+
+## License
+UDJ is licensed under the GPLv2. For the full license please
+view klnusbaum/udj/license
 
 
 [home]:https://www.udjplayer.com
