@@ -4,9 +4,14 @@ UDJ is a social music player. It allows many people to control
 a single music player democratically. Checkout the
 [UDJ homepage][home] for more information. This is the official
 UDJ server. For details on the API for interacting with this server
-checkout the [UDJ-0.5 REST API][api].
+checkout the [UDJ-0.5 REST API][api]. You can also checkout the source
+for any of our several clients:
 
-
+*  [Desktop Client][desktop]
+*  [Android Client][android]
+*  [iOS Client][ios]
+*  [Web Client][webclient]
+*  [Windows Phone Client][wpclient]
 
 ## Running The Test Server
 
@@ -67,3 +72,8 @@ UDJ is licensed under the [GPLv2][gpl].
 [venv]:http://pypi.python.org/pypi/virtualenv
 [gpl]:https://github.com/klnusbaum/UDJ/blob/master/LICENSE
 [mailing]:mailto:udjdev@bazaarsolutions.com
+[desktop]:https://github.com/klnusbaum/UDJ-Desktop-Client
+[android]:https://github.com/klnusbaum/UDJ-Android-Client
+[ios]:https://github.com/yourmattg/UDJ
+[webclient]:https://github.com/dicarlo2/UDJWebApp
+[wpclient]:https://github.com/Leester337/UDJ
