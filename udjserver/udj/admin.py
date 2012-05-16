@@ -11,6 +11,17 @@ def setPlayerInactive(modeladmin, request, queryset):
 
 setPlayerInactive.short_description = "Set player(s) as inactive"
 
+def setPlayerPlaying(modeladmin, request, queryset):
+  queryset.update(state='PL')
+
+setPlayerPlaying.short_description = "Set player(s) as playing"
+
+def setPlayerPaused(modeladmin, request, queryset):
+  queryset.update(state='PA')
+
+setPlayerPaused.short_description = "Set player(s) as paused"
+
+
 def setCurrentSong(modeladmin, request, queryset):
   lib_id = queryset[0].song.player_lib_song_id
   player = queryset[0].song.player
@@ -20,10 +31,24 @@ def setCurrentSong(modeladmin, request, queryset):
 
 setCurrentSong.short_description = "Set as current song"
 
+def setLibraryDeleted(modeladmin, request, queryset):
+  for player in queryset:
+    LibraryEntry.objects.filter(player=player).update(is_deleted=True) 
+
+setLibraryDeleted.short_description = "Delete All Player Songs"
+
+def permaDeleteLibrary(modeladmin, request, queryset):
+  for player in queryset:
+    LibraryEntry.objects.filter(player=player).delete() 
+
+permaDeleteLibrary.short_description = "Permanently Delete Player Library"
+
+
+
 class PlayerAdmin(admin.ModelAdmin):
   list_display=('name', 'owning_user', 'state', 'volume')
   list_filters=('owning_user', 'state')
-  actions = [setPlayerInactive]
+  actions = [setPlayerInactive, setLibraryDeleted, permaDeleteLibrary, setPlayerPlaying, setPlayerPaused]
 
 class ParticipantAdmin(admin.ModelAdmin):
   list_display=('user', 'player', 'time_joined', 'time_last_interaction')
