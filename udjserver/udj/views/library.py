@@ -55,7 +55,7 @@ def addSongs2Library(request, user_id, player_id, player):
   try:
     addSongs(libJSON, player)
   except KeyError as e:
-    return HttpResponseBadRequest('Bad JSON\n An entry was missing the value: " + e)
+    return HttpResponseBadRequest('Bad JSON\n An entry was missing the key: " + str(e))
   except ValueError:
     return HttpResponseBadRequest('Bad JSON\n' + request.raw_post_data)
   except AlreadyExistsError:
