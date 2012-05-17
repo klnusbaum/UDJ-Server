@@ -284,7 +284,7 @@ def setPlayerState(request, user_id, player_id, player):
   elif givenState == u'inactive':
     player.state = u'IN'
   else:
-    return HttpResponseBadRequest()
+    return HttpResponseBadRequest("Bad state given: " + givenState)
 
   player.save()
   return HttpResponse()
