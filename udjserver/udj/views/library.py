@@ -104,7 +104,9 @@ def modLibrary(request, user_id, player_id, player):
     toAdd = json.loads(request.POST['to_add'])
     toDelete = json.loads(request.POST['to_delete'])
   except ValueError:
-    return HttpResponseBadRequest("Bad JSON. Couldn't even parse.")
+    return HttpResponseBadRequest("Bad JSON. Couldn't even parse. \n" +
+      "to add data: " + request.POST['to_add'] + "\n" +
+      "to delete data: " + request.POST['to_delete'])
 
   try:
     addSongs(toAdd, player)
