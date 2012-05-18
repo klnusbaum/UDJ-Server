@@ -103,24 +103,16 @@ def modLibrary(request, user_id, player_id, player):
   try:
     toAdd = json.loads(request.POST['to_add'])
     toDelete = json.loads(request.POST['to_delete'])
+  except ValueError:
+    return HttpResponseBadRequest('Bad JSON. Couldn't even parse.')
 
+  try:
     addSongs(toAdd, player)
     deleteSongs(toDelete, player)
   except KeyError as e:
-    return HttpResponseBadRequest('Bad JSON\n. Bad key: ' + str(e) )
+    return HttpResponseBadRequest('Bad JSON.\n Bad key: ' + str(e) )
   except ValueError as f:
-    givenValues = ""
-    for song in toAdd:
-      givenValues = giveValues + "lib_id : " + str(song['id'])
-      givenValues = giveValues + "title : " + str(song['title'])
-      givenValues = giveValues + "artist : " + str(song['artist'])
-      givenValues = giveValues + "album : " + str(song['album'])
-      givenValues = giveValues + "genre : " + str(song['genre'])
-      givenValues = giveValues + "track : " + str(song['track'])
-      givenValues = giveValues + "duration : " str(+ song['duration'])
-      
-    return HttpResponseBadRequest('Bad JSON\n. Bad value: ' + str(f) +
-      '\n interpurted values ' + givenValues)
+    return HttpResponseBadRequest('Bad JSON.\n Bad value: ' + str(f) )
   except AlreadyExistsError:
     return HttpResponse(status=409)
 
