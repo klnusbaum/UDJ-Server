@@ -99,12 +99,33 @@ class LibTestCases(KurtisTestCase):
       "track": 3,
       "genre": "Rock",
       "duration": 268
-    }]
+    },
+    {
+      "id": 2,
+      "title": "Narcolepsy",
+      "artist": "Third Eye Blind",
+      "album": "Third Eye Blind",
+      "track": 2,
+      "genre": "Rock",
+      "duration": 228,
+    },
+    {
+      "id": 11,
+      "title": "Fuel",
+      "artist": "Metallica",
+      "album": "Reload",
+      "track": 2,
+      "genre": "Rock",
+      "duration": 266,
+    } 
+    ]
     to_delete=[]
     response = self.doPost('/udj/users/2/players/1/library',
       {'to_add' : json.dumps(to_add), 'to_delete' : json.dumps(to_delete)})
 
     self.assertEqual(409, response.status_code, response.content)
     jsonResponse = json.loads(response.content)
-    assertEqual([1], jsonResponse)
+    self.assertEqual([1,2], jsonResponse)
+    #Make sure we didn't add fuel because this was a bad one
+    self.assertFalse(LibraryEntry.objects.filter(player__id=1, player_lib_song_id=11).exists())
 

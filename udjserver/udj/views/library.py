@@ -118,9 +118,8 @@ def modLibrary(request, user_id, player_id, player):
   except AlreadyExistsError:
     existingIds = []
     for song in toAdd:
-      if LibraryEntry.objects.filter(player=player, player_lib_song_id=song['id'], id_deleted=False).exists():
+      if LibraryEntry.objects.filter(player=player, player_lib_song_id=song['id'], is_deleted=False).exists():
         existingIds.append(song['id'])
-
-    return HttpResponse(status=409, json.dumps(existingIds))
+    return HttpResponse(json.dumps(existingIds), status=409)
 
   return HttpResponse()
