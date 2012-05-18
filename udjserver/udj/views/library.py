@@ -21,7 +21,7 @@ from django.db import transaction
 
 def addSongs(libJSON, player):
   for libEntry in libJSON:
-    if LibraryEntry.objects.filter(player=player, player_lib_song_id=libEntry['id']).exists():
+    if LibraryEntry.objects.filter(player=player, player_lib_song_id=libEntry['id'], is_deleted=False).exists():
       raise AlreadyExistsError('Song already exists')
     LibraryEntry(
       player=player,
@@ -116,6 +116,11 @@ def modLibrary(request, user_id, player_id, player):
   except ValueError as f:
     return HttpResponseBadRequest('Bad JSON.\n Bad value: ' + str(f) )
   except AlreadyExistsError:
-    return HttpResponse(status=409)
+    existingIds = []
+    for song in toAdd:
+      if LibraryEntry.objects.filter(player=player, player_lib_song_id=song['id'], id_deleted=False).exists():
+        existingIds.append(song['id'])
+
+    return HttpResponse(status=409, json.dumps(existingIds))
 
   return HttpResponse()

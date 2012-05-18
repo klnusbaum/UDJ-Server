@@ -90,4 +90,21 @@ class LibTestCases(KurtisTestCase):
     self.assertEqual(True, LibraryEntry.objects.get(player__id=1, player_lib_song_id=1).is_deleted)
     self.assertEqual(True, LibraryEntry.objects.get(player__id=1, player_lib_song_id=2).is_deleted)
 
+  def testBadMultiModAdd(self):
+    to_add = [{
+      "id": 1,
+      "title": "Semi-Charmed Life",
+      "artist": "Third Eye Blind",
+      "album": "Third Eye Blind",
+      "track": 3,
+      "genre": "Rock",
+      "duration": 268
+    }]
+    to_delete=[]
+    response = self.doPost('/udj/users/2/players/1/library',
+      {'to_add' : json.dumps(to_add), 'to_delete' : json.dumps(to_delete)})
+
+    self.assertEqual(409, response.status_code, response.content)
+    jsonResponse = json.loads(response.content)
+    assertEqual([1], jsonResponse)
 
