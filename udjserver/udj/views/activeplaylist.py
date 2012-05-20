@@ -88,6 +88,8 @@ def getActivePlaylist(request, user, player_id, activePlayer):
 @HasNZParams(['to_add','to_remove'])
 @transaction.commit_on_success
 def multiModActivePlaylist(request, user, player_id, activePlayer):
+  if activePlayer.owning_user != user:
+    return HttpResponseForbidden("Only the owner may do that")
   try:
     toAdd = json.loads(request.POST['to_add'])
     toRemove = json.loads(request.POST['to_remove'])
@@ -111,6 +113,8 @@ def modActivePlaylist(request, user, player_id, lib_id, activePlayer):
   if request.method == 'PUT':
     return add2ActivePlaylist(user, lib_id, activePlayer)
   elif request.method == 'DELETE':
+    if user != activePlayer.owning_user:
+      return HttpResponseForbidden()
     return removeFromActivePlaylist(user, lib_id, activePlayer)
 
 

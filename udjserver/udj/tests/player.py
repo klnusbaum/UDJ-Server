@@ -461,18 +461,10 @@ class PlaylistModTests(JeffTestCase):
   @EnsureParticipationUpdated(3, 1)
   def testRemoveQueuedSong(self):
     response = self.doDelete('/udj/players/1/active_playlist/songs/3')
-    self.assertEqual(response.status_code, 200)
-
-    removedSong = ActivePlaylistEntry.objects.get(pk=3)
-    self.assertEqual('RM', removedSong.state)
-
-  @EnsureParticipationUpdated(3, 1)
-  def testUnauthorizedRemove(self):
-    response = self.doDelete('/udj/players/1/active_playlist/songs/2')
     self.assertEqual(response.status_code, 403)
 
-    shouldntBeRemoved = ActivePlaylistEntry.objects.get(pk=2)
-    self.assertEqual('QE', shouldntBeRemoved.state)
+    removedSong = ActivePlaylistEntry.objects.get(pk=3)
+    self.assertEqual('QE', removedSong.state)
 
   @EnsureParticipationUpdated(3, 1)
   def testVoteSongUp(self):
@@ -500,22 +492,4 @@ class PlaylistModTests(JeffTestCase):
     self.assertEqual(response.status_code, 200)
 
     upvote = Vote.objects.get(user__id=3, playlist_entry__song__id=2, weight=-1)
-
-  @EnsureParticipationUpdated(3, 1)
-  def testMultiMod(self):
-
-    to_add = [9]
-    to_remove = [3]
-
-    response = self.doPost('/udj/players/1/active_playlist', 
-        {'to_add' : json.dumps(to_add), 'to_remove' : json.dumps(to_remove)})
-    self.assertEqual(response.status_code, 200)
-
-    added = ActivePlaylistEntry.objects.get(
-      song__player__id=1, song__player_lib_song_id=9, state='QE')
-    vote = Vote.objects.get(playlist_entry=added)
-
-    removedSong = ActivePlaylistEntry.objects.get(pk=3)
-    self.assertEqual('RM', removedSong.state)
-
 
