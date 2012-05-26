@@ -94,6 +94,16 @@ class ActivePlaylistEntry(models.Model):
   def downvoters(self):
     return  [vote.user for vote in  Vote.objects.filter(playlist_entry=self, weight=-1 )]
 
+  @staticmethod
+  def isQueuedOrPlaying(songId, player):
+    return ActivePlaylistEntry.objects.filter(song__player=player, song__player_lib_song_id=songId)\
+        .exclude(state='RM').exclude(state='FN').exists()
+
+  @staticmethod
+  def isQueued(songId, player):
+    return ActivePlaylistEntry.objects.filter(song__player=player, song__player_lib_song_id=songId)\
+        .exclude(state='RM').exclude(state='FN').exclude(state='PL').exists()
+
   def __unicode__(self):
     return self.song.title + " added by " + self.adder.username
 

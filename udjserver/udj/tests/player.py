@@ -277,6 +277,76 @@ class PlayerAdminTests(KurtisTestCase):
     shouldntBeRemoved = ActivePlaylistEntry.objects.get(pk=2)
     self.assertEqual('RM', shouldntBeRemoved.state)
 
+  def testPlaylistMultiMod(self):
+    toAdd = [9]
+    toRemove = [3]
+
+    response = self.doPost(
+      '/udj/players/1/active_playlist',
+      {'to_add' : json.dumps(toAdd), 'to_remove' : json.dumps(toRemove)}
+    )
+    self.assertEqual(response.status_code, 200, response.content)
+    #make sure song was queued
+    addedSong = ActivePlaylistEntry.objects.get(
+      song__player__id=1, song__player_lib_song_id=9, state='QE')
+    #make sure song was removed
+    self.assertFalse(ActivePlaylistEntry.objects.filter(
+      song__player__id=1,
+      song__player_lib_song_id=3,
+      state='QE').exists())
+    self.assertTrue(ActivePlaylistEntry.objects.filter(
+      song__player__id=1,
+      song__player_lib_song_id=3,
+      state='RM').exists())
+
+  def testBadRemoveMultiMod(self):
+    toAdd = [9]
+    toRemove = [3,6]
+
+    response = self.doPost(
+      '/udj/players/1/active_playlist',
+      {'to_add' : json.dumps(toAdd), 'to_remove' : json.dumps(toRemove)}
+    )
+    self.assertEqual(response.status_code, 404, response.content)
+    self.assertEqual(response[MISSING_RESOURCE_HEADER], 'song')
+
+    responseJSON = json.loads(response.content)
+    self.assertEqual([6], responseJSON)
+
+    #ensure 9 wasn't added
+    self.assertFalse(ActivePlaylistEntry.objects.filter(
+      song__player__id='1',
+      song__player_lib_song_id='9',
+      state="QE").exists())
+
+    #ensure 3 is still queued
+    ActivePlaylistEntry.objects.get(
+      song__player__id='1',
+      song__player_lib_song_id='3',
+      state="QE")
+
+  def testBadAddMultiMod(self):
+    toAdd = [6,9]
+    toRemove = [3]
+    response = self.doPost(
+      '/udj/players/1/active_playlist',
+      {'to_add' : json.dumps(toAdd), 'to_remove' : json.dumps(toRemove)}
+    )
+    self.assertEqual(409, response.status_code, response.content)
+
+    #ensure 9 wasn't added
+    self.assertFalse(ActivePlaylistEntry.objects.filter(
+      song__player__id='1',
+      song__player_lib_song_id='9',
+      state="QE").exists())
+
+    #ensure 3 is still queued
+    ActivePlaylistEntry.objects.get(
+      song__player__id='1',
+      song__player_lib_song_id='3',
+      state="QE")
+
+
 
 
 
