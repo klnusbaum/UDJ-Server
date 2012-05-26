@@ -129,3 +129,26 @@ class LibTestCases(KurtisTestCase):
     #Make sure we didn't add fuel because this was a bad one
     self.assertFalse(LibraryEntry.objects.filter(player__id=1, player_lib_song_id=11).exists())
 
+  def testBadMultiModRemove(self):
+    to_add = [{
+      "id": 11,
+      "title": "Fuel",
+      "artist": "Metallica",
+      "album": "Reload",
+      "track": 2,
+      "genre": "Rock",
+      "duration": 266,
+    }
+    ]
+    to_delete=[1,14]
+    response = self.doPost('/udj/users/2/players/1/library',
+      {'to_add' : json.dumps(to_add), 'to_delete' : json.dumps(to_delete)})
+
+    self.assertEqual(404, response.status_code, response.content)
+    jsonResponse = json.loads(response.content)
+    self.assertEqual([14], jsonResponse, jsonResponse)
+    #Make sure we didn't add Fuel because this was a bad one
+    self.assertFalse(LibraryEntry.objects.filter(player__id=1, player_lib_song_id=11).exists())
+    #Make sure we didn't delete Semi-Charmed Life because this request was bad
+    self.assertTrue(LibraryEntry.objects.filter(player__id=1, player_lib_song_id=1, is_deleted=False).exists())
+

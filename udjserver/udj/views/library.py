@@ -9,7 +9,6 @@ from udj.authdecorators import TicketUserMatch
 from udj.models import LibraryEntry
 from udj.models import Player
 from udj.headers import MISSING_RESOURCE_HEADER
-from udj.exceptions import AlreadyExistsError
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpRequest
@@ -19,10 +18,23 @@ from django.http import HttpResponseNotFound
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 
+def getAlreadyExistingIds(songs, player):
+  existingIds = []
+  for song in songs:
+    if LibraryEntry.objects.filter(player=player, player_lib_song_id=song['id'], is_deleted=False).exists():
+      existingIds.append(song['id'])
+  return existingIds
+
+def getNonExistantIds(songIds, player):
+  nonExistentIds = []
+  for songId in songIds:
+    if not LibraryEntry.objects.filter(player=player, player_lib_song_id=songId, is_deleted=False).exists():
+      nonExistentIds.append(songId)
+  return nonExistentIds
+
+
 def addSongs(libJSON, player):
   for libEntry in libJSON:
-    if LibraryEntry.objects.filter(player=player, player_lib_song_id=libEntry['id'], is_deleted=False).exists():
-      raise AlreadyExistsError('Song already exists')
     LibraryEntry(
       player=player,
       player_lib_song_id=libEntry['id'],
@@ -53,13 +65,14 @@ def addSongs2Library(request, user_id, player_id, player):
     return HttpResponseBadRequest('Bad JSON')
 
   try:
+    existingIds = getAlreadyExistingIds(libJSON, player)
+    if len(existingIds) > 0:
+      return HttpResponse(json.dumps(existingIds), status=409)
     addSongs(libJSON, player)
   except KeyError as e:
     return HttpResponseBadRequest("Bad JSON. Missing key: " + str(e))
   except ValueError as f:
     return HttpResponseBadRequest("Bad JSON. Bad value: " + str(f))
-  except AlreadyExistsError:
-    return HttpResponse(status=409)
 
   return HttpResponse(status=201)
 
@@ -108,18 +121,21 @@ def modLibrary(request, user_id, player_id, player):
       "to add data: " + request.POST['to_add'] + "\n" +
       "to delete data: " + request.POST['to_delete'])
 
+
   try:
+    existingIds = getAlreadyExistingIds(toAdd, player)
+    if len(existingIds) > 0:
+      return HttpResponse(json.dumps(existingIds), status=409)
+
+    nonExistentIds = getNonExistantIds(toDelete, player)
+    if len(nonExistentIds) > 0:
+      return HttpResponse(json.dumps(nonExistentIds), status=404)
+
     addSongs(toAdd, player)
     deleteSongs(toDelete, player)
   except KeyError as e:
     return HttpResponseBadRequest('Bad JSON.\n Bad key: ' + str(e) )
   except ValueError as f:
     return HttpResponseBadRequest('Bad JSON.\n Bad value: ' + str(f) )
-  except AlreadyExistsError:
-    existingIds = []
-    for song in toAdd:
-      if LibraryEntry.objects.filter(player=player, player_lib_song_id=song['id'], is_deleted=False).exists():
-        existingIds.append(song['id'])
-    return HttpResponse(json.dumps(existingIds), status=409)
 
   return HttpResponse()
