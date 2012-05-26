@@ -47,7 +47,7 @@ class PlayerLocation(models.Model):
 
   def __unicode__(self):
     return self.player.name + " is at (" +str(self.longitude) + \
-      "," + str(self.latitude)
+      "," + str(self.latitude) + ")"
 
 class LibraryEntry(models.Model):
   player = models.ForeignKey(Player)
