@@ -105,16 +105,30 @@ def multiModActivePlaylist(request, user, player_id, activePlayer):
     return HttpResponseBadRequest('Bad JSON\n. Couldn\'t even parse.\n Given data:' + request.raw_post_data)
 
   try:
+
+    #first, validate all our inputs
+    # 1. Ensure none of the songs that want to be added are already on the playlist
     alreadyOnPlaylist = getAlreadyOnPlaylist(toAdd, activePlayer)
     if len(alreadyOnPlaylist) > 0:
       return HttpResponse(json.dumps(alreadyOnPlaylist), status=409)
 
+    # 2. Ensure none of the songs to be deleted aren't on the playlist
     notOnPlaylist = getNotOnPlaylist(toRemove, activePlayer)
     if len(notOnPlaylist) > 0:
       toReturn = HttpResponse(json.dumps(notOnPlaylist), status=404)
       toReturn[MISSING_RESOURCE_HEADER] = 'song'
       return toReturn
 
+    # 3. Ensure all of the songs to be added actually exists in the library
+    notInLibrary = []
+    for songId in toAdd:
+      if not LibraryEntry.songExsits(songId, activePlayer):
+        notInLibrary.append(songId)
+
+    if len(notInLibrary) > 0:
+      toReturn = HttpResponse(json.dumps(notInLibrary), status=404)
+      toReturn[MISSING_RESOURCE_HEADER] = 'song'
+      return toReturn
 
     addSongsToPlaylist(toAdd, activePlayer, user)
     removeSongsFromPlaylist(toRemove, activePlayer, user)

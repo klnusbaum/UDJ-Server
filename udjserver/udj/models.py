@@ -61,6 +61,14 @@ class LibraryEntry(models.Model):
   is_deleted = models.BooleanField(default=False)
   is_banned = models.BooleanField(default=False)
 
+  @staticmethod
+  def songExsits(songId, player):
+    return LibraryEntry.objects.filter(
+      player=player,
+      player_lib_song_id=songId,
+      is_deleted=False,
+      is_banned=False).exists()
+
   def validate_unique(self, exclude=None):
     if not self.is_deleted and \
       LibraryEntry.objects.exclude(pk=self.pk).filter(
