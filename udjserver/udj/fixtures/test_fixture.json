@@ -452,6 +452,18 @@
   },
 
   {
+    "pk": 4,
+    "model": "udj.player",
+    "fields": {
+      "owning_user": 2,
+      "name": "Player with no location",
+      "state": "PL",
+      "volume": 5
+    }
+  },
+
+
+  {
     "pk": 1,
     "model": "udj.playerlocation",
     "fields": {

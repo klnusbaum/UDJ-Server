@@ -115,7 +115,7 @@ class PlayerModificationTests(KurtisTestCase):
   def testChangeName(self):
     newName = "A Bitchn' name"
     response = self.doPost('/udj/users/2/players/1/name', {'name': newName})
-    self.assertEqual(response.status_code, 200, "Error: " + response.content)
+    self.assertEqual(200, response.status_code)
     player = Player.objects.get(pk=1)
     self.assertEqual(player.name, newName)
 
@@ -142,6 +142,21 @@ class PlayerModificationTests(KurtisTestCase):
     self.assertEqual(playerLocation.state.id, 23)
     self.assertEqual(playerLocation.zipcode, 55447)
 
+  def testSetLocationWithNoPreviousLocation(self):
+    newLocation = {
+      'address' : '305 Vicksburg Lane',
+      'city' : 'Plymouth',
+      'state' : 'MN',
+      'zipcode' : 55447
+    }
+
+    response = self.doPost('/udj/users/2/players/4/location', newLocation)
+    self.assertEqual(200, response.status_code)
+    playerLocation = PlayerLocation.objects.get(player__id=4)
+    self.assertEqual(playerLocation.address, '305 Vicksburg Lane')
+    self.assertEqual(playerLocation.city, 'Plymouth')
+    self.assertEqual(playerLocation.state.id, 23)
+    self.assertEqual(playerLocation.zipcode, 55447)
 
 class PlayerModificationTests2(AlejandroTestCase):
 

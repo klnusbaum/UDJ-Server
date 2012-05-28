@@ -211,20 +211,32 @@ def deletePlayerPassword(request, user_id, player_id, player):
 @PlayerExists
 @HasNZParams(['address','city','state','zipcode'])
 def setLocation(request, user_id, player_id, player):
+
   try:
     address = request.POST['address']
     city = request.POST['city']
     state = request.POST['state']
     zipcode = request.POST['zipcode']
     lat, lon = geocodeLocation(address, city, state, zipcode)
-    playerLocation = PlayerLocation.objects.get(player=player)
-    playerLocation.address = address
-    playerLocation.city = city
-    playerLocation.state = State.objects.get(name=state)
-    playerLocation.zipcode = zipcode
-    playerLocation.latitude = lat
-    playerLocation.longitude = lon
-    playerLocation.save()
+    playerLocation, created = PlayerLocation.objects.get_or_create(
+      player=player,
+      defaults={
+        'address' : address,
+        'city' : city,
+        'state' : State.objects.get(name=state),
+        'zipcode' : zipcode,
+        'latitude' : lat,
+        'longitude' : lon
+      }
+    )
+    if not created:
+      playerLocation.address = address
+      playerLocation.city = city
+      playerLocation.state = State.objects.get(name=state)
+      playerLocation.zipcode = zipcode
+      playerLocation.latitude = lat
+      playerLocation.longitude = lon
+      playerLocation.save()
     return HttpResponse()
   except LocationNotFoundError:
     return HttpResponseBadRequest('Bad location')
