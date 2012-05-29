@@ -1,2 +1,3 @@
 *pyc
 udjserver/settings_local.py
+udjserver/urls_local.py
