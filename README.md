@@ -32,11 +32,11 @@ please visit the [virtualenv homepage][venv].
 ### Configuring the Test Server
 
 In order to run the test server, there are several key variables
-that you must provide to the settings.py file. This can easily be
-done by creating a file called `settings_local.py`. The settings.py
+that you must provide to the `settings.py` file. This can easily be
+done by creating a file called `settings_local.py`. The `settings.py`
 file will load this file and use any variables put in it. A
-skeleton of what a typical `settings_local.py` can be found in
-`settings_local.skel`. Once you have all your settings configure,
+skeleton of what a typical `settings_local.py` looks like can be found in
+`settings_local.skel`. Once you have all your settings configured,
 you can populate your database with test data by executing
 
     python manage.py loaddata udj/fixtures/test_fixture.json
