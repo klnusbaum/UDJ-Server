@@ -13,6 +13,15 @@
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
       }
+      #forkme {
+        position: fixed;
+        top: 40px;
+        right: 0px;
+      }
+
+      @media (max-width: 980px) {
+        #forkme { display: none; }
+      }
     </style>
     <link href="{{ STATIC_URL }}bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
 
@@ -30,9 +39,7 @@
   </head>
 
   <body>
-    <div id="forkme">
-      <a href="http://github.com/klnusbaum/"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/camo.github.com/71eeaab9d563c2b3c590319b398dd35683265e85/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub"></a>
-    </div>
+      <a id="forkme" href="http://github.com/klnusbaum/"><img style="position: fixed; top: 40px; right: 0px;" src="https://a248.e.akamai.net/camo.github.com/71eeaab9d563c2b3c590319b398dd35683265e85/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub"></a>
 
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
