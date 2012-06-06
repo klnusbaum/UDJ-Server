@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.gis.db import models as gismodels
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from datetime import datetime
@@ -33,15 +34,17 @@ class PlayerPassword(models.Model):
   def __unicode__(self):
     return self.player.name + " password"
 
-class PlayerLocation(models.Model):
+class PlayerLocation(gismodels.Model):
 
-  player = models.ForeignKey(Player, unique=True)
-  address = models.CharField(max_length=50)
-  city = models.CharField(max_length=50)
-  state = models.ForeignKey(State)
-  zipcode = models.IntegerField()
-  latitude = models.FloatField()
-  longitude = models.FloatField()
+  player = gismodels.ForeignKey(Player, unique=True)
+  address = gismodels.CharField(max_length=50)
+  city = gismodels.CharField(max_length=50)
+  state = gismodels.ForeignKey(State)
+  zipcode = gismodels.IntegerField()
+  latitude = gismodels.FloatField()
+  longitude = gismodels.FloatField()
+  point = gismodels.PointField(null=True)
+  objects = gismodels.GeoManager()
 
   #TODO put some sort of validation to make sure that long and lat are valid
 
