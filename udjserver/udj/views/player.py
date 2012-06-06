@@ -25,8 +25,9 @@ from udj.JSONCodecs import UDJEncoder
 from udj.exceptions import LocationNotFoundError
 from udj.auth import hashPlayerPassword
 from udj.decorators import UpdatePlayerActivity
-from django.db import transaction
 
+
+from django.db import transaction
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseNotFound
@@ -37,6 +38,8 @@ from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.gis.geos import *
+from django.contrib.gis.measure import D
 
 from httplib import HTTPConnection
 from httplib import HTTPResponse
@@ -54,6 +57,7 @@ def isValidLocation(location):
     State.objects.filter(name__iexact=location['state']).exists() and \
     'zipcode' in location
 
+"""
 def getDistanceToLocation(eventLocation, lat2, lon2):
   lat1 = eventLocation.latitude
   lon1 = eventLocation.longitude
@@ -65,18 +69,23 @@ def getDistanceToLocation(eventLocation, lat2, lon2):
   c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
   d = radius * c
   return d
+"""
 
 @NeedsAuth
 @AcceptsMethods(['GET'])
 def getNearbyPlayers(request, latitude, longitude):
-  playerLocations = PlayerLocation.objects.exclude(player__state='IN')
-  nearbyLocations = []
-  lat2 = float(latitude)
-  lon2 = float(longitude)
+  givenLat = float(latitude)
+  givenLon = float(longitude)
+  point = Point(givenLon, givenLat)
+
+  nearbyLocations = PlayerLocation.objects.exclude(player__state='IN').filter(
+      point__distance_lte=(point, D(km=10))).distance(point).order_by('distance')[:100]
+  """
   for location in playerLocations:
     distance = getDistanceToLocation(location, lat2, lon2)
     if distance < 5:
       nearbyLocations.append(location)
+  """
 
   nearbyPlayers = [location.player for location in nearbyLocations]
 
