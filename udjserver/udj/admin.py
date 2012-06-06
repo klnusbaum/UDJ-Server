@@ -1,5 +1,6 @@
 from udj.models import *
 from django.contrib import admin
+from django.contrib.gis import admin as gisadmin
 
 def removeSongFromActivePlaylist(modeladmin, request, queryset):
   queryset.update(state='RM')
@@ -86,10 +87,13 @@ class TimePlayedAdmin(admin.ModelAdmin):
   list_filter = ('playlist_entry__adder', 'playlist_entry__song__player', )
 
 
+class PlayerLocationAdmin(gisadmin.ModelAdmin):
+  list_display = ('player', 'address', 'city', 'state', 'zipcode', 'latitude', 'longitude', 'point',)
+
 admin.site.register(Ticket, TicketAdmin)
 admin.site.register(Player, PlayerAdmin)
 admin.site.register(PlayerPassword)
-admin.site.register(PlayerLocation)
+admin.site.register(PlayerLocation, PlayerLocationAdmin)
 admin.site.register(LibraryEntry, LibraryAdmin)
 admin.site.register(ActivePlaylistEntry, ActivePlaylistEntryAdmin)
 admin.site.register(Participant, ParticipantAdmin)
