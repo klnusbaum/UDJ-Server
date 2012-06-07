@@ -87,8 +87,7 @@ def doLocationSet(address, city, state, zipcode, player):
     city=city,
     state=State.objects.get(name__iexact=state),
     zipcode=zipcode,
-    latitude=lat,
-    longitude=lon
+    point=Point(lon, lat)
   ).save()
 
 @NeedsAuth
@@ -214,8 +213,7 @@ def setLocation(request, user_id, player_id, player):
         'city' : city,
         'state' : State.objects.get(name=state),
         'zipcode' : zipcode,
-        'latitude' : lat,
-        'longitude' : lon
+        'point' : Point(lon, lat)
       }
     )
     if not created:

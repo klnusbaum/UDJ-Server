@@ -28,4 +28,4 @@ def USCWebGISGeocoder(address, city, state, zipcode, apiKey):
   if parsedData[2] != "200":
     raise LocationNotFoundError('results contained error')
 
-  return (parsedData[3] , parsedData[4])
+  return (float(parsedData[3]) , float(parsedData[4]))

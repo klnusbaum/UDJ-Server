@@ -74,8 +74,8 @@ class UDJEncoder(json.JSONEncoder):
       }
 
       if location != None:
-        toReturn['latitude'] = location.latitude
-        toReturn['longitude'] = location.longitude
+        toReturn['latitude'] = location.point.y
+        toReturn['longitude'] = location.point.x
 
       return toReturn
 

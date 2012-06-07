@@ -41,9 +41,7 @@ class PlayerLocation(gismodels.Model):
   city = gismodels.CharField(max_length=50)
   state = gismodels.ForeignKey(State)
   zipcode = gismodels.IntegerField()
-  latitude = gismodels.FloatField()
-  longitude = gismodels.FloatField()
-  point = gismodels.PointField(null=True)
+  point = gismodels.PointField(default='POINT(0.0 0.0)')
   objects = gismodels.GeoManager()
 
   #TODO put some sort of validation to make sure that long and lat are valid

@@ -50,7 +50,7 @@ class GetPlayersTests(JeffTestCase):
     self.assertEqual(2, firstPlayer['owner_id'])
     self.assertEqual(False, firstPlayer['has_password'])
 
-class CreatePlayerTest(YunYoungTestCase):
+class CreatePlayerTests(YunYoungTestCase):
   def testCreatePlayer(self):
     playerName = "Yunyoung Player"
     payload = {'name' : playerName } 
@@ -106,8 +106,8 @@ class CreatePlayerTest(YunYoungTestCase):
     self.assertEqual(createdLocation.city, location['city'])
     self.assertEqual(createdLocation.state.name, location['state'])
     self.assertEqual(createdLocation.zipcode, location['zipcode'])
-    self.assertEqual(createdLocation.latitude, 40.1135372574038)
-    self.assertEqual(createdLocation.longitude, -88.2240781569526)
+    self.assertEqual(createdLocation.point.y, 40.1135372574038)
+    self.assertEqual(createdLocation.point.x, -88.2240781569526)
 
 
 class PlayerModificationTests(KurtisTestCase):
