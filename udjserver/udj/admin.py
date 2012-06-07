@@ -88,7 +88,7 @@ class TimePlayedAdmin(admin.ModelAdmin):
 
 
 class PlayerLocationAdmin(gisadmin.ModelAdmin):
-  list_display = ('player', 'address', 'city', 'state', 'zipcode', 'latitude', 'longitude', 'point',)
+  list_display = ('player', 'address', 'city', 'state', 'zipcode', 'point',)
 
 admin.site.register(Ticket, TicketAdmin)
 admin.site.register(Player, PlayerAdmin)
