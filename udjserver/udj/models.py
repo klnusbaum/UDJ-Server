@@ -47,8 +47,8 @@ class PlayerLocation(gismodels.Model):
   #TODO put some sort of validation to make sure that long and lat are valid
 
   def __unicode__(self):
-    return self.player.name + " is at (" +str(self.longitude) + \
-      "," + str(self.latitude) + ")"
+    return self.player.name + " is at (" +str(self.point.x) + \
+      "," + str(self.point.y) + ")"
 
 class LibraryEntry(models.Model):
   player = models.ForeignKey(Player)
