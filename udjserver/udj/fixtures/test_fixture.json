@@ -473,7 +473,8 @@
       "state": 13,
       "zipcode": 61801,
       "latitude": 40.113331,
-      "longitude": -88.223948
+      "longitude": -88.223948,
+      "point" : "POINT(-88.223948 40.113331)"
     }
   },
 
@@ -487,7 +488,8 @@
       "state": 23,
       "zipcode": 55447,
       "latitude": 44.981822,
-      "longitude": -93.481330
+      "longitude": -93.481330,
+      "point" : "POINT(-93.481330 44.981822)"
     }
   },
 
@@ -501,7 +503,8 @@
       "state": 9,
       "zipcode": 33146,
       "latitude": 25.721439,
-      "longitude": -80.27994
+      "longitude": -80.27994,
+      "point" : "POINT(-80.27994 25.721439)"
     }
   },
 

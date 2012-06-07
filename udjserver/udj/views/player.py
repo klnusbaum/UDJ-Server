@@ -57,20 +57,6 @@ def isValidLocation(location):
     State.objects.filter(name__iexact=location['state']).exists() and \
     'zipcode' in location
 
-"""
-def getDistanceToLocation(eventLocation, lat2, lon2):
-  lat1 = eventLocation.latitude
-  lon1 = eventLocation.longitude
-  radius = 6371 # km
-  dlat = math.radians(lat2-lat1)
-  dlon = math.radians(lon2-lon1)
-  a = math.sin(dlat/2) * math.sin(dlat/2) + math.cos(math.radians(lat1)) \
-      * math.cos(math.radians(lat2)) * math.sin(dlon/2) * math.sin(dlon/2)
-  c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-  d = radius * c
-  return d
-"""
-
 @NeedsAuth
 @AcceptsMethods(['GET'])
 def getNearbyPlayers(request, latitude, longitude):
@@ -79,13 +65,7 @@ def getNearbyPlayers(request, latitude, longitude):
   point = Point(givenLon, givenLat)
 
   nearbyLocations = PlayerLocation.objects.exclude(player__state='IN').filter(
-      point__distance_lte=(point, D(km=10))).distance(point).order_by('distance')[:100]
-  """
-  for location in playerLocations:
-    distance = getDistanceToLocation(location, lat2, lon2)
-    if distance < 5:
-      nearbyLocations.append(location)
-  """
+    point__distance_lte=(point, D(km=5))).distance(point).order_by('distance')[:100]
 
   nearbyPlayers = [location.player for location in nearbyLocations]
 
