@@ -141,6 +141,7 @@ def multiModActivePlaylist(request, user, player_id, activePlayer):
   return HttpResponse()
 
 
+@csrf_exempt
 @NeedsAuth
 @AcceptsMethods(['PUT', 'DELETE'])
 @ActivePlayerExists

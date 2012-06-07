@@ -51,6 +51,7 @@ def deleteSongs(songIds, player):
     libEntry.is_deleted = True
     libEntry.save()
 
+@csrf_exempt
 @NeedsAuth
 @TicketUserMatch
 @AcceptsMethods(['PUT'])
@@ -90,6 +91,7 @@ def deleteSongFromLibrary(request, user_id, player_id, lib_id, player):
 
   return HttpResponse()
 
+@csrf_exempt
 @NeedsAuth
 @TicketUserMatch
 @PlayerExists

@@ -90,6 +90,7 @@ def doLocationSet(address, city, state, zipcode, player):
     point=Point(lon, lat)
   ).save()
 
+@csrf_exempt
 @NeedsAuth
 @TicketUserMatch
 @AcceptsMethods(['PUT'])
@@ -313,6 +314,7 @@ def onSuccessfulPlayerAuth(activePlayer, user_id):
     obj.save()
   return HttpResponse(status=201)
 
+@csrf_exempt
 @AcceptsMethods(['PUT'])
 @NeedsAuth
 @TicketUserMatch
