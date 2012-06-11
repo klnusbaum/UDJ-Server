@@ -369,8 +369,8 @@ def getAvailableMusic(request, user, player_id, activePlayer):
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
 def getRandomMusic(request, user, player_id, activePlayer):
-  rand_limit = request.GET.get('max_randoms',20)
-  rand_limit = max(rand_limit,100)
+  rand_limit = int(request.GET.get('max_randoms',20))
+  rand_limit = min(rand_limit,100)
   randomSongs = LibraryEntry.objects.filter(player=activePlayer) \
       .exclude(Q(is_deleted=True) | Q(is_banned=True))
   randomSongs = randomSongs.order_by('?')[:rand_limit]
@@ -410,8 +410,8 @@ def getArtistSongs(request, user, player_id, activePlayer, givenArtist):
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
 def getRecentlyPlayed(request, user, player_id, activePlayer):
-  songs_limit = request.GET.get('max_songs',20)
-  songs_limit = max(songs_limit,100)
+  songs_limit = int(request.GET.get('max_songs',20))
+  songs_limit = min(songs_limit,100)
   songs = PlaylistEntryTimePlayed.objects.filter(playlist_entry__song__player=activePlayer)\
     .filter(playlist_entry__state='FN')\
     .order_by('-time_played')[:songs_limit]

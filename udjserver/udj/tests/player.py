@@ -418,6 +418,13 @@ class PlayerQueryTests(YunYoungTestCase):
       self.assertTrue(song['id'] in expectedLibIds)
 
   @EnsureParticipationUpdated(7, 1)
+  def testSimpleGetWithMax(self):
+    response = self.doGet('/udj/players/1/available_music?query=Third+Eye+Blind&max_results=2')
+    self.assertEqual(response.status_code, 200)
+    songResults = json.loads(response.content)
+    self.assertEquals(2, len(songResults))
+
+  @EnsureParticipationUpdated(7, 1)
   def testAlbumGet(self):
 
     response = self.doGet('/udj/players/1/available_music?query=Bedlam+in+Goliath')
@@ -440,6 +447,7 @@ class PlayerQueryTests(YunYoungTestCase):
           LibraryEntry.objects.get(player__id=1, player_lib_song_id=song['id']).is_deleted)
       self.assertFalse(
           LibraryEntry.objects.get(player__id=1, player_lib_song_id=song['id']).is_banned)
+
 
   @EnsureParticipationUpdated(7, 1)
   def testGetPlaylist(self):
