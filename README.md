@@ -28,6 +28,12 @@ any currently installed python packages and the ones required
 by UDJ. For more information about virtual environment,
 please visit the [virtualenv homepage][venv].
 
+Also note that UDJ uses geodjango so you'll need to have a spatial
+database. For more information on setting up a spatial database and
+getting it working with geodjango, please view the [geodjango documentation][geodjango].
+We recommend setting up a PostGIS database, however UDJ should work in theory with
+other spatial databases supported by geodjango.
+
 
 ### Configuring the Test Server
 
@@ -77,3 +83,4 @@ UDJ is licensed under the [GPLv2][gpl].
 [ios]:https://github.com/yourmattg/UDJ
 [webclient]:https://github.com/dicarlo2/UDJWebApp
 [wpclient]:https://github.com/Leester337/UDJ
+[geodjango]:https://docs.djangoproject.com/en/dev/ref/contrib/gis/
