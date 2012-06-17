@@ -26,7 +26,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from settings import sortActivePlaylist
 
@@ -85,7 +85,7 @@ def getActivePlaylist(request, user, player_id, activePlayer):
   try:
     currentPlaying = ActivePlaylistEntry.objects.get(song__player=activePlayer, state='PL')
     playlist['current_song'] = currentPlaying
-  except ObjectDoesNotExist:
+  except ObjectDoesNotExist, MultipleObjectsReturned:
     playlist['current_song'] = {}
 
   playlist['volume'] = activePlayer.volume

@@ -37,7 +37,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.contrib.gis.geos import *
 from django.contrib.gis.measure import D
 
@@ -231,7 +231,6 @@ def setLocation(request, user_id, player_id, player):
 
 
 @csrf_exempt
-@transaction.commit_on_success
 @NeedsAuth
 @AcceptsMethods(['POST'])
 @ActivePlayerExists
@@ -248,6 +247,7 @@ def setCurrentSong(request, player_id, activePlayer):
   return HttpResponse("Song changed")
 
 
+@transaction.commit_on_success
 def changeCurrentSong(activePlayer, lib_id):
   #Make sure the song to be set exists
   newCurrentSong = ActivePlaylistEntry.objects.get(
@@ -261,6 +261,8 @@ def changeCurrentSong(activePlayer, lib_id):
     currentSong.save()
   except ObjectDoesNotExist:
     pass
+  except MultipleObjectsReturned:
+    ActivePlaylistEntry.objects.filter(song__player=activePlayer, state=u'PL').update(state=u'FN')
 
   newCurrentSong.state = u'PL'
   newCurrentSong.save()
