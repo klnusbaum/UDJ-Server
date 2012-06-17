@@ -32,6 +32,12 @@ def setCurrentSong(modeladmin, request, queryset):
 
 setCurrentSong.short_description = "Set as current song"
 
+def setSongsFinished(modeladmin, request, queryset):
+  queryset.update(state=u'FN')
+
+setSongsFinished.short_description = "Set song(s) finished"
+
+
 def setLibraryDeleted(modeladmin, request, queryset):
   for player in queryset:
     LibraryEntry.objects.filter(player=player).update(is_deleted=True) 
@@ -57,8 +63,8 @@ class ParticipantAdmin(admin.ModelAdmin):
 
 class ActivePlaylistEntryAdmin(admin.ModelAdmin):
   list_display = ('song', 'time_added', 'adder', 'state')
-  list_filter = ('state','adder', 'song__player')
-  actions = [removeSongFromActivePlaylist, setCurrentSong]
+  list_filter = ('state','song__player', 'adder',)
+  actions = [removeSongFromActivePlaylist, setCurrentSong, setSongsFinished]
 
 class TicketAdmin(admin.ModelAdmin):
   list_display = ('user', 'ticket_hash', 'time_issued')
