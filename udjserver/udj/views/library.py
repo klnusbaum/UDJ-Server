@@ -6,8 +6,7 @@ from udj.decorators import PlayerExists
 from udj.decorators import HasNZParams
 from udj.authdecorators import NeedsAuth
 from udj.authdecorators import TicketUserMatch
-from udj.models import LibraryEntry
-from udj.models import Player
+from udj.models import LibraryEntry, Player, ActivePlaylistEntry
 from udj.headers import MISSING_RESOURCE_HEADER
 
 from django.views.decorators.csrf import csrf_exempt
@@ -50,6 +49,13 @@ def deleteSongs(songIds, player):
     libEntry = LibraryEntry.objects.get(player=player, player_lib_song_id=song_id)
     libEntry.is_deleted = True
     libEntry.save()
+    removeIfOnPlaylist(libEntry)
+
+def removeIfOnPlaylist(libEntry):
+  onList = ActivePlaylistEntry.objects.filter(song=libEntry, state=u'QE')
+  if onList.exists():
+    onList.update(state=u'RM')
+
 
 @csrf_exempt
 @NeedsAuth
@@ -81,7 +87,10 @@ def addSongs2Library(request, user_id, player_id, player):
 @TicketUserMatch
 @AcceptsMethods(['DELETE'])
 @PlayerExists
+@transaction.commit_on_success
 def deleteSongFromLibrary(request, user_id, player_id, lib_id, player):
+
+
   try:
     deleteSongs([lib_id], player)
   except ObjectDoesNotExist:
