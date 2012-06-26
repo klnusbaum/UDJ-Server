@@ -80,7 +80,7 @@ UDJ is licensed under the [GPLv2][gpl].
 [mailing]:mailto:udjdev@bazaarsolutions.com
 [desktop]:https://github.com/klnusbaum/UDJ-Desktop-Client
 [android]:https://github.com/klnusbaum/UDJ-Android-Client
-[ios]:https://github.com/yourmattg/UDJ
+[ios]:https://github.com/yourmattg/UDJ-iPhone-Client
 [webclient]:https://github.com/dicarlo2/UDJWebApp
 [wpclient]:https://github.com/Leester337/UDJ
 [geodjango]:https://docs.djangoproject.com/en/dev/ref/contrib/gis/
