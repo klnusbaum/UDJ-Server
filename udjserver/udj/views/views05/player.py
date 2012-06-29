@@ -1,5 +1,8 @@
 import json
 import math
+from datetime import datetime
+
+from settings import geocodeLocation
 
 from udj.headers import MISSING_RESOURCE_HEADER
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER
@@ -12,19 +15,19 @@ from udj.models import Participant
 from udj.models import LibraryEntry
 from udj.models import ActivePlaylistEntry
 from udj.models import PlaylistEntryTimePlayed
-from udj.decorators import AcceptsMethods
-from udj.decorators import NeedsJSON
-from udj.decorators import PlayerExists
-from udj.decorators import ActivePlayerExists
-from udj.authdecorators import NeedsAuth
-from udj.authdecorators import TicketUserMatch
-from udj.authdecorators import IsOwnerOrParticipates
-from udj.authdecorators import IsOwner
-from udj.decorators import HasNZParams
-from udj.JSONCodecs import UDJEncoder
 from udj.exceptions import LocationNotFoundError
-from udj.auth import hashPlayerPassword
-from udj.decorators import UpdatePlayerActivity
+from udj.views.views05.decorators import AcceptsMethods
+from udj.views.views05.decorators import NeedsJSON
+from udj.views.views05.decorators import PlayerExists
+from udj.views.views05.decorators import ActivePlayerExists
+from udj.views.views05.decorators import HasNZParams
+from udj.views.views05.authdecorators import NeedsAuth
+from udj.views.views05.authdecorators import TicketUserMatch
+from udj.views.views05.authdecorators import IsOwnerOrParticipates
+from udj.views.views05.authdecorators import IsOwner
+from udj.views.views05.decorators import UpdatePlayerActivity
+from udj.views.views05.auth import hashPlayerPassword
+from udj.views.views05.JSONCodecs import UDJEncoder
 
 
 from django.db import transaction
@@ -40,13 +43,6 @@ from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.contrib.gis.geos import *
 from django.contrib.gis.measure import D
-
-from httplib import HTTPConnection
-from httplib import HTTPResponse
-
-from datetime import datetime
-
-from settings import geocodeLocation
 
 
 def isValidLocation(location):

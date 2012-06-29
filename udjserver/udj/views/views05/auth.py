@@ -1,5 +1,13 @@
 import json
 import hashlib
+import random
+from datetime import datetime
+
+from udj.models import Ticket
+from udj.headers import DJANGO_TICKET_HEADER
+from udj.views.views05.decorators import AcceptsMethods
+from udj.views.views05.decorators import HasNZParams
+
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
@@ -7,12 +15,6 @@ from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
-import random
-from udj.models import Ticket
-from udj.headers import DJANGO_TICKET_HEADER
-from udj.decorators import AcceptsMethods
-from udj.decorators import HasNZParams
-from datetime import datetime
 
 def hashPlayerPassword(password):
   m = hashlib.sha1()

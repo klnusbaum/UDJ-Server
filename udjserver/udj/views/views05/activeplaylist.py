@@ -1,5 +1,7 @@
 import json
 
+from settings import sortActivePlaylist
+
 from udj.headers import MISSING_RESOURCE_HEADER
 from udj.models import Vote
 from udj.models import Player
@@ -7,14 +9,14 @@ from udj.models import Participant
 from udj.models import LibraryEntry
 from udj.models import ActivePlaylistEntry
 from udj.models import PlaylistEntryTimePlayed
-from udj.decorators import AcceptsMethods
-from udj.decorators import ActivePlayerExists
-from udj.decorators import UpdatePlayerActivity
-from udj.decorators import HasNZParams
-from udj.authdecorators import NeedsAuth
-from udj.authdecorators import TicketUserMatch
-from udj.authdecorators import IsOwnerOrParticipates
-from udj.JSONCodecs import UDJEncoder
+from udj.views.views05.decorators import AcceptsMethods
+from udj.views.views05.decorators import ActivePlayerExists
+from udj.views.views05.decorators import UpdatePlayerActivity
+from udj.views.views05.decorators import HasNZParams
+from udj.views.views05.authdecorators import NeedsAuth
+from udj.views.views05.authdecorators import TicketUserMatch
+from udj.views.views05.authdecorators import IsOwnerOrParticipates
+from udj.views.views05.JSONCodecs import UDJEncoder
 from udj.exceptions import ForbiddenError
 
 from django.http import HttpRequest
@@ -28,7 +30,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
-from settings import sortActivePlaylist
 
 def getAlreadyOnPlaylist(libIds, player):
   alreadyOnPlaylist = []

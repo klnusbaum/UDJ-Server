@@ -1,7 +1,7 @@
 from udj.models import Participant
-from udj.auth import isValidTicket
-from udj.auth import ticketMatchesUser
-from udj.auth import getUserForTicket
+from udj.views.views05.auth import isValidTicket
+from udj.views.views05.auth import ticketMatchesUser
+from udj.views.views05.auth import getUserForTicket
 from udj.headers import DJANGO_TICKET_HEADER
 from udj.headers import TICKET_HEADER
 
