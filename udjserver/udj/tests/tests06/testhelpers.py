@@ -15,7 +15,7 @@ class DoesServerOpsTestCase(TestCase):
 
   def setUp(self):
     response = self.client.post(
-      '/udj/auth', {'username': self.username, 'password' : self.userpass})
+      '/udj/0_6/auth', {'username': self.username, 'password' : self.userpass})
     self.assertEqual(response.status_code, 200)
     ticket_and_user_id = json.loads(response.content)
     self.ticket_hash = ticket_and_user_id['ticket_hash']

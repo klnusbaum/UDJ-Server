@@ -11,7 +11,7 @@ class ReissueAuthTest(TestCase):
 
   def issueTicketRequest(self):
     return self.client.post(
-        '/udj/auth', {'username': 'lucas', 'password' : 'testlucas'})
+        '/udj/0_6/auth', {'username': 'lucas', 'password' : 'testlucas'})
 
   @staticmethod
   def getCurrentTicket():
@@ -41,7 +41,7 @@ class AuthTest(TestCase):
 
   def issueTicketRequest(self):
     return self.client.post(
-        '/udj/auth', {'username': 'kurtis', 'password' : 'testkurtis'})
+        '/udj/0_6/auth', {'username': 'kurtis', 'password' : 'testkurtis'})
 
   @staticmethod
   def getCurrentTicket():
