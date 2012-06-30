@@ -1,11 +1,11 @@
 import json
 
-from udj.decorators import NeedsJSON
-from udj.decorators import AcceptsMethods
-from udj.decorators import PlayerExists
-from udj.decorators import HasNZParams
-from udj.authdecorators import NeedsAuth
-from udj.authdecorators import TicketUserMatch
+from udj.views.views06.decorators import NeedsJSON
+from udj.views.views06.decorators import AcceptsMethods
+from udj.views.views06.decorators import PlayerExists
+from udj.views.views06.decorators import HasNZParams
+from udj.views.views06.authdecorators import NeedsAuth
+from udj.views.views06.authdecorators import TicketUserMatch
 from udj.models import LibraryEntry, Player, ActivePlaylistEntry
 from udj.headers import MISSING_RESOURCE_HEADER
 

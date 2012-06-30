@@ -1,10 +1,10 @@
 from django.conf.urls.defaults import patterns, include, url
 
-urlpatterns = patterns('udj.auth',
+urlpatterns = patterns('udj.views.views05.auth',
     (r'^auth$', 'authenticate'),
 )
 
-urlpatterns += patterns('udj.views.activeplaylist',
+urlpatterns += patterns('udj.views.views05.activeplaylist',
   (r'^players/(?P<player_id>\d+)/active_playlist$', 'activePlaylist'),
   (r'^players/(?P<player_id>\d+)/active_playlist/songs/(?P<lib_id>\d+)$', 'modActivePlaylist'),
   (r'^players/(?P<player_id>\d+)/active_playlist/songs/(?P<lib_id>\d+)/users/(?P<user_id>\d+)/upvote$', 
@@ -13,7 +13,7 @@ urlpatterns += patterns('udj.views.activeplaylist',
     'voteSongDown'),
 )
 
-urlpatterns += patterns('udj.views.player',
+urlpatterns += patterns('udj.views.views05.player',
   (r'^users/(?P<user_id>\d+)/players/player$', 'createPlayer'),
   (r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/name$', 'changePlayerName'),
   (r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/password$', 'modifyPlayerPassword'),
@@ -33,55 +33,9 @@ urlpatterns += patterns('udj.views.player',
 
 )
 
-urlpatterns += patterns('udj.views.library',
+urlpatterns += patterns('udj.views.views05.library',
   (r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/library/songs$', 'addSongs2Library'),
   (r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/library/(?P<lib_id>\d+)$', 'deleteSongFromLibrary'),
   (r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/library', 'modLibrary'),
   (r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/ban_music/(?P<lib_id>\d+)$', 'modifyBanList'),
 )
-
-
-"""
-
-urlpatterns += patterns('udj.views.library',
-  (r'^users/(?P<user_id>\d+)/library/songs$', 'addSongsToLibrary'),
-  (
-    r'^users/(?P<user_id>\d+)/library/(?P<lib_id>\d+)$', 
-    'deleteSongFromLibrary'
-  ),
-) 
-
-urlpatterns += patterns('udj.views.event',
-  (r'^events$', 'getEvents'),
-  (r'^events/(?P<latitude>-?\d+\.\d+)/(?P<longitude>-?\d+\.\d+)$',
-    'getNearbyEvents'),
-  (r'^events/event$', 'createEvent'),
-  (r'^events/(?P<event_id>\d+)$', 'endEvent'),
-  (r'^events/(?P<event_id>\d+)/users/(?P<user_id>\d+)$', 'joinOrLeaveEvent'),
-  (r'^events/(?P<event_id>\d+)/users$', 'getEventGoers'),
-  (r'^events/(?P<event_id>\d+)/available_music$', 'availableMusic'),
-  (r'^events/(?P<event_id>\d+)/available_music/random_songs$', 
-    'getRandomMusic'),
-  (r'^events/(?P<event_id>\d+)/available_music/(?P<song_id>\d+)$', 
-    'removeFromAvailableMusic'),
-  (r'^events/(?P<event_id>\d+)/current_song$', 
-    'setCurrentSong'),
-)
-urlpatterns += patterns('udj.views.activeplaylist',
-  (r'^events/(?P<event_id>\d+)/active_playlist$', 
-    'getActivePlaylist'),
-  (r'^events/(?P<event_id>\d+)/active_playlist/songs$', 
-    'addToPlaylist'),
-  (r'^events/(?P<event_id>\d+)/active_playlist/(?P<playlist_id>\d+)/users/(?P<user_id>\d+)/upvote$', 
-    'voteSongUp'),
-  (r'^events/(?P<event_id>\d+)/active_playlist/(?P<playlist_id>\d+)/users/(?P<user_id>\d+)/downvote$', 
-    'voteSongDown'),
-  (r'^events/(?P<event_id>\d+)/active_playlist/songs/(?P<playlist_id>\d+)$', 
-    'removeSongFromActivePlaylist'),
-  (r'^events/(?P<event_id>\d+)/active_playlist/users/(?P<user_id>\d+)/add_requests$', 
-    'getAddRequests'),
-  (r'^events/(?P<event_id>\d+)/active_playlist/users/(?P<user_id>\d+)/votes$', 
-    'getVotes'),
-)
-
-"""

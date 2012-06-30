@@ -5,7 +5,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^udj/', include('udj.urls')),
+    url(r'^udj/', include('udj.urls05')),
     # Examples:
     # url(r'^$', 'udjserver.views.home', name='home'),
     # url(r'^udjserver/', include('udjserver.foo.urls')),

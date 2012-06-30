@@ -1,10 +1,11 @@
 import json
+from datetime import datetime
 
-from udj.tests.testhelpers import JeffTestCase
-from udj.tests.testhelpers import YunYoungTestCase
-from udj.tests.testhelpers import KurtisTestCase
-from udj.tests.testhelpers import AlejandroTestCase
-from udj.tests.testhelpers import EnsureParticipationUpdated
+from udj.tests.tests05.testhelpers import JeffTestCase
+from udj.tests.tests05.testhelpers import YunYoungTestCase
+from udj.tests.tests05.testhelpers import KurtisTestCase
+from udj.tests.tests05.testhelpers import AlejandroTestCase
+from udj.tests.tests05.testhelpers import EnsureParticipationUpdated
 from udj.models import Vote
 from udj.models import LibraryEntry
 from udj.models import Player
@@ -13,13 +14,12 @@ from udj.models import PlayerPassword
 from udj.models import Participant
 from udj.models import ActivePlaylistEntry
 from udj.models import PlaylistEntryTimePlayed
-from udj.auth import hashPlayerPassword
+from udj.views.views05.auth import hashPlayerPassword
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER
 from udj.headers import MISSING_RESOURCE_HEADER
 
 from django.test.client import Client
 
-from datetime import datetime
 
 
 

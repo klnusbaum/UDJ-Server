@@ -1,6 +1,6 @@
 import json
 from udj.models import LibraryEntry, ActivePlaylistEntry
-from udj.tests.testhelpers import KurtisTestCase
+from udj.tests.tests05.testhelpers import KurtisTestCase
 from udj.headers import MISSING_RESOURCE_HEADER
 
 class LibTestCases(KurtisTestCase):
