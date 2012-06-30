@@ -1,7 +1,5 @@
 import json
 
-from settings import sortActivePlaylist
-
 from udj.headers import MISSING_RESOURCE_HEADER
 from udj.models import Vote
 from udj.models import Player
@@ -80,7 +78,7 @@ def activePlaylist(request, user, player_id, activePlayer):
 
 def getActivePlaylist(request, user, player_id, activePlayer):
   queuedEntries = ActivePlaylistEntry.objects.filter(song__player=activePlayer, state='QE')
-  queuedEntries = sortActivePlaylist(queuedEntries)
+  queuedEntries = activePlayer.sortPlaylist(queuedEntries)
   playlist={'active_playlist' : queuedEntries}
 
   try:

@@ -425,7 +425,8 @@
       "owning_user": 2,
       "name": "Kurtis Player",
       "state": "PL",
-      "volume": 5
+      "volume": 5,
+      "sorting_algo" : 1
     }
   },
 
@@ -436,7 +437,8 @@
       "owning_user": 2,
       "name": "Minnesota Player",
       "state": "IN",
-      "volume": 2
+      "volume": 2,
+      "sorting_algo" : 1
     }
   },
 
@@ -447,7 +449,8 @@
       "owning_user": 6,
       "name": "Alejandro Player",
       "state": "PL",
-      "volume": 3
+      "volume": 3,
+      "sorting_algo" : 1
     }
   },
 
@@ -458,7 +461,8 @@
       "owning_user": 2,
       "name": "Player with no location",
       "state": "PL",
-      "volume": 5
+      "volume": 5,
+      "sorting_algo" : 1
     }
   },
 
@@ -669,6 +673,17 @@
       "password": "sha1$ba6e8$1a1a9583d77c053b7de164ac418b853d52620d49", 
       "email": "", 
       "date_joined": "2012-04-14 23:57:48"
+    }
+  },
+
+
+  {
+    "pk": 1,
+    "model": "udj.sortingalgorithm",
+    "fields": {
+      "name" : "Total Votes",
+      "description" : "Sorts the playlist be calculating each songs total votes (upvotes - downvotes). Ties are broken by the time each song was added (with preference given to the song that was added first",
+      "function_name" : "totalVotes"
     }
   },
 

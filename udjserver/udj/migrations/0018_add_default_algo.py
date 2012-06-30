@@ -1,25 +1,23 @@
 # -*- coding: utf-8 -*-
 import datetime
 from south.db import db
-from south.v2 import SchemaMigration
+from south.v2 import DataMigration
 from django.db import models
+from udj.trans_migration_constants import ADDED_DEFAULT_ALGO_NAME
 
-
-class Migration(SchemaMigration):
+class Migration(DataMigration):
 
     def forwards(self, orm):
-        # Adding model 'SortingAlgorithm'
-        db.create_table('udj_sortingalgorithm', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=200)),
-            ('description', self.gf('django.db.models.fields.CharField')(max_length=500)),
-            ('function_name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=200)),
-        ))
-        db.send_create_signal('udj', ['SortingAlgorithm'])
+        totalAlgo = orm.SortingAlgorithm(
+          name=ADDED_DEFAULT_ALGO_NAME, 
+          description="Sorts playlist be the total amount of votes per song",
+          function_name='totalVotes')
+        totalAlgo.save()
+
 
     def backwards(self, orm):
-        # Deleting model 'SortingAlgorithm'
-        db.delete_table('udj_sortingalgorithm')
+      pass
+
 
     models = {
         'auth.group': {
@@ -93,6 +91,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             'owning_user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
+            'sorting_algo': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.SortingAlgorithm']"}),
             'state': ('django.db.models.fields.CharField', [], {'default': "'IN'", 'max_length': '2'}),
             'volume': ('django.db.models.fields.IntegerField', [], {'default': '5'})
         },
@@ -148,3 +147,4 @@ class Migration(SchemaMigration):
     }
 
     complete_apps = ['udj']
+    symmetrical = True

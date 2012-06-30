@@ -53,7 +53,7 @@ permaDeleteLibrary.short_description = "Permanently Delete Player Library"
 
 
 class PlayerAdmin(admin.ModelAdmin):
-  list_display=('name', 'owning_user', 'state', 'volume')
+  list_display=('name', 'owning_user', 'state', 'volume', 'sorting_algo',)
   list_filters=('owning_user', 'state')
   actions = [setPlayerInactive, setLibraryDeleted, permaDeleteLibrary, setPlayerPlaying, setPlayerPaused]
 
@@ -96,7 +96,11 @@ class TimePlayedAdmin(admin.ModelAdmin):
 class PlayerLocationAdmin(gisadmin.ModelAdmin):
   list_display = ('player', 'address', 'city', 'state', 'zipcode', 'point',)
 
+class SortingAlgorithmAdmin(admin.ModelAdmin):
+  list_display = ('name', 'description', 'function_name',)
+
 admin.site.register(Ticket, TicketAdmin)
+admin.site.register(SortingAlgorithm, SortingAlgorithmAdmin)
 admin.site.register(Player, PlayerAdmin)
 admin.site.register(PlayerPassword)
 admin.site.register(PlayerLocation, PlayerLocationAdmin)

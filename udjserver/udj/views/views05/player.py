@@ -15,6 +15,7 @@ from udj.models import Participant
 from udj.models import LibraryEntry
 from udj.models import ActivePlaylistEntry
 from udj.models import PlaylistEntryTimePlayed
+from udj.models import SortingAlgorithm
 from udj.exceptions import LocationNotFoundError
 from udj.views.views05.decorators import AcceptsMethods
 from udj.views.views05.decorators import NeedsJSON
@@ -112,7 +113,8 @@ def createPlayer(request, user_id):
     return HttpResponse('A player with that name already exists', status=409)
 
   #Create and save new player
-  newPlayer = Player(owning_user=user, name=newPlayerName)
+  algo = SortingAlgorithm.objects.get(name='Total Votes')
+  newPlayer = Player(owning_user=user, name=newPlayerName, sorting_algo=algo)
   newPlayer.save()
 
   #If password provided, create and save password

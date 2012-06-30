@@ -1,0 +1,1 @@
+ADDED_DEFAULT_ALGO_NAME = 'Total Votes'

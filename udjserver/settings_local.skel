@@ -27,11 +27,3 @@ def geocodeLocation(address, city, state, zipcode):
   from udj.geocoders import USCWebGISGeocoder
   GEOCODER_API_KEY="Geocoding key"
   return USCWebGISGeocoder(address, city, state, zipcode, GEOCODER_API_KEY)
-
-def sortActivePlaylist(queuedEntries):
-  """
-  Change this if you want to use a different playlist sorting algorithm
-  """
-  from udj.playlistalgos import totalVotes
-  return totalVotes(queuedEntries)
-
