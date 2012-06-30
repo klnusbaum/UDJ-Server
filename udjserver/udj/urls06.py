@@ -6,6 +6,7 @@ urlpatterns = patterns('udj.views.views06.auth',
 
 urlpatterns += patterns('udj.views.views06.server_capabilities',
     (r'^sorting_algorithms$', 'getSortingAlgorithms'),
+    (r'^external_libraries$', 'getExternalLibraries'),
 )
 
 """

@@ -689,6 +689,15 @@
 
   {
     "pk": 1,
+    "model": "udj.externallibrary",
+    "fields": {
+      "name" : "Spotify",
+      "description" : "A streaming music library with a butt load of music"
+    }
+  },
+
+  {
+    "pk": 1,
     "model": "udj.state",
     "fields":{
       "name": "AL"

@@ -9,6 +9,13 @@ def zero_ten_validator(value):
   if value < 0 or value > 10:
     raise ValidationError(u'%s is not between 0 and 10' % value)
 
+class ExternalLibrary(models.Model):
+  name = models.CharField(max_length=200)
+  description = models.CharField(max_length=500)
+
+  def __unicode__(self):
+    return self.name
+
 class SortingAlgorithm(models.Model):
   name = models.CharField(max_length=200, unique=True)
   description = models.CharField(max_length=500)
@@ -31,6 +38,7 @@ class Player(models.Model):
   state = models.CharField(max_length=2, default='IN')
   volume = models.IntegerField(default=5, validators=[zero_ten_validator])
   sorting_algo = models.ForeignKey(SortingAlgorithm)
+  external_library = models.ForeignKey(ExternalLibrary, null=True)
 
   def sortPlaylist(self, toSort):
     from udj import playlistalgos
@@ -178,5 +186,4 @@ class Vote(models.Model):
   def __unicode__(self):
     voteFor = "Upvote for " if self.weight ==1 else "Downvote for "
     return voteFor + self.playlist_entry.song.title
-
 
