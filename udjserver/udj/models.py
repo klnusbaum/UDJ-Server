@@ -165,3 +165,8 @@ class Vote(models.Model):
     voteFor = "Upvote for " if self.weight ==1 else "Downvote for "
     return voteFor + self.playlist_entry.song.title
 
+
+class SortingAlgorithm(models.Model):
+  name = models.CharField(max_length=200, unique=True)
+  description = models.CharField(max_length=500)
+  function_name = models.CharField(max_length=200, unique=True)
