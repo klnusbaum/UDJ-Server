@@ -501,7 +501,6 @@
       "city": "Urbana",
       "state": 13,
       "zipcode": 61801,
-      "country": 1,
       "point" : "POINT(-88.223948 40.113331)"
     }
   },
@@ -515,7 +514,6 @@
       "city": "Plymouth",
       "state": 23,
       "zipcode": 55447,
-      "country": 1,
       "point" : "POINT(-93.481330 44.981822)"
     }
   },
@@ -529,7 +527,6 @@
       "city": "Coral Gables",
       "state": 9,
       "zipcode": 33146,
-      "country": 1,
       "point" : "POINT(-80.27994 25.721439)"
     }
   },
@@ -543,7 +540,6 @@
       "city": "Champaign",
       "state": 13,
       "zipcode": 61820,
-      "country": 1,
       "point" : "POINT(-88.230399 40.110415)"
     }
   },
@@ -557,7 +553,6 @@
       "city": "Urbana",
       "state": 13,
       "zipcode":  61801,
-      "country": 1,
       "point" : "POINT(-88.204848 40.111597)"
     }
   },
@@ -784,350 +779,400 @@
     "pk": 1,
     "model": "udj.state",
     "fields":{
-      "name": "AL"
+      "name": "AL",
+      "country": 1
     }
   },
   {
     "pk": 2,
     "model": "udj.state",
     "fields": {
-      "name": "AK"
+      "name": "AK",
+      "country": 1
     }
   },
   {
     "pk": 3,
     "model": "udj.state",
     "fields": {
-      "name": "AZ"
+      "name": "AZ",
+      "country": 1
     }
   },
   {
     "pk": 4,
     "model": "udj.state",
     "fields": {
-      "name": "AR"
+      "name": "AR",
+      "country": 1
     }
   },
   {
     "pk": 5,
     "model": "udj.state",
     "fields": {
-      "name": "CA"
+      "name": "CA",
+      "country": 1
     }
   },
   {
     "pk": 6,
     "model": "udj.state",
     "fields": {
-      "name": "CO"
+      "name": "CO",
+      "country": 1
     }
   },
   {
     "pk": 7,
     "model": "udj.state",
     "fields": {
-      "name": "CT"
+      "name": "CT",
+      "country": 1
     }
   },
   {
     "pk": 8,
     "model": "udj.state",
     "fields": {
-      "name": "DE"
+      "name": "DE",
+      "country": 1
     }
   },
   {
     "pk": 9,
     "model": "udj.state",
     "fields": {
-      "name": "FL"
+      "name": "FL",
+      "country": 1
     }
   },
   {
     "pk": 10,
     "model": "udj.state",
     "fields": {
-      "name": "GA"
+      "name": "GA",
+      "country": 1
     }
   },
   {
     "pk": 11,
     "model": "udj.state",
     "fields": {
-      "name": "HI"
+      "name": "HI",
+      "country": 1
     }
   },
   {
     "pk": 12,
     "model": "udj.state",
     "fields": {
-      "name": "ID"
+      "name": "ID",
+      "country": 1
     }
   },
   {
     "pk": 13,
     "model": "udj.state",
     "fields": {
-      "name": "IL"
+      "name": "IL",
+      "country": 1
     }
   },
   {
     "pk": 14,
     "model": "udj.state",
     "fields": {
-      "name": "IN"
+      "name": "IN",
+      "country": 1
     }
   },
   {
     "pk": 15,
     "model": "udj.state",
     "fields": {
-      "name": "IA"
+      "name": "IA",
+      "country": 1
     }
   },
   {
     "pk": 16,
     "model": "udj.state",
     "fields": {
-      "name": "KS"
+      "name": "KS",
+      "country": 1
     }
   },
   {
     "pk": 17,
     "model": "udj.state",
     "fields": {
-      "name": "KY"
+      "name": "KY",
+      "country": 1
     }
   },
   {
     "pk": 18,
     "model": "udj.state",
     "fields": {
-      "name": "LA"
+      "name": "LA",
+      "country": 1
     }
   },
   {
     "pk": 19,
     "model": "udj.state",
     "fields": {
-      "name": "ME"
+      "name": "ME",
+      "country": 1
     }
   },
   {
     "pk": 20,
     "model": "udj.state",
     "fields": {
-      "name": "MD"
+      "name": "MD",
+      "country": 1
     }
   },
   {
     "pk": 21,
     "model": "udj.state",
     "fields": {
-      "name": "MA"
+      "name": "MA",
+      "country": 1
     }
   },
   {
     "pk": 22,
     "model": "udj.state",
     "fields": {
-      "name": "MI"
+      "name": "MI",
+      "country": 1
     }
   },
   {
     "pk": 23,
     "model": "udj.state",
     "fields": {
-      "name": "MN"
+      "name": "MN",
+      "country": 1
     }
   },
   {
     "pk": 24,
     "model": "udj.state",
     "fields": {
-      "name": "MS"
+      "name": "MS",
+      "country": 1
     }
   },
   {
     "pk": 25,
     "model": "udj.state",
     "fields": {
-      "name": "MO"
+      "name": "MO",
+      "country": 1
     }
   },
   {
     "pk": 26,
     "model": "udj.state",
     "fields": {
-      "name": "MT"
+      "name": "MT",
+      "country": 1
     }
   },
   {
     "pk": 27,
     "model": "udj.state",
     "fields": {
-      "name": "NE"
+      "name": "NE",
+      "country": 1
     }
   },
   {
     "pk": 28,
     "model": "udj.state",
     "fields": {
-      "name": "NV"
+      "name": "NV",
+      "country": 1
     }
   },
   {
     "pk": 29,
     "model": "udj.state",
     "fields": {
-      "name": "NH"
+      "name": "NH",
+      "country": 1
     }
   },
   {
     "pk": 30,
     "model": "udj.state",
     "fields": {
-      "name": "NJ"
+      "name": "NJ",
+      "country": 1
     }
   },
   {
     "pk": 31,
     "model": "udj.state",
     "fields": {
-      "name": "NM"
+      "name": "NM",
+      "country": 1
     }
   },
   {
     "pk": 32,
     "model": "udj.state",
     "fields": {
-      "name": "NY"
+      "name": "NY",
+      "country": 1
     }
   },
   {
     "pk": 33,
     "model": "udj.state",
     "fields": {
-      "name": "NC"
+      "name": "NC",
+      "country": 1
     }
   },
   {
     "pk": 34,
     "model": "udj.state",
     "fields": {
-      "name": "ND"
+      "name": "ND",
+      "country": 1
     }
   },
   {
     "pk": 35,
     "model": "udj.state",
     "fields": {
-      "name": "OH"
+      "name": "OH",
+      "country": 1
     }
   },
   {
     "pk": 36,
     "model": "udj.state",
     "fields": {
-      "name": "OK"
+      "name": "OK",
+      "country": 1
     }
   },
   {
     "pk": 37,
     "model": "udj.state",
     "fields": {
-      "name": "OR"
+      "name": "OR",
+      "country": 1
     }
   },
   {
     "pk": 38,
     "model": "udj.state",
     "fields": {
-      "name": "PA"
+      "name": "PA",
+      "country": 1
     }
   },
   {
     "pk": 39,
     "model": "udj.state",
     "fields": {
-      "name": "RI"
+      "name": "RI",
+      "country": 1
     }
   },
   {
     "pk": 40,
     "model": "udj.state",
     "fields": {
-      "name": "SC"
+      "name": "SC",
+      "country": 1
     }
   },
   {
     "pk": 41,
     "model": "udj.state",
     "fields": {
-      "name": "SD"
+      "name": "SD",
+      "country": 1
     }
   },
   {
     "pk": 42,
     "model": "udj.state",
     "fields": {
-      "name": "TN"
+      "name": "TN",
+      "country": 1
     }
   },
   {
     "pk": 43,
     "model": "udj.state",
     "fields": {
-      "name": "TX"
+      "name": "TX",
+      "country": 1
     }
   },
   {
     "pk": 44,
     "model": "udj.state",
     "fields": {
-      "name": "UT"
+      "name": "UT",
+      "country": 1
     }
   },
   {
     "pk": 45,
     "model": "udj.state",
     "fields": {
-      "name": "VT"
+      "name": "VT",
+      "country": 1
     }
   },
   {
     "pk": 46,
     "model": "udj.state",
     "fields": {
-      "name": "VA"
+      "name": "VA",
+      "country": 1
     }
   },
   {
     "pk": 47,
     "model": "udj.state",
     "fields": {
-      "name": "WA"
+      "name": "WA",
+      "country": 1
     }
   },
   {
     "pk": 48,
     "model": "udj.state",
     "fields": {
-      "name": "WV"
+      "name": "WV",
+      "country": 1
     }
   },
   {
     "pk": 49,
     "model": "udj.state",
     "fields": {
-      "name": "WI"
+      "name": "WI",
+      "country": 1
     }
   },
   {
     "pk": 50,
     "model": "udj.state",
     "fields": {
-      "name": "WY"
+      "name": "WY",
+      "country": 1
     }
   },
   {

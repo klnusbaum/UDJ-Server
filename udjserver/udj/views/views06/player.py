@@ -59,16 +59,24 @@ def isValidLocation(location):
   return true
 
 
-def doLocationSet(address, city, state, zipcode, player):
-  lat, lon = geocodeLocation(address, city, state, zipcode)
-  PlayerLocation(
+def doLocationSet(zipcode, country, player, address=None, state=None, city=None):
+  lat, lon = geocodeLocation(zipcode, country, address, state, city)
+  newLocation = PlayerLocation(
     player=player,
-    address=address,
-    city=city,
-    state=State.objects.get(name__iexact=state),
     zipcode=zipcode,
+    country=Country.objects.get(name__iexact=country),
     point=Point(lon, lat)
-  ).save()
+  )
+
+  if address is not None:
+    newLocation.address = address
+
+  if state is not None:
+    newLocation.state = State.objects.get(name__iexact=state)
+
+  if city is not None:
+
+
 
 @csrf_exempt
 @NeedsAuth

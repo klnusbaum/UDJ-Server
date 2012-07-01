@@ -85,7 +85,6 @@ def doLocationSet(address, city, state, zipcode, player):
     city=city,
     state=State.objects.get(name__iexact=state),
     zipcode=zipcode,
-    country=Country.objects.get(name="United States"),
     point=Point(lon, lat)
   ).save()
 
@@ -212,9 +211,8 @@ def setLocation(request, user_id, player_id, player):
       defaults={
         'address' : address,
         'city' : city,
-        'state' : State.objects.get(name=state),
+        'state' : State.objects.get(name__iexact=state),
         'zipcode' : zipcode,
-        'country' : Country.objects.get(name="United States"),
         'point' : Point(lon, lat)
       }
     )

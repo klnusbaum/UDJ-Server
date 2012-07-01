@@ -24,18 +24,24 @@ class SortingAlgorithm(models.Model):
   def __unicode__(self):
     return self.name
 
+class Country(models.Model):
+  name = models.CharField(max_length=100, unique=True)
+
+  def __unicode__(self):
+    return self.name
+
 class State(models.Model):
   name = models.CharField(max_length=2)
+  country = models.ForeignKey(Country)
 
   def __unicode__(self):
     return self.name
 
+  class Meta:
+    unique_together = ("name", "country")
 
-class Country(models.Model):
-  name = models.CharField(max_length=100)
 
-  def __unicode__(self):
-    return self.name
+
 
 class Player(models.Model):
   PLAYER_STATE_CHOICES = (('IN', u'Inactive'), ('PL', u'Playing'), ('PA', u'Paused'))
@@ -70,7 +76,6 @@ class PlayerLocation(gismodels.Model):
   city = gismodels.CharField(max_length=50, null=True)
   state = gismodels.ForeignKey(State, null=True)
   zipcode = gismodels.IntegerField()
-  country = gismodels.ForeignKey(Country)
   point = gismodels.PointField(default='POINT(0.0 0.0)')
   objects = gismodels.GeoManager()
 
