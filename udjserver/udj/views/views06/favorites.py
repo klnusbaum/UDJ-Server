@@ -58,3 +58,10 @@ def removeSongFromFavorite(user, player_id, lib_id):
   return HttpResponse()
 
 
+@NeedsAuth
+@AcceptsMethods(['GET'])
+def getFavorites(request, player_id):
+  user = getUserForTicket(request)
+  favorites = Favorite.objects.filter(user=user, favorite_song__player__id=player_id)
+  return HttpResponse(json.dumps(favorites, cls=UDJEncoder), content_type="text/json")
+

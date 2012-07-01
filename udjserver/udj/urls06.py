@@ -11,6 +11,7 @@ urlpatterns += patterns('udj.views.views06.server_capabilities',
 
 urlpatterns += patterns('udj.views.views06.favorites',
     (r'^favorites/players/(?P<player_id>\d+)/(?P<lib_id>\d+)$', 'favorite'),
+    (r'^favorites/players/(?P<player_id>\d+)$', 'getFavorites'),
 )
 
 

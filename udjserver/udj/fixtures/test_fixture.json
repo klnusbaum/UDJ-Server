@@ -548,6 +548,25 @@
   },
 
 
+  {
+    "pk": 1,
+    "model": "udj.favorite",
+    "fields": {
+      "user": 2,
+      "favorite_song" : 7,
+      "date_added" : "2012-06-14 23:51:32"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "udj.favorite",
+    "fields": {
+      "user": 2,
+      "favorite_song" : 8,
+      "date_added" : "2012-06-14 23:52:00"
+    }
+  },
+
 
   {
     "pk": 1, 

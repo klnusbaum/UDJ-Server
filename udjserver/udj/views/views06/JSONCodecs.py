@@ -9,6 +9,7 @@ from udj.models import ActivePlaylistEntry
 from udj.models import PlaylistEntryTimePlayed
 from udj.models import SortingAlgorithm
 from udj.models import ExternalLibrary
+from udj.models import Favorite
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.query import QuerySet
@@ -20,6 +21,8 @@ class UDJEncoder(json.JSONEncoder):
   def default(self, obj):
     if isinstance(obj, QuerySet):
       return [x for x in obj]
+    elif isinstance(obj, Favorite):
+      return obj.favorite_song
     elif isinstance(obj, ExternalLibrary):
       return {
         'id' : obj.id,
