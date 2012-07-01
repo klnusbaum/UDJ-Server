@@ -1,4 +1,5 @@
 import json
+import re
 
 from udj.views.views06.decorators import NeedsJSON
 from udj.views.views06.decorators import AcceptsMethods
@@ -20,7 +21,9 @@ def createUser(request):
     username = desiredUser['username']
     email = desiredUser['email']
     password = desiredUser['password']
-  except ValueError, KeyError:
+  except ValueError:
+    return HttpResponseBadRequest("Malformed JSON")
+  except KeyError:
     return HttpResponseBadRequest("Malformed JSON")
 
   if User.objects.filter(email=email).exists():
@@ -39,6 +42,10 @@ def createUser(request):
   try:
     validate_email(email)
   except ValidationError:
+    return HttpResponse(status=406)
+
+
+  if not re.compile(r'^[\w.@+-]+$').match(username):
     return HttpResponse(status=406)
 
   newUser = User.objects.create_user(
