@@ -90,7 +90,7 @@ def getActivePlaylist(request, user, player_id, activePlayer):
   playlist['volume'] = activePlayer.volume
   playlist['state'] = 'playing' if activePlayer.state=='PL' else 'paused'
 
-  return HttpResponse(json.dumps(playlist, cls=UDJEncoder))
+  return HttpResponse(json.dumps(playlist, cls=UDJEncoder), content_type="text/json")
 
 @HasNZParams(['to_add','to_remove'])
 @transaction.commit_on_success
@@ -109,12 +109,12 @@ def multiModActivePlaylist(request, user, player_id, activePlayer):
     # 1. Ensure none of the songs that want to be added are already on the playlist
     alreadyOnPlaylist = getAlreadyOnPlaylist(toAdd, activePlayer)
     if len(alreadyOnPlaylist) > 0:
-      return HttpResponse(json.dumps(alreadyOnPlaylist), status=409)
+      return HttpResponse(json.dumps(alreadyOnPlaylist), content_type="text/json", status=409)
 
     # 2. Ensure none of the songs to be deleted aren't on the playlist
     notOnPlaylist = getNotOnPlaylist(toRemove, activePlayer)
     if len(notOnPlaylist) > 0:
-      toReturn = HttpResponse(json.dumps(notOnPlaylist), status=404)
+      toReturn = HttpResponse(json.dumps(notOnPlaylist), content_type="text/json", status=404)
       toReturn[MISSING_RESOURCE_HEADER] = 'song'
       return toReturn
 
@@ -125,7 +125,7 @@ def multiModActivePlaylist(request, user, player_id, activePlayer):
         notInLibrary.append(songId)
 
     if len(notInLibrary) > 0:
-      toReturn = HttpResponse(json.dumps(notInLibrary), status=404)
+      toReturn = HttpResponse(json.dumps(notInLibrary), content_type="text/json", status=404)
       toReturn[MISSING_RESOURCE_HEADER] = 'song'
       return toReturn
 

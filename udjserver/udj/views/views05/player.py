@@ -341,7 +341,8 @@ def participateWithPlayer(request, player_id, user_id, activePlayer):
 def getActiveUsersForPlayer(request, user, player_id, activePlayer):
   return HttpResponse(
     json.dumps(Participant.activeParticipants(activePlayer),
-    cls=UDJEncoder))
+    cls=UDJEncoder),
+    content_type="text/json")
 
 @NeedsAuth
 @AcceptsMethods(['GET'])
@@ -361,7 +362,7 @@ def getAvailableMusic(request, user, player_id, activePlayer):
   if 'max_results' in request.GET:
     available_songs = available_songs[:request.GET['max_results']]
 
-  return HttpResponse(json.dumps(available_songs, cls=UDJEncoder))
+  return HttpResponse(json.dumps(available_songs, cls=UDJEncoder), content_type="text/json")
 
 @NeedsAuth
 @AcceptsMethods(['GET'])
@@ -375,7 +376,7 @@ def getRandomMusic(request, user, player_id, activePlayer):
       .exclude(Q(is_deleted=True) | Q(is_banned=True))
   randomSongs = randomSongs.order_by('?')[:rand_limit]
 
-  return HttpResponse(json.dumps(randomSongs, cls=UDJEncoder))
+  return HttpResponse(json.dumps(randomSongs, cls=UDJEncoder), content_type="text/json")
 
 
 @NeedsAuth
@@ -388,7 +389,7 @@ def getArtists(request, user, player_id, activePlayer):
       .exclude(is_deleted=True)\
       .exclude(is_banned=True)\
       .distinct('artist').order_by('artist').values_list('artist', flat=True)
-  return HttpResponse(json.dumps(artists, cls=UDJEncoder))
+  return HttpResponse(json.dumps(artists, cls=UDJEncoder), content_type="text/json")
 
 
 @NeedsAuth
@@ -401,7 +402,7 @@ def getArtistSongs(request, user, player_id, activePlayer, givenArtist):
       .exclude(is_deleted=True)\
       .exclude(is_banned=True)\
       .filter(artist=givenArtist)
-  return HttpResponse(json.dumps(songs, cls=UDJEncoder))
+  return HttpResponse(json.dumps(songs, cls=UDJEncoder), content_type="text/json")
 
 
 @NeedsAuth
@@ -416,5 +417,5 @@ def getRecentlyPlayed(request, user, player_id, activePlayer):
     .filter(playlist_entry__state='FN')\
     .order_by('-time_played')[:songs_limit]
 
-  return HttpResponse(json.dumps([song.playlist_entry for song in songs], cls=UDJEncoder))
+  return HttpResponse(json.dumps([song.playlist_entry for song in songs], cls=UDJEncoder), content_type="text/json")
 

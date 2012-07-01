@@ -74,7 +74,7 @@ def addSongs2Library(request, user_id, player_id, player):
   try:
     existingIds = getAlreadyExistingIds(libJSON, player)
     if len(existingIds) > 0:
-      return HttpResponse(json.dumps(existingIds), status=409)
+      return HttpResponse(json.dumps(existingIds), content_type="text/json", status=409)
     addSongs(libJSON, player)
   except KeyError as e:
     return HttpResponseBadRequest("Bad JSON. Missing key: " + str(e))
@@ -136,11 +136,11 @@ def modLibrary(request, user_id, player_id, player):
   try:
     existingIds = getAlreadyExistingIds(toAdd, player)
     if len(existingIds) > 0:
-      return HttpResponse(json.dumps(existingIds), status=409)
+      return HttpResponse(json.dumps(existingIds), content_type="text/json", status=409)
 
     nonExistentIds = getNonExistantIds(toDelete, player)
     if len(nonExistentIds) > 0:
-      return HttpResponse(json.dumps(nonExistentIds), status=404)
+      return HttpResponse(json.dumps(nonExistentIds), content_type="text/json", status=404)
 
     addSongs(toAdd, player)
     deleteSongs(toDelete, player)
