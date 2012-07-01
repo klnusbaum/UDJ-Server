@@ -4,6 +4,10 @@ urlpatterns = patterns('udj.views.views06.auth',
   (r'^auth$', 'authenticate'),
 )
 
+urlpatterns += patterns('udj.views.views06.user_creation',
+  (r'^user$', 'createUser'),
+)
+
 urlpatterns += patterns('udj.views.views06.server_capabilities',
   (r'^sorting_algorithms$', 'getSortingAlgorithms'),
   (r'^external_libraries$', 'getExternalLibraries'),

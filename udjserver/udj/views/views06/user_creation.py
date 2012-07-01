@@ -8,13 +8,15 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.contrib.auth.models import User
 
 @NeedsJSON
 @AcceptsMethods(['PUT'])
 def createUser(request):
   try:
-    desiredUser = json.loads(request.content)
+    desiredUser = json.loads(request.raw_post_data)
     username = desiredUser['username']
     email = desiredUser['email']
     password = desiredUser['password']
@@ -26,7 +28,7 @@ def createUser(request):
     toReturn[CONFLICT_RESOURCE_HEADER] = 'email'
     return toReturn
 
-  if User.objects.filter(username=username).exists()
+  if User.objects.filter(username=username).exists():
     toReturn = HttpResponse(status=409)
     toReturn[CONFLICT_RESOURCE_HEADER] = 'username'
     return toReturn
