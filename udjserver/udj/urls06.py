@@ -1,18 +1,24 @@
 from django.conf.urls.defaults import patterns, include, url
 
 urlpatterns = patterns('udj.views.views06.auth',
-    (r'^auth$', 'authenticate'),
+  (r'^auth$', 'authenticate'),
 )
 
 urlpatterns += patterns('udj.views.views06.server_capabilities',
-    (r'^sorting_algorithms$', 'getSortingAlgorithms'),
-    (r'^external_libraries$', 'getExternalLibraries'),
+  (r'^sorting_algorithms$', 'getSortingAlgorithms'),
+  (r'^external_libraries$', 'getExternalLibraries'),
 )
 
 urlpatterns += patterns('udj.views.views06.favorites',
-    (r'^favorites/players/(?P<player_id>\d+)/(?P<lib_id>\d+)$', 'favorite'),
-    (r'^favorites/players/(?P<player_id>\d+)$', 'getFavorites'),
+  (r'^favorites/players/(?P<player_id>\d+)/(?P<lib_id>\d+)$', 'favorite'),
+  (r'^favorites/players/(?P<player_id>\d+)$', 'getFavorites'),
 )
+
+urlpatterns += patterns('udj.views.views06.player_search',
+  (r'^players/(?P<latitude>-?\d+\.\d+)/(?P<longitude>-?\d+\.\d+)$', 'getNearbyPlayers'),
+  (r'^players$', 'getPlayers'),
+)
+
 
 
 """
@@ -33,8 +39,6 @@ urlpatterns += patterns('udj.views.views06.player',
   (r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/location$', 'setLocation'),
   (r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/state$', 'setPlayerState'),
   (r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/volume$', 'setPlayerVolume'),
-  (r'^players/(?P<latitude>-?\d+\.\d+)/(?P<longitude>-?\d+\.\d+)$', 'getNearbyPlayers'),
-  (r'^players$', 'getPlayers'),
   (r'^players/(?P<player_id>\d+)/users/(?P<user_id>\d+)$', 'participateWithPlayer'),
   (r'^players/(?P<player_id>\d+)/users$', 'getActiveUsersForPlayer'),
   (r'^players/(?P<player_id>\d+)/available_music$', 'getAvailableMusic'),
