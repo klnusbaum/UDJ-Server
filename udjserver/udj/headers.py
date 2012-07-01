@@ -1,5 +1,6 @@
 TICKET_HEADER = "X-Udj-Ticket-Hash"
 MISSING_RESOURCE_HEADER = "X-Udj-Missing-Resource"
+CONFLICT_RESOURCE_HEADER = "X-Udj-Conflict-Resource"
 MISSING_REASON_HEADER = "X-Udj-Missing-Reason"
 PLAYER_PASSWORD_HEADER = "X-Udj-Player-Password"
 
