@@ -187,3 +187,11 @@ class Vote(models.Model):
     voteFor = "Upvote for " if self.weight ==1 else "Downvote for "
     return voteFor + self.playlist_entry.song.title
 
+class Favorite(models.Model):
+  user = models.ForeignKey(User)
+  favorite_song = models.ForeignKey(LibraryEntry)
+  date_added = models.DateTimeField(auto_now_add=True)
+
+  def __unicode__(self):
+    return self.user.username + " likes " + self.favorite_song.title
+

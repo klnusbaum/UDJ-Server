@@ -1,5 +1,4 @@
 import json
-from udj.models import LibraryEntry, ActivePlaylistEntry
 from udj.tests.tests06.testhelpers import KurtisTestCase
 
 class ServerCapabilities(KurtisTestCase):

@@ -9,6 +9,11 @@ urlpatterns += patterns('udj.views.views06.server_capabilities',
     (r'^external_libraries$', 'getExternalLibraries'),
 )
 
+urlpatterns += patterns('udj.views.views06.favorites',
+    (r'^favorites/players/(?P<player_id>\d+)/(?P<lib_id>\d+)$', 'favorite'),
+)
+
+
 """
 
 urlpatterns += patterns('udj.views.views06.activeplaylist',
