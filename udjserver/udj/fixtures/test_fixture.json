@@ -466,6 +466,31 @@
     }
   },
 
+  {
+    "pk": 5,
+    "model": "udj.player",
+    "fields": {
+      "owning_user": 2,
+      "name": "Other Kurtis Player",
+      "state": "PL",
+      "volume": 5,
+      "sorting_algo" : 1
+    }
+  },
+
+  {
+    "pk": 6,
+    "model": "udj.player",
+    "fields": {
+      "owning_user": 2,
+      "name": "Schnucks player",
+      "state": "PL",
+      "volume": 5,
+      "sorting_algo" : 1
+    }
+  },
+
+
 
   {
     "pk": 1,
@@ -505,6 +530,33 @@
       "point" : "POINT(-80.27994 25.721439)"
     }
   },
+
+  {
+    "pk": 4,
+    "model": "udj.playerlocation",
+    "fields": {
+      "player" : 5,
+      "address" : "604 East Green Street",
+      "city": "Champaign",
+      "state": 13,
+      "zipcode": 61820,
+      "point" : "POINT(-88.230399 40.110415)"
+    }
+  },
+
+  {
+    "pk": 5,
+    "model": "udj.playerlocation",
+    "fields": {
+      "player" : 6,
+      "address" : "200 S Vine St",
+      "city": "Urbana",
+      "state": 13,
+      "zipcode":  61801,
+      "point" : "POINT(-88.204848 40.111597)"
+    }
+  },
+
 
   {
     "pk": 1,

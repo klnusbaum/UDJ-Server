@@ -29,7 +29,7 @@ class GetPlayersTests(JeffTestCase):
     self.assertEqual(response.status_code, 200, response.content)
     self.isJSONResponse(response)
     players = json.loads(response.content)
-    self.assertEqual(len(players), 1)
+    self.assertEqual(len(players), 3)
     firstPlayer = players[0]
     self.assertEqual(1, firstPlayer['id'])
     self.assertEqual("Kurtis Player", firstPlayer['name'])
@@ -42,7 +42,7 @@ class GetPlayersTests(JeffTestCase):
     self.assertEqual(response.status_code, 200)
     self.isJSONResponse(response)
     players = json.loads(response.content)
-    self.assertEqual(len(players), 1)
+    self.assertEqual(len(players), 2)
     firstPlayer = players[0]
     self.assertEqual(1, firstPlayer['id'])
     self.assertEqual("Kurtis Player", firstPlayer['name'])

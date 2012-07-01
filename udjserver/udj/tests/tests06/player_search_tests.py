@@ -10,7 +10,7 @@ class GetPlayersTests(JeffTestCase):
     self.assertEqual(response.status_code, 200, response.content)
     self.isJSONResponse(response)
     players = json.loads(response.content)
-    self.assertEqual(len(players), 1)
+    self.assertEqual(len(players), 3)
     firstPlayer = players[0]
     self.assertEqual(1, firstPlayer['id'])
     self.assertEqual("Kurtis Player", firstPlayer['name'])
@@ -23,7 +23,7 @@ class GetPlayersTests(JeffTestCase):
     self.assertEqual(response.status_code, 200)
     self.isJSONResponse(response)
     players = json.loads(response.content)
-    self.assertEqual(len(players), 1)
+    self.assertEqual(len(players), 2)
     firstPlayer = players[0]
     self.assertEqual(1, firstPlayer['id'])
     self.assertEqual("Kurtis Player", firstPlayer['name'])
@@ -31,9 +31,36 @@ class GetPlayersTests(JeffTestCase):
     self.assertEqual(2, firstPlayer['owner_id'])
     self.assertEqual(False, firstPlayer['has_password'])
 
+  def testLocationSearchWithLimit(self):
+    response = self.doGet('/udj/0_6/players/40.11241/-88.222053?max_results=1')
+    self.assertEqual(response.status_code, 200, response.content)
+    self.isJSONResponse(response)
+    players = json.loads(response.content)
+    self.assertEqual(len(players), 1)
+
+  def testNameSearchWithLimit(self):
+    response = self.doGet('/udj/0_6/players?name=kurtis&max_results=1')
+    self.assertEqual(response.status_code, 200, response.content)
+    self.isJSONResponse(response)
+    players = json.loads(response.content)
+    self.assertEqual(len(players), 1)
+
+  def testSearchWithRadius(self):
+    response = self.doGet('/udj/0_6/players/40.111595/-88.204847?radius=2')
+    self.assertEqual(200, response.status_code)
+    players = json.loads(response.content)
+    self.assertEqual(2, len(players))
+
+  def testSearchWithRadiusAndLimit(self):
+    response = self.doGet('/udj/0_6/players/40.111595/-88.204847?radius=2&max_results=1')
+    self.assertEqual(200, response.status_code)
+    players = json.loads(response.content)
+    self.assertEqual(1, len(players))
+    self.assertEqual(6, players[0]["id"])
+
   def testTooSmallRadius(self):
     badRadius = min_search_radius -1
-    response = self.doGet('/udj/0_6/players/40.11381/-88.224083?radius=%d' % badRadius)
+    response = self.doGet('/udj/0_6/players/40.11241/-88.222053?radius=%d' % badRadius)
     self.assertEqual(406, response.status_code)
     radiiInfo = json.loads(response.content)
     self.assertEqual(min_search_radius, radiiInfo['min_radius'])
