@@ -30,6 +30,13 @@ class State(models.Model):
   def __unicode__(self):
     return self.name
 
+
+class Country(models.Model):
+  name = models.CharField(max_length=100)
+
+  def __unicode__(self):
+    return self.name
+
 class Player(models.Model):
   PLAYER_STATE_CHOICES = (('IN', u'Inactive'), ('PL', u'Playing'), ('PA', u'Paused'))
 
@@ -59,10 +66,11 @@ class PlayerPassword(models.Model):
 class PlayerLocation(gismodels.Model):
 
   player = gismodels.ForeignKey(Player, unique=True)
-  address = gismodels.CharField(max_length=50)
-  city = gismodels.CharField(max_length=50)
-  state = gismodels.ForeignKey(State)
+  address = gismodels.CharField(max_length=50, null=True)
+  city = gismodels.CharField(max_length=50, null=True)
+  state = gismodels.ForeignKey(State, null=True)
   zipcode = gismodels.IntegerField()
+  country = gismodels.ForeignKey(Country)
   point = gismodels.PointField(default='POINT(0.0 0.0)')
   objects = gismodels.GeoManager()
 

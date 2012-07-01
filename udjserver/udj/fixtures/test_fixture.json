@@ -501,6 +501,7 @@
       "city": "Urbana",
       "state": 13,
       "zipcode": 61801,
+      "country": 1,
       "point" : "POINT(-88.223948 40.113331)"
     }
   },
@@ -514,6 +515,7 @@
       "city": "Plymouth",
       "state": 23,
       "zipcode": 55447,
+      "country": 1,
       "point" : "POINT(-93.481330 44.981822)"
     }
   },
@@ -527,6 +529,7 @@
       "city": "Coral Gables",
       "state": 9,
       "zipcode": 33146,
+      "country": 1,
       "point" : "POINT(-80.27994 25.721439)"
     }
   },
@@ -540,6 +543,7 @@
       "city": "Champaign",
       "state": 13,
       "zipcode": 61820,
+      "country": 1,
       "point" : "POINT(-88.230399 40.110415)"
     }
   },
@@ -553,6 +557,7 @@
       "city": "Urbana",
       "state": 13,
       "zipcode":  61801,
+      "country": 1,
       "point" : "POINT(-88.204848 40.111597)"
     }
   },
@@ -764,6 +769,14 @@
     "fields": {
       "name" : "Spotify",
       "description" : "A streaming music library with a butt load of music"
+    }
+  },
+
+  {
+    "pk": 1,
+    "model" : "udj.country",
+    "fields":{
+      "name":"United States"
     }
   },
 

@@ -22,11 +22,11 @@ from udj.views.views06.decorators import PlayerExists
 from udj.views.views06.decorators import ActivePlayerExists
 from udj.views.views06.decorators import HasNZParams
 from udj.views.views06.authdecorators import NeedsAuth
-from udj.views.views06.authdecorators import TicketUserMatch
 from udj.views.views06.authdecorators import IsOwnerOrParticipates
 from udj.views.views06.authdecorators import IsOwner
 from udj.views.views06.decorators import UpdatePlayerActivity
 from udj.views.views06.auth import hashPlayerPassword
+from udj.views.views06.auth import getUserForTicket
 from udj.views.views06.JSONCodecs import UDJEncoder
 
 
@@ -46,12 +46,18 @@ from django.contrib.gis.geos import Point
 
 
 def isValidLocation(location):
-  return \
-    'address' in location and \
-    'city' in location and \
-    'state' in location and \
-    State.objects.filter(name__iexact=location['state']).exists() and \
-    'zipcode' in location
+  if not ( 'zipcode' in location and 'country' in location):
+    return false
+
+  if 'state' in location and \
+    not State.objects.filter(name__iexact=location['state']).exists():
+    return false
+
+  if not Country.objects.filter(name__iexact=location['country']).exists():
+    return false
+
+  return true
+
 
 def doLocationSet(address, city, state, zipcode, player):
   lat, lon = geocodeLocation(address, city, state, zipcode)
@@ -66,23 +72,22 @@ def doLocationSet(address, city, state, zipcode, player):
 
 @csrf_exempt
 @NeedsAuth
-@TicketUserMatch
 @AcceptsMethods(['PUT'])
 @NeedsJSON
 @transaction.commit_on_success
 def createPlayer(request, user_id):
-  user = User.objects.get(pk=user_id)
+  user = getUserForTicket(request)
   try:
     newPlayerJSON = json.loads(request.raw_post_data)
   except ValueError:
     return HttpResponseBadRequest('Bad JSON')
 
   #Ensure the name attribute was provided with the JSON
-  newPlayerName = ""
   try:
     newPlayerName = newPlayerJSON['name']
   except KeyError:
     return HttpResponseBadRequest('No name given')
+
 
   #Ensure that the suers doesn't already have a player with the given name
   conflictingPlayer = Player.objects.filter(owning_user=user, name=newPlayerName)
@@ -92,6 +97,7 @@ def createPlayer(request, user_id):
   #Create and save new player
   newPlayer = Player(owning_user=user, name=newPlayerName)
   newPlayer.save()
+
 
   #If password provided, create and save password
   if 'password' in newPlayerJSON:
@@ -111,6 +117,7 @@ def createPlayer(request, user_id):
 
   return HttpResponse(json.dumps({'player_id' : newPlayer.id}), status=201, content_type="text/json")
 
+"""
 @csrf_exempt
 @AcceptsMethods(['POST'])
 @NeedsAuth
@@ -393,4 +400,4 @@ def getRecentlyPlayed(request, user, player_id, activePlayer):
     .order_by('-time_played')[:songs_limit]
 
   return HttpResponse(json.dumps([song.playlist_entry for song in songs], cls=UDJEncoder))
-
+"""

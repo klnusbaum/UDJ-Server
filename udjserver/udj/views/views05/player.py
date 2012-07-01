@@ -8,6 +8,7 @@ from udj.headers import MISSING_RESOURCE_HEADER
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER
 from udj.models import Vote
 from udj.models import Player
+from udj.models import Country
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
 from udj.models import State
@@ -84,6 +85,7 @@ def doLocationSet(address, city, state, zipcode, player):
     city=city,
     state=State.objects.get(name__iexact=state),
     zipcode=zipcode,
+    country=Country.objects.get(name="United States"),
     point=Point(lon, lat)
   ).save()
 
@@ -212,6 +214,7 @@ def setLocation(request, user_id, player_id, player):
         'city' : city,
         'state' : State.objects.get(name=state),
         'zipcode' : zipcode,
+        'country' : Country.objects.get(name="United States"),
         'point' : Point(lon, lat)
       }
     )
