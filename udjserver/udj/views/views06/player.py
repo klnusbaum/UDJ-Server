@@ -44,6 +44,8 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.contrib.gis.geos import *
 from django.contrib.gis.measure import D
 
+from settings import default_search_radius, max_search_radius, min_search_radius
+
 
 def isValidLocation(location):
   return \
@@ -56,12 +58,21 @@ def isValidLocation(location):
 @NeedsAuth
 @AcceptsMethods(['GET'])
 def getNearbyPlayers(request, latitude, longitude):
+
+  search_limit = int(request.GET.get('max_results', 20))
+  search_limit = min(search_limit, 100)
+
+  search_radius = int(request.GET.get('radius', default_search_radius))
+  if search_radius >= max_search_radius or search_radius < min_search_radius:
+    radii_info = { 'min_radius' : min_search_radius, 'max_radius' : max_search_radius}
+    return HttpResponse(json.dumps(radii_info), status=406)
+
   givenLat = float(latitude)
   givenLon = float(longitude)
   point = Point(givenLon, givenLat)
 
   nearbyLocations = PlayerLocation.objects.exclude(player__state='IN').filter(
-    point__distance_lte=(point, D(km=5))).distance(point).order_by('distance')[:100]
+    point__distance_lte=(point, D(km=search_radius))).distance(point).order_by('distance')[:search_limit]
 
   nearbyPlayers = [location.player for location in nearbyLocations]
 
@@ -71,7 +82,10 @@ def getNearbyPlayers(request, latitude, longitude):
 @AcceptsMethods(['GET'])
 @HasNZParams(['name'])
 def getPlayers(request):
-  players = Player.objects.filter(name__icontains=request.GET['name']).exclude(state='IN')
+  search_limit = int(request.GET.get('max_results', 20))
+  search_limit = min(search_limit, 100)
+
+  players = Player.objects.filter(name__icontains=request.GET['name']).exclude(state='IN')[:search_limit]
   return HttpResponse(json.dumps(players, cls=UDJEncoder), content_type="text/json")
 
 

@@ -143,8 +143,9 @@ LOGGING = {
 def geocodeLocation(address, city, state, zipcode):
   raise ImproperlyConfigured('Must specifiy a function for geocoding')
 
-def sortActivePlaylist(queuedEntries):
-  raise ImproperlyConfigured('Must specifiy a function for sorting active playlists')
+default_search_radius = 5
+max_search_radius = 20
+min_search_radius = 1
 
 try:
   from settings_local import *
