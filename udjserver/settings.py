@@ -140,7 +140,7 @@ LOGGING = {
     }
 }
 
-def geocodeLocation(address, city, state, zipcode):
+def geocodeLocation(postal_code, country, address=None, city=None, region=None):
   raise ImproperlyConfigured('Must specifiy a function for geocoding')
 
 default_search_radius = 5

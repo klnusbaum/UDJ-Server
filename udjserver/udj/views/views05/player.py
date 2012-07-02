@@ -75,7 +75,7 @@ def getPlayers(request):
 
 
 def doLocationSet(address, city, state, zipcode, player):
-  lat, lon = geocodeLocation(address, city, state, zipcode)
+  lat, lon = geocodeLocation(zipcode, "United State", address, city, state)
   PlayerLocation(
     player=player,
     point=Point(lon, lat)
@@ -198,7 +198,7 @@ def setLocation(request, user_id, player_id, player):
     city = request.POST['city']
     state = request.POST['state']
     zipcode = request.POST['zipcode']
-    lat, lon = geocodeLocation(address, city, state, zipcode)
+    lat, lon = geocodeLocation(zipcode, "United States", address, city, state)
     playerLocation, created = PlayerLocation.objects.get_or_create(
       player=player,
       defaults={

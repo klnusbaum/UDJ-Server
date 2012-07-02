@@ -4,16 +4,22 @@ from urllib import urlencode
 
 def USCWebGISGeocoder(address, city, state, zipcode, apiKey):
   uscwebgisUrl = "/Services/Geocode/WebService/GeocoderWebServiceHttpNonParsed_V02_96.aspx?"
-  #TODO Need to scrub location values. could be vulnerable to a url redirect
   queryParams = {
-    'streetAddress' : address,
-    'city' : city,
-    'state' : state,
     'zip' : zipcode,
     'apiKey' : apiKey,
     'version' : '2.96',
     'format' : 'csv',
   }
+
+  if not address is None:
+    queryParams['streetAddress'] = address
+
+  if not city is None:
+    queryParams['city'] = city
+
+  if not state is None:
+    queryParams['state'] = state
+
   requestUrl = uscwebgisUrl + urlencode(queryParams)
 
   conn = HTTPSConnection('webgis.usc.edu')
