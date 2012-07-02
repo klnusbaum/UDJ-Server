@@ -8,10 +8,8 @@ from udj.headers import MISSING_RESOURCE_HEADER
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER
 from udj.models import Vote
 from udj.models import Player
-from udj.models import Country
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
-from udj.models import State
 from udj.models import Participant
 from udj.models import LibraryEntry
 from udj.models import ActivePlaylistEntry
@@ -52,7 +50,6 @@ def isValidLocation(location):
     'address' in location and \
     'city' in location and \
     'state' in location and \
-    State.objects.filter(name__iexact=location['state']).exists() and \
     'zipcode' in location
 
 @NeedsAuth
@@ -81,10 +78,6 @@ def doLocationSet(address, city, state, zipcode, player):
   lat, lon = geocodeLocation(address, city, state, zipcode)
   PlayerLocation(
     player=player,
-    address=address,
-    city=city,
-    state=State.objects.get(name__iexact=state),
-    zipcode=zipcode,
     point=Point(lon, lat)
   ).save()
 
@@ -209,20 +202,11 @@ def setLocation(request, user_id, player_id, player):
     playerLocation, created = PlayerLocation.objects.get_or_create(
       player=player,
       defaults={
-        'address' : address,
-        'city' : city,
-        'state' : State.objects.get(name__iexact=state),
-        'zipcode' : zipcode,
         'point' : Point(lon, lat)
       }
     )
     if not created:
-      playerLocation.address = address
-      playerLocation.city = city
-      playerLocation.state = State.objects.get(name=state)
-      playerLocation.zipcode = zipcode
-      playerLocation.latitude = lat
-      playerLocation.longitude = lon
+      playerLocation.point = Point(lon, lat)
       playerLocation.save()
     return HttpResponse()
   except LocationNotFoundError:

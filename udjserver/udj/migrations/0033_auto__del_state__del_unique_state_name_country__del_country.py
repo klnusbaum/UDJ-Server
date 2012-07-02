@@ -6,17 +6,36 @@ from django.db import models
 
 
 class Migration(SchemaMigration):
-    no_dry_run = True
-
 
     def forwards(self, orm):
-        # Deleting field 'PlayerLocation.country'
-        db.delete_column('udj_playerlocation', 'country_id')
+        # Removing unique constraint on 'State', fields ['name', 'country']
+        db.delete_unique('udj_state', ['name', 'country_id'])
+
+        # Deleting model 'State'
+        db.delete_table('udj_state')
+
+        # Deleting model 'Country'
+        db.delete_table('udj_country')
 
     def backwards(self, orm):
+        # Adding model 'State'
+        db.create_table('udj_state', (
+            ('country', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['udj.Country'])),
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=2)),
+        ))
+        db.send_create_signal('udj', ['State'])
 
-        # User chose to not deal with backwards NULL issues for 'PlayerLocation.country'
-        raise RuntimeError("Cannot reverse this migration. 'PlayerLocation.country' and its values cannot be restored.")
+        # Adding unique constraint on 'State', fields ['name', 'country']
+        db.create_unique('udj_state', ['name', 'country_id'])
+
+        # Adding model 'Country'
+        db.create_table('udj_country', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=100, unique=True)),
+        ))
+        db.send_create_signal('udj', ['Country'])
+
     models = {
         'auth.group': {
             'Meta': {'object_name': 'Group'},
@@ -61,11 +80,6 @@ class Migration(SchemaMigration):
             'song': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.LibraryEntry']"}),
             'state': ('django.db.models.fields.CharField', [], {'default': "u'QE'", 'max_length': '2'}),
             'time_added': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'})
-        },
-        'udj.country': {
-            'Meta': {'object_name': 'Country'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '100'})
         },
         'udj.externallibrary': {
             'Meta': {'object_name': 'ExternalLibrary'},
@@ -114,13 +128,9 @@ class Migration(SchemaMigration):
         },
         'udj.playerlocation': {
             'Meta': {'object_name': 'PlayerLocation'},
-            'address': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True'}),
-            'city': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'player': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.Player']", 'unique': 'True'}),
-            'point': ('django.contrib.gis.db.models.fields.PointField', [], {'default': "'POINT(0.0 0.0)'"}),
-            'state': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.State']", 'null': 'True'}),
-            'zipcode': ('django.db.models.fields.IntegerField', [], {})
+            'point': ('django.contrib.gis.db.models.fields.PointField', [], {'default': "'POINT(0.0 0.0)'"})
         },
         'udj.playerpassword': {
             'Meta': {'object_name': 'PlayerPassword'},
@@ -141,12 +151,6 @@ class Migration(SchemaMigration):
             'function_name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '200'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '200'})
-        },
-        'udj.state': {
-            'Meta': {'object_name': 'State'},
-            'country': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.Country']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '2'})
         },
         'udj.ticket': {
             'Meta': {'unique_together': "(('user', 'ticket_hash'),)", 'object_name': 'Ticket'},

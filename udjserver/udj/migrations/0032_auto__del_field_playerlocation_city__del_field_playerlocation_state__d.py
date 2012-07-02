@@ -6,17 +6,39 @@ from django.db import models
 
 
 class Migration(SchemaMigration):
-    no_dry_run = True
-
 
     def forwards(self, orm):
-        # Deleting field 'PlayerLocation.country'
-        db.delete_column('udj_playerlocation', 'country_id')
+        # Deleting field 'PlayerLocation.city'
+        db.delete_column('udj_playerlocation', 'city')
+
+        # Deleting field 'PlayerLocation.state'
+        db.delete_column('udj_playerlocation', 'state_id')
+
+        # Deleting field 'PlayerLocation.address'
+        db.delete_column('udj_playerlocation', 'address')
+
+        # Deleting field 'PlayerLocation.zipcode'
+        db.delete_column('udj_playerlocation', 'zipcode')
 
     def backwards(self, orm):
+        # Adding field 'PlayerLocation.city'
+        db.add_column('udj_playerlocation', 'city',
+                      self.gf('django.db.models.fields.CharField')(max_length=50, null=True),
+                      keep_default=False)
 
-        # User chose to not deal with backwards NULL issues for 'PlayerLocation.country'
-        raise RuntimeError("Cannot reverse this migration. 'PlayerLocation.country' and its values cannot be restored.")
+        # Adding field 'PlayerLocation.state'
+        db.add_column('udj_playerlocation', 'state',
+                      self.gf('django.db.models.fields.related.ForeignKey')(to=orm['udj.State'], null=True),
+                      keep_default=False)
+
+        # Adding field 'PlayerLocation.address'
+        db.add_column('udj_playerlocation', 'address',
+                      self.gf('django.db.models.fields.CharField')(max_length=50, null=True),
+                      keep_default=False)
+
+
+        # User chose to not deal with backwards NULL issues for 'PlayerLocation.zipcode'
+        raise RuntimeError("Cannot reverse this migration. 'PlayerLocation.zipcode' and its values cannot be restored.")
     models = {
         'auth.group': {
             'Meta': {'object_name': 'Group'},
@@ -114,13 +136,9 @@ class Migration(SchemaMigration):
         },
         'udj.playerlocation': {
             'Meta': {'object_name': 'PlayerLocation'},
-            'address': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True'}),
-            'city': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'player': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.Player']", 'unique': 'True'}),
-            'point': ('django.contrib.gis.db.models.fields.PointField', [], {'default': "'POINT(0.0 0.0)'"}),
-            'state': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.State']", 'null': 'True'}),
-            'zipcode': ('django.db.models.fields.IntegerField', [], {})
+            'point': ('django.contrib.gis.db.models.fields.PointField', [], {'default': "'POINT(0.0 0.0)'"})
         },
         'udj.playerpassword': {
             'Meta': {'object_name': 'PlayerPassword'},
@@ -143,7 +161,7 @@ class Migration(SchemaMigration):
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '200'})
         },
         'udj.state': {
-            'Meta': {'object_name': 'State'},
+            'Meta': {'unique_together': "(('name', 'country'),)", 'object_name': 'State'},
             'country': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['udj.Country']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '2'})

@@ -102,10 +102,6 @@ class CreatePlayerTests(YunYoungTestCase):
     self.assertFalse(PlayerPassword.objects.filter(player=addedPlayer).exists())
 
     createdLocation = PlayerLocation.objects.get(player__id=givenPlayerId)
-    self.assertEqual(createdLocation.address, location['address'])
-    self.assertEqual(createdLocation.city, location['city'])
-    self.assertEqual(createdLocation.state.name, location['state'])
-    self.assertEqual(createdLocation.zipcode, location['zipcode'])
     self.assertEqual(createdLocation.point.y, 40.1135372574038)
     self.assertEqual(createdLocation.point.x, -88.2240781569526)
 
@@ -137,10 +133,6 @@ class PlayerModificationTests(KurtisTestCase):
     response = self.doPost('/udj/users/2/players/1/location', newLocation)
     self.assertEqual(response.status_code, 200, "Error: " + response.content)
     playerLocation = PlayerLocation.objects.get(player__id=1)
-    self.assertEqual(playerLocation.address, '305 Vicksburg Lane')
-    self.assertEqual(playerLocation.city, 'Plymouth')
-    self.assertEqual(playerLocation.state.id, 23)
-    self.assertEqual(playerLocation.zipcode, 55447)
 
   def testSetLocationWithNoPreviousLocation(self):
     newLocation = {
@@ -153,10 +145,6 @@ class PlayerModificationTests(KurtisTestCase):
     response = self.doPost('/udj/users/2/players/4/location', newLocation)
     self.assertEqual(200, response.status_code)
     playerLocation = PlayerLocation.objects.get(player__id=4)
-    self.assertEqual(playerLocation.address, '305 Vicksburg Lane')
-    self.assertEqual(playerLocation.city, 'Plymouth')
-    self.assertEqual(playerLocation.state.id, 23)
-    self.assertEqual(playerLocation.zipcode, 55447)
 
 class PlayerModificationTests2(AlejandroTestCase):
 
