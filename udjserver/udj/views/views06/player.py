@@ -2,9 +2,6 @@ import json
 import math
 from datetime import datetime
 
-from settings import geocodeLocation
-from settings import default_sorting_algo
-
 from udj.headers import MISSING_RESOURCE_HEADER
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER
 from udj.models import Vote
@@ -44,106 +41,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.contrib.gis.geos import Point
-from django.core.exceptions import ImproperlyConfigured
 
 
 
-def isValidLocation(location):
-  return 'postal_code' in location and 'country' in location
-
-
-
-def setPlayerLocation(location, player):
-  lat, lon = geocodeLocation(location['postal_code'], location['country'], location.get('address', None), location.get('locality', None), location.get('region', None))
-  playerLocation, created = PlayerLocation.objects.get_or_create(
-      player=player,
-      defaults={
-        'point' : Point(lon, lat)
-      }
-    )
-
-  if not created:
-    playerLocation.point = Point(lon, lat)
-    playerLocation.save()
-
-
-
-@csrf_exempt
-@NeedsAuth
-@AcceptsMethods(['PUT'])
-@NeedsJSON
-@transaction.commit_on_success
-def createPlayer(request):
-  user = getUserForTicket(request)
-  try:
-    newPlayerJSON = json.loads(request.raw_post_data)
-  except ValueError:
-    return HttpResponseBadRequest('Bad JSON')
-
-  #Ensure the name attribute was provided with the JSON
-  try:
-    newPlayerName = newPlayerJSON['name']
-  except KeyError:
-    return HttpResponseBadRequest('No name given')
-
-  #Determine which sorting algorithm to use
-  if 'sorting_algorithm_id' in newPlayerJSON:
-    try:
-      sortingAlgo = SortingAlgorithm.objects.get(pk=newPlayerJSON['sorting_algorithm_id'])
-    except ObjectDoesNotExist:
-      toReturn = HttpResponseNotFound()
-      toReturn[MISSING_RESOURCE_HEADER] = 'sorting_algorithm'
-      return toReturn
-  else:
-    try:
-      sortingAlgo = SortingAlgorithm.objects.get(function_name=default_sorting_algo)
-    except ObjectDoesNotExist:
-      raise ImproperlyConfigured('Default sorting algorithm is not in database')
-
-
-  #Determine external library
-  externalLib = None
-  if 'external_library_id' in newPlayerJSON:
-    try:
-      externalLib = ExternalLibrary.objects.get(pk=newPlayerJSON['external_library_id'])
-    except ObjectDoesNotExist:
-      toReturn = HttpResponseNotFound()
-      toReturn[MISSING_RESOURCE_HEADER] = 'external_library'
-      return toReturn
-
-
-  #Ensure that the suers doesn't already have a player with the given name
-  conflictingPlayer = Player.objects.filter(owning_user=user, name=newPlayerName)
-  if conflictingPlayer.exists():
-    return HttpResponse('A player with that name already exists', status=409)
-
-  #Create and save new player
-  newPlayer = Player(
-      owning_user=user,
-      name=newPlayerName,
-      sorting_algo=sortingAlgo,
-      external_library=externalLib)
-  newPlayer.save()
-
-
-
-
-  #If password provided, create and save password
-  if 'password' in newPlayerJSON:
-    PlayerPassword(player=newPlayer, password_hash=hashPlayerPassword(newPlayerJSON['password'])).save()
-
-  #If locaiton provided, geocode it and save it
-  if 'location' in newPlayerJSON:
-    location = newPlayerJSON['location']
-    if isValidLocation(location):
-      try:
-        setPlayerLocation(location, newPlayer)
-      except LocationNotFoundError:
-        return HttpResponseBadRequest('Location not found')
-    else:
-      return HttpResponseBadRequest('Bad location')
-
-  return HttpResponse(json.dumps({'player_id' : newPlayer.id}), status=201, content_type="text/json")
 
 """
 @csrf_exempt

@@ -23,7 +23,7 @@ urlpatterns += patterns('udj.views.views06.player_search',
   (r'^players$', 'getPlayers'),
 )
 
-urlpatterns += patterns('udj.views.views06.player',
+urlpatterns += patterns('udj.views.views06.player_creation',
   (r'^players/player$', 'createPlayer'),
 )
 
