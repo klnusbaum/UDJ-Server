@@ -10,6 +10,7 @@ from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER
 from udj.models import Vote
 from udj.models import Player
 from udj.models import PlayerLocation
+from udj.models import ExternalLibrary
 from udj.models import SortingAlgorithm
 from udj.models import PlayerPassword
 from udj.models import Participant
@@ -85,18 +86,30 @@ def createPlayer(request):
   except KeyError:
     return HttpResponseBadRequest('No name given')
 
+  #Determine which sorting algorithm to use
   if 'sorting_algorithm_id' in newPlayerJSON:
     try:
       sortingAlgo = SortingAlgorithm.objects.get(pk=newPlayerJSON['sorting_algorithm_id'])
     except ObjectDoesNotExist:
       toReturn = HttpResponseNotFound()
       toReturn[MISSING_RESOURCE_HEADER] = 'sorting_algorithm'
+      return toReturn
   else:
     try:
       sortingAlgo = SortingAlgorithm.objects.get(function_name=default_sorting_algo)
     except ObjectDoesNotExist:
       raise ImproperlyConfigured('Default sorting algorithm is not in database')
 
+
+  #Determine external library
+  externalLib = None
+  if 'external_library_id' in newPlayerJSON:
+    try:
+      externalLib = ExternalLibrary.objects.get(pk=newPlayerJSON['external_library_id'])
+    except ObjectDoesNotExist:
+      toReturn = HttpResponseNotFound()
+      toReturn[MISSING_RESOURCE_HEADER] = 'external_library'
+      return toReturn
 
 
   #Ensure that the suers doesn't already have a player with the given name
@@ -105,8 +118,14 @@ def createPlayer(request):
     return HttpResponse('A player with that name already exists', status=409)
 
   #Create and save new player
-  newPlayer = Player(owning_user=user, name=newPlayerName, sorting_algo=sortingAlgo)
+  newPlayer = Player(
+      owning_user=user,
+      name=newPlayerName,
+      sorting_algo=sortingAlgo,
+      external_library=externalLib)
   newPlayer.save()
+
+
 
 
   #If password provided, create and save password
