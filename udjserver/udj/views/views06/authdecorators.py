@@ -11,7 +11,6 @@ from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
 
 
-
 def userParticipates(player, user):
   return Participant.objects.filter(user=user).exists()
 
@@ -58,14 +57,15 @@ def NeedsAuth(function):
       return function(*args, **kwargs)
   return wrapper
 
-def TicketUserMatch(function):
+def IsOwnerOrAdmin(function):
   def wrapper(*args, **kwargs):
     request = args[0]
-    user_id = kwargs['user_id']
-    if not ticketMatchesUser(request, user_id):
-      return HttpResponseForbidden("The ticket doesn't match the given user\n" +
-        "Given Ticket: \"" + request.META[DJANGO_TICKET_HEADER] + "\"\n" +
-        "Given User id: \"" + user_id + "\"")
-    else:
+    user = getUserForTicket(request)
+    player = kwargs['player']
+    if player.owning_user==user or player.isAdmin(user):
       return function(*args, **kwargs)
+    else:
+      return HttpResponseForbidden()
   return wrapper
+
+

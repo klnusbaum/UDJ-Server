@@ -13,7 +13,6 @@ from udj.views.views06.decorators import NeedsJSON
 from udj.views.views06.authdecorators import NeedsAuth
 from udj.views.views06.auth import hashPlayerPassword
 from udj.views.views06.auth import getUserForTicket
-from udj.views.views06.helpers import isValidLocation
 from udj.views.views06.helpers import setPlayerLocation
 
 from django.db import transaction
@@ -26,6 +25,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ImproperlyConfigured
 from django.core.exceptions import ObjectDoesNotExist
 
+def isValidLocation(location):
+  return 'postal_code' in location and 'country' in location
 
 @csrf_exempt
 @NeedsAuth

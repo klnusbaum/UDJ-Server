@@ -35,6 +35,9 @@ class Player(models.Model):
   sorting_algo = models.ForeignKey(SortingAlgorithm)
   external_library = models.ForeignKey(ExternalLibrary, null=True)
 
+  def isAdmin(self, user):
+    return PlayerAdmin.objects.filter(admin_user=user, player=self).exists()
+
   def sortPlaylist(self, toSort):
     from udj import playlistalgos
     toCall = getattr(playlistalgos, self.sorting_algo.function_name)
@@ -186,4 +189,15 @@ class Favorite(models.Model):
 
   def __unicode__(self):
     return self.user.username + " likes " + self.favorite_song.title
+
+
+class PlayerAdmin(models.Model):
+  admin_user = models.ForeignKey(user)
+  player = models.ForeignKey(admin)
+
+  def Meta:
+    unique_together = ("admin_user", "player")
+
+  def __unicode__(self):
+    return self.user.username + " is an admin for " + self.player.name
 

@@ -4,8 +4,6 @@ from settings import geocodeLocation
 
 from django.contrib.gis.geos import Point
 
-def isValidLocation(location):
-  return 'postal_code' in location and 'country' in location
 
 
 
