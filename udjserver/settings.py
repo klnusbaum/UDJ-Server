@@ -140,8 +140,10 @@ LOGGING = {
     }
 }
 
-def geocodeLocation(postal_code, country, address=None, city=None, region=None):
+def geocodeLocation(postal_code, country, address=None, locality=None, region=None):
   raise ImproperlyConfigured('Must specifiy a function for geocoding')
+
+default_sorting_algo = "totalVotes"
 
 default_search_radius = 5
 max_search_radius = 20

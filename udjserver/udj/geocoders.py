@@ -2,7 +2,7 @@ from httplib import HTTPSConnection
 from udj.exceptions import LocationNotFoundError
 from urllib import urlencode
 
-def USCWebGISGeocoder(address, city, state, zipcode, apiKey):
+def USCWebGISGeocoder(address, locality, region, zipcode, apiKey):
   uscwebgisUrl = "/Services/Geocode/WebService/GeocoderWebServiceHttpNonParsed_V02_96.aspx?"
   queryParams = {
     'zip' : zipcode,
@@ -14,13 +14,14 @@ def USCWebGISGeocoder(address, city, state, zipcode, apiKey):
   if not address is None:
     queryParams['streetAddress'] = address
 
-  if not city is None:
-    queryParams['city'] = city
+  if not locality is None:
+    queryParams['city'] = locality
 
-  if not state is None:
-    queryParams['state'] = state
+  if not region is None:
+    queryParams['state'] = region
 
   requestUrl = uscwebgisUrl + urlencode(queryParams)
+
 
   conn = HTTPSConnection('webgis.usc.edu')
   geocodeRequest = conn.request('GET', requestUrl)

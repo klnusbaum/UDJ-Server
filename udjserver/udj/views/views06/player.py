@@ -3,14 +3,15 @@ import math
 from datetime import datetime
 
 from settings import geocodeLocation
+from settings import default_sorting_algo
 
 from udj.headers import MISSING_RESOURCE_HEADER
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER
 from udj.models import Vote
 from udj.models import Player
 from udj.models import PlayerLocation
+from udj.models import SortingAlgorithm
 from udj.models import PlayerPassword
-from udj.models import State
 from udj.models import Participant
 from udj.models import LibraryEntry
 from udj.models import ActivePlaylistEntry
@@ -42,39 +43,27 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.contrib.gis.geos import Point
+from django.core.exceptions import ImproperlyConfigured
 
 
 
 def isValidLocation(location):
-  if not ( 'zipcode' in location and 'country' in location):
-    return false
-
-  if 'state' in location and \
-    not State.objects.filter(name__iexact=location['state']).exists():
-    return false
-
-  if not Country.objects.filter(name__iexact=location['country']).exists():
-    return false
-
-  return true
+  return 'postal_code' in location and 'country' in location
 
 
-def doLocationSet(zipcode, country, player, address=None, state=None, city=None):
-  lat, lon = geocodeLocation(zipcode, country, address, state, city)
-  newLocation = PlayerLocation(
-    player=player,
-    zipcode=zipcode,
-    country=Country.objects.get(name__iexact=country),
-    point=Point(lon, lat)
-  )
 
-  if address is not None:
-    newLocation.address = address
+def setPlayerLocation(location, player):
+  lat, lon = geocodeLocation(location['postal_code'], location['country'], location.get('address', None), location.get('locality', None), location.get('region', None))
+  playerLocation, created = PlayerLocation.objects.get_or_create(
+      player=player,
+      defaults={
+        'point' : Point(lon, lat)
+      }
+    )
 
-  if state is not None:
-    newLocation.state = State.objects.get(name__iexact=state)
-
-  if city is not None:
+  if not created:
+    playerLocation.point = Point(lon, lat)
+    playerLocation.save()
 
 
 
@@ -83,7 +72,7 @@ def doLocationSet(zipcode, country, player, address=None, state=None, city=None)
 @AcceptsMethods(['PUT'])
 @NeedsJSON
 @transaction.commit_on_success
-def createPlayer(request, user_id):
+def createPlayer(request):
   user = getUserForTicket(request)
   try:
     newPlayerJSON = json.loads(request.raw_post_data)
@@ -96,6 +85,19 @@ def createPlayer(request, user_id):
   except KeyError:
     return HttpResponseBadRequest('No name given')
 
+  if 'sorting_algorithm_id' in newPlayerJSON:
+    try:
+      sortingAlgo = SortingAlgorithm.objects.get(pk=newPlayerJSON['sorting_algorithm_id'])
+    except ObjectDoesNotExist:
+      toReturn = HttpResponseNotFound()
+      toReturn[MISSING_RESOURCE_HEADER] = 'sorting_algorithm'
+  else:
+    try:
+      sortingAlgo = SortingAlgorithm.objects.get(function_name=default_sorting_algo)
+    except ObjectDoesNotExist:
+      raise ImproperlyConfigured('Default sorting algorithm is not in database')
+
+
 
   #Ensure that the suers doesn't already have a player with the given name
   conflictingPlayer = Player.objects.filter(owning_user=user, name=newPlayerName)
@@ -103,7 +105,7 @@ def createPlayer(request, user_id):
     return HttpResponse('A player with that name already exists', status=409)
 
   #Create and save new player
-  newPlayer = Player(owning_user=user, name=newPlayerName)
+  newPlayer = Player(owning_user=user, name=newPlayerName, sorting_algo=sortingAlgo)
   newPlayer.save()
 
 
@@ -116,8 +118,7 @@ def createPlayer(request, user_id):
     location = newPlayerJSON['location']
     if isValidLocation(location):
       try:
-        doLocationSet(location['address'], location['city'],
-            location['state'], location['zipcode'], newPlayer)
+        setPlayerLocation(location, newPlayer)
       except LocationNotFoundError:
         return HttpResponseBadRequest('Location not found')
     else:
