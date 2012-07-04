@@ -88,44 +88,6 @@ def changeCurrentSong(activePlayer, lib_id):
 
 
 
-@csrf_exempt
-@NeedsAuth
-@AcceptsMethods(['POST'])
-@TicketUserMatch
-@PlayerExists
-@HasNZParams(['state'])
-def setPlayerState(request, user_id, player_id, player):
-  givenState = request.POST['state']
-
-  if givenState == u'paused':
-    player.state = u'PA'
-  elif givenState == u'playing':
-    player.state = u'PL'
-  elif givenState == u'inactive':
-    player.state = u'IN'
-  else:
-    return HttpResponseBadRequest("Bad state given: " + givenState)
-
-  player.save()
-  return HttpResponse()
-
-@csrf_exempt
-@NeedsAuth
-@AcceptsMethods(['POST'])
-@TicketUserMatch
-@PlayerExists
-@HasNZParams(['volume'])
-def setPlayerVolume(request, user_id, player_id, player):
-  try:
-    newVolume = int(request.POST['volume'])
-    if newVolume > 10 or newVolume < 0:
-      return HttpResponseBadRequest()
-    player.volume = newVolume
-    player.save()
-    return HttpResponse()
-  except ValueError:
-    return HttpResponseBadRequest('Bad volume: ' + request.POST['volume'])
-
 
 def onSuccessfulPlayerAuth(activePlayer, user_id):
   obj, created = Participant.objects.get_or_create(player=activePlayer, user=User.objects.get(pk=user_id))

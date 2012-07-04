@@ -24,7 +24,7 @@ def changePlayerName(request, player_id, player):
   givenName = request.POST['name']
   if givenName == '':
     return HttpResponseBadRequest("Bad name")
-  if Player.objects.filter(owning_user__id=user_id, name=givenName).exists():
+  if Player.objects.filter(owning_user=player__owning_user, name=givenName).exists():
     return HttpResponse(status=409)
 
   player.name=givenName
@@ -39,9 +39,9 @@ def changePlayerName(request, player_id, player):
 @PlayerExists
 def modifyPlayerPassword(request, player_id, player):
   if request.method == 'POST':
-    return setPlayerPassword(request, user_id, player_id, player)
+    return setPlayerPassword(request, player_id, player)
   elif request.method == 'DELETE':
-    return deletePlayerPassword(request, user_id, player_id, player)
+    return deletePlayerPassword(request, player_id, player)
 
 @HasNZParams(['password'])
 def setPlayerPassword(request, player_id, player):
@@ -60,7 +60,7 @@ def setPlayerPassword(request, player_id, player):
 
   return HttpResponse()
 
-def deletePlayerPassword(request, user_id, player_id, player):
+def deletePlayerPassword(request, player_id, player):
   try:
     toDelete = PlayerPassword.objects.get(player=player)
     toDelete.delete()
@@ -92,3 +92,62 @@ def setLocation(request, player_id, player):
     return HttpResponseBadRequest('Location not found')
 
   return HttpRequest()
+
+@csrf_exempt
+@AcceptsMethods(['POST'])
+@NeedsAuth
+@IsOwnerOrAdmin
+@PlayerExists
+@HasNZParams(['sorting_algorithm_id'])
+def setSortingAlgorithm(request, player_id, player):
+  try:
+    newAlgorithm = SortingAlgorithm.objects.get(pk=request.POST['sorting_algorithm_id'])
+  except ObjectDoesNotExist:
+    toReturn = HttpResponseNotFound()
+    toReturn[MISSING_RESOURCE_HEADER] = "sorting_algorithm"
+    return toReturn
+
+  player.sorting_algo = newAlgorithm
+  player.save()
+  return HttpResponse()
+
+
+@csrf_exempt
+@NeedsAuth
+@AcceptsMethods(['POST'])
+@PlayerExists
+@IsOwnerOrAdmin
+@HasNZParams(['state'])
+def setPlayerState(request, player_id, player):
+  givenState = request.POST['state']
+
+  if givenState == u'paused':
+    player.state = u'PA'
+  elif givenState == u'playing':
+    player.state = u'PL'
+  elif givenState == u'inactive':
+    player.state = u'IN'
+  else:
+    return HttpResponseBadRequest("Bad state given: " + givenState)
+
+  player.save()
+  return HttpResponse()
+
+
+@csrf_exempt
+@NeedsAuth
+@AcceptsMethods(['POST'])
+@PlayerExists
+@IsOwnerOrAdmin
+@HasNZParams(['volume'])
+def setPlayerVolume(request, user_id, player_id, player):
+  try:
+    newVolume = int(request.POST['volume'])
+    if newVolume > 10 or newVolume < 0:
+      return HttpResponseBadRequest()
+    player.volume = newVolume
+    player.save()
+    return HttpResponse()
+  except ValueError:
+    return HttpResponseBadRequest('Bad volume: ' + request.POST['volume'])
+
