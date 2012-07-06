@@ -192,10 +192,10 @@ class Favorite(models.Model):
 
 
 class PlayerAdmin(models.Model):
-  admin_user = models.ForeignKey(user)
-  player = models.ForeignKey(admin)
+  admin_user = models.ForeignKey(User)
+  player = models.ForeignKey(Player)
 
-  def Meta:
+  class Meta:
     unique_together = ("admin_user", "player")
 
   def __unicode__(self):

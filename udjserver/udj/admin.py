@@ -94,7 +94,7 @@ class TimePlayedAdmin(admin.ModelAdmin):
 
 
 class PlayerLocationAdmin(gisadmin.ModelAdmin):
-  list_display = ('player', 'address', 'city', 'state', 'zipcode', 'point',)
+  list_display = ('player', 'point',)
 
 class SortingAlgorithmAdmin(admin.ModelAdmin):
   list_display = ('name', 'description', 'function_name',)
