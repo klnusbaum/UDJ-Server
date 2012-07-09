@@ -52,10 +52,9 @@ def NeedsJSON(function):
 def PlayerExists(function):
   def wrapper(*args, **kwargs):
     request = args[0]
-    user_id = kwargs['user_id']
     player_id = kwargs['player_id']
     try:
-      actualPlayer = Player.objects.get(owning_user__id=user_id, id=player_id)
+      actualPlayer = Player.objects.get(pk=player_id)
       kwargs['player'] = actualPlayer
       return function(*args, **kwargs)
     except ObjectDoesNotExist:

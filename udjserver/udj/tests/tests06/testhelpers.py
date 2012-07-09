@@ -47,6 +47,7 @@ class DoesServerOpsTestCase(TestCase):
   def isJSONResponse(self, response):
     self.assertEqual(response['Content-Type'], 'text/json')
 
+
 class KurtisTestCase(DoesServerOpsTestCase):
   username = "kurtis"
   userpass = "testkurtis"
@@ -78,3 +79,4 @@ def EnsureParticipationUpdated(user_id, player_id):
       (args[0]).assertTrue(newTime > oldTime)
     return wrapper
   return decorator
+
