@@ -34,7 +34,7 @@ class ReissueAuthTest(TestCase):
 
 
 
-class AuthTest(TestCase):
+class AuthTests(TestCase):
   fixtures = ['test_fixture']
   client = Client()
   kurtis = User.objects.get(username='kurtis')
@@ -45,7 +45,7 @@ class AuthTest(TestCase):
 
   @staticmethod
   def getCurrentTicket():
-    return Ticket.objects.get(user=AuthTest.kurtis)
+    return Ticket.objects.get(user=AuthTests.kurtis)
 
   def testAuth(self):
     response = self.issueTicketRequest()
@@ -57,8 +57,8 @@ class AuthTest(TestCase):
     ticket_hash = ticket_and_user_id['ticket_hash']
     user_id = ticket_and_user_id['user_id']
 
-    self.assertEqual(user_id, AuthTest.kurtis.id)
-    self.assertEqual(ticket_hash, AuthTest.getCurrentTicket().ticket_hash)
+    self.assertEqual(user_id, AuthTests.kurtis.id)
+    self.assertEqual(ticket_hash, AuthTests.getCurrentTicket().ticket_hash)
 
   def testDoubleAuth(self):
     response = self.issueTicketRequest()
@@ -70,8 +70,8 @@ class AuthTest(TestCase):
     ticket_hash = ticket_and_user_id['ticket_hash']
     user_id = ticket_and_user_id['user_id']
 
-    self.assertEqual(user_id, AuthTest.kurtis.id)
-    self.assertEqual(ticket_hash, AuthTest.getCurrentTicket().ticket_hash)
+    self.assertEqual(user_id, AuthTests.kurtis.id)
+    self.assertEqual(ticket_hash, AuthTests.getCurrentTicket().ticket_hash)
 
     response = self.issueTicketRequest()
 

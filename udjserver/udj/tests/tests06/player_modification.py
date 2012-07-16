@@ -1,25 +1,18 @@
-import json
-from udj import player_mod_test_helpers
-from udj.models import Player, PlayerPassword
-from udj.tests.tests06.testhelpers import AlejandroTestCase
-from udj.headers import MISSING_RESOURCE_HEADER
-from udj.views.views06.auth import hashPlayerPassword
+import udj
 
-class OwnerModificationTests(player_mod_test_helpers.BasicPlayerModificationTests):
+
+class OwnerModificationTests(udj.testhelpers.tests06.testclasses.BasicPlayerModificationTests):
   username = "kurtis"
   userpass = "testkurtis"
 
-
-class AdminModificationTests(player_mod_test_helpers.BasicPlayerModificationTests):
+class AdminModificationTests(udj.testhelpers.tests06.testclasses.BasicPlayerModificationTests):
   username = "lucas"
   userpass = "testlucas"
 
-
-
-class OwnerPasswordModificationTests(player_mod_test_helpers.PasswordModificationTests):
+class OwnerPasswordModificationTests(udj.testhelpers.tests06.testclasses.PasswordModificationTests):
   username = 'alejandro'
   userpass = 'testalejandro'
 
-class AdminPasswordModificationTests(player_mod_test_helpers.PasswordModificationTests):
+class AdminPasswordModificationTests(udj.testhelpers.tests06.testclasses.PasswordModificationTests):
   username = 'kurtis'
   userpass = 'testkurtis'

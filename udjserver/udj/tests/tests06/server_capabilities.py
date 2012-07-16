@@ -1,5 +1,5 @@
 import json
-from udj.tests.tests06.testhelpers import KurtisTestCase
+from udj.testhelpers.tests06.testclasses import KurtisTestCase
 
 class ServerCapabilities(KurtisTestCase):
 

@@ -1,11 +1,11 @@
 import json
 from datetime import datetime
 
-from udj.tests.tests06.testhelpers import JeffTestCase
-from udj.tests.tests06.testhelpers import YunYoungTestCase
-from udj.tests.tests06.testhelpers import KurtisTestCase
-from udj.tests.tests06.testhelpers import AlejandroTestCase
-from udj.tests.tests06.testhelpers import EnsureParticipationUpdated
+from udj.testhelpers.tests06.testclasses import JeffTestCase
+from udj.testhelpers.tests06.testclasses import YunYoungTestCase
+from udj.testhelpers.tests06.testclasses import KurtisTestCase
+from udj.testhelpers.tests06.testclasses import AlejandroTestCase
+from udj.testhelpers.tests06.testclasses import EnsureParticipationUpdated
 from udj.models import Vote
 from udj.models import LibraryEntry
 from udj.models import Player

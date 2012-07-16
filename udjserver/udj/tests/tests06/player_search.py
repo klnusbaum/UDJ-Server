@@ -1,6 +1,6 @@
 import json
 
-from udj.tests.tests05.testhelpers import JeffTestCase
+from udj.testhelpers.tests06.testclasses import JeffTestCase
 
 from settings import min_search_radius, max_search_radius
 

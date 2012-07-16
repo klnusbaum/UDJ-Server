@@ -1,6 +1,6 @@
 import json
 from udj.models import LibraryEntry, Player, Favorite
-from udj.tests.tests06.testhelpers import KurtisTestCase
+from udj.testhelpers.tests06.testclasses import KurtisTestCase
 from udj.headers import MISSING_RESOURCE_HEADER
 
 class FavoritesTests(KurtisTestCase):

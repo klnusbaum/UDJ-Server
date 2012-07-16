@@ -1,6 +1,6 @@
 import json
 from udj.models import Player, PlayerLocation, PlayerPassword
-from udj.tests.tests06.testhelpers import YunYoungTestCase
+from udj.testhelpers.tests06.testclasses import YunYoungTestCase
 from udj.headers import MISSING_RESOURCE_HEADER
 from udj.views.views06.auth import hashPlayerPassword
 

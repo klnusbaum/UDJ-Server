@@ -1,6 +1,6 @@
 import json
 from udj.models import LibraryEntry, ActivePlaylistEntry
-from udj.tests.tests05.testhelpers import KurtisTestCase
+from udj.testhelpers.tests06.testclasses import KurtisTestCase
 from udj.headers import MISSING_RESOURCE_HEADER
 
 class LibTestCases(KurtisTestCase):
@@ -25,7 +25,7 @@ class LibTestCases(KurtisTestCase):
       "duration" : 160
     }]
 
-    response = self.doJSONPut('/udj/users/2/players/1/library/songs', json.dumps(payload))
+    response = self.doJSONPut('/udj/0_6/players/1/library/songs', json.dumps(payload))
     self.assertEqual(201, response.status_code, response.content)
     self.verifySongAdded(payload[0])
 
@@ -41,37 +41,37 @@ class LibTestCases(KurtisTestCase):
       "duration" : 291
     }]
 
-    response = self.doJSONPut('/udj/users/2/players/1/library/songs', json.dumps(payload))
+    response = self.doJSONPut('/udj/0_6/players/1/library/songs', json.dumps(payload))
     self.assertEqual(409, response.status_code, response.content)
 
   def testDelete(self):
-    response = self.doDelete('/udj/users/2/players/1/library/10')
+    response = self.doDelete('/udj/0_6/players/1/library/10')
     self.assertEqual(200, response.status_code, response.content)
     self.assertEqual(True, LibraryEntry.objects.get(player__id=1, player_lib_song_id=10).is_deleted)
 
   def testDeleteOnPlaylist(self):
-    response = self.doDelete('/udj/users/2/players/1/library/5')
+    response = self.doDelete('/udj/0_6/players/1/library/5')
     self.assertEqual(200, response.status_code, response.content)
     self.assertEqual(True, LibraryEntry.objects.get(player__id=1, player_lib_song_id=5).is_deleted)
     self.assertEqual(u'RM', ActivePlaylistEntry.objects.get(pk=4).state)
 
   def testBadDelete(self):
-    response = self.doDelete('/udj/users/2/players/1/library/12')
+    response = self.doDelete('/udj/0_6/players/1/library/12')
     self.assertEqual(404, response.status_code, response.content)
     self.assertEqual(response[MISSING_RESOURCE_HEADER], 'song')
 
   def testAddSong2BanList(self):
-    response = self.doPut('/udj/users/2/players/1/ban_music/1')
+    response = self.doPut('/udj/0_6/players/1/ban_music/1')
     self.assertEqual(200, response.status_code, response.content)
     self.assertEqual(LibraryEntry.objects.get(player__id=1, player_lib_song_id=1).is_banned, True)
 
   def testUnbanSong(self):
-    response = self.doDelete('/udj/users/2/players/1/ban_music/4')
+    response = self.doDelete('/udj/0_6/players/1/ban_music/4')
     self.assertEqual(200, response.status_code, response.content)
     self.assertEqual(LibraryEntry.objects.get(player__id=1, player_lib_song_id=4).is_banned, False)
 
   def testBadSongBan(self):
-    response = self.doDelete('/udj/users/2/players/1/ban_music/12')
+    response = self.doDelete('/udj/0_6/players/1/ban_music/12')
     self.assertEqual(404, response.status_code, response.content)
     self.assertEqual(response[MISSING_RESOURCE_HEADER], 'song')
 
@@ -88,7 +88,7 @@ class LibTestCases(KurtisTestCase):
 
     to_delete = [1,2]
 
-    response = self.doPost('/udj/users/2/players/1/library',
+    response = self.doPost('/udj/0_6/players/1/library',
       {'to_add' : json.dumps(to_add), 'to_delete' : json.dumps(to_delete)})
 
     self.assertEqual(200, response.status_code, response.content)
@@ -126,7 +126,7 @@ class LibTestCases(KurtisTestCase):
     } 
     ]
     to_delete=[]
-    response = self.doPost('/udj/users/2/players/1/library',
+    response = self.doPost('/udj/0_6/players/1/library',
       {'to_add' : json.dumps(to_add), 'to_delete' : json.dumps(to_delete)})
 
     self.assertEqual(409, response.status_code, response.content)
@@ -147,7 +147,7 @@ class LibTestCases(KurtisTestCase):
     }
     ]
     to_delete=[1,14]
-    response = self.doPost('/udj/users/2/players/1/library',
+    response = self.doPost('/udj/0_6/players/1/library',
       {'to_add' : json.dumps(to_add), 'to_delete' : json.dumps(to_delete)})
 
     self.assertEqual(404, response.status_code, response.content)
