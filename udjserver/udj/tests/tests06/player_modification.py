@@ -16,20 +16,10 @@ class AdminModificationTests(player_mod_test_helpers.BasicPlayerModificationTest
 
 
 
-class PlayerModificationTests2(AlejandroTestCase):
+class OwnerPasswordModificationTests(player_mod_test_helpers.PasswordModificationTests):
+  username = 'alejandro'
+  userpass = 'testalejandro'
 
-  def testChangePassword(self):
-    oldTime = PlayerPassword.objects.get(player__id=3).time_set
-    newPassword = "nudepassword"
-    response = self.doPost('/udj/0_6/players/3/password', {'password': newPassword})
-    self.assertEqual(response.status_code, 200, "Error: " + response.content)
-    playerPassword = PlayerPassword.objects.get(player__id=3)
-    self.assertEqual(playerPassword.password_hash, hashPlayerPassword(newPassword))
-    self.assertTrue(oldTime < playerPassword.time_set)
-
-  def testDeletePassword(self):
-    response = self.doDelete('/udj/0_6/players/3/password')
-    self.assertEqual(response.status_code, 200, "Error: " + response.content)
-    playerPassword = PlayerPassword.objects.filter(player__id=3)
-    self.assertFalse(playerPassword.exists())
-
+class AdminPasswordModificationTests(player_mod_test_helpers.PasswordModificationTests):
+  username = 'kurtis'
+  userpass = 'testkurtis'

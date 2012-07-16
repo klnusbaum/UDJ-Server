@@ -599,12 +599,11 @@
     }
   },
 
-
   {
     "pk": 1,
     "model" : "udj.playeradmin",
     "fields": {
-      "admin_user" : 4,
+      "admin_user" : 5,
       "player" : 1
     }
   },
@@ -613,17 +612,8 @@
     "pk": 2,
     "model" : "udj.playeradmin",
     "fields": {
-      "admin_user" : 5,
-      "player" : 1
-    }
-  },
-
-  {
-    "pk": 3,
-    "model" : "udj.playeradmin",
-    "fields": {
-      "admin_user" : 5,
-      "player" : 4
+      "admin_user" : 2,
+      "player" : 3
     }
   },
 
