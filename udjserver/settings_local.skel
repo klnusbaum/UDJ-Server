@@ -1,3 +1,7 @@
+import os
+from udj.geocoders import YahooGeocoder
+from udj.exceptions import LocationNotFoundError
+
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '50 random characters (anything but spaces)'
 
@@ -19,11 +23,9 @@ DATABASES = {
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-
 def geocodeLocation(address, city, state, zipcode):
   """
   Change this if you want to use a different geocoding function
   """
-  from udj.geocoders import USCWebGISGeocoder
-  GEOCODER_API_KEY="Geocoding key"
-  return USCWebGISGeocoder(address, city, state, zipcode, GEOCODER_API_KEY)
+  YAHOO_APP_ID='Your yahoo app id'
+  return YahooGeocoder(address, locality, region, postal_code, YAHOO_APP_ID)
