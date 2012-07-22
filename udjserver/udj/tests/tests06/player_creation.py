@@ -75,6 +75,12 @@ class CreatePlayerTests(YunYoungTestCase):
     createdLocation = PlayerLocation.objects.get(player__id=givenPlayerId)
     self.assertEqual(createdLocation.point.y, 40.113645)
     self.assertEqual(createdLocation.point.x, -88.224018)
+    self.assertEqual(location['address'], createdLocation.address)
+    self.assertEqual(location['locality'], createdLocation.locality)
+    self.assertEqual(location['region'], createdLocation.region)
+    self.assertEqual(location['postal_code'], createdLocation.postal_code)
+    self.assertEqual(location['country'], createdLocation.country)
+
 
   def testBadLocation(self):
     playerName = "Yunyoung Player"

@@ -497,7 +497,12 @@
     "model": "udj.playerlocation",
     "fields": {
       "player" : 1,
-      "point" : "POINT(-88.223948 40.113331)"
+      "point" : "POINT(-88.223948 40.113331)",
+      "address" : "201 N Goodwin",
+      "locality" : "Urbana",
+      "region" : "IL",
+      "postal_code" : "61801",
+      "country" : "US"
     }
   },
 
@@ -506,7 +511,12 @@
     "model": "udj.playerlocation",
     "fields": {
       "player" : 2,
-      "point" : "POINT(-93.481330 44.981822)"
+      "point" : "POINT(-93.481330 44.981822)",
+      "address" : "305 Vicksburg Lane North",
+      "locality" : "Plymouth",
+      "region" : "MN",
+      "postal_code" : "55447",
+      "country" : "US"
     }
   },
 
@@ -515,7 +525,12 @@
     "model": "udj.playerlocation",
     "fields": {
       "player" : 3,
-      "point" : "POINT(-80.27994 25.721439)"
+      "point" : "POINT(-80.27994 25.721439)",
+      "address" : "1300 Memorial Drive",
+      "locality" : "Coral Gables",
+      "region" : "FL",
+      "postal_code" : "33146",
+      "country" : "U.S."
     }
   },
 
@@ -524,7 +539,12 @@
     "model": "udj.playerlocation",
     "fields": {
       "player" : 5,
-      "point" : "POINT(-88.230399 40.110415)"
+      "point" : "POINT(-88.230399 40.110415)",
+      "address" : "604 East Green Street",
+      "locality" : "Champaign",
+      "region" : "IL",
+      "postal_code" : "61820",
+      "country" : "U.S."
     }
   },
 
@@ -533,7 +553,12 @@
     "model": "udj.playerlocation",
     "fields": {
       "player" : 6,
-      "point" : "POINT(-88.204848 40.111597)"
+      "point" : "POINT(-88.204848 40.111597)",
+      "address" : "200 North Vine Street",
+      "locality" : "Urbana",
+      "region" :  "IL",
+      "postal_code" : "61801",
+      "country" : "U.S."
     }
   },
 

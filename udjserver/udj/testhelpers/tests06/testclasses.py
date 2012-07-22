@@ -83,20 +83,27 @@ class BasicPlayerModificationTests(DoesServerOpsTestCase):
       'address' : '305 Vicksburg Lane',
       'locality' : 'Plymouth',
       'region' : 'MN',
-      'postal_code' : 55447,
+      'postal_code' : '55447',
       'country' : 'U.S.'
     }
 
     response = self.doPost('/udj/0_6/players/1/location', newLocation)
     self.assertEqual(response.status_code, 200)
     playerLocation = PlayerLocation.objects.get(player__id=1)
+    self.assertEqual(newLocation['address'], playerLocation.address)
+    self.assertEqual(newLocation['locality'], playerLocation.locality)
+    self.assertEqual(newLocation['region'], playerLocation.region)
+    self.assertEqual(newLocation['postal_code'], playerLocation.postal_code)
+    self.assertEqual(newLocation['country'], playerLocation.country)
+    self.assertEqual(-93.481394, playerLocation.point.x)
+    self.assertEqual(44.981806, playerLocation.point.y)
 
   def testSetLocationWithNoPreviousLocation(self):
     newLocation = {
       'address' : '305 Vicksburg Lane',
       'locality' : 'Plymouth',
       'region' : 'MN',
-      'postal_code' : 55447,
+      'postal_code' : '55447',
       'country' : 'U.S.'
     }
 
@@ -104,6 +111,13 @@ class BasicPlayerModificationTests(DoesServerOpsTestCase):
     response = self.doPost('/udj/0_6/players/4/location', newLocation)
     self.assertEqual(200, response.status_code)
     playerLocation = PlayerLocation.objects.get(player__id=4)
+    self.assertEqual(newLocation['address'], playerLocation.address)
+    self.assertEqual(newLocation['locality'], playerLocation.locality)
+    self.assertEqual(newLocation['region'], playerLocation.region)
+    self.assertEqual(newLocation['postal_code'], playerLocation.postal_code)
+    self.assertEqual(newLocation['country'], playerLocation.country)
+    self.assertEqual(-93.481394, playerLocation.point.x)
+    self.assertEqual(44.981806, playerLocation.point.y)
 
   def testAddAdmin(self):
     response = self.doPut('/udj/0_6/players/1/admins/7')

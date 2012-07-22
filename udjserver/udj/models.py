@@ -57,6 +57,11 @@ class PlayerPassword(models.Model):
 class PlayerLocation(gismodels.Model):
 
   player = gismodels.ForeignKey(Player, unique=True)
+  address = gismodels.CharField(max_length=100, null=True)
+  locality = gismodels.CharField(max_length=100, null=True)
+  region = gismodels.CharField(max_length=50, null=True)
+  postal_code = gismodels.CharField(max_length=20, default="00000")
+  country = gismodels.CharField(max_length=100, default="U.S.")
   point = gismodels.PointField(default='POINT(0.0 0.0)')
 
   objects = gismodels.GeoManager()
