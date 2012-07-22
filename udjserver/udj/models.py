@@ -199,5 +199,5 @@ class PlayerAdmin(models.Model):
     unique_together = ("admin_user", "player")
 
   def __unicode__(self):
-    return self.user.username + " is an admin for " + self.player.name
+    return self.admin_user.username + " is an admin for " + self.player.name
 

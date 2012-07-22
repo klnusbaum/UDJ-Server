@@ -608,7 +608,7 @@
     }
   },
   {
-    "pk": 1,
+    "pk": 2,
     "model" : "udj.playeradmin",
     "fields": {
       "admin_user" : 5,
@@ -617,7 +617,7 @@
   },
 
   {
-    "pk": 2,
+    "pk": 3,
     "model" : "udj.playeradmin",
     "fields": {
       "admin_user" : 2,

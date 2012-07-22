@@ -4,7 +4,7 @@ from django.test.client import Client
 from django.contrib.auth.models import User
 from udj.models import Ticket
 from udj.headers import DJANGO_TICKET_HEADER
-from udj.models import Player, PlayerPassword, PlayerLocation
+from udj.models import Player, PlayerPassword, PlayerLocation, PlayerAdmin
 from udj.views.views06.auth import hashPlayerPassword
 
 from datetime import datetime
@@ -74,7 +74,7 @@ class BasicPlayerModificationTests(DoesServerOpsTestCase):
   def testSetPassword(self):
     newPassword = 'nudepassword'
     response = self.doPost('/udj/0_6/players/1/password', {'password': newPassword})
-    self.assertEqual(response.status_code, 200, "Error: " + response.content)
+    self.assertEqual(response.status_code, 200)
     playerPassword = PlayerPassword.objects.get(player__id=1)
     self.assertEqual(playerPassword.password_hash, hashPlayerPassword(newPassword))
 
@@ -88,7 +88,7 @@ class BasicPlayerModificationTests(DoesServerOpsTestCase):
     }
 
     response = self.doPost('/udj/0_6/players/1/location', newLocation)
-    self.assertEqual(response.status_code, 200, "Error: " + response.content)
+    self.assertEqual(response.status_code, 200)
     playerLocation = PlayerLocation.objects.get(player__id=1)
 
   def testSetLocationWithNoPreviousLocation(self):
@@ -100,13 +100,14 @@ class BasicPlayerModificationTests(DoesServerOpsTestCase):
       'country' : 'U.S.'
     }
 
+
     response = self.doPost('/udj/0_6/players/4/location', newLocation)
     self.assertEqual(200, response.status_code)
     playerLocation = PlayerLocation.objects.get(player__id=4)
 
   def testAddAdmin(self):
     response = self.doPut('/udj/0_6/players/1/admins/7')
-    self.assertEqual(200, response.status_code)
+    self.assertEqual(201, response.status_code)
     self.assertTrue(PlayerAdmin.objects.filter(admin_user__id=7, player__id=1).exists())
 
 

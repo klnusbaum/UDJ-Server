@@ -167,9 +167,9 @@ def setPlayerVolume(request, user_id, player_id, player):
 @IsOwnerOrAdmin
 def modAdmin(request, player_id, user_id, player):
   if request.method == 'PUT':
-    addAdmin(request, player_id, user_id, player)
+    return addAdmin(request, player_id, user_id, player)
   elif request.method == 'DELETE':
-    removeAdmin(request, player_id, user_id, player)
+    return removeAdmin(request, player_id, user_id, player)
 
 def addAdmin(request, player_id, user_id, player):
   try:
