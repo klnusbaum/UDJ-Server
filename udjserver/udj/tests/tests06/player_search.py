@@ -17,6 +17,13 @@ class GetPlayersTests(JeffTestCase):
     self.assertEqual("kurtis", firstPlayer['owner_username'])
     self.assertEqual(2, firstPlayer['owner_id'])
     self.assertEqual(False, firstPlayer['has_password'])
+    location = firstPlayer['location']
+    self.assertEqual("201 N Goodwin", location['address'])
+    self.assertEqual("Urbana", location['locality'])
+    self.assertEqual("IL", location['region'])
+    self.assertEqual("61801", location['postal_code'])
+    self.assertEqual("US", location['country'])
+
 
   def testGetPlayersByName(self):
     response = self.doGet('/udj/0_6/players?name=kurtis')

@@ -75,11 +75,6 @@ class UDJEncoder(json.JSONEncoder):
           'last_name' : obj.user.last_name
       }
     elif isinstance(obj, Player):
-      location = None
-      try:
-        location = PlayerLocation.objects.get(player=obj)
-      except ObjectDoesNotExist:
-        pass
 
       toReturn = {
         "id" : obj.id,
@@ -89,11 +84,25 @@ class UDJEncoder(json.JSONEncoder):
         "has_password" : True if PlayerPassword.objects.filter(player=obj).exists() else False
       }
 
+      location = None
+      try:
+        location = PlayerLocation.objects.get(player=obj)
+      except ObjectDoesNotExist:
+        pass
       if location != None:
-        toReturn['latitude'] = location.point.y
-        toReturn['longitude'] = location.point.x
+        toReturn['location'] = location
 
       return toReturn
+    elif isinstance(obj, PlayerLocation):
+      return {
+          "address" : obj.address if obj.address != None else "",
+          "locality" : obj.locality if obj.locality != None else "",
+          "region" : obj.region if obj.region != None else "",
+          "country" : obj.country,
+          "postal_code" : obj.postal_code,
+          "latitude" : obj.point.y,
+          "longitude" : obj.point.x
+      }
 
     return json.JSONEncoder.default(self, obj)
 
