@@ -71,13 +71,6 @@ class LucasTestCase(DoesServerOpsTestCase):
 
 class BasicPlayerModificationTests(DoesServerOpsTestCase):
 
-  def testChangeName(self):
-    newName = "A Bitchn' name"
-    response = self.doPost('/udj/0_6/players/1/name', {'name': newName})
-    self.assertEqual(200, response.status_code)
-    player = Player.objects.get(pk=1)
-    self.assertEqual(player.name, newName)
-
   def testSetPassword(self):
     newPassword = 'nudepassword'
     response = self.doPost('/udj/0_6/players/1/password', {'password': newPassword})
@@ -110,6 +103,13 @@ class BasicPlayerModificationTests(DoesServerOpsTestCase):
     response = self.doPost('/udj/0_6/players/4/location', newLocation)
     self.assertEqual(200, response.status_code)
     playerLocation = PlayerLocation.objects.get(player__id=4)
+
+  def testAddAdmin(self):
+    response = self.doPut('/udj/0_6/players/1/admins/7')
+    self.assertEqual(200, response.status_code)
+    self.assertTrue(PlayerAdmin.objects.filter(admin_user__id=7, player__id=1).exists())
+
+
 
 class PasswordModificationTests(DoesServerOpsTestCase):
 

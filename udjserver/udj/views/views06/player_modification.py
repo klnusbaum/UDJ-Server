@@ -3,6 +3,7 @@ import json
 from udj.headers import MISSING_RESOURCE_HEADER
 from udj.models import Player
 from udj.models import PlayerPassword
+from udj.models import PlayerAdmin
 from udj.exceptions import LocationNotFoundError
 from udj.views.views06.auth import hashPlayerPassword
 from udj.views.views06.decorators import AcceptsMethods

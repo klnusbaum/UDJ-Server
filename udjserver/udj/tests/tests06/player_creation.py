@@ -73,8 +73,8 @@ class CreatePlayerTests(YunYoungTestCase):
     self.assertFalse(PlayerPassword.objects.filter(player=addedPlayer).exists())
 
     createdLocation = PlayerLocation.objects.get(player__id=givenPlayerId)
-    self.assertEqual(createdLocation.point.y, 40.1135372574038)
-    self.assertEqual(createdLocation.point.x, -88.2240781569526)
+    self.assertEqual(createdLocation.point.y, 40.113645)
+    self.assertEqual(createdLocation.point.x, -88.224018)
 
   def testBadLocation(self):
     playerName = "Yunyoung Player"

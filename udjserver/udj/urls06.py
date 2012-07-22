@@ -28,7 +28,6 @@ urlpatterns += patterns('udj.views.views06.player_creation',
 )
 
 urlpatterns += patterns('udj.views.views06.player_modification',
-  (r'^players/(?P<player_id>\d+)/name$', 'changePlayerName'),
   (r'^players/(?P<player_id>\d+)/password$', 'modifyPlayerPassword'),
   (r'^players/(?P<player_id>\d+)/location$', 'setLocation'),
   (r'^players/(?P<player_id>\d+)/sorting_algorithm$', 'setSortingAlgorithm'),
