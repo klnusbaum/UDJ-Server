@@ -151,6 +151,23 @@ class BasicPlayerModificationTests(DoesServerOpsTestCase):
     self.assertEqual(404, response.status_code)
     self.assertEqual('user', response[MISSING_RESOURCE_HEADER])
 
+  def testBanParticipatingUser(self):
+    response = self.doPut('/udj/0_6/players/1/banned_users/3')
+    self.assertEqual(201, response.status_code)
+    bannedUser = Participant.objects.get(user__id=3, player__id=1)
+    self.assertEqual(True, bannedUser.ban_flag)
+
+  def testBanNonParticipatingUser(self):
+    response = self.doPut('/udj/0_6/players/1/banned_users/1')
+    self.assertEqual(201, response.status_code)
+    bannedUser = Participant.objects.get(user__id=1, player__id=1)
+    self.assertEqual(True, bannedUser.ban_flag)
+
+  def testBanNonExistentUser(self):
+    response = self.doPut('/udj/0_6/players/1/banned_users/10000000')
+    self.assertEqual(404, response.status_code)
+    self.assertEqual('user', response[MISSING_RESOURCE_HEADER])
+
 
 
 

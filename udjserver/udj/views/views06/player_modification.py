@@ -215,7 +215,7 @@ def kickUser(request, player_id, kick_user_id, player):
 def modBans(request, player_id, ban_user_id, player):
   if request.method == 'PUT':
     return banUser(request, player_id, ban_user_id, player)
-  elif request.method == 'DELETE'
+  elif request.method == 'DELETE':
     return unbanUser(request, player_id, ban_user_id, player)
 
 
@@ -234,7 +234,7 @@ def banUser(request, player_id, ban_user_id, player):
     bannedParticipant.ban_flag = True
     bannedParticipant.save()
 
-  return HttpResponse
+  return HttpResponse(status=201)
 
 def unbanUser(request, player_id, ban_user_id, player):
   try:
