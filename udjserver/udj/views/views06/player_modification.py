@@ -207,3 +207,44 @@ def kickUser(request, player_id, kick_user_id, player):
     toReturn = HttpResponseNotFound()
     toReturn[MISSING_RESOURCE_HEADER] = 'user'
     return toReturn
+
+@NeedsAuth
+@AcceptsMethods(['PUT', 'DELETE'])
+@PlayerExists
+@IsOwnerOrAdmin
+def modBans(request, player_id, ban_user_id, player):
+  if request.method == 'PUT':
+    return banUser(request, player_id, ban_user_id, player)
+  elif request.method == 'DELETE'
+    return unbanUser(request, player_id, ban_user_id, player)
+
+
+def banUser(request, player_id, ban_user_id, player):
+  try:
+    user = User.objects.get(pk=ban_user_id) 
+  except ObjectDoesNotExist:
+    toReturn = HttpResponseNotFound()
+    toReturn[MISSING_RESOURCE_HEADER] = 'user'
+    return toReturn
+
+
+  bannedParticipant, created = Participant.objects.get_or_create(user=user, player=player,
+      defaults={'ban_flag' : True})
+  if not created:
+    bannedParticipant.ban_flag = True
+    bannedParticipant.save()
+
+  return HttpResponse
+
+def unbanUser(request, player_id, ban_user_id, player):
+  try:
+    bannedUser = Participant.objects.get(user__id=ban_user_id, player=player)
+    bannedUser.ban_flag=False
+    bannedUser.save()
+    return HttpResponse()
+  except ObjectDoesNotExist:
+    toReturn = HttpResponseNotFound()
+    toReturn[MISSING_RESOURCE_HEADER] = 'user'
+    return toReturn
+
+
