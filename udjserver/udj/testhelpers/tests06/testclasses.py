@@ -146,6 +146,11 @@ class BasicPlayerModificationTests(DoesServerOpsTestCase):
     kickedUser = Participant.objects.get(user__id=3, player__id=1)
     self.assertEqual(True, kickedUser.kick_flag)
 
+  def testKickNonParticipatingUser(self):
+    response = self.doPut('/udj/0_6/players/1/kicked_users/1')
+    self.assertEqual(404, response.status_code)
+    self.assertEqual('user', response[MISSING_RESOURCE_HEADER])
+
   def testKickNonExistentUser(self):
     response = self.doPut('/udj/0_6/players/1/kicked_users/100000')
     self.assertEqual(404, response.status_code)
@@ -167,6 +172,23 @@ class BasicPlayerModificationTests(DoesServerOpsTestCase):
     response = self.doPut('/udj/0_6/players/1/banned_users/10000000')
     self.assertEqual(404, response.status_code)
     self.assertEqual('user', response[MISSING_RESOURCE_HEADER])
+
+  def testUnbanUser(self):
+    response = self.doDelete('/udj/0_6/players/1/banned_users/8')
+    self.assertEqual(200, response.status_code)
+    bannedUser = Participant.objects.get(user__id=8, player__id=1)
+    self.assertEqual(False, bannedUser.ban_flag)
+
+  def testUnbanNonParticipatingUser(self):
+    response = self.doDelete('/udj/0_6/players/1/banned_users/1')
+    self.assertEqual(404, response.status_code)
+    self.assertEqual('user', response[MISSING_RESOURCE_HEADER])
+
+  def testUnbanNonExistentUser(self):
+    response = self.doDelete('/udj/0_6/players/1/banned_users/1000000')
+    self.assertEqual(404, response.status_code)
+    self.assertEqual('user', response[MISSING_RESOURCE_HEADER])
+
 
 
 
