@@ -3,6 +3,7 @@ import json
 from udj.headers import MISSING_RESOURCE_HEADER
 from udj.models import Player
 from udj.models import PlayerPassword
+from udj.models import Participant
 from udj.models import PlayerAdmin
 from udj.exceptions import LocationNotFoundError
 from udj.views.views06.auth import hashPlayerPassword
@@ -185,6 +186,22 @@ def removeAdmin(request, player_id, user_id, player):
   try:
     toRemove = PlayerAdmin.objects.get(admin_user__id=user_id, player=player)
     toRemove.delete()
+    return HttpResponse()
+  except ObjectDoesNotExist:
+    toReturn = HttpResponseNotFound()
+    toReturn[MISSING_RESOURCE_HEADER] = 'user'
+    return toReturn
+
+
+@NeedsAuth
+@AcceptsMethods(['PUT'])
+@PlayerExists
+@IsOwnerOrAdmin
+def kickUser(request, player_id, kick_user_id, player):
+  try:
+    toKick = Participant.objects.get(user__id=kick_user_id, player=player)
+    toKick.kick_flag=True
+    toKick.save()
     return HttpResponse()
   except ObjectDoesNotExist:
     toReturn = HttpResponseNotFound()

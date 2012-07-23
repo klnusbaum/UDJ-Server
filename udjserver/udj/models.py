@@ -163,6 +163,8 @@ class Participant(models.Model):
   player = models.ForeignKey(Player)
   time_joined = models.DateTimeField(auto_now_add=True)
   time_last_interaction = models.DateTimeField(auto_now=True, auto_now_add=True)
+  kick_flag = models.BooleanField(default=False)
+  ban_flag = models.BooleanField(default=False)
 
   class Meta:
     unique_together = ("user", "player")

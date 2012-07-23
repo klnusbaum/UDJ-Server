@@ -649,6 +649,14 @@
       "player" : 3
     }
   },
+  {
+    "pk": 4,
+    "model" : "udj.playeradmin",
+    "fields": {
+      "admin_user" : 1,
+      "player" : 1
+    }
+  },
 
 
   {

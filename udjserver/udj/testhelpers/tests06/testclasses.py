@@ -2,8 +2,8 @@ import json
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
-from udj.models import Ticket
-from udj.headers import DJANGO_TICKET_HEADER
+from udj.models import Ticket, Participant
+from udj.headers import DJANGO_TICKET_HEADER, MISSING_RESOURCE_HEADER
 from udj.models import Player, PlayerPassword, PlayerLocation, PlayerAdmin
 from udj.views.views06.auth import hashPlayerPassword
 
@@ -123,6 +123,34 @@ class BasicPlayerModificationTests(DoesServerOpsTestCase):
     response = self.doPut('/udj/0_6/players/1/admins/7')
     self.assertEqual(201, response.status_code)
     self.assertTrue(PlayerAdmin.objects.filter(admin_user__id=7, player__id=1).exists())
+
+  def testNonExistentAdminAdd(self):
+    response = self.doPut('/udj/0_6/players/1/admins/100000')
+    self.assertEqual(404, response.status_code)
+    self.assertEqual('user', response[MISSING_RESOURCE_HEADER])
+
+
+  def testRemoveAdmin(self):
+    response = self.doDelete('/udj/0_6/players/1/admins/1')
+    self.assertEqual(200, response.status_code)
+    self.assertFalse(PlayerAdmin.objects.filter(admin_user__id=1, player__id=1).exists())
+
+  def testNonExistsentAdminRemove(self):
+    response = self.doDelete('/udj/0_6/players/1/admins/100000')
+    self.assertEqual(404, response.status_code)
+    self.assertEqual('user', response[MISSING_RESOURCE_HEADER])
+
+  def testKickUser(self):
+    response = self.doPut('/udj/0_6/players/1/kicked_users/3')
+    self.assertEqual(200, response.status_code)
+    kickedUser = Participant.objects.get(user__id=3, player__id=1)
+    self.assertEqual(True, kickedUser.kick_flag)
+
+  def testKickNonExistentUser(self):
+    response = self.doPut('/udj/0_6/players/1/kicked_users/100000')
+    self.assertEqual(404, response.status_code)
+    self.assertEqual('user', response[MISSING_RESOURCE_HEADER])
+
 
 
 
