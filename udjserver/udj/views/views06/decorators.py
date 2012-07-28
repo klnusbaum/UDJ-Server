@@ -63,25 +63,18 @@ def PlayerExists(function):
       return toReturn
   return wrapper
 
-def ActivePlayerExists(function):
+def PlayerIsActive(function):
   def wrapper(*args, **kwargs):
-    request = args[0]
-    player_id = kwargs['player_id']
-    try:
-      potentialPlayer = Player.objects.get(id=player_id)
-      if potentialPlayer.state != 'IN':
-        kwargs['activePlayer'] = potentialPlayer
-        return function(*args, **kwargs)
-      else:
-        toReturn =  HttpResponseNotFound("Player inactive")
-        toReturn[MISSING_RESOURCE_HEADER] = 'player'
-        toReturn[MISSING_REASON_HEADER] = 'inactive'
-        return toReturn
-    except ObjectDoesNotExist:
+    player = kwargs['player']
+    if player.state == u'IN':
       toReturn =  HttpResponseNotFound()
       toReturn[MISSING_RESOURCE_HEADER] = 'player'
+      toReturn[MISSING_REASON_HEADER] = 'inactive'
       return toReturn
+    else:
+      return function(*args, **kwargs)
   return wrapper
+
 
 def UpdatePlayerActivity(function):
   def wrapper(*args, **kwargs):

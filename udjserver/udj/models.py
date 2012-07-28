@@ -24,6 +24,24 @@ class SortingAlgorithm(models.Model):
   def __unicode__(self):
     return self.name
 
+class Participant(models.Model):
+  user = models.ForeignKey(User)
+  player = models.ForeignKey('Player')
+  time_joined = models.DateTimeField(auto_now_add=True)
+  time_last_interaction = models.DateTimeField(auto_now=True, auto_now_add=True)
+  kick_flag = models.BooleanField(default=False)
+  ban_flag = models.BooleanField(default=False)
+
+  class Meta:
+    unique_together = ("user", "player")
+
+  @staticmethod
+  def activeParticipants(player):
+    return Participant.objects.filter(player=player,
+      time_last_interaction__gt=(datetime.now() - timedelta(hours=1)))
+
+  def __unicode__(self):
+    return "User " + str(self.user.id) + " is participating with player " + str(self.player.name)
 
 class Player(models.Model):
   PLAYER_STATE_CHOICES = (('IN', u'Inactive'), ('PL', u'Playing'), ('PA', u'Paused'))
@@ -34,6 +52,11 @@ class Player(models.Model):
   volume = models.IntegerField(default=5, validators=[zero_ten_validator])
   sorting_algo = models.ForeignKey(SortingAlgorithm)
   external_library = models.ForeignKey(ExternalLibrary, null=True)
+  size_limit = models.IntegerField(null=True)
+
+  def isFull(self):
+    return self.size_limit != None \
+        and Participant.ActiveParticipants(self).count() < self.size_limit
 
   def isAdmin(self, user):
     return PlayerAdmin.objects.filter(admin_user=user, player=self).exists()
@@ -158,24 +181,6 @@ class Ticket(models.Model):
   def __unicode__(self):
     return "Ticket " + self.ticket_hash +  " : User id " + str(self.user.id)
 
-class Participant(models.Model):
-  user = models.ForeignKey(User)
-  player = models.ForeignKey(Player)
-  time_joined = models.DateTimeField(auto_now_add=True)
-  time_last_interaction = models.DateTimeField(auto_now=True, auto_now_add=True)
-  kick_flag = models.BooleanField(default=False)
-  ban_flag = models.BooleanField(default=False)
-
-  class Meta:
-    unique_together = ("user", "player")
-
-  @staticmethod
-  def activeParticipants(player):
-    return Participant.objects.filter(player=player,
-      time_last_interaction__gt=(datetime.now() - timedelta(hours=1)))
-
-  def __unicode__(self):
-    return "User " + str(self.user.id) + " is participating with player " + str(self.player.name)
 
 class Vote(models.Model):
   playlist_entry = models.ForeignKey(ActivePlaylistEntry) 
