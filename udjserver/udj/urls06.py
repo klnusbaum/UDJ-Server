@@ -38,6 +38,11 @@ urlpatterns += patterns('udj.views.views06.player_modification',
   (r'^players/(?P<player_id>\d+)/banned_users/(?P<ban_user_id>\d+)$', 'modBans'),
 )
 
+urlpatterns += patterns('udj.views.views06.player_interaction',
+  (r'^players/(?P<player_id>\d+)/users/user$', 'participateWithPlayer'),
+)
+
+
 
 
 """

@@ -1,23 +1,24 @@
+from udj.models import Participant, PlayerPassword
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER, FORBIDDEN_REASON_HEADER
-
 from udj.views.views06.decorators import PlayerExists, PlayerIsActive, AcceptsMethods
 from udj.views.views06.authdecorators import NeedsAuth
-from udj.views.views06.auth import getUserForTicket
+from udj.views.views06.auth import getUserForTicket, hashPlayerPassword
 
-from django.http import HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden
+from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 @AcceptsMethods(['PUT'])
 @NeedsAuth
 @PlayerExists
 @PlayerIsActive
-def participateWithPlayer(request, player_id, activePlayer):
+def participateWithPlayer(request, player_id, player):
 
 
   def onSuccessfulPlayerAuth(activePlayer, user):
     #very important to check if they're banned or player is full first.
     #otherwise we might might mark them as actually participating
-    if activePlayer.isUserBanned(user):
+    if Participant.objects.filter(user=user, player=activePlayer, ban_flag=True).exists():
       toReturn = HttpResponseForbidden()
       toReturn['FORBIDDEN_REASON_HEADER'] = 'banned'
     if activePlayer.isFull():
@@ -34,16 +35,16 @@ def participateWithPlayer(request, player_id, activePlayer):
 
 
   user = getUserForTicket(request)
-  playerPassword = PlayerPassword.objects.filter(player=activePlayer)
+  playerPassword = PlayerPassword.objects.filter(player=player)
   if playerPassword.exists():
     if DJANGO_PLAYER_PASSWORD_HEADER in request.META:
       hashedPassword = hashPlayerPassword(request.META[DJANGO_PLAYER_PASSWORD_HEADER])
       if hashedPassword == playerPassword[0].password_hash:
-        return onSuccessfulPlayerAuth(activePlayer, user)
+        return onSuccessfulPlayerAuth(player, user)
 
     toReturn = HttpResponse(status=401)
     toReturn['WWW-Authenticate'] = 'player-password'
     return toReturn
   else:
-    return onSuccessfulPlayerAuth(activePlayer, user)
+    return onSuccessfulPlayerAuth(player, user)
 
