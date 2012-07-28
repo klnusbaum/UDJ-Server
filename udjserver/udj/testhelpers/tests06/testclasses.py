@@ -73,7 +73,7 @@ class LeeTestCase(DoesServerOpsTestCase):
   username = "lee"
   userpass = "testlee"
 
-class BasicPlayerModificationTests(DoesServerOpsTestCase):
+class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
 
   def testSetPassword(self):
     newPassword = 'nudepassword'
@@ -197,7 +197,7 @@ class BasicPlayerModificationTests(DoesServerOpsTestCase):
 
 
 
-class PasswordModificationTests(DoesServerOpsTestCase):
+class PasswordAdministrationTests(DoesServerOpsTestCase):
 
   def testChangePassword(self):
     oldTime = PlayerPassword.objects.get(player__id=3).time_set
