@@ -14,7 +14,6 @@ from django.views.decorators.csrf import csrf_exempt
 @PlayerIsActive
 def participateWithPlayer(request, player_id, player):
 
-
   def onSuccessfulPlayerAuth(activePlayer, user):
     #very important to check if they're banned or player is full first.
     #otherwise we might might mark them as actually participating

@@ -73,6 +73,10 @@ class LeeTestCase(DoesServerOpsTestCase):
   username = "lee"
   userpass = "testlee"
 
+class ZachTestCase(DoesServerOpsTestCase):
+  username = "zach"
+  userpass = "testzach"
+
 class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
 
   def testSetPassword(self):

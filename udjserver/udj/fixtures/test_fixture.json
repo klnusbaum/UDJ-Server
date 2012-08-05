@@ -862,7 +862,7 @@
     "pk": 8, 
     "model": "auth.user", 
     "fields": {
-      "username": "zachtest", 
+      "username": "zach", 
       "first_name": "", 
       "last_name": "", 
       "is_active": true, 
