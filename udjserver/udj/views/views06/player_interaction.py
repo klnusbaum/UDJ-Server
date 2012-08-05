@@ -7,6 +7,8 @@ from udj.views.views06.auth import getUserForTicket, hashPlayerPassword
 from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 
+from datetime import datetime
+
 @csrf_exempt
 @AcceptsMethods(['PUT'])
 @NeedsAuth
@@ -19,10 +21,12 @@ def participateWithPlayer(request, player_id, player):
     #otherwise we might might mark them as actually participating
     if Participant.objects.filter(user=user, player=activePlayer, ban_flag=True).exists():
       toReturn = HttpResponseForbidden()
-      toReturn['FORBIDDEN_REASON_HEADER'] = 'banned'
+      toReturn[FORBIDDEN_REASON_HEADER] = 'banned'
+      return toReturn
     if activePlayer.isFull():
       toReturn = HttpResponseForbidden()
-      toReturn['FORBIDDEN_REASON_HEADER'] = 'player-full'
+      toReturn[FORBIDDEN_REASON_HEADER] = 'player-full'
+      return toReturn
 
     obj, created = Participant.objects.get_or_create(player=activePlayer, user=user)
     if not created:

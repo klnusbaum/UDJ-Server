@@ -35,6 +35,9 @@ class Participant(models.Model):
   class Meta:
     unique_together = ("user", "player")
 
+  def isBanned(self):
+    return self.ban_flag
+
   @staticmethod
   def activeParticipants(player):
     return Participant.objects.filter(player=player,
