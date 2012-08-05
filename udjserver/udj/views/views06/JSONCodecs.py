@@ -69,13 +69,8 @@ class UDJEncoder(json.JSONEncoder):
       }
 
     elif isinstance(obj, Participant):
-      return {
-          'username' : obj.user.username,
-          'first_name' : obj.user.first_name,
-          'last_name' : obj.user.last_name
-      }
+      return obj.user
     elif isinstance(obj, Player):
-
       toReturn = {
         "id" : obj.id,
         "name" : obj.name,
