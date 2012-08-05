@@ -122,7 +122,7 @@ def participateWithPlayer(request, player_id, user_id, activePlayer):
 @UpdatePlayerActivity
 def getActiveUsersForPlayer(request, user, player_id, activePlayer):
   return HttpResponse(
-    json.dumps(Participant.activeParticipants(activePlayer),
+    json.dumps(activePlayer.ActiveParticipants(),
     cls=UDJEncoder))
 
 @NeedsAuth

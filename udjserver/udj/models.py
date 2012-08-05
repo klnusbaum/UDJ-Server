@@ -38,11 +38,6 @@ class Participant(models.Model):
   def isBanned(self):
     return self.ban_flag
 
-  @staticmethod
-  def activeParticipants(player):
-    return Participant.objects.filter(player=player,
-      time_last_interaction__gt=(datetime.now() - timedelta(hours=1)))
-
   def __unicode__(self):
     return "User " + str(self.user.id) + " is participating with player " + str(self.player.name)
 
@@ -59,7 +54,7 @@ class Player(models.Model):
 
   def isFull(self):
     return self.size_limit != None \
-        and Participant.activeParticipants(self).count() < self.size_limit
+        and self.ActiveParticipants().count() < self.size_limit
 
   def isAdmin(self, user):
     return PlayerAdmin.objects.filter(admin_user=user, player=self).exists()
@@ -68,6 +63,13 @@ class Player(models.Model):
     from udj import playlistalgos
     toCall = getattr(playlistalgos, self.sorting_algo.function_name)
     return toCall(toSort)
+
+  def ActiveParticipants(self):
+    return Participant.objects.filter(player=self,
+      time_last_interaction__gt=(datetime.now() - timedelta(hours=1))).exclude(kick_flag=True, ban_flag=True)
+
+  def BannedUsers(self):
+    return Participant.objects.filter(player=self, ban_flag=True)
 
   def __unicode__(self):
     return self.name + " player" 

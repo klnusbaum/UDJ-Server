@@ -247,4 +247,11 @@ def unbanUser(request, player_id, ban_user_id, player):
     toReturn[MISSING_RESOURCE_HEADER] = 'user'
     return toReturn
 
+@NeedsAuth
+@AcceptsMethods(['GET'])
+@PlayerExists
+@IsOwnerOrAdmin
+def getBannedUsers(request, player_id, player):
+  return HttpResponse(json.dumps(player.BannedUsers), cls=UDJEncoder)
+
 
