@@ -490,32 +490,9 @@
     }
   },
 
+
   {
     "pk": 7,
-    "model": "udj.player",
-    "fields": {
-      "owning_user": 2,
-      "name": "Schnucks player",
-      "state": "PL",
-      "volume": 5,
-      "sorting_algo" : 1
-    }
-  },
-
-  {
-    "pk": 8,
-    "model": "udj.player",
-    "fields": {
-      "owning_user": 2,
-      "name": "Schnucks player",
-      "state": "PL",
-      "volume": 5,
-      "sorting_algo" : 1
-    }
-  },
-
-  {
-    "pk": 9,
     "model": "udj.player",
     "fields": {
       "owning_user": 2,
@@ -657,7 +634,7 @@
     "pk": 5,
     "model": "udj.participant",
     "fields": {
-      "player": 9,
+      "player": 7,
       "user": 9,
       "time_joined": "2012-04-14 12:34:22",
       "time_last_interaction" : "2012-04-14 13:27:33",
@@ -668,7 +645,7 @@
     "pk": 6,
     "model": "udj.participant",
     "fields": {
-      "player": 9,
+      "player": 7,
       "user": 10,
       "time_joined": "2012-04-14 12:34:22",
       "time_last_interaction" : "2012-04-14 13:27:33",

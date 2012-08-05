@@ -26,3 +26,8 @@ class BeginParticipateTests(ZachTestCase):
     response = self.doPut('/udj/0_6/players/1/users/user')
     self.assertEqual(response.status_code, 403)
     self.assertEqual(response[FORBIDDEN_REASON_HEADER], 'banned')
+
+  def testFullPlayer(self):
+    response = self.doPut('/udj/0_6/players/7/users/user')
+    self.assertEqual(response.status_code, 403)
+    self.assertEqual(response[FORBIDDEN_REASON_HEADER], 'player-full')

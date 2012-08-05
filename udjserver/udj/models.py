@@ -59,7 +59,7 @@ class Player(models.Model):
 
   def isFull(self):
     return self.size_limit != None \
-        and Participant.ActiveParticipants(self).count() < self.size_limit
+        and Participant.activeParticipants(self).count() < self.size_limit
 
   def isAdmin(self, user):
     return PlayerAdmin.objects.filter(admin_user=user, player=self).exists()
