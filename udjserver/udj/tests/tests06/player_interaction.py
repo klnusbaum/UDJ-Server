@@ -151,3 +151,21 @@ class GetAvailableMusicTests(JeffTestCase):
     expectedLibIds =[6,7]
     for song in songResults:
       self.assertTrue(song['id'] in expectedLibIds)
+
+class GetArtistsTests(JeffTestCase):
+  def setUp(self):
+    super(GetArtistsTests, self).setUp()
+    jeff = Participant.objects.get(user__id=3, player__id=1)
+    jeff.time_last_interaction = datetime.now()
+    jeff.save()
+
+  @EnsureParticipationUpdated(3,1)
+  def testGetArtists(self):
+    response = self.doGet('/udj/0_6/players/1/available_music/artists')
+    self.assertEqual(response.status_code, 200)
+    self.isJSONResponse(response)
+    jsonResponse = json.loads(response.content)
+    self.assertEqual(3, len(jsonResponse))
+    requiredArtists = [u'Skrillex', u'The Mars Volta', u'Third Eye Blind']
+    for artist in jsonResponse:
+      self.assertTrue(artist in requiredArtists)

@@ -128,6 +128,16 @@ class Player(models.Model):
     return user==self.owning_user or self.isAdmin(user) or \
         (self.state == 'AC' and self.isActiveParticipant(user))
 
+
+  def SongSets(self):
+    return SongSet.objects.filter(player=self)
+
+  def Artists(self):
+    return LibraryEntry.objects.filter(player=self)\
+      .exclude(is_deleted=True)\
+      .exclude(is_banned=True)\
+      .distinct('artist').order_by('artist').values_list('artist', flat=True)
+
   def AvailableMusic(self, query):
     return LibraryEntry.objects.filter(player=self).filter(
       Q(title__icontains=query) |
@@ -136,8 +146,6 @@ class Player(models.Model):
         Q(is_deleted=True)|
         Q(is_banned=True))
 
-  def SongSets(self):
-    return SongSet.objects.filter(player=self)
 
   def isFull(self):
     return self.size_limit != None \
