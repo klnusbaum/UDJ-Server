@@ -122,6 +122,7 @@ class GetAvailableMusicTests(JeffTestCase):
     jeff.time_last_interaction = datetime.now()
     jeff.save()
 
+  @EnsureParticipationUpdated(3,1)
   def testGetBasicMusic(self):
     response = self.doGet('/udj/players/1/available_music?query=Third+Eye+Blind')
     self.assertEqual(response.status_code, 200)
@@ -132,3 +133,21 @@ class GetAvailableMusicTests(JeffTestCase):
     for song in songResults:
       self.assertTrue(song['id'] in expectedLibIds)
 
+  @EnsureParticipationUpdated(3, 1)
+  def testSimpleGetWithMax(self):
+    response = self.doGet('/udj/players/1/available_music?query=Third+Eye+Blind&max_results=2')
+    self.assertEqual(response.status_code, 200)
+    self.isJSONResponse(response)
+    songResults = json.loads(response.content)
+    self.assertEquals(2, len(songResults))
+
+  @EnsureParticipationUpdated(3, 1)
+  def testAlbumGet(self):
+    response = self.doGet('/udj/players/1/available_music?query=Bedlam+in+Goliath')
+    self.assertEqual(response.status_code, 200)
+    self.isJSONResponse(response)
+    songResults = json.loads(response.content)
+    self.assertEquals(2, len(songResults))
+    expectedLibIds =[6,7]
+    for song in songResults:
+      self.assertTrue(song['id'] in expectedLibIds)
