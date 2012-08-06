@@ -1,5 +1,5 @@
 import json
-from udj.models import Participant, PlayerAdmin, SongSet, SongSetEntry
+from udj.models import Participant, PlayerAdmin, SongSet, SongSetEntry, LibraryEntry
 from datetime import datetime
 from udj.testhelpers.tests06.testclasses import ZachTestCase, MattTestCase, JeffTestCase
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER, FORBIDDEN_REASON_HEADER
@@ -74,12 +74,14 @@ class GetUsersTests(MattTestCase):
     for user in users:
       self.assertTrue(user['id'] in expectedIds)
 
-class GetAdminsTests(JeffTestCase):
+class EnsureActiveJeffTest(JeffTestCase):
   def setUp(self):
-    super(GetAdminsTests, self).setUp()
+    super(EnsureActiveJeffTest, self).setUp()
     jeff = Participant.objects.get(user__id=3, player__id=1)
     jeff.time_last_interaction = datetime.now()
     jeff.save()
+
+class GetAdminsTests(EnsureActiveJeffTest):
 
   @EnsureParticipationUpdated(3, 1)
   def testGetAdmins(self):
@@ -92,12 +94,7 @@ class GetAdminsTests(JeffTestCase):
     for admin in admins:
       self.assertTrue(admin['id'] in expectedIds)
 
-class GetSongSetTests(JeffTestCase):
-  def setUp(self):
-    super(GetSongSetTests, self).setUp()
-    jeff = Participant.objects.get(user__id=3, player__id=1)
-    jeff.time_last_interaction = datetime.now()
-    jeff.save()
+class GetSongSetTests(EnsureActiveJeffTest):
 
   @EnsureParticipationUpdated(3, 1)
   def testGetSongSets(self):
@@ -115,12 +112,7 @@ class GetSongSetTests(JeffTestCase):
       for song in songset['songs']:
         self.assertTrue(song['id'] in expectedSongIds)
 
-class GetAvailableMusicTests(JeffTestCase):
-  def setUp(self):
-    super(GetAvailableMusicTests, self).setUp()
-    jeff = Participant.objects.get(user__id=3, player__id=1)
-    jeff.time_last_interaction = datetime.now()
-    jeff.save()
+class GetAvailableMusicTests(EnsureActiveJeffTest):
 
   @EnsureParticipationUpdated(3,1)
   def testGetBasicMusic(self):
@@ -152,12 +144,7 @@ class GetAvailableMusicTests(JeffTestCase):
     for song in songResults:
       self.assertTrue(song['id'] in expectedLibIds)
 
-class GetArtistsTests(JeffTestCase):
-  def setUp(self):
-    super(GetArtistsTests, self).setUp()
-    jeff = Participant.objects.get(user__id=3, player__id=1)
-    jeff.time_last_interaction = datetime.now()
-    jeff.save()
+class GetArtistsTests(EnsureActiveJeffTest):
 
   @EnsureParticipationUpdated(3,1)
   def testGetArtists(self):
@@ -181,13 +168,7 @@ class GetArtistsTests(JeffTestCase):
       self.assertTrue(songId in requiredIds)
 
 
-class GetRecentlyPlayed(JeffTestCase):
-  def setUp(self):
-    super(GetRecentlyPlayed, self).setUp()
-    jeff = Participant.objects.get(user__id=3, player__id=1)
-    jeff.time_last_interaction = datetime.now()
-    jeff.save()
-
+class GetRecentlyPlayed(EnsureActiveJeffTest):
 
   @EnsureParticipationUpdated(3,1)
   def testRecentlyPlayed(self):
@@ -205,5 +186,22 @@ class GetRecentlyPlayed(JeffTestCase):
     self.assertEqual(response.status_code, 200)
     jsonResponse = json.loads(response.content)
     self.assertEqual(1, len(jsonResponse))
+
+
+class GetRandoms(EnsureActiveJeffTest):
+
+  @EnsureParticipationUpdated(3,1)
+  def testSimpleGetRandom(self):
+    response = self.doGet('/udj/0_6/players/1/available_music/random_songs?max_randoms=2')
+    self.assertEqual(response.status_code, 200)
+    self.isJSONResponse(response)
+    songResults = json.loads(response.content)
+    self.assertEquals(2, len(songResults))
+    for song in songResults:
+      self.assertFalse(
+          LibraryEntry.objects.get(player__id=1, player_lib_song_id=song['id']).is_deleted)
+      self.assertFalse(
+          LibraryEntry.objects.get(player__id=1, player_lib_song_id=song['id']).is_banned)
+
 
 

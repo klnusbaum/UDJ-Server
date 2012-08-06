@@ -197,6 +197,10 @@ class Player(models.Model):
       .order_by('-time_played')\
       .distinct('time_played', 'playlist_entry__song__id')
 
+  def Randoms(self):
+    return LibraryEntry.objects.filter(player=self)\
+      .exclude(Q(is_deleted=True) | Q(is_banned=True)).order_by('?')
+
 
   def AvailableMusic(self, query):
     return LibraryEntry.objects.filter(player=self).filter(
