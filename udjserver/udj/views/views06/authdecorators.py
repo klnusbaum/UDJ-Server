@@ -67,6 +67,25 @@ def IsOwnerOrAdmin(function):
       return HttpResponseForbidden()
   return wrapper
 
+def IsOwnerOrParticipatingAdmin(function):
+  def wrapper(*args, **kwargs):
+    request = args[0]
+    user = getUserForTicket(request)
+    player = kwargs['player']
+    if player.owning_user==user:
+      return function(*args, **kwargs)
+    elif player.isAdmin(user):
+      if player.isActiveParticipant(user):
+        return function(*args, **kwargs)
+      else:
+        toReturn = HttpResponse(status=401)
+        toReturn['WWW-Authenticate'] = 'begin-participating'
+        return toReturn
+    else:
+      return HttpResponseForbidden()
+  return wrapper
+
+
 def CanCreateSongSets(function):
   def wrapper(*args, **kwargs):
     request = args[0]

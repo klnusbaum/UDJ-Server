@@ -3,7 +3,7 @@ import json
 from udj.models import Participant, PlayerPassword
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER, FORBIDDEN_REASON_HEADER
 from udj.views.views06.decorators import PlayerExists, PlayerIsActive, AcceptsMethods, UpdatePlayerActivity, HasNZParams
-from udj.views.views06.authdecorators import NeedsAuth, IsOwnerOrParticipates
+from udj.views.views06.authdecorators import NeedsAuth, IsOwnerOrParticipates, IsOwnerOrAdmin
 from udj.views.views06.auth import getUserForTicket, hashPlayerPassword
 from udj.views.views06.JSONCodecs import UDJEncoder
 from udj.views.views06.helpers import HttpJSONResponse
@@ -136,6 +136,61 @@ def getRandomSongsForPlayer(request, player_id, player):
   rand_limit = min(rand_limit,100)
   randomSongs = player.Randoms()[:rand_limit]
   return HttpJSONResponse(json.dumps(randomSongs, cls=UDJEncoder))
+
+@csrf_exempt
+@AcceptsMethods(['POST', 'DELETE'])
+@NeedsAuth
+@PlayerExists
+@PlayerIsActive
+@IsOwnerOrParticipatingAdmin
+@UpdatePlayerActivity
+def modCurrentSong(request, player_id, player):
+  if request.method == 'POST':
+    setCurrentSong(request, player)
+  elif request.method == 'DELETE':
+    removeCurrentSong(request, player)
+  else:
+    #Should never get here because of the AcceptsMethods decorator
+    pass
+
+@HasNZParams(['lib_id'])
+def setCurrentSong(request, player):
+
+  try:
+    newCurrentSong = ActivePlaylistEntry.objects.get(
+      song__player_lib_song_id=request.POST['lib_id'],
+      song__player=player,
+      state=u'QE')
+
+    try:
+      currentSong = ActivePlaylistEntry.objects.get(song__player=player, state=u'PL')
+      currentSong.state=u'FN'
+      currentSong.save()
+    except ObjectDoesNotExist:
+      pass
+    except MultipleObjectsReturned:
+      #We should never get this, but some how we do sometimes. This is bad.
+      ActivePlaylistEntry.objects.filter(song__player=player, state=u'PL').update(state=u'FN')
+
+    newCurrentSong.state = u'PL'
+    newCurrentSong.save()
+    PlaylistEntryTimePlayed(playlist_entry=newCurrentSong).save()
+  except ObjectDoesNotExist:
+    toReturn = HttpResponseNotFound()
+    toReturn[MISSING_RESOURCE_HEADER] = 'song'
+    return toReturn
+  return HttpResponse("Song changed")
+
+def removeCurrentSong(request, player):
+    try:
+      currentSong = ActivePlaylistEntry.objects.get(song__player=player, state=u'PL')
+      currentSong.state=u'FN'
+      currentSong.save()
+    except ObjectDoesNotExist:
+      toReturn = HttpResponseNotFound()
+      toReturn[MISSING_RESOURCE_HEADER] = 'song'
+      return toReturn
+  return HttpResponse()
 
 
 
