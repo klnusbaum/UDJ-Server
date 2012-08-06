@@ -2,7 +2,7 @@ import json
 
 from udj.models import Participant, PlayerPassword
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER, FORBIDDEN_REASON_HEADER
-from udj.views.views06.decorators import PlayerExists, PlayerIsActive, AcceptsMethods
+from udj.views.views06.decorators import PlayerExists, PlayerIsActive, AcceptsMethods, UpdatePlayerActivity
 from udj.views.views06.authdecorators import NeedsAuth, IsOwnerOrParticipates
 from udj.views.views06.auth import getUserForTicket, hashPlayerPassword
 from udj.views.views06.JSONCodecs import UDJEncoder
@@ -59,6 +59,16 @@ def participateWithPlayer(request, player_id, player):
 @PlayerExists
 @PlayerIsActive
 @IsOwnerOrParticipates
+@UpdatePlayerActivity
 def getUsersForPlayer(request, player_id, player):
   return HttpResponse(json.dumps(player.ActiveParticipants(), cls=UDJEncoder))
+
+@AcceptsMethods(['GET'])
+@NeedsAuth
+@PlayerExists
+@PlayerIsActive
+@IsOwnerOrParticipates
+@UpdatePlayerActivity
+def getAdminsForPlayer(request, player_id, player):
+  return HttpResponse(json.dumps(player.Admins(), cls=UDJEncoder))
 

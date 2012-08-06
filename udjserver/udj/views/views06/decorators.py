@@ -77,12 +77,14 @@ def PlayerIsActive(function):
 
 
 def UpdatePlayerActivity(function):
+  from udj.views.views06.auth import getUserForTicket
   def wrapper(*args, **kwargs):
     toReturn = function(*args, **kwargs)
-    user = kwargs['user']
-    activePlayer = kwargs['activePlayer']
-    if user != activePlayer.owning_user:
-      participant = Participant.objects.get(user=user, player=activePlayer)
+    request = args[0]
+    user = getUserForTicket(request)
+    player = kwargs['player']
+    if user != player.owning_user:
+      participant = Participant.objects.get(user=user, player=player)
       participant.time_last_interaction = datetime.now()
       participant.save()
     return toReturn

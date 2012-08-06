@@ -43,11 +43,14 @@ class BeginParticipateTests(ZachTestCase):
     self.assertEqual(zach.kick_flag, False)
 
 class GetUsersTests(MattTestCase):
-
-  def testGetUsersSingle(self):
+  def setUp(self):
+    super(GetUsersTests, self).setUp()
     matt = Participant.objects.get(user__id=9)
     matt.time_last_interaction = datetime.now()
     matt.save()
+
+  @EnsureParticipationUpdated(9, 7)
+  def testGetUsersSingle(self):
     response = self.doGet('/udj/0_6/players/7/users')
     self.assertEqual(response.status_code, 200)
     users = json.loads(response.content)
@@ -56,10 +59,8 @@ class GetUsersTests(MattTestCase):
     for user in users:
       self.assertTrue(user['id'] in expectedIds)
 
+  @EnsureParticipationUpdated(9, 7)
   def testGetUsersBoth(self):
-    matt = Participant.objects.get(user__id=9)
-    matt.time_last_interaction = datetime.now()
-    matt.save()
     alex = Participant.objects.get(user__id=10)
     alex.time_last_interaction = datetime.now()
     alex.save()
