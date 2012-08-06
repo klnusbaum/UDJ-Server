@@ -46,7 +46,7 @@ class DoesServerOpsTestCase(TestCase):
     return self.client.post(url, args, **headers)
 
   def isJSONResponse(self, response):
-    self.assertEqual(response['Content-Type'], 'text/json')
+    self.assertEqual(response['Content-Type'], 'text/json; charset=utf-8')
 
 
 class BasicPlayerAdministrationTests(DoesServerOpsTestCase):

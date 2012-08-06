@@ -24,7 +24,7 @@ class ReissueAuthTest(TestCase):
     response = self.issueTicketRequest()
 
     self.assertEqual(response.status_code, 200, response.content)
-    self.assertEqual(response['Content-Type'], 'text/json')
+    self.assertEqual(response['Content-Type'], 'text/json; charset=utf-8')
 
 
     newTicket = ReissueAuthTest.getCurrentTicket()
@@ -51,7 +51,7 @@ class AuthTests(TestCase):
     response = self.issueTicketRequest()
 
     self.assertEqual(response.status_code, 200, response.content)
-    self.assertEqual(response['Content-Type'], 'text/json')
+    self.assertEqual(response['Content-Type'], 'text/json; charset=utf-8')
 
     ticket_and_user_id = json.loads(response.content)
     ticket_hash = ticket_and_user_id['ticket_hash']
@@ -64,7 +64,7 @@ class AuthTests(TestCase):
     response = self.issueTicketRequest()
 
     self.assertEqual(response.status_code, 200, response.content)
-    self.assertEqual(response['Content-Type'], 'text/json')
+    self.assertEqual(response['Content-Type'], 'text/json; charset=utf-8')
 
     ticket_and_user_id = json.loads(response.content)
     ticket_hash = ticket_and_user_id['ticket_hash']
@@ -76,7 +76,7 @@ class AuthTests(TestCase):
     response = self.issueTicketRequest()
 
     self.assertEqual(response.status_code, 200, response.content)
-    self.assertEqual(response['Content-Type'], 'text/json')
+    self.assertEqual(response['Content-Type'], 'text/json; charset=utf-8')
 
     ticket_and_user_id = json.loads(response.content)
     new_ticket = ticket_and_user_id['ticket_hash']

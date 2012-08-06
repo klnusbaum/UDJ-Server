@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.gis.db import models as gismodels
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from datetime import datetime
 from datetime import timedelta
 
@@ -128,7 +129,7 @@ class Player(models.Model):
         (self.state == 'AC' and self.isActiveParticipant(user))
 
   def AvailableMusic(self, query):
-    return LibraryEntry.objects.filter(player=activePlayer).filter(
+    return LibraryEntry.objects.filter(player=self).filter(
       Q(title__icontains=query) |
       Q(artist__icontains=query) |
       Q(album__icontains=query)).exclude(

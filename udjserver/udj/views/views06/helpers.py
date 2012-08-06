@@ -1,6 +1,7 @@
 from udj.models import Player
 from udj.models import PlayerLocation
 from settings import geocodeLocation
+from django.http import HttpResponse
 
 from django.contrib.gis.geos import Point
 
@@ -33,3 +34,8 @@ def setPlayerLocation(location, player):
     playerLocation.country = country
     playerLocation.save()
 
+
+class HttpJSONResponse(HttpResponse):
+
+  def __init__(self, content, status=200):
+    super(HttpJSONResponse, self).__init__(content, status=status, content_type="text/json; charset=utf-8")

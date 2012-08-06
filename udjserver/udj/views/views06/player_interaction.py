@@ -6,6 +6,7 @@ from udj.views.views06.decorators import PlayerExists, PlayerIsActive, AcceptsMe
 from udj.views.views06.authdecorators import NeedsAuth, IsOwnerOrParticipates
 from udj.views.views06.auth import getUserForTicket, hashPlayerPassword
 from udj.views.views06.JSONCodecs import UDJEncoder
+from udj.views.views06.helpers import HttpJSONResponse
 
 from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
@@ -61,7 +62,7 @@ def participateWithPlayer(request, player_id, player):
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
 def getUsersForPlayer(request, player_id, player):
-  return HttpResponse(json.dumps(player.ActiveParticipants(), cls=UDJEncoder), content_type='text/json')
+  return HttpJSONResponse(json.dumps(player.ActiveParticipants(), cls=UDJEncoder))
 
 @AcceptsMethods(['GET'])
 @NeedsAuth
@@ -70,7 +71,7 @@ def getUsersForPlayer(request, player_id, player):
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
 def getAdminsForPlayer(request, player_id, player):
-  return HttpResponse(json.dumps(player.Admins(), cls=UDJEncoder), content_type='text/json')
+  return HttpJSONResponse(json.dumps(player.Admins(), cls=UDJEncoder))
 
 @AcceptsMethods(['GET'])
 @NeedsAuth
@@ -79,7 +80,7 @@ def getAdminsForPlayer(request, player_id, player):
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
 def getSongSetsForPlayer(request, player_id, player):
-  return HttpResponse(json.dumps(player.SongSets(), cls=UDJEncoder), content_type='text/json')
+  return HttpJSONResponse(json.dumps(player.SongSets(), cls=UDJEncoder))
 
 @AcceptsMethods(['GET'])
 @NeedsAuth
@@ -91,5 +92,14 @@ def getSongSetsForPlayer(request, player_id, player):
 def getAvailableMusic(request, player_id, player):
   availableMusic = player.AvailableMusic(request.GET['query'])
   if 'max_results' in request.GET:
-    available_songs = available_songs[:request.GET['max_results']]
-  return HttpResponse(json.dumps(availableSongs, cls=UDJEncoder), content_type="text/json")
+    availableMusic = availableMusic[:request.GET['max_results']]
+  return HttpJSONResponse(json.dumps(availableMusic, cls=UDJEncoder))
+
+@AcceptsMethods(['GET'])
+@NeedsAuth
+@PlayerExists
+@PlayerIsActive
+@IsOwnerOrParticipates
+@UpdatePlayerActivity
+def getArtists(request, player_id, player):
+  return HttpJSONResponse(json.dumps(player.Artists(), cls=UDJEncoder))

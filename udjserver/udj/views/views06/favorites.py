@@ -8,6 +8,7 @@ from udj.views.views06.authdecorators import NeedsAuth
 from udj.views.views06.JSONCodecs import UDJEncoder
 from udj.views.views06.auth import getUserForTicket
 from udj.headers import MISSING_RESOURCE_HEADER
+from udj.views.views06.helpers import HttpJSONResponse
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
@@ -63,5 +64,5 @@ def removeSongFromFavorite(user, player_id, lib_id):
 def getFavorites(request, player_id):
   user = getUserForTicket(request)
   favorites = Favorite.objects.filter(user=user, favorite_song__player__id=player_id)
-  return HttpResponse(json.dumps(favorites, cls=UDJEncoder), content_type="text/json")
+  return HttpJSONResponse(json.dumps(favorites, cls=UDJEncoder))
 

@@ -6,6 +6,7 @@ from udj.views.views06.authdecorators import NeedsAuth
 from udj.views.views06.decorators import AcceptsMethods
 from udj.views.views06.decorators import HasNZParams
 from udj.views.views06.JSONCodecs import UDJEncoder
+from udj.views.views06.helpers import HttpJSONResponse
 
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
@@ -24,7 +25,7 @@ def getNearbyPlayers(request, latitude, longitude):
   search_radius = int(request.GET.get('radius', default_search_radius))
   if search_radius >= max_search_radius or search_radius < min_search_radius:
     radii_info = { 'min_radius' : min_search_radius, 'max_radius' : max_search_radius}
-    return HttpResponse(json.dumps(radii_info), status=406, content_type="text/json")
+    return HttpJSONResponse(json.dumps(radii_info), status=406)
 
   givenLat = float(latitude)
   givenLon = float(longitude)
@@ -35,7 +36,7 @@ def getNearbyPlayers(request, latitude, longitude):
 
   nearbyPlayers = [location.player for location in nearbyLocations]
 
-  return HttpResponse(json.dumps(nearbyPlayers, cls=UDJEncoder), content_type="text/json")
+  return HttpJSONResponse(json.dumps(nearbyPlayers, cls=UDJEncoder))
 
 @NeedsAuth
 @AcceptsMethods(['GET'])
@@ -45,5 +46,5 @@ def getPlayers(request):
   search_limit = min(search_limit, 100)
 
   players = Player.objects.filter(name__icontains=request.GET['name']).exclude(state='IN')[:search_limit]
-  return HttpResponse(json.dumps(players, cls=UDJEncoder), content_type="text/json")
+  return HttpJSONResponse(json.dumps(players, cls=UDJEncoder))
 

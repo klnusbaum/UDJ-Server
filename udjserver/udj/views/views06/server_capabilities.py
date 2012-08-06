@@ -5,6 +5,7 @@ from udj.models import ExternalLibrary
 from udj.views.views06.decorators import AcceptsMethods
 from udj.views.views06.authdecorators import NeedsAuth
 from udj.views.views06.JSONCodecs import UDJEncoder
+from udj.views.views06.helpers import HttpJSONResponse
 
 from django.http import HttpRequest
 from django.http import HttpResponse
@@ -13,10 +14,10 @@ from django.http import HttpResponse
 @AcceptsMethods(['GET'])
 def getSortingAlgorithms(request):
   allAlgos = SortingAlgorithm.objects.all()
-  return HttpResponse(json.dumps(allAlgos, cls=UDJEncoder), content_type="text/json")
+  return HttpJSONResponse(json.dumps(allAlgos, cls=UDJEncoder))
 
 @NeedsAuth
 @AcceptsMethods(['GET'])
 def getExternalLibraries(request):
   allExternalLibs = ExternalLibrary.objects.all()
-  return HttpResponse(json.dumps(allExternalLibs, cls=UDJEncoder), content_type="text/json")
+  return HttpJSONResponse(json.dumps(allExternalLibs, cls=UDJEncoder))

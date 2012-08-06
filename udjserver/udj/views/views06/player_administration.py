@@ -14,6 +14,7 @@ from udj.views.views06.authdecorators import IsOwnerOrAdmin
 from udj.views.views06.authdecorators import NeedsAuth
 from udj.views.views06.helpers import setPlayerLocation
 from udj.views.views06.JSONCodecs import UDJEncoder
+from udj.views.views06.helpers import HttpJSONResponse
 
 from django.http import HttpRequest
 from django.http import HttpResponse
@@ -253,6 +254,6 @@ def unbanUser(request, player_id, ban_user_id, player):
 @PlayerExists
 @IsOwnerOrAdmin
 def getBannedUsers(request, player_id, player):
-  return HttpResponse(json.dumps(player.BannedUsers(), cls=UDJEncoder), content_type="text/json")
+  return HttpJSONResponse(json.dumps(player.BannedUsers(), cls=UDJEncoder))
 
 

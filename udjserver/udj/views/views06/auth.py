@@ -7,6 +7,7 @@ from udj.models import Ticket
 from udj.headers import DJANGO_TICKET_HEADER
 from udj.views.views06.decorators import AcceptsMethods
 from udj.views.views06.decorators import HasNZParams
+from udj.views.views06.helpers import HttpJSONResponse
 
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
@@ -78,7 +79,7 @@ def authenticate(request):
   if userToAuth.check_password(request.POST['password']):
     ticket = obtainTicketForUser(userToAuth)
     ticket_and_id = {"ticket_hash" : ticket.ticket_hash, "user_id" : userToAuth.id}
-    response = HttpResponse(json.dumps(ticket_and_id), content_type='text/json')
+    response = HttpJSONResponse(json.dumps(ticket_and_id))
     return response
   else:
     response = HttpResponse(status=401)

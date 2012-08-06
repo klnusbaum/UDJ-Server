@@ -124,7 +124,7 @@ class GetAvailableMusicTests(JeffTestCase):
 
   @EnsureParticipationUpdated(3,1)
   def testGetBasicMusic(self):
-    response = self.doGet('/udj/players/1/available_music?query=Third+Eye+Blind')
+    response = self.doGet('/udj/0_6/players/1/available_music?query=Third+Eye+Blind')
     self.assertEqual(response.status_code, 200)
     self.isJSONResponse(response)
     songResults = json.loads(response.content)
@@ -135,7 +135,7 @@ class GetAvailableMusicTests(JeffTestCase):
 
   @EnsureParticipationUpdated(3, 1)
   def testSimpleGetWithMax(self):
-    response = self.doGet('/udj/players/1/available_music?query=Third+Eye+Blind&max_results=2')
+    response = self.doGet('/udj/0_6/players/1/available_music?query=Third+Eye+Blind&max_results=2')
     self.assertEqual(response.status_code, 200)
     self.isJSONResponse(response)
     songResults = json.loads(response.content)
@@ -143,7 +143,7 @@ class GetAvailableMusicTests(JeffTestCase):
 
   @EnsureParticipationUpdated(3, 1)
   def testAlbumGet(self):
-    response = self.doGet('/udj/players/1/available_music?query=Bedlam+in+Goliath')
+    response = self.doGet('/udj/0_6/players/1/available_music?query=Bedlam+in+Goliath')
     self.assertEqual(response.status_code, 200)
     self.isJSONResponse(response)
     songResults = json.loads(response.content)

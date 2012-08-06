@@ -46,6 +46,8 @@ urlpatterns += patterns('udj.views.views06.player_interaction',
   (r'^players/(?P<player_id>\d+)/admins$', 'getAdminsForPlayer'),
   (r'^players/(?P<player_id>\d+)/song_sets$', 'getSongSetsForPlayer'),
   (r'^players/(?P<player_id>\d+)/available_music$', 'getAvailableMusic'),
+  (r'^players/(?P<player_id>\d+)/available_music/artists$', 'getArtists'),
+  (r'^players/(?P<player_id>\d+)/available_music/artists/(?P<givenArtist>.*)$', 'getArtistSongs'),
 )
 
 

@@ -14,6 +14,7 @@ from udj.views.views06.authdecorators import NeedsAuth
 from udj.views.views06.auth import hashPlayerPassword
 from udj.views.views06.auth import getUserForTicket
 from udj.views.views06.helpers import setPlayerLocation
+from udj.views.views06.helpers import HttpJSONResponse
 
 from django.db import transaction
 from django.http import HttpRequest
@@ -100,5 +101,5 @@ def createPlayer(request):
     else:
       return HttpResponseBadRequest('Bad location')
 
-  return HttpResponse(json.dumps({'player_id' : newPlayer.id}), status=201, content_type="text/json")
+  return HttpJSONResponse(json.dumps({'player_id' : newPlayer.id}), status=201)
 
