@@ -41,6 +41,17 @@ class Participant(models.Model):
   def __unicode__(self):
     return "User " + str(self.user.id) + " is participating with player " + str(self.player.name)
 
+class PlayerAdmin(models.Model):
+  admin_user = models.ForeignKey(User)
+  player = models.ForeignKey('Player')
+
+  class Meta:
+    unique_together = ("admin_user", "player")
+
+  def __unicode__(self):
+    return self.admin_user.username + " is an admin for " + self.player.name
+
+
 class Player(models.Model):
   PLAYER_STATE_CHOICES = (('IN', u'Inactive'), ('PL', u'Playing'), ('PA', u'Paused'))
 
@@ -57,7 +68,7 @@ class Player(models.Model):
         and self.ActiveParticipants().count() < self.size_limit
 
   def isAdmin(self, user):
-    return PlayerAdmin.objects.filter(admin_user=user, player=self).exists()
+    return self.Admins().filter(admin_user=user).exists()
 
   def isActiveParticipant(self, user):
     return self.ActiveParticipants().filter(user=user).exists()
@@ -69,9 +80,11 @@ class Player(models.Model):
     return Participant.objects.filter(player=self,
       time_last_interaction__gt=(datetime.now() - timedelta(hours=1))).exclude(kick_flag=True, ban_flag=True)
 
+  def Admins(self):
+    return PlayerAdmin.objects.filter(player=self)
+
   def KickedUsers(self):
     return Participant.objects.filter(player=self, kick_flag=True)
-
 
   def BannedUsers(self):
     return Participant.objects.filter(player=self, ban_flag=True)
@@ -218,14 +231,4 @@ class Favorite(models.Model):
   def __unicode__(self):
     return self.user.username + " likes " + self.favorite_song.title
 
-
-class PlayerAdmin(models.Model):
-  admin_user = models.ForeignKey(User)
-  player = models.ForeignKey(Player)
-
-  class Meta:
-    unique_together = ("admin_user", "player")
-
-  def __unicode__(self):
-    return self.admin_user.username + " is an admin for " + self.player.name
 
