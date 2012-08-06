@@ -107,7 +107,7 @@ class UDJEncoder(json.JSONEncoder):
           "description" : obj.description,
           "songs" : obj.Songs(),
           "owner" : obj.owner,
-          "date_created" : obj.date_create.replace(microsecond=0).isoformat()
+          "date_created" : obj.date_created.replace(microsecond=0).isoformat()
       }
 
     elif isinstance(obj, SongSetEntry):

@@ -44,6 +44,7 @@ urlpatterns += patterns('udj.views.views06.player_interaction',
   (r'^players/(?P<player_id>\d+)/users/user$', 'participateWithPlayer'),
   (r'^players/(?P<player_id>\d+)/users$', 'getUsersForPlayer'),
   (r'^players/(?P<player_id>\d+)/admins$', 'getAdminsForPlayer'),
+  (r'^players/(?P<player_id>\d+)/song_sets$', 'getSongSetsForPlayer'),
 )
 
 

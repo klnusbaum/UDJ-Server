@@ -80,3 +80,4 @@ def getAdminsForPlayer(request, player_id, player):
 @UpdatePlayerActivity
 def getSongSetsForPlayer(request, player_id, player):
   return HttpResponse(json.dumps(player.SongSets(), cls=UDJEncoder))
+

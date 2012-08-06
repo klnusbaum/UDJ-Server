@@ -1003,7 +1003,7 @@
     "pk": 3,
     "model" : "udj.songsetentry",
     "fields":{
-      "songset" : 1,
+      "songset" : 2,
       "song" : 6
     }
   },
@@ -1012,7 +1012,7 @@
     "pk": 4,
     "model" : "udj.songsetentry",
     "fields":{
-      "songset" : 1,
+      "songset" : 2,
       "song" : 7
     }
   }

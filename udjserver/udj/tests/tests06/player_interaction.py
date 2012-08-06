@@ -1,5 +1,5 @@
 import json
-from udj.models import Participant, PlayerAdmin
+from udj.models import Participant, PlayerAdmin, SongSet, SongSetEntry
 from datetime import datetime
 from udj.testhelpers.tests06.testclasses import ZachTestCase, MattTestCase, JeffTestCase
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER, FORBIDDEN_REASON_HEADER
@@ -72,15 +72,15 @@ class GetUsersTests(MattTestCase):
     for user in users:
       self.assertTrue(user['id'] in expectedIds)
 
-class GetAdminsTest(JeffTestCase):
+class GetAdminsTests(JeffTestCase):
   def setUp(self):
     super(GetAdminsTest, self).setUp()
-    lucas = Participant.objects.get(user__id=3, player__id=1)
-    lucas.time_last_interaction = datetime.now()
-    lucas.save()
+    jeff = Participant.objects.get(user__id=3, player__id=1)
+    jeff.time_last_interaction = datetime.now()
+    jeff.save()
 
   @EnsureParticipationUpdated(3, 1)
-  def testGetUsersSingle(self):
+  def testGetAdmins(self):
     response = self.doGet('/udj/0_6/players/1/admins')
     self.assertEqual(response.status_code, 200)
     admins = json.loads(response.content)
@@ -88,3 +88,24 @@ class GetAdminsTest(JeffTestCase):
     expectedIds = [1,5]
     for admin in admins:
       self.assertTrue(admin['id'] in expectedIds)
+
+class GetSongSetTests(JeffTestCase):
+  def setUp(self):
+    super(GetSongSetTests, self).setUp()
+    jeff = Participant.objects.get(user__id=3, player__id=1)
+    jeff.time_last_interaction = datetime.now()
+    jeff.save()
+
+  @EnsureParticipationUpdated(3, 1)
+  def testGetSongSets(self):
+    response = self.doGet('/udj/0_6/players/1/song_sets')
+    self.assertEqual(response.status_code, 200)
+    songsets = json.loads(response.content)
+    self.assertEqual(2, len(songsets))
+    expectedNames = ['Third Eye Blind', 'Mars Volta']
+    for songset in songsets:
+      self.assertTrue(songset['name'] in expectedNames)
+      expectedSongs = SongSet.objects.get(name=songset['name'], player__id=1).Songs()
+      expectedSongIds = [x.song.player_lib_song_id for x in expectedSongs]
+      for song in songset['songs']:
+        self.assertTrue(song['id'] in expectedSongIds)
