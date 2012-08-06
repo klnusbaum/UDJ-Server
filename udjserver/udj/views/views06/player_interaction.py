@@ -2,7 +2,7 @@ import json
 
 from udj.models import Participant, PlayerPassword
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER, FORBIDDEN_REASON_HEADER
-from udj.views.views06.decorators import PlayerExists, PlayerIsActive, AcceptsMethods, UpdatePlayerActivity
+from udj.views.views06.decorators import PlayerExists, PlayerIsActive, AcceptsMethods, UpdatePlayerActivity, HasNZParams
 from udj.views.views06.authdecorators import NeedsAuth, IsOwnerOrParticipates
 from udj.views.views06.auth import getUserForTicket, hashPlayerPassword
 from udj.views.views06.JSONCodecs import UDJEncoder
@@ -81,3 +81,15 @@ def getAdminsForPlayer(request, player_id, player):
 def getSongSetsForPlayer(request, player_id, player):
   return HttpResponse(json.dumps(player.SongSets(), cls=UDJEncoder))
 
+@AcceptsMethods(['GET'])
+@NeedsAuth
+@PlayerExists
+@PlayerIsActive
+@IsOwnerOrParticipates
+@UpdatePlayerActivity
+@HasNZParams(['query'])
+def getAvailableMusic(request, player_id, player):
+  availableMusic = player.AvailableMusic(request.GET['query'])
+  if 'max_results' in request.GET:
+    available_songs = available_songs[:request.GET['max_results']]
+  return HttpResponse(json.dumps(availableSongs, cls=UDJEncoder), content_type="text/json")

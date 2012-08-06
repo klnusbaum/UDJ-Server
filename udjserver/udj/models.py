@@ -127,6 +127,14 @@ class Player(models.Model):
     return user==self.owning_user or self.isAdmin(user) or \
         (self.state == 'AC' and self.isActiveParticipant(user))
 
+  def AvailableMusic(self, query):
+    return LibraryEntry.objects.filter(player=activePlayer).filter(
+      Q(title__icontains=query) |
+      Q(artist__icontains=query) |
+      Q(album__icontains=query)).exclude(
+        Q(is_deleted=True)|
+        Q(is_banned=True))
+
   def SongSets(self):
     return SongSet.objects.filter(player=self)
 

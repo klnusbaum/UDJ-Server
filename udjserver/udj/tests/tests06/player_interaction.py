@@ -107,5 +107,23 @@ class GetSongSetTests(JeffTestCase):
       self.assertTrue(songset['name'] in expectedNames)
       expectedSongs = SongSet.objects.get(name=songset['name'], player__id=1).Songs()
       expectedSongIds = [x.song.player_lib_song_id for x in expectedSongs]
+      self.assertTrue(len(expectedSongIds), len(songset['songs']))
       for song in songset['songs']:
         self.assertTrue(song['id'] in expectedSongIds)
+
+class GetAvailableMusicTests(JeffTestCase):
+  def setUp(self):
+    super(GetAvailableMusicTests, self).setUp()
+    jeff = Participant.objects.get(user__id=3, player__id=1)
+    jeff.time_last_interaction = datetime.now()
+    jeff.save()
+
+  def testGetBasicMusic(self):
+    response = self.doGet('/udj/players/1/available_music?query=Third+Eye+Blind')
+    self.assertEqual(response.status_code, 200)
+    songResults = json.loads(response.content)
+    self.assertEquals(4, len(songResults))
+    expectedLibIds =[1,2,3,5]
+    for song in songResults:
+      self.assertTrue(song['id'] in expectedLibIds)
+
