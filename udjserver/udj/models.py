@@ -62,6 +62,7 @@ class Player(models.Model):
   sorting_algo = models.ForeignKey(SortingAlgorithm)
   external_library = models.ForeignKey(ExternalLibrary, null=True)
   size_limit = models.IntegerField(null=True)
+  allow_user_songset = models.BooleanField(default=False)
 
   def isFull(self):
     return self.size_limit != None \
@@ -231,4 +232,12 @@ class Favorite(models.Model):
   def __unicode__(self):
     return self.user.username + " likes " + self.favorite_song.title
 
+class SongSet(models.Model):
+  player = models.ForeignKey(Player)
+  name = models.CharField(max_length=100)
+  description = models.CharField(max_length=500)
+  owner = models.ForeignKey(User)
+  date_created = models.DateTimeField()
 
+  class Meta:
+    unique_together = ("player", "name")
