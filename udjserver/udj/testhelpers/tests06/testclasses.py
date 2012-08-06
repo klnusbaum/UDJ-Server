@@ -174,6 +174,12 @@ class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
     self.assertEqual(1, len(bannedUsers))
     self.assertEqual(8, bannedUsers[0]['id'])
 
+  def testChangeSongSetPermissionToYes(self):
+    self.assertFalse(Player.objects.get(pk=1).allow_user_songset)
+    response = self.doPost('/udj/0_6/players/1/songset_user_permission', {'songset_user_permission' : 'yes'})
+    self.assertEqual(response.status_code, 200, 'Error: ' + response.content)
+    self.assertTrue(Player.objects.get(pk=1).allow_user_songset)
+
 
 class PasswordAdministrationTests(DoesServerOpsTestCase):
 
@@ -191,6 +197,8 @@ class PasswordAdministrationTests(DoesServerOpsTestCase):
     self.assertEqual(response.status_code, 200, "Error: " + response.content)
     playerPassword = PlayerPassword.objects.filter(player__id=3)
     self.assertFalse(playerPassword.exists())
+
+
 
 
 

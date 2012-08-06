@@ -24,24 +24,25 @@ from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
 
-
 @csrf_exempt
 @AcceptsMethods(['POST'])
 @NeedsAuth
 @PlayerExists
 @IsOwnerOrAdmin
-@HasNZParams(['name'])
-def changePlayerName(request, player_id, player):
-  givenName = request.POST['name']
-  if givenName == '':
-    return HttpResponseBadRequest("Bad name")
-  if Player.objects.filter(owning_user=player.owning_user, name=givenName).exists():
-    return HttpResponse(status=409)
-
-  player.name=givenName
-  player.save()
+@HasNZParams(['songset_user_permission'])
+def changeSongSetPermission(request, player_id, player):
+  if request.POST['songset_user_permission'] == 'yes':
+    player.allow_user_songset = True
+    player.save()
+  elif request.POST['songset_user_permission'] == 'no':
+    player.allow_user_songset = False
+    player.save()
+  else:
+    return HttpResponse('Invalid permission value', status=400)
 
   return HttpResponse()
+
+
 
 @csrf_exempt
 @AcceptsMethods(['POST', 'DELETE'])
