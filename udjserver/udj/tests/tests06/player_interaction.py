@@ -169,3 +169,14 @@ class GetArtistsTests(JeffTestCase):
     requiredArtists = [u'Skrillex', u'The Mars Volta', u'Third Eye Blind']
     for artist in jsonResponse:
       self.assertTrue(artist in requiredArtists)
+
+  @EnsureParticipationUpdated(3,1)
+  def testSpecificArtistGet(self):
+    response = self.doGet('/udj/players/1/available_music/artists/Third Eye Blind')
+    self.assertEqual(response.status_code, 200)
+    jsonResponse = json.loads(response.content)
+    self.assertEqual(4, len(jsonResponse))
+    requiredIds = [1, 2, 3, 5]
+    for songId in [x['id'] for x in jsonResponse]:
+      self.assertTrue(songId in requiredIds)
+

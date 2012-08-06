@@ -138,6 +138,12 @@ class Player(models.Model):
       .exclude(is_banned=True)\
       .distinct('artist').order_by('artist').values_list('artist', flat=True)
 
+  def ArtistSongs(self, artist):
+    return LibraryEntry.objects.filter(player=self)\
+      .exclude(is_deleted=True)\
+      .exclude(is_banned=True)\
+      .filter(artist=artists)
+
   def AvailableMusic(self, query):
     return LibraryEntry.objects.filter(player=self).filter(
       Q(title__icontains=query) |

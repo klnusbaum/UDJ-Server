@@ -103,3 +103,12 @@ def getAvailableMusic(request, player_id, player):
 @UpdatePlayerActivity
 def getArtists(request, player_id, player):
   return HttpJSONResponse(json.dumps(player.Artists(), cls=UDJEncoder))
+
+@AcceptsMethods(['GET'])
+@NeedsAuth
+@PlayerExists
+@PlayerIsActive
+@IsOwnerOrParticipates
+@UpdatePlayerActivity
+def getArtistSongs(request, player_id, player, givenArtist):
+  return HttpJSONResponse(json.dumps(player.ArtistSongs(givenArtist), cls=UDJEncoder))
