@@ -10,22 +10,20 @@ from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
 
-
-def userParticipates(player, user):
-  return Participant.objects.filter(user=user).exists()
-
 def IsOwnerOrParticipates(function):
   def wrapper(*args, **kwargs):
     request = args[0]
     user = getUserForTicket(request)
-    activePlayer = kwargs['activePlayer']
-    if activePlayer.owning_user==user or userParticipates(activePlayer, user):
-      kwargs['user'] = user
+    player = kwargs['player']
+    if player.owner=user or player.isActiveParticipant(user):
       return function(*args, **kwargs)
+    else if player.isKicked(user):
+      toReturn = HttpResponse(status=401)
+      toReturn['WWW-Authenticate'] = 'kicked'
+      return toReturn
     else:
       toReturn = HttpResponse(status=401)
       toReturn['WWW-Authenticate'] = 'begin-participating'
-      return toReturn
   return wrapper
 
 def IsOwner(function):

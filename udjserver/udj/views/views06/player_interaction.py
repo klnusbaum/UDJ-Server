@@ -51,3 +51,11 @@ def participateWithPlayer(request, player_id, player):
   else:
     return onSuccessfulPlayerAuth(player, user)
 
+@AcceptsMethods(['GET'])
+@NeedsAuth
+@PlayerExists
+@PlayerIsActive
+@IsOwnerOrParticipates
+def getUsersForPlayer(request, player_id, player):
+  return HttpResponse(json.dumps(player.ActiveParticipants(), cls=UDJEncoder))
+

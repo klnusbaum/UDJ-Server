@@ -59,17 +59,28 @@ class Player(models.Model):
   def isAdmin(self, user):
     return PlayerAdmin.objects.filter(admin_user=user, player=self).exists()
 
-  def sortPlaylist(self, toSort):
-    from udj import playlistalgos
-    toCall = getattr(playlistalgos, self.sorting_algo.function_name)
-    return toCall(toSort)
+  def isActiveParticipant(self, user):
+    return self.ActiveParticipants().filter(user=user).exists()
+
+  def isKicked(self, user):
+    return self.KickedUser().filter(user=user).exists()
 
   def ActiveParticipants(self):
     return Participant.objects.filter(player=self,
       time_last_interaction__gt=(datetime.now() - timedelta(hours=1))).exclude(kick_flag=True, ban_flag=True)
 
+  def KickedUsers(self):
+    return Participant.objects.filter(player=self, kick_flag=True)
+
+
   def BannedUsers(self):
     return Participant.objects.filter(player=self, ban_flag=True)
+
+  def sortPlaylist(self, toSort):
+    from udj import playlistalgos
+    toCall = getattr(playlistalgos, self.sorting_algo.function_name)
+    return toCall(toSort)
+
 
   def __unicode__(self):
     return self.name + " player" 
