@@ -180,6 +180,21 @@ class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
     self.assertEqual(response.status_code, 200, 'Error: ' + response.content)
     self.assertTrue(Player.objects.get(pk=1).allow_user_songset)
 
+  def testChangeSongSetPerimssionToNo(self):
+    playerToChange = Player.objects.get(pk=1)
+    playerToChange.allow_user_songset = True
+    playerToChange.save()
+    self.assertTrue(Player.objects.get(pk=1).allow_user_songset)
+    response = self.doPost('/udj/0_6/players/1/songset_user_permission', {'songset_user_permission' : 'no'})
+    self.assertEqual(response.status_code, 200, 'Error: ' + response.content)
+    self.assertFalse(Player.objects.get(pk=1).allow_user_songset)
+
+  def testBadChangeSongSetPermission(self):
+    response = self.doPost('/udj/0_6/players/1/songset_user_permission', {'songset_user_permission' : 'derp'})
+    self.assertEqual(response.status_code, 400)
+    self.assertEqual(response.content, 'Invalid permission value')
+
+
 
 class PasswordAdministrationTests(DoesServerOpsTestCase):
 
