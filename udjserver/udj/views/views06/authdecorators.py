@@ -15,15 +15,16 @@ def IsOwnerOrParticipates(function):
     request = args[0]
     user = getUserForTicket(request)
     player = kwargs['player']
-    if player.owner=user or player.isActiveParticipant(user):
+    if player.owning_user==user or player.isActiveParticipant(user):
       return function(*args, **kwargs)
-    else if player.isKicked(user):
+    elif player.isKicked(user):
       toReturn = HttpResponse(status=401)
       toReturn['WWW-Authenticate'] = 'kicked'
       return toReturn
     else:
       toReturn = HttpResponse(status=401)
       toReturn['WWW-Authenticate'] = 'begin-participating'
+      return toReturn
   return wrapper
 
 def IsOwner(function):

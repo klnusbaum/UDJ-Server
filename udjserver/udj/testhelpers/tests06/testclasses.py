@@ -49,34 +49,6 @@ class DoesServerOpsTestCase(TestCase):
     self.assertEqual(response['Content-Type'], 'text/json')
 
 
-class KurtisTestCase(DoesServerOpsTestCase):
-  username = "kurtis"
-  userpass = "testkurtis"
-
-class JeffTestCase(DoesServerOpsTestCase):
-  username = "jeff"
-  userpass = "testjeff"
-
-class YunYoungTestCase(DoesServerOpsTestCase):
-  username = "yunyoung"
-  userpass = "testyunyoung"
-
-class AlejandroTestCase(DoesServerOpsTestCase):
-  username = "alejandro"
-  userpass = "testalejandro"
-
-class LucasTestCase(DoesServerOpsTestCase):
-  username = "lucas"
-  userpass = "testlucas"
-
-class LeeTestCase(DoesServerOpsTestCase):
-  username = "lee"
-  userpass = "testlee"
-
-class ZachTestCase(DoesServerOpsTestCase):
-  username = "zach"
-  userpass = "testzach"
-
 class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
 
   def testSetPassword(self):
@@ -115,7 +87,6 @@ class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
       'country' : 'U.S.'
     }
 
-
     response = self.doPost('/udj/0_6/players/4/location', newLocation)
     self.assertEqual(200, response.status_code)
     playerLocation = PlayerLocation.objects.get(player__id=4)
@@ -136,7 +107,6 @@ class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
     response = self.doPut('/udj/0_6/players/1/admins/100000')
     self.assertEqual(404, response.status_code)
     self.assertEqual('user', response[MISSING_RESOURCE_HEADER])
-
 
   def testRemoveAdmin(self):
     response = self.doDelete('/udj/0_6/players/1/admins/1')
@@ -197,15 +167,12 @@ class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
     self.assertEqual(404, response.status_code)
     self.assertEqual('user', response[MISSING_RESOURCE_HEADER])
 
-
   def testGetBannedUsers(self):
     response = self.doGet('/udj/0_6/players/1/banned_users')
     self.assertEqual(200, response.status_code)
     bannedUsers = json.loads(response.content)
     self.assertEqual(1, len(bannedUsers))
     self.assertEqual(8, bannedUsers[0]['id'])
-
-
 
 
 class PasswordAdministrationTests(DoesServerOpsTestCase):
@@ -224,4 +191,38 @@ class PasswordAdministrationTests(DoesServerOpsTestCase):
     self.assertEqual(response.status_code, 200, "Error: " + response.content)
     playerPassword = PlayerPassword.objects.filter(player__id=3)
     self.assertFalse(playerPassword.exists())
+
+
+
+class KurtisTestCase(DoesServerOpsTestCase):
+  username = "kurtis"
+  userpass = "testkurtis"
+
+class JeffTestCase(DoesServerOpsTestCase):
+  username = "jeff"
+  userpass = "testjeff"
+
+class YunYoungTestCase(DoesServerOpsTestCase):
+  username = "yunyoung"
+  userpass = "testyunyoung"
+
+class AlejandroTestCase(DoesServerOpsTestCase):
+  username = "alejandro"
+  userpass = "testalejandro"
+
+class LucasTestCase(DoesServerOpsTestCase):
+  username = "lucas"
+  userpass = "testlucas"
+
+class LeeTestCase(DoesServerOpsTestCase):
+  username = "lee"
+  userpass = "testlee"
+
+class ZachTestCase(DoesServerOpsTestCase):
+  username = "zach"
+  userpass = "testzach"
+
+class MattTestCase(DoesServerOpsTestCase):
+  username = "matt"
+  userpass = "testmatt"
 

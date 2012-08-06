@@ -1,8 +1,11 @@
+import json
+
 from udj.models import Participant, PlayerPassword
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER, FORBIDDEN_REASON_HEADER
 from udj.views.views06.decorators import PlayerExists, PlayerIsActive, AcceptsMethods
-from udj.views.views06.authdecorators import NeedsAuth
+from udj.views.views06.authdecorators import NeedsAuth, IsOwnerOrParticipates
 from udj.views.views06.auth import getUserForTicket, hashPlayerPassword
+from udj.views.views06.JSONCodecs import UDJEncoder
 
 from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt

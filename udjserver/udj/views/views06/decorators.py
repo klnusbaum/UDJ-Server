@@ -78,12 +78,13 @@ def PlayerIsActive(function):
 
 def UpdatePlayerActivity(function):
   def wrapper(*args, **kwargs):
+    toReturn = function(*args, **kwargs)
     user = kwargs['user']
     activePlayer = kwargs['activePlayer']
     if user != activePlayer.owning_user:
       participant = Participant.objects.get(user=user, player=activePlayer)
       participant.time_last_interaction = datetime.now()
       participant.save()
-    return function(*args, **kwargs)
+    return toReturn
   return wrapper
 

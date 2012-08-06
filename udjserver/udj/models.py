@@ -63,7 +63,7 @@ class Player(models.Model):
     return self.ActiveParticipants().filter(user=user).exists()
 
   def isKicked(self, user):
-    return self.KickedUser().filter(user=user).exists()
+    return self.KickedUsers().filter(user=user).exists()
 
   def ActiveParticipants(self):
     return Participant.objects.filter(player=self,
