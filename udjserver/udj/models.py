@@ -189,9 +189,13 @@ class Player(models.Model):
       .filter(artist=artist)
 
   def RecentlyPlayed(self):
+    #This is weird, for some reason I have to put time_played in the distinct field
+    #in theory this shouldn't hurt anything (since all the time_playeds "should" be different).
+    #But it's still weird...
     return PlaylistEntryTimePlayed.objects.filter(playlist_entry__song__player=self)\
       .filter(playlist_entry__state='FN')\
-      .order_by('-time_played')
+      .order_by('-time_played')\
+      .distinct('time_played', 'playlist_entry__song__id')
 
 
   def AvailableMusic(self, query):
