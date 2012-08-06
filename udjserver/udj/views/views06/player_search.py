@@ -24,7 +24,7 @@ def getNearbyPlayers(request, latitude, longitude):
   search_radius = int(request.GET.get('radius', default_search_radius))
   if search_radius >= max_search_radius or search_radius < min_search_radius:
     radii_info = { 'min_radius' : min_search_radius, 'max_radius' : max_search_radius}
-    return HttpResponse(json.dumps(radii_info), status=406)
+    return HttpResponse(json.dumps(radii_info), status=406, content_type="text/json")
 
   givenLat = float(latitude)
   givenLon = float(longitude)

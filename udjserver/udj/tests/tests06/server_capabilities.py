@@ -6,7 +6,7 @@ class ServerCapabilities(KurtisTestCase):
   def testGetSortingAlgos(self):
     response = self.doGet('/udj/0_6/sorting_algorithms')
     self.assertEqual(200, response.status_code)
-    self.assertEqual('text/json', response['Content-Type'])
+    self.isJSONResponse(response)
     sortingAlgo = json.loads(response.content)
     self.assertEqual(1, len(sortingAlgo))
     self.assertEqual(1, sortingAlgo[0]['id'])
@@ -16,7 +16,7 @@ class ServerCapabilities(KurtisTestCase):
   def testGetExternalLibs(self):
     response = self.doGet('/udj/0_6/external_libraries')
     self.assertEqual(200, response.status_code)
-    self.assertEqual('text/json', response['Content-Type'])
+    self.isJSONResponse(response)
     externalLibs = json.loads(response.content)
     self.assertEqual(1, len(externalLibs))
     self.assertEqual(1, externalLibs[0]['id'])

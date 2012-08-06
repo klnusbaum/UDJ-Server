@@ -170,6 +170,7 @@ class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
   def testGetBannedUsers(self):
     response = self.doGet('/udj/0_6/players/1/banned_users')
     self.assertEqual(200, response.status_code)
+    self.isJSONResponse(response)
     bannedUsers = json.loads(response.content)
     self.assertEqual(1, len(bannedUsers))
     self.assertEqual(8, bannedUsers[0]['id'])

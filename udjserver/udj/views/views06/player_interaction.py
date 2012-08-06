@@ -61,7 +61,7 @@ def participateWithPlayer(request, player_id, player):
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
 def getUsersForPlayer(request, player_id, player):
-  return HttpResponse(json.dumps(player.ActiveParticipants(), cls=UDJEncoder))
+  return HttpResponse(json.dumps(player.ActiveParticipants(), cls=UDJEncoder), content_type='text/json')
 
 @AcceptsMethods(['GET'])
 @NeedsAuth
@@ -70,7 +70,7 @@ def getUsersForPlayer(request, player_id, player):
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
 def getAdminsForPlayer(request, player_id, player):
-  return HttpResponse(json.dumps(player.Admins(), cls=UDJEncoder))
+  return HttpResponse(json.dumps(player.Admins(), cls=UDJEncoder), content_type='text/json')
 
 @AcceptsMethods(['GET'])
 @NeedsAuth
@@ -79,7 +79,7 @@ def getAdminsForPlayer(request, player_id, player):
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
 def getSongSetsForPlayer(request, player_id, player):
-  return HttpResponse(json.dumps(player.SongSets(), cls=UDJEncoder))
+  return HttpResponse(json.dumps(player.SongSets(), cls=UDJEncoder), content_type='text/json')
 
 @AcceptsMethods(['GET'])
 @NeedsAuth

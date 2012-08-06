@@ -35,6 +35,7 @@ class FavoritesTests(KurtisTestCase):
   def testGetFavorites(self):
     response = self.doGet('/udj/0_6/favorites/players/1')
     self.assertEqual(200, response.status_code)
+    self.isJSONResponse(response)
     favorites = json.loads(response.content)
     self.assertTrue(2, len(favorites))
     libids = [fav["id"] for fav in favorites]

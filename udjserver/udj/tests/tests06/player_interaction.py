@@ -53,6 +53,7 @@ class GetUsersTests(MattTestCase):
   def testGetUsersSingle(self):
     response = self.doGet('/udj/0_6/players/7/users')
     self.assertEqual(response.status_code, 200)
+    self.isJSONResponse(response)
     users = json.loads(response.content)
     self.assertEqual(1, len(users))
     expectedIds = [9]
@@ -66,6 +67,7 @@ class GetUsersTests(MattTestCase):
     alex.save()
     response = self.doGet('/udj/0_6/players/7/users')
     self.assertEqual(response.status_code, 200)
+    self.isJSONResponse(response)
     users = json.loads(response.content)
     self.assertEqual(2, len(users))
     expectedIds = [9, 10]
@@ -74,7 +76,7 @@ class GetUsersTests(MattTestCase):
 
 class GetAdminsTests(JeffTestCase):
   def setUp(self):
-    super(GetAdminsTest, self).setUp()
+    super(GetAdminsTests, self).setUp()
     jeff = Participant.objects.get(user__id=3, player__id=1)
     jeff.time_last_interaction = datetime.now()
     jeff.save()
@@ -83,6 +85,7 @@ class GetAdminsTests(JeffTestCase):
   def testGetAdmins(self):
     response = self.doGet('/udj/0_6/players/1/admins')
     self.assertEqual(response.status_code, 200)
+    self.isJSONResponse(response)
     admins = json.loads(response.content)
     self.assertEqual(2, len(admins))
     expectedIds = [1,5]
@@ -100,6 +103,7 @@ class GetSongSetTests(JeffTestCase):
   def testGetSongSets(self):
     response = self.doGet('/udj/0_6/players/1/song_sets')
     self.assertEqual(response.status_code, 200)
+    self.isJSONResponse(response)
     songsets = json.loads(response.content)
     self.assertEqual(2, len(songsets))
     expectedNames = ['Third Eye Blind', 'Mars Volta']
@@ -121,6 +125,7 @@ class GetAvailableMusicTests(JeffTestCase):
   def testGetBasicMusic(self):
     response = self.doGet('/udj/players/1/available_music?query=Third+Eye+Blind')
     self.assertEqual(response.status_code, 200)
+    self.isJSONResponse(response)
     songResults = json.loads(response.content)
     self.assertEquals(4, len(songResults))
     expectedLibIds =[1,2,3,5]

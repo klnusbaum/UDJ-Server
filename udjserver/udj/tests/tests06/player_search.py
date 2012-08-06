@@ -55,12 +55,14 @@ class GetPlayersTests(JeffTestCase):
   def testSearchWithRadius(self):
     response = self.doGet('/udj/0_6/players/40.111595/-88.204847?radius=2')
     self.assertEqual(200, response.status_code)
+    self.isJSONResponse(response)
     players = json.loads(response.content)
     self.assertEqual(2, len(players))
 
   def testSearchWithRadiusAndLimit(self):
     response = self.doGet('/udj/0_6/players/40.111595/-88.204847?radius=2&max_results=1')
     self.assertEqual(200, response.status_code)
+    self.isJSONResponse(response)
     players = json.loads(response.content)
     self.assertEqual(1, len(players))
     self.assertEqual(6, players[0]["id"])
@@ -69,6 +71,7 @@ class GetPlayersTests(JeffTestCase):
     badRadius = min_search_radius -1
     response = self.doGet('/udj/0_6/players/40.11241/-88.222053?radius=%d' % badRadius)
     self.assertEqual(406, response.status_code)
+    self.isJSONResponse(response)
     radiiInfo = json.loads(response.content)
     self.assertEqual(min_search_radius, radiiInfo['min_radius'])
     self.assertEqual(max_search_radius, radiiInfo['max_radius'])
@@ -77,6 +80,7 @@ class GetPlayersTests(JeffTestCase):
     badRadius = max_search_radius +1
     response = self.doGet('/udj/0_6/players/40.11381/-88.224083?radius=%d' % badRadius)
     self.assertEqual(406, response.status_code)
+    self.isJSONResponse(response)
     radiiInfo = json.loads(response.content)
     self.assertEqual(min_search_radius, radiiInfo['min_radius'])
     self.assertEqual(max_search_radius, radiiInfo['max_radius'])
