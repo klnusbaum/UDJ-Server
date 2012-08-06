@@ -426,7 +426,8 @@
       "name": "Kurtis Player",
       "state": "PL",
       "volume": 5,
-      "sorting_algo" : 1
+      "sorting_algo" : 1,
+      "allow_user_songset" : true
     }
   },
 
@@ -952,5 +953,70 @@
       "user": 5, 
       "time_issued": "2012-04-24 23:01:37"
     }
+  },
+
+
+  {
+    "pk": 1,
+    "model": "udj.songset",
+    "fields": {
+      "name" : "Third Eye Blind",
+      "description" : "A song set with some great third eye blind.",
+      "player" : 1,
+      "owner" : 2,
+      "date_created": "2012-06-22 18:06:49"
+    }
+  },
+
+  {
+    "pk": 2,
+    "model": "udj.songset",
+    "fields": {
+      "name" : "Mars Volta",
+      "description" : "A song set with some great Mars Volta.",
+      "player" : 1,
+      "owner" : 3,
+      "date_created": "2012-08-04 17:31:52"
+    }
+  },
+
+
+  {
+    "pk": 1,
+    "model" : "udj.songsetentry",
+    "fields":{
+      "songset" : 1,
+      "song" : 1
+    }
+  },
+
+  {
+    "pk": 2,
+    "model" : "udj.songsetentry",
+    "fields":{
+      "songset" : 1,
+      "song" : 3
+    }
+  },
+
+  {
+    "pk": 3,
+    "model" : "udj.songsetentry",
+    "fields":{
+      "songset" : 1,
+      "song" : 6
+    }
+  },
+
+  {
+    "pk": 4,
+    "model" : "udj.songsetentry",
+    "fields":{
+      "songset" : 1,
+      "song" : 7
+    }
   }
+
+
+
 ]

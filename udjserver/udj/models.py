@@ -51,6 +51,37 @@ class PlayerAdmin(models.Model):
   def __unicode__(self):
     return self.admin_user.username + " is an admin for " + self.player.name
 
+class LibraryEntry(models.Model):
+  player = models.ForeignKey('Player')
+  player_lib_song_id = models.IntegerField()
+  title = models.CharField(max_length=200)
+  artist = models.CharField(max_length=200)
+  album = models.CharField(max_length=200)
+  track = models.IntegerField()
+  genre = models.CharField(max_length=50)
+  duration = models.IntegerField()
+  is_deleted = models.BooleanField(default=False)
+  is_banned = models.BooleanField(default=False)
+
+  @staticmethod
+  def songExsits(songId, player):
+    return LibraryEntry.objects.filter(
+      player=player,
+      player_lib_song_id=songId,
+      is_deleted=False,
+      is_banned=False).exists()
+
+  def validate_unique(self, exclude=None):
+    if not self.is_deleted and \
+      LibraryEntry.objects.exclude(pk=self.pk).filter(
+      player_lib_song_id=self.player_lib_song_id, player=self.player, is_deleted=False).exists():
+      raise ValidationError('Duplicated non-deleted lib ids for a player')
+    super(LibraryEntry, self).validate_unique(exclude=exclude)
+
+  def __unicode__(self):
+    return "Library Entry " + str(self.player_lib_song_id) + ": " + self.title
+
+
 class SongSetEntry(models.Model):
   songset = models.ForeignKey('SongSet')
   song = models.ForeignKey(LibraryEntry)
@@ -159,36 +190,6 @@ class PlayerLocation(gismodels.Model):
   def __unicode__(self):
     return self.player.name + " is at (" +str(self.point.x) + \
       "," + str(self.point.y) + ")"
-
-class LibraryEntry(models.Model):
-  player = models.ForeignKey(Player)
-  player_lib_song_id = models.IntegerField()
-  title = models.CharField(max_length=200)
-  artist = models.CharField(max_length=200)
-  album = models.CharField(max_length=200)
-  track = models.IntegerField()
-  genre = models.CharField(max_length=50)
-  duration = models.IntegerField()
-  is_deleted = models.BooleanField(default=False)
-  is_banned = models.BooleanField(default=False)
-
-  @staticmethod
-  def songExsits(songId, player):
-    return LibraryEntry.objects.filter(
-      player=player,
-      player_lib_song_id=songId,
-      is_deleted=False,
-      is_banned=False).exists()
-
-  def validate_unique(self, exclude=None):
-    if not self.is_deleted and \
-      LibraryEntry.objects.exclude(pk=self.pk).filter(
-      player_lib_song_id=self.player_lib_song_id, player=self.player, is_deleted=False).exists():
-      raise ValidationError('Duplicated non-deleted lib ids for a player')
-    super(LibraryEntry, self).validate_unique(exclude=exclude)
-
-  def __unicode__(self):
-    return "Library Entry " + str(self.player_lib_song_id) + ": " + self.title
 
 class ActivePlaylistEntry(models.Model):
   STATE_CHOICES = (
