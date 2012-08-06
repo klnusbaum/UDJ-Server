@@ -241,3 +241,18 @@ class SongSet(models.Model):
 
   class Meta:
     unique_together = ("player", "name")
+
+  def __unicode__(self):
+    return self.name + " on " + self.player.name
+
+class SongSetEntry(models.Model):
+  songset = models.ForeignKey(SongSet)
+  song = models.ForeignKey(LibraryEntry)
+
+  def clean(self):
+    if self.songset.player != self.song.player:
+      raise ValidationError('A song from another player is on songset ' + str(self))
+    super(SongSetEntry, self).clean()
+
+  def __unicode__(self):
+    return self.song.title + " on Song Set " + self.songset.name
