@@ -64,6 +64,10 @@ class Player(models.Model):
   size_limit = models.IntegerField(null=True)
   allow_user_songset = models.BooleanField(default=False)
 
+  def canCreatSongSets(self, user):
+    return user==self.owning_user or self.isAdmin(user) or \
+        (self.state == 'AC' and self.isActiveParticipant(user))
+
   def isFull(self):
     return self.size_limit != None \
         and self.ActiveParticipants().count() < self.size_limit

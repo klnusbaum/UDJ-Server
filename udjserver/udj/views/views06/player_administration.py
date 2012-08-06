@@ -8,7 +8,6 @@ from udj.models import PlayerAdmin
 from udj.exceptions import LocationNotFoundError
 from udj.views.views06.auth import hashPlayerPassword
 from udj.views.views06.decorators import AcceptsMethods
-from udj.views.views06.decorators import NeedsJSON
 from udj.views.views06.decorators import PlayerExists
 from udj.views.views06.decorators import HasNZParams
 from udj.views.views06.authdecorators import IsOwnerOrAdmin

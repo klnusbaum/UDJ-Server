@@ -67,4 +67,15 @@ def IsOwnerOrAdmin(function):
       return HttpResponseForbidden()
   return wrapper
 
+def CanCreateSongSets(function):
+  def wrapper(*args, **kwargs):
+    request = args[0]
+    user = getUserForTicket(request)
+    player = kwargs['player']
+    if player.canCreateSongSets(user):
+      return function(*args, **kwargs)
+    else:
+      return HttpResponseForbidden()
+  return wrapper
+
 
