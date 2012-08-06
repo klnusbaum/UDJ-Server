@@ -180,3 +180,22 @@ class GetArtistsTests(JeffTestCase):
     for songId in [x['id'] for x in jsonResponse]:
       self.assertTrue(songId in requiredIds)
 
+
+class GetRecentlyPlayed(JeffTestCase):
+  def setUp(self):
+    super(GetRecentlyPlayed, self).setUp()
+    jeff = Participant.objects.get(user__id=3, player__id=1)
+    jeff.time_last_interaction = datetime.now()
+    jeff.save()
+
+
+  @EnsureParticipationUpdated(3,1)
+  def testRecentlyPlayed(self):
+    response = self.doGet('/udj/0_6/players/1/recently_played')
+    self.assertEqual(response.status_code, 200)
+    self.isJSONResponse(response)
+    jsonResponse = json.loads(response.content)
+    self.assertEqual(2, len(jsonResponse))
+    self.assertEqual(7, jsonResponse[0]['song']['id'])
+    self.assertEqual(5, jsonResponse[1]['song']['id'])
+

@@ -110,8 +110,12 @@ class UDJEncoder(json.JSONEncoder):
           "date_created" : obj.date_created.replace(microsecond=0).isoformat()
       }
 
+
     elif isinstance(obj, SongSetEntry):
       return obj.song
+
+    elif isinstance(obj, PlaylistEntryTimePlayed):
+      return obj.playlist_entry
 
     return json.JSONEncoder.default(self, obj)
 

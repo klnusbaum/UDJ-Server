@@ -82,6 +82,50 @@ class LibraryEntry(models.Model):
   def __unicode__(self):
     return "Library Entry " + str(self.player_lib_song_id) + ": " + self.title
 
+class ActivePlaylistEntry(models.Model):
+  STATE_CHOICES = (
+    (u'QE', u'Queued'), 
+    (u'RM', u'Removed'),
+    (u'PL', u'Playing'),
+    (u'FN', u'Finished'),)
+  song = models.ForeignKey(LibraryEntry)
+  time_added = models.DateTimeField(auto_now_add=True)
+  adder = models.ForeignKey(User)
+  state = models.CharField(max_length=2, choices=STATE_CHOICES, default=u'QE')
+
+  def upvote_count(self):
+    return self.vote_set.filter(weight=1).count()
+
+  def downvote_count(self):
+    return self.vote_set.filter(weight=-1).count()
+
+  def upvoters(self):
+    return  [vote.user for vote in  Vote.objects.filter(playlist_entry=self, weight=1 )]
+
+  def downvoters(self):
+    return  [vote.user for vote in  Vote.objects.filter(playlist_entry=self, weight=-1 )]
+
+  @staticmethod
+  def isQueuedOrPlaying(songId, player):
+    return ActivePlaylistEntry.objects.filter(song__player=player, song__player_lib_song_id=songId)\
+        .exclude(state='RM').exclude(state='FN').exists()
+
+  @staticmethod
+  def isQueued(songId, player):
+    return ActivePlaylistEntry.objects.filter(song__player=player, song__player_lib_song_id=songId)\
+        .exclude(state='RM').exclude(state='FN').exclude(state='PL').exists()
+
+  def __unicode__(self):
+    return self.song.title + " added by " + self.adder.username
+
+class PlaylistEntryTimePlayed(models.Model):
+  playlist_entry = models.OneToOneField(ActivePlaylistEntry)
+  time_played = models.DateTimeField(auto_now_add=True)
+
+  def __unicode__(self):
+    return self.playlist_entry.song.title +  " : played at " \
+      + str(self.time_played)
+
 
 class SongSetEntry(models.Model):
   songset = models.ForeignKey('SongSet')
@@ -143,6 +187,12 @@ class Player(models.Model):
       .exclude(is_deleted=True)\
       .exclude(is_banned=True)\
       .filter(artist=artist)
+
+  def RecentlyPlayed(self):
+    return PlaylistEntryTimePlayed.objects.filter(playlist_entry__song__player=self)\
+      .filter(playlist_entry__state='FN')\
+      .order_by('-time_played')
+
 
   def AvailableMusic(self, query):
     return LibraryEntry.objects.filter(player=self).filter(
@@ -213,50 +263,6 @@ class PlayerLocation(gismodels.Model):
   def __unicode__(self):
     return self.player.name + " is at (" +str(self.point.x) + \
       "," + str(self.point.y) + ")"
-
-class ActivePlaylistEntry(models.Model):
-  STATE_CHOICES = (
-    (u'QE', u'Queued'), 
-    (u'RM', u'Removed'),
-    (u'PL', u'Playing'),
-    (u'FN', u'Finished'),)
-  song = models.ForeignKey(LibraryEntry)
-  time_added = models.DateTimeField(auto_now_add=True)
-  adder = models.ForeignKey(User)
-  state = models.CharField(max_length=2, choices=STATE_CHOICES, default=u'QE')
-
-  def upvote_count(self):
-    return self.vote_set.filter(weight=1).count()
-
-  def downvote_count(self):
-    return self.vote_set.filter(weight=-1).count()
-
-  def upvoters(self):
-    return  [vote.user for vote in  Vote.objects.filter(playlist_entry=self, weight=1 )]
-
-  def downvoters(self):
-    return  [vote.user for vote in  Vote.objects.filter(playlist_entry=self, weight=-1 )]
-
-  @staticmethod
-  def isQueuedOrPlaying(songId, player):
-    return ActivePlaylistEntry.objects.filter(song__player=player, song__player_lib_song_id=songId)\
-        .exclude(state='RM').exclude(state='FN').exists()
-
-  @staticmethod
-  def isQueued(songId, player):
-    return ActivePlaylistEntry.objects.filter(song__player=player, song__player_lib_song_id=songId)\
-        .exclude(state='RM').exclude(state='FN').exclude(state='PL').exists()
-
-  def __unicode__(self):
-    return self.song.title + " added by " + self.adder.username
-
-class PlaylistEntryTimePlayed(models.Model):
-  playlist_entry = models.OneToOneField(ActivePlaylistEntry)
-  time_played = models.DateTimeField(auto_now_add=True)
-
-  def __unicode__(self):
-    return self.playlist_entry.song.title +  " : played at " \
-      + str(self.time_played)
 
 
 class Ticket(models.Model):

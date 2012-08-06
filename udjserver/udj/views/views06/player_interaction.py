@@ -112,3 +112,15 @@ def getArtists(request, player_id, player):
 @UpdatePlayerActivity
 def getArtistSongs(request, player_id, player, givenArtist):
   return HttpJSONResponse(json.dumps(player.ArtistSongs(givenArtist), cls=UDJEncoder))
+
+@AcceptsMethods(['GET'])
+@NeedsAuth
+@PlayerExists
+@PlayerIsActive
+@IsOwnerOrParticipates
+@UpdatePlayerActivity
+def getRecentlyPlayed(request, player_id, player):
+  songs_limit = int(request.GET.get('max_songs',40))
+  songs_limit = min(songs_limit,100)
+  recentlyPlayed = player.RecentlyPlayed()[:songs_limit]
+  return HttpJSONResponse(json.dumps(recentlyPlayed, cls=UDJEncoder))
