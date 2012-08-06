@@ -172,7 +172,7 @@ class GetArtistsTests(JeffTestCase):
 
   @EnsureParticipationUpdated(3,1)
   def testSpecificArtistGet(self):
-    response = self.doGet('/udj/players/1/available_music/artists/Third Eye Blind')
+    response = self.doGet('/udj/0_6/players/1/available_music/artists/Third Eye Blind')
     self.assertEqual(response.status_code, 200)
     jsonResponse = json.loads(response.content)
     self.assertEqual(4, len(jsonResponse))

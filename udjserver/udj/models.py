@@ -142,7 +142,7 @@ class Player(models.Model):
     return LibraryEntry.objects.filter(player=self)\
       .exclude(is_deleted=True)\
       .exclude(is_banned=True)\
-      .filter(artist=artists)
+      .filter(artist=artist)
 
   def AvailableMusic(self, query):
     return LibraryEntry.objects.filter(player=self).filter(
