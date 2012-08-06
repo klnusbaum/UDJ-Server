@@ -72,3 +72,11 @@ def getUsersForPlayer(request, player_id, player):
 def getAdminsForPlayer(request, player_id, player):
   return HttpResponse(json.dumps(player.Admins(), cls=UDJEncoder))
 
+@AcceptsMethods(['GET'])
+@NeedsAuth
+@PlayerExists
+@PlayerIsActive
+@IsOwnerOrParticipates
+@UpdatePlayerActivity
+def getSongSetsForPlayer(request, player_id, player):
+  return HttpResponse(json.dumps(player.SongSets(), cls=UDJEncoder))

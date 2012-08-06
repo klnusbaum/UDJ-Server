@@ -51,6 +51,34 @@ class PlayerAdmin(models.Model):
   def __unicode__(self):
     return self.admin_user.username + " is an admin for " + self.player.name
 
+class SongSetEntry(models.Model):
+  songset = models.ForeignKey('SongSet')
+  song = models.ForeignKey(LibraryEntry)
+
+  def clean(self):
+    if self.songset.player != self.song.player:
+      raise ValidationError('A song from another player is on songset ' + str(self))
+    super(SongSetEntry, self).clean()
+
+  def __unicode__(self):
+    return self.song.title + " on Song Set " + self.songset.name
+
+class SongSet(models.Model):
+  player = models.ForeignKey('Player')
+  name = models.CharField(max_length=100)
+  description = models.CharField(max_length=500)
+  owner = models.ForeignKey(User)
+  date_created = models.DateTimeField()
+
+  def Songs(self):
+    return SongSetEntry.objects.filter(songset=self)
+
+  class Meta:
+    unique_together = ("player", "name")
+
+  def __unicode__(self):
+    return self.name + " on " + self.player.name
+
 
 class Player(models.Model):
   PLAYER_STATE_CHOICES = (('IN', u'Inactive'), ('PL', u'Playing'), ('PA', u'Paused'))
@@ -67,6 +95,9 @@ class Player(models.Model):
   def canCreatSongSets(self, user):
     return user==self.owning_user or self.isAdmin(user) or \
         (self.state == 'AC' and self.isActiveParticipant(user))
+
+  def SongSets(self):
+    return SongSet.objects.filter(player=self)
 
   def isFull(self):
     return self.size_limit != None \
@@ -236,27 +267,3 @@ class Favorite(models.Model):
   def __unicode__(self):
     return self.user.username + " likes " + self.favorite_song.title
 
-class SongSet(models.Model):
-  player = models.ForeignKey(Player)
-  name = models.CharField(max_length=100)
-  description = models.CharField(max_length=500)
-  owner = models.ForeignKey(User)
-  date_created = models.DateTimeField()
-
-  class Meta:
-    unique_together = ("player", "name")
-
-  def __unicode__(self):
-    return self.name + " on " + self.player.name
-
-class SongSetEntry(models.Model):
-  songset = models.ForeignKey(SongSet)
-  song = models.ForeignKey(LibraryEntry)
-
-  def clean(self):
-    if self.songset.player != self.song.player:
-      raise ValidationError('A song from another player is on songset ' + str(self))
-    super(SongSetEntry, self).clean()
-
-  def __unicode__(self):
-    return self.song.title + " on Song Set " + self.songset.name

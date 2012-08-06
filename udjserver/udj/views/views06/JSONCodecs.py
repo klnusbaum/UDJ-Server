@@ -1,4 +1,6 @@
 import json
+from udj.models import SongSet
+from udj.models import SongSetEntry
 from udj.models import Player
 from udj.models import PlayerAdmin
 from udj.models import PlayerLocation
@@ -56,8 +58,6 @@ class UDJEncoder(json.JSONEncoder):
         toReturn['time_played'] = PlaylistEntryTimePlayed.objects.get(playlist_entry=obj).time_played.replace(microsecond=0).isoformat()
       return toReturn
 
-
-
     elif isinstance(obj, LibraryEntry):
       return {
           'id' : obj.player_lib_song_id,
@@ -101,6 +101,17 @@ class UDJEncoder(json.JSONEncoder):
           "latitude" : obj.point.y,
           "longitude" : obj.point.x
       }
+    elif isinstance(obj, SongSet):
+      return {
+          "name" : obj.name,
+          "description" : obj.description,
+          "songs" : obj.Songs(),
+          "owner" : obj.owner,
+          "date_created" : obj.date_create.replace(microsecond=0).isoformat()
+      }
+
+    elif isinstance(obj, SongSetEntry):
+      return obj.song
 
     return json.JSONEncoder.default(self, obj)
 
