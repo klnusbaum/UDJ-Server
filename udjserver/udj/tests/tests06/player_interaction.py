@@ -1,7 +1,7 @@
 import json
-from udj.models import Participant
+from udj.models import Participant, PlayerAdmin
 from datetime import datetime
-from udj.testhelpers.tests06.testclasses import ZachTestCase, MattTestCase
+from udj.testhelpers.tests06.testclasses import ZachTestCase, MattTestCase, JeffTestCase
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER, FORBIDDEN_REASON_HEADER
 from udj.testhelpers.tests06.decorators import EnsureParticipationUpdated
 
@@ -45,7 +45,7 @@ class BeginParticipateTests(ZachTestCase):
 class GetUsersTests(MattTestCase):
   def setUp(self):
     super(GetUsersTests, self).setUp()
-    matt = Participant.objects.get(user__id=9)
+    matt = Participant.objects.get(user__id=9, player__id=7)
     matt.time_last_interaction = datetime.now()
     matt.save()
 
@@ -61,7 +61,7 @@ class GetUsersTests(MattTestCase):
 
   @EnsureParticipationUpdated(9, 7)
   def testGetUsersBoth(self):
-    alex = Participant.objects.get(user__id=10)
+    alex = Participant.objects.get(user__id=10, player__id=7)
     alex.time_last_interaction = datetime.now()
     alex.save()
     response = self.doGet('/udj/0_6/players/7/users')
@@ -72,3 +72,19 @@ class GetUsersTests(MattTestCase):
     for user in users:
       self.assertTrue(user['id'] in expectedIds)
 
+class GetAdminsTest(JeffTestCase):
+  def setUp(self):
+    super(GetAdminsTest, self).setUp()
+    lucas = Participant.objects.get(user__id=3, player__id=1)
+    lucas.time_last_interaction = datetime.now()
+    lucas.save()
+
+  @EnsureParticipationUpdated(3, 1)
+  def testGetUsersSingle(self):
+    response = self.doGet('/udj/0_6/players/1/admins')
+    self.assertEqual(response.status_code, 200)
+    admins = json.loads(response.content)
+    self.assertEqual(2, len(admins))
+    expectedIds = [1,5]
+    for admin in admins:
+      self.assertTrue(admin['id'] in expectedIds)
