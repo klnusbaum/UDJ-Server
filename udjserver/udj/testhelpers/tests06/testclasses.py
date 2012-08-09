@@ -224,6 +224,12 @@ class CurrentSongTestCase(DoesServerOpsTestCase):
     self.assertEqual('PL',ActivePlaylistEntry.objects.get(pk=1).state)
     PlaylistEntryTimePlayed.objects.get(playlist_entry__id=1)
 
+  def testRemoveCurrentSong(self):
+    response = self.doDelete('/udj/0_6/players/1/current_song')
+    self.assertEqual(response.status_code, 200, response.content)
+    self.assertEqual('FN',ActivePlaylistEntry.objects.get(pk=5).state)
+    self.assertFalse(ActivePlaylistEntry.objects.filter(song__player__id=1, state='PL').exists())
+
 
 class BlankCurrentSongTestCase(DoesServerOpsTestCase):
 
