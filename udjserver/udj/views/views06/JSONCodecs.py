@@ -78,8 +78,8 @@ class UDJEncoder(json.JSONEncoder):
         "id" : obj.id,
         "name" : obj.name,
         "owner" : obj.owning_user,
-        "has_password" : True if PlayerPassword.objects.filter(player=obj).exists() else False
-        "admins" : obj.Admins()
+        "has_password" : True if PlayerPassword.objects.filter(player=obj).exists() else False,
+        "admins" : obj.Admins(),
         "sorting_algo": obj.sorting_algo,
         "songset_user_permission" : obj.allow_user_songset,
         "num_active_users" : obj.ActiveParticipants()

@@ -1,15 +1,16 @@
 import json
 
-from udj.models import Participant, PlayerPassword
+from udj.models import Participant, PlayerPassword, ActivePlaylistEntry, PlaylistEntryTimePlayed
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER, FORBIDDEN_REASON_HEADER
 from udj.views.views06.decorators import PlayerExists, PlayerIsActive, AcceptsMethods, UpdatePlayerActivity, HasNZParams
-from udj.views.views06.authdecorators import NeedsAuth, IsOwnerOrParticipates, IsOwnerOrAdmin
+from udj.views.views06.authdecorators import NeedsAuth, IsOwnerOrParticipates, IsOwnerOrParticipatingAdmin
 from udj.views.views06.auth import getUserForTicket, hashPlayerPassword
 from udj.views.views06.JSONCodecs import UDJEncoder
 from udj.views.views06.helpers import HttpJSONResponse
 
 from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ObjectDoesNotExist
 
 from datetime import datetime
 
@@ -146,12 +147,13 @@ def getRandomSongsForPlayer(request, player_id, player):
 @UpdatePlayerActivity
 def modCurrentSong(request, player_id, player):
   if request.method == 'POST':
-    setCurrentSong(request, player)
+    return setCurrentSong(request, player)
   elif request.method == 'DELETE':
-    removeCurrentSong(request, player)
+    return removeCurrentSong(request, player)
   else:
     #Should never get here because of the AcceptsMethods decorator
-    pass
+    #Put here because I'm pedantic sometimes :/
+    return HttpResponseNotAllowed(['POST', 'DELETE'])
 
 @HasNZParams(['lib_id'])
 def setCurrentSong(request, player):
@@ -161,37 +163,37 @@ def setCurrentSong(request, player):
       song__player_lib_song_id=request.POST['lib_id'],
       song__player=player,
       state=u'QE')
-
-    try:
-      currentSong = ActivePlaylistEntry.objects.get(song__player=player, state=u'PL')
-      currentSong.state=u'FN'
-      currentSong.save()
-    except ObjectDoesNotExist:
-      pass
-    except MultipleObjectsReturned:
-      #We should never get this, but some how we do sometimes. This is bad. It means that
-      #this function isn't getting execute atomically like we hoped it would be
-      #I think we may actually need a mutex to protect this critial section :(
-      ActivePlaylistEntry.objects.filter(song__player=player, state=u'PL').update(state=u'FN')
-
-    newCurrentSong.state = u'PL'
-    newCurrentSong.save()
-    PlaylistEntryTimePlayed(playlist_entry=newCurrentSong).save()
   except ObjectDoesNotExist:
     toReturn = HttpResponseNotFound()
     toReturn[MISSING_RESOURCE_HEADER] = 'song'
     return toReturn
+
+  try:
+    currentSong = ActivePlaylistEntry.objects.get(song__player=player, state=u'PL')
+    currentSong.state=u'FN'
+    currentSong.save()
+  except ObjectDoesNotExist:
+    pass
+  except MultipleObjectsReturned:
+    #We should never get this, but some how we do sometimes. This is bad. It means that
+    #this function isn't getting execute atomically like we hoped it would be
+    #I think we may actually need a mutex to protect this critial section :(
+    ActivePlaylistEntry.objects.filter(song__player=player, state=u'PL').update(state=u'FN')
+
+  newCurrentSong.state = u'PL'
+  newCurrentSong.save()
+  PlaylistEntryTimePlayed(playlist_entry=newCurrentSong).save()
   return HttpResponse("Song changed")
 
 def removeCurrentSong(request, player):
-    try:
-      currentSong = ActivePlaylistEntry.objects.get(song__player=player, state=u'PL')
-      currentSong.state=u'FN'
-      currentSong.save()
-    except ObjectDoesNotExist:
-      toReturn = HttpResponseNotFound()
-      toReturn[MISSING_RESOURCE_HEADER] = 'song'
-      return toReturn
+  try:
+    currentSong = ActivePlaylistEntry.objects.get(song__player=player, state=u'PL')
+    currentSong.state=u'FN'
+    currentSong.save()
+  except ObjectDoesNotExist:
+    toReturn = HttpResponseNotFound()
+    toReturn[MISSING_RESOURCE_HEADER] = 'song'
+    return toReturn
   return HttpResponse()
 
 

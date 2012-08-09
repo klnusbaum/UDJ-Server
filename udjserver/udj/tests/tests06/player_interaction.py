@@ -1,7 +1,7 @@
 import json
 from udj.models import Participant, PlayerAdmin, SongSet, SongSetEntry, LibraryEntry
 from datetime import datetime
-from udj.testhelpers.tests06.testclasses import ZachTestCase, MattTestCase, JeffTestCase
+from udj.testhelpers.tests06.testclasses import ZachTestCase, MattTestCase, JeffTestCase, CurrentSongTestCase
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER, FORBIDDEN_REASON_HEADER
 from udj.testhelpers.tests06.decorators import EnsureParticipationUpdated
 
@@ -202,6 +202,11 @@ class GetRandoms(EnsureActiveJeffTest):
           LibraryEntry.objects.get(player__id=1, player_lib_song_id=song['id']).is_deleted)
       self.assertFalse(
           LibraryEntry.objects.get(player__id=1, player_lib_song_id=song['id']).is_banned)
+
+
+class OwnerCurrentSongTestCase(CurrentSongTestCase):
+  username="kurtis"
+  userpass="testkurtis"
 
 
 

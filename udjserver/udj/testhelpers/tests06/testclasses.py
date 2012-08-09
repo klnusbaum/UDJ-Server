@@ -4,7 +4,7 @@ from django.test.client import Client
 from django.contrib.auth.models import User
 from udj.models import Ticket, Participant
 from udj.headers import DJANGO_TICKET_HEADER, MISSING_RESOURCE_HEADER
-from udj.models import Player, PlayerPassword, PlayerLocation, PlayerAdmin
+from udj.models import Player, PlayerPassword, PlayerLocation, PlayerAdmin, ActivePlaylistEntry, PlaylistEntryTimePlayed
 from udj.views.views06.auth import hashPlayerPassword
 
 from datetime import datetime
@@ -214,7 +214,15 @@ class PasswordAdministrationTests(DoesServerOpsTestCase):
     playerPassword = PlayerPassword.objects.filter(player__id=3)
     self.assertFalse(playerPassword.exists())
 
+class CurrentSongTestCase(DoesServerOpsTestCase):
 
+  def testSetCurrentSong(self):
+    response = self.doPost('/udj/0_6/players/1/current_song', {'lib_id' : 1})
+    self.assertEqual(response.status_code, 200, response.content)
+
+    self.assertEqual('FN',ActivePlaylistEntry.objects.get(pk=5).state)
+    self.assertEqual('PL',ActivePlaylistEntry.objects.get(pk=1).state)
+    PlaylistEntryTimePlayed.objects.get(playlist_entry__id=1)
 
 
 
