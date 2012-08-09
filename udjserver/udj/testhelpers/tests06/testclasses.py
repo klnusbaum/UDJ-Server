@@ -225,6 +225,16 @@ class CurrentSongTestCase(DoesServerOpsTestCase):
     PlaylistEntryTimePlayed.objects.get(playlist_entry__id=1)
 
 
+class BlankCurrentSongTestCase(DoesServerOpsTestCase):
+
+  def testSetCurrentSongWithBlank(self):
+    response = self.doPost('/udj/0_6/players/3/current_song', {'lib_id' : 1})
+    self.assertEqual(response.status_code, 200, response.content)
+
+    self.assertEqual('PL',ActivePlaylistEntry.objects.get(pk=8).state)
+    PlaylistEntryTimePlayed.objects.get(playlist_entry__id=8)
+
+
 
 class KurtisTestCase(DoesServerOpsTestCase):
   username = "kurtis"

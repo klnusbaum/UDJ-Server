@@ -1,7 +1,7 @@
 import json
 from udj.models import Participant, PlayerAdmin, SongSet, SongSetEntry, LibraryEntry
 from datetime import datetime
-from udj.testhelpers.tests06.testclasses import ZachTestCase, MattTestCase, JeffTestCase, CurrentSongTestCase
+from udj.testhelpers.tests06.testclasses import ZachTestCase, MattTestCase, JeffTestCase, CurrentSongTestCase, BlankCurrentSongTestCase
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER, FORBIDDEN_REASON_HEADER
 from udj.testhelpers.tests06.decorators import EnsureParticipationUpdated
 
@@ -224,4 +224,27 @@ class AdminCurrentSongTestCase(CurrentSongTestCase):
   def tearDown(self):
     lucas = Participant.objects.get(user__id=5, player__id=1)
     self.assertTrue(lucas.time_last_interaction > self.oldtime)
+
+class OwnerBlankCurrentSongTestCase(BlankCurrentSongTestCase):
+  username = 'alejandro'
+  userpass = 'testalejandro'
+
+class AdminBlankCurrentSongTestCase(BlankCurrentSongTestCase):
+  username="kurtis"
+  userpass="testkurtis"
+
+  def setUp(self):
+    super(BlankCurrentSongTestCase, self).setUp()
+    kurtis = Participant.objects.get(user__id=2, player__id=3)
+    kurtis.time_last_interaction = datetime.now()
+    kurtis.save()
+    self.oldtime = kurtis.time_last_interaction
+    print "Oldtime: " + str(self.oldtime)
+
+
+  def tearDown(self):
+    kurtis = Participant.objects.get(user__id=2, player__id=3)
+    print "Oldtime: " + str(self.oldtime)
+    print "NewTime: " + str(kurtis.time_last_interaction)
+    self.assertTrue(kurtis.time_last_interaction > self.oldtime)
 
