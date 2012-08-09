@@ -240,6 +240,11 @@ class BlankCurrentSongTestCase(DoesServerOpsTestCase):
     self.assertEqual('PL',ActivePlaylistEntry.objects.get(pk=8).state)
     PlaylistEntryTimePlayed.objects.get(playlist_entry__id=8)
 
+  def testRemoveWithNoCurrentSong(self):
+    response = self.doDelete('/udj/0_6/players/3/current_song')
+    self.assertEqual(response.status_code, 404, response.content)
+    self.assertEqual('song', response[MISSING_RESOURCE_HEADER])
+
 
 
 class KurtisTestCase(DoesServerOpsTestCase):

@@ -1,14 +1,14 @@
 import json
 
 from udj.models import Participant, PlayerPassword, ActivePlaylistEntry, PlaylistEntryTimePlayed
-from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER, FORBIDDEN_REASON_HEADER
+from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER, FORBIDDEN_REASON_HEADER, MISSING_RESOURCE_HEADER
 from udj.views.views06.decorators import PlayerExists, PlayerIsActive, AcceptsMethods, UpdatePlayerActivity, HasNZParams
 from udj.views.views06.authdecorators import NeedsAuth, IsOwnerOrParticipates, IsOwnerOrParticipatingAdmin
 from udj.views.views06.auth import getUserForTicket, hashPlayerPassword
 from udj.views.views06.JSONCodecs import UDJEncoder
 from udj.views.views06.helpers import HttpJSONResponse
 
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
 

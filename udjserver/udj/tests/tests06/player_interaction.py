@@ -239,12 +239,8 @@ class AdminBlankCurrentSongTestCase(BlankCurrentSongTestCase):
     kurtis.time_last_interaction = datetime.now()
     kurtis.save()
     self.oldtime = kurtis.time_last_interaction
-    print "Oldtime: " + str(self.oldtime)
-
 
   def tearDown(self):
     kurtis = Participant.objects.get(user__id=2, player__id=3)
-    print "Oldtime: " + str(self.oldtime)
-    print "NewTime: " + str(kurtis.time_last_interaction)
     self.assertTrue(kurtis.time_last_interaction > self.oldtime)
 
