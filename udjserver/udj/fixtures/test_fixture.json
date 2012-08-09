@@ -666,6 +666,17 @@
       "kick_flag" : true
     }
   },
+  {
+    "pk": 8,
+    "model": "udj.participant",
+    "fields": {
+      "player": 1,
+      "user": 5,
+      "time_joined": "2012-04-14 12:34:22",
+      "time_last_interaction" : "2012-04-14 13:27:33"
+    }
+  },
+
 
 
 

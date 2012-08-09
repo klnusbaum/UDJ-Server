@@ -209,4 +209,19 @@ class OwnerCurrentSongTestCase(CurrentSongTestCase):
   userpass="testkurtis"
 
 
+class AdminCurrentSongTestCase(CurrentSongTestCase):
+  username="lucas"
+  userpass="testlucas"
+
+  def setUp(self):
+    super(CurrentSongTestCase, self).setUp()
+    lucas = Participant.objects.get(user__id=5, player__id=1)
+    lucas.time_last_interaction = datetime.now()
+    lucas.save()
+    self.oldtime = lucas.time_last_interaction
+
+
+  def tearDown(self):
+    lucas = Participant.objects.get(user__id=5, player__id=1)
+    self.assertTrue(lucas.time_last_interaction > self.oldtime)
 
