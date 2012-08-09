@@ -211,6 +211,22 @@ class Player(models.Model):
         Q(is_banned=True))
 
 
+  def ActivePlaylist(self):
+    queuedEntries = ActivePlaylistEntry.objects.filter(song__player=self, state='QE')
+    queuedEntries = activePlayer.sortPlaylist(queuedEntries)
+    playlist={'active_playlist' : queuedEntries}
+
+    try:
+      currentPlaying = ActivePlaylistEntry.objects.get(song__player=self, state='PL')
+      playlist['current_song'] = currentPlaying
+    except ObjectDoesNotExist, MultipleObjectsReturned:
+      playlist['current_song'] = {}
+
+    playlist['volume'] = self.volume
+    playlist['state'] = 'playing' if self.state=='PL' else 'paused'
+    return playlist
+
+
   def isFull(self):
     return self.size_limit != None \
         and self.ActiveParticipants().count() < self.size_limit
