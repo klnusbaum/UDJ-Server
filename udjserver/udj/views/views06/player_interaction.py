@@ -169,7 +169,9 @@ def setCurrentSong(request, player):
     except ObjectDoesNotExist:
       pass
     except MultipleObjectsReturned:
-      #We should never get this, but some how we do sometimes. This is bad.
+      #We should never get this, but some how we do sometimes. This is bad. It means that
+      #this function isn't getting execute atomically like we hoped it would be
+      #I think we may actually need a mutex to protect this critial section :(
       ActivePlaylistEntry.objects.filter(song__player=player, state=u'PL').update(state=u'FN')
 
     newCurrentSong.state = u'PL'

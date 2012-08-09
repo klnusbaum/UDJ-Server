@@ -77,18 +77,21 @@ class UDJEncoder(json.JSONEncoder):
       toReturn = {
         "id" : obj.id,
         "name" : obj.name,
-        "owner_username" : obj.owning_user.username,
-        "owner_id" : obj.owning_user.id,
+        "owner" : obj.owning_user,
         "has_password" : True if PlayerPassword.objects.filter(player=obj).exists() else False
+        "admins" : obj.Admins()
+        "sorting_algo": obj.sorting_algo,
+        "songset_user_permission" : obj.allow_user_songset,
+        "num_active_users" : obj.ActiveParticipants()
       }
 
-      location = None
       try:
-        location = PlayerLocation.objects.get(player=obj)
+        toReturn['location'] = PlayerLocation.objects.get(player=obj)
       except ObjectDoesNotExist:
         pass
-      if location != None:
-        toReturn['location'] = location
+      
+      if obj.size_limit != None:
+        toReturn['size_limit'] = obj.size_limit
 
       return toReturn
     elif isinstance(obj, PlayerLocation):
