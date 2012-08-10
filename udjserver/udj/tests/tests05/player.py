@@ -199,8 +199,8 @@ class PlayerAdminTests(KurtisTestCase):
     response = self.doGet('/udj/players/1/users')
     self.assertEqual(response.status_code, 200)
     jsonUsers = json.loads(response.content)
-    self.assertEquals(len(jsonUsers), 2)
-    possibleUsers = ['jeff', 'vilas']
+    self.assertEquals(len(jsonUsers), 3)
+    possibleUsers = ['jeff', 'vilas', 'lucas']
     for user in jsonUsers:
       self.assertTrue(user['username'] in possibleUsers)
 
@@ -211,8 +211,8 @@ class PlayerAdminTests(KurtisTestCase):
     response = self.doGet('/udj/players/1/users')
     self.assertEqual(response.status_code, 200)
     jsonUsers = json.loads(response.content)
-    self.assertEquals(len(jsonUsers), 3)
-    possibleUsers = ['jeff', 'vilas', 'yunyoung']
+    self.assertEquals(len(jsonUsers), 4)
+    possibleUsers = ['jeff', 'vilas', 'yunyoung', 'lucas']
     for user in jsonUsers:
       self.assertTrue(user['username'] in possibleUsers)
 
