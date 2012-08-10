@@ -214,6 +214,7 @@ def setLocation(request, user_id, player_id, player):
 
 
 @csrf_exempt
+@transaction.commit_on_success
 @NeedsAuth
 @AcceptsMethods(['POST'])
 @ActivePlayerExists
@@ -230,8 +231,9 @@ def setCurrentSong(request, player_id, activePlayer):
   return HttpResponse("Song changed")
 
 
-@transaction.commit_on_success
 def changeCurrentSong(activePlayer, lib_id):
+  activePlayer.lockActivePlaylist()
+
   #Make sure the song to be set exists
   newCurrentSong = ActivePlaylistEntry.objects.get(
     song__player_lib_song_id=lib_id, 
@@ -244,8 +246,9 @@ def changeCurrentSong(activePlayer, lib_id):
     currentSong.save()
   except ObjectDoesNotExist:
     pass
-  except MultipleObjectsReturned:
-    ActivePlaylistEntry.objects.filter(song__player=activePlayer, state=u'PL').update(state=u'FN')
+  #except MultipleObjectsReturned:
+  # Shouldn't need this anymore now that I can succesfully lock the playlist
+  #  ActivePlaylistEntry.objects.filter(song__player=activePlayer, state=u'PL').update(state=u'FN')
 
   newCurrentSong.state = u'PL'
   newCurrentSong.save()

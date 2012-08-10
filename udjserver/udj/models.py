@@ -172,6 +172,10 @@ class Player(models.Model):
     return user==self.owning_user or self.isAdmin(user) or \
         (self.state == 'AC' and self.isActiveParticipant(user))
 
+  def lockActivePlaylist(self):
+    #lock active playlist
+    ActivePlaylistEntry.objects.select_for_update().filter(song__player=self)
+
 
   def SongSets(self):
     return SongSet.objects.filter(player=self)

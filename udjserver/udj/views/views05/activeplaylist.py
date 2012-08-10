@@ -104,6 +104,8 @@ def multiModActivePlaylist(request, user, player_id, activePlayer):
     return HttpResponseBadRequest('Bad JSON\n. Couldn\'t even parse.\n Given data:' + request.raw_post_data)
 
   try:
+    #0. lock active playlist
+    activePlayer.lockActivePlaylist()
 
     #first, validate all our inputs
     # 1. Ensure none of the songs that want to be added are already on the playlist
@@ -141,6 +143,7 @@ def multiModActivePlaylist(request, user, player_id, activePlayer):
 
 
 @csrf_exempt
+@transaction.commit_on_success
 @NeedsAuth
 @AcceptsMethods(['PUT', 'DELETE'])
 @ActivePlayerExists
@@ -155,9 +158,8 @@ def modActivePlaylist(request, user, player_id, lib_id, activePlayer):
     return removeFromActivePlaylist(user, lib_id, activePlayer)
 
 
-@transaction.commit_on_success
 def add2ActivePlaylist(user, lib_id, activePlayer):
-
+  activePlayer.lockActivePlaylist()
   if ActivePlaylistEntry.isQueuedOrPlaying(lib_id, activePlayer):
     return HttpResponse(status=409)
 
@@ -170,8 +172,8 @@ def add2ActivePlaylist(user, lib_id, activePlayer):
 
   return HttpResponse(status=201)
 
-@transaction.commit_on_success
 def removeFromActivePlaylist(user, lib_id, activePlayer):
+  activePlayer.lockActivePlaylist()
   try:
     removeSongsFromPlaylist([lib_id], activePlayer, user)
   except ObjectDoesNotExist:
