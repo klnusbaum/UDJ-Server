@@ -116,6 +116,7 @@ class ParticipantPlaylistModTests(udj.testhelpers.tests06.testclasses.EnsureActi
       '/udj/0_6/players/1/active_playlist',
       {'to_add' : json.dumps(toAdd), 'to_remove' : json.dumps(toRemove)}
     )
+    self.assertEqual(200, response.status_code)
 
     song9 = ActivePlaylistEntry.objects.get(
       song__player__id='1',
@@ -129,4 +130,52 @@ class ParticipantPlaylistModTests(udj.testhelpers.tests06.testclasses.EnsureActi
       state="QE")
     self.assertEqual(1, len(song10.upvoters()))
     self.assertEqual(0, len(song10.downvoters()))
+
+  @EnsureParticipationUpdated(3,1)
+  def testForbiddenRemove(self):
+    toAdd = [9,10]
+    toRemove = [3]
+
+    response = self.doPost(
+      '/udj/0_6/players/1/active_playlist',
+      {'to_add' : json.dumps(toAdd), 'to_remove' : json.dumps(toRemove)}
+    )
+    self.assertEqual(403, response.status_code)
+
+    self.assertFalse(ActivePlaylistEntry.objects.filter(
+      song__player__id='1',
+      song__player_lib_song_id='9',
+      state="QE").exists())
+    self.assertFalse(ActivePlaylistEntry.objects.filter(
+      song__player__id='1',
+      song__player_lib_song_id='10',
+      state="QE").exists())
+
+  @EnsureParticipationUpdated(3,1)
+  def testMultiAddWithDuplicateSong(self):
+    initialUpvoteCount = len(ActivePlaylistEntry.objects.get(song__player=1, song__player_lib_song_id=1).upvoters())
+
+    toAdd = [1,10]
+    toRemove = []
+
+    response = self.doPost(
+      '/udj/0_6/players/1/active_playlist',
+      {'to_add' : json.dumps(toAdd), 'to_remove' : json.dumps(toRemove)}
+    )
+    self.assertEqual(200, response.status_code)
+
+    song9 = ActivePlaylistEntry.objects.get(
+      song__player__id='1',
+      song__player_lib_song_id='1',
+      state="QE")
+    afterUpvoteCount = len(ActivePlaylistEntry.objects.get(song__player=1, song__player_lib_song_id=1).upvoters())
+    self.assertEqual(initialUpvoteCount+1, afterUpvoteCount)
+
+    song10 = ActivePlaylistEntry.objects.get(
+      song__player__id='1',
+      song__player_lib_song_id='10',
+      state="QE")
+    self.assertEqual(1, len(song10.upvoters()))
+    self.assertEqual(0, len(song10.downvoters()))
+
 
