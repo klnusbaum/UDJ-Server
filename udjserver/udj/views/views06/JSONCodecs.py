@@ -34,7 +34,7 @@ class UDJEncoder(json.JSONEncoder):
       }
     elif isinstance(obj, SortingAlgorithm):
       return {
-        'id' : obj.id,
+        'id' : str(obj.id),
         'name' : obj.name,
         'description' : obj.description
       }
