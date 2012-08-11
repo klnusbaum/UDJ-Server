@@ -173,7 +173,7 @@ class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
     self.isJSONResponse(response)
     bannedUsers = json.loads(response.content)
     self.assertEqual(1, len(bannedUsers))
-    self.assertEqual(8, bannedUsers[0]['id'])
+    self.assertEqual('8', bannedUsers[0]['id'])
 
   def testChangeSongSetPermissionToYes(self):
     playerToChange = Player.objects.get(pk=1)

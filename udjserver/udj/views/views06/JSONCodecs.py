@@ -40,7 +40,7 @@ class UDJEncoder(json.JSONEncoder):
       }
     elif isinstance(obj, User):
       return {
-        'id' : obj.id,
+        'id' : str(obj.id),
         'username' : obj.username,
         'first_name' : obj.first_name,
         'last_name' : obj.last_name

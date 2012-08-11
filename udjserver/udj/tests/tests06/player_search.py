@@ -15,7 +15,7 @@ class GetPlayersTests(JeffTestCase):
     self.assertEqual('1', firstPlayer['id'])
     self.assertEqual("Kurtis Player", firstPlayer['name'])
     self.assertEqual("kurtis", firstPlayer['owner']['username'])
-    self.assertEqual(2, firstPlayer['owner']['id'])
+    self.assertEqual('2', firstPlayer['owner']['id'])
     self.assertEqual(False, firstPlayer['has_password'])
     location = firstPlayer['location']
     self.assertEqual("201 N Goodwin", location['address'])
@@ -35,7 +35,7 @@ class GetPlayersTests(JeffTestCase):
     self.assertEqual('1', firstPlayer['id'])
     self.assertEqual("Kurtis Player", firstPlayer['name'])
     self.assertEqual("kurtis", firstPlayer['owner']['username'])
-    self.assertEqual(2, firstPlayer['owner']['id'])
+    self.assertEqual('2', firstPlayer['owner']['id'])
     self.assertEqual(False, firstPlayer['has_password'])
 
   def testLocationSearchWithLimit(self):

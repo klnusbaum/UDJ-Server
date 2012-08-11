@@ -57,7 +57,7 @@ class GetUsersTests(MattTestCase):
     self.isJSONResponse(response)
     users = json.loads(response.content)
     self.assertEqual(1, len(users))
-    expectedIds = [9]
+    expectedIds = ['9']
     for user in users:
       self.assertTrue(user['id'] in expectedIds)
 
@@ -71,7 +71,7 @@ class GetUsersTests(MattTestCase):
     self.isJSONResponse(response)
     users = json.loads(response.content)
     self.assertEqual(2, len(users))
-    expectedIds = [9, 10]
+    expectedIds = ['9', '10']
     for user in users:
       self.assertTrue(user['id'] in expectedIds)
 
@@ -91,7 +91,7 @@ class GetAdminsTests(EnsureActiveJeffTest):
     self.isJSONResponse(response)
     admins = json.loads(response.content)
     self.assertEqual(2, len(admins))
-    expectedIds = [1,5]
+    expectedIds = ['1','5']
     for admin in admins:
       self.assertTrue(admin['id'] in expectedIds)
 
