@@ -32,6 +32,7 @@ class Participant(models.Model):
   time_last_interaction = models.DateTimeField(auto_now=True, auto_now_add=True)
   kick_flag = models.BooleanField(default=False)
   ban_flag = models.BooleanField(default=False)
+  logout_flag = models.BooleanField(default=False)
 
   class Meta:
     unique_together = ("user", "player")
