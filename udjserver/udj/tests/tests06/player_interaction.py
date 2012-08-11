@@ -83,14 +83,7 @@ class GetUsersTests(MattTestCase):
     for user in users:
       self.assertTrue(user['id'] in expectedIds)
 
-class EnsureActiveJeffTest(JeffTestCase):
-  def setUp(self):
-    super(EnsureActiveJeffTest, self).setUp()
-    jeff = Participant.objects.get(user__id=3, player__id=1)
-    jeff.time_last_interaction = datetime.now()
-    jeff.save()
-
-class GetAdminsTests(EnsureActiveJeffTest):
+class GetAdminsTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
 
   @EnsureParticipationUpdated(3, 1)
   def testGetAdmins(self):
@@ -103,7 +96,7 @@ class GetAdminsTests(EnsureActiveJeffTest):
     for admin in admins:
       self.assertTrue(admin['id'] in expectedIds)
 
-class GetSongSetTests(EnsureActiveJeffTest):
+class GetSongSetTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
 
   @EnsureParticipationUpdated(3, 1)
   def testGetSongSets(self):
@@ -121,7 +114,7 @@ class GetSongSetTests(EnsureActiveJeffTest):
       for song in songset['songs']:
         self.assertTrue(song['id'] in expectedSongIds)
 
-class GetAvailableMusicTests(EnsureActiveJeffTest):
+class GetAvailableMusicTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
 
   @EnsureParticipationUpdated(3,1)
   def testGetBasicMusic(self):
@@ -153,7 +146,7 @@ class GetAvailableMusicTests(EnsureActiveJeffTest):
     for song in songResults:
       self.assertTrue(song['id'] in expectedLibIds)
 
-class GetArtistsTests(EnsureActiveJeffTest):
+class GetArtistsTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
 
   @EnsureParticipationUpdated(3,1)
   def testGetArtists(self):
@@ -177,7 +170,7 @@ class GetArtistsTests(EnsureActiveJeffTest):
       self.assertTrue(songId in requiredIds)
 
 
-class GetRecentlyPlayed(EnsureActiveJeffTest):
+class GetRecentlyPlayed(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
 
   @EnsureParticipationUpdated(3,1)
   def testRecentlyPlayed(self):
@@ -197,7 +190,7 @@ class GetRecentlyPlayed(EnsureActiveJeffTest):
     self.assertEqual(1, len(jsonResponse))
 
 
-class GetRandoms(EnsureActiveJeffTest):
+class GetRandoms(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
 
   @EnsureParticipationUpdated(3,1)
   def testSimpleGetRandom(self):
@@ -212,7 +205,7 @@ class GetRandoms(EnsureActiveJeffTest):
       self.assertFalse(
           LibraryEntry.objects.get(player__id=1, player_lib_song_id=song['id']).is_banned)
 
-class LogoutTests(EnsureActiveJeffTest):
+class LogoutTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
   def testLogout(self):
     response = self.doDelete('/udj/0_6/players/1/users/user')
     self.assertEqual(response.status_code, 200)

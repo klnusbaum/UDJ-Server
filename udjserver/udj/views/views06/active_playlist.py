@@ -1,14 +1,14 @@
 import json
 
 from udj.models import Participant, Player
-
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed
-
 from udj.views.views06.decorators import PlayerExists, PlayerIsActive, AcceptsMethods, UpdatePlayerActivity, HasNZParams
 from udj.views.views06.authdecorators import NeedsAuth, IsOwnerOrParticipates
 from udj.views.views06.JSONCodecs import UDJEncoder
 from udj.views.views06.helpers import HttpJSONResponse
+
 from django.views.decorators.csrf import csrf_exempt
+from django.db import transaction
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed
 
 
 @csrf_exempt
@@ -28,9 +28,10 @@ def activePlaylist(request, player_id, player):
     #Put here because I'm pedantic sometimes :/
     return HttpResponseNotAllowed(['POST', 'DELETE'])
 
-def getActivePlaylist(player)
+def getActivePlaylist(player):
   return HttpJSONResponse(json.dumps(player.ActivePlaylist(), cls=UDJEncoder))
 
 @HasNZParams(['to_add','to_remove'])
-def multiModeActivePlaylist(request, player):
+def multiModActivePlaylist(request, player):
+  player.lockActivePlaylist()
   pass

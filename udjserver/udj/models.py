@@ -218,7 +218,7 @@ class Player(models.Model):
 
   def ActivePlaylist(self):
     queuedEntries = ActivePlaylistEntry.objects.filter(song__player=self, state='QE')
-    queuedEntries = activePlayer.sortPlaylist(queuedEntries)
+    queuedEntries = self.sortPlaylist(queuedEntries)
     playlist={'active_playlist' : queuedEntries}
 
     try:
