@@ -2,7 +2,7 @@ import json
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
-from udj.models import Ticket, Participant
+from udj.models import Ticket, Participant, ActivePlaylistEntry
 from udj.headers import DJANGO_TICKET_HEADER, MISSING_RESOURCE_HEADER
 from udj.models import Player, PlayerPassword, PlayerLocation, PlayerAdmin, ActivePlaylistEntry, PlaylistEntryTimePlayed
 from udj.views.views06.auth import hashPlayerPassword
@@ -244,6 +244,91 @@ class BlankCurrentSongTestCase(DoesServerOpsTestCase):
     response = self.doDelete('/udj/0_6/players/3/current_song')
     self.assertEqual(response.status_code, 404, response.content)
     self.assertEqual('song', response[MISSING_RESOURCE_HEADER])
+
+
+class PlaylistModTests(DoesServerOpsTestCase):
+  def testBasicSongRemove(self):
+    response = self.doDelete('/udj/0_6/players/1/active_playlist/songs/2')
+    self.assertEqual(response.status_code, 200)
+
+    shouldBeRemoved = ActivePlaylistEntry.objects.get(pk=2)
+    self.assertEqual('RM', shouldBeRemoved.state)
+
+  def testPlaylistMultiMod(self):
+    toAdd = [9]
+    toRemove = [3]
+
+    response = self.doPost(
+      '/udj/0_6/players/1/active_playlist',
+      {'to_add' : json.dumps(toAdd), 'to_remove' : json.dumps(toRemove)}
+    )
+    self.assertEqual(response.status_code, 200, response.content)
+    #make sure song was queued
+    addedSong = ActivePlaylistEntry.objects.get(
+      song__player__id=1, song__player_lib_song_id=9, state='QE')
+    #make sure song was removed
+    self.assertFalse(ActivePlaylistEntry.objects.filter(
+      song__player__id=1,
+      song__player_lib_song_id=3,
+      state='QE').exists())
+    self.assertTrue(ActivePlaylistEntry.objects.filter(
+      song__player__id=1,
+      song__player_lib_song_id=3,
+      state='RM').exists())
+
+  def testBadRemoveMultiMod(self):
+    toAdd = [9]
+    toRemove = [3,6]
+
+    response = self.doPost(
+      '/udj/0_6/players/1/active_playlist',
+      {'to_add' : json.dumps(toAdd), 'to_remove' : json.dumps(toRemove)}
+    )
+    self.assertEqual(response.status_code, 404, response.content)
+    self.assertEqual(response[MISSING_RESOURCE_HEADER], 'song')
+
+    responseJSON = json.loads(response.content)
+    self.assertEqual([6], responseJSON)
+
+    #ensure 9 wasn't added
+    self.assertFalse(ActivePlaylistEntry.objects.filter(
+      song__player__id='1',
+      song__player_lib_song_id='9',
+      state="QE").exists())
+
+    #ensure 3 is still queued
+    ActivePlaylistEntry.objects.get(
+      song__player__id='1',
+      song__player_lib_song_id='3',
+      state="QE")
+
+  def testDuplicateAddMultiMod(self):
+    sixInitVoteCount = len(ActivePlaylistEntry.objects.get(song__player__id=1, song__player_lib_song_id=6).upvoters())
+
+    toAdd = [6,9]
+    toRemove = [3]
+    response = self.doPost(
+      '/udj/0_6/players/1/active_playlist',
+      {'to_add' : json.dumps(toAdd), 'to_remove' : json.dumps(toRemove)}
+    )
+    self.assertEqual(200, response.status_code, response.content)
+
+    #ensure 9 was added
+    self.assertTrue(ActivePlaylistEntry.objects.filter(
+      song__player__id='1',
+      song__player_lib_song_id='9',
+      state="QE").exists())
+
+    #ensure 3 is no longer queued
+    ActivePlaylistEntry.objects.get(
+      song__player__id='1',
+      song__player_lib_song_id='3',
+      state="RM")
+
+    #ensure the vote count for 6 hasn't changed since it's the current song.
+    sixNewVoteCount = len(ActivePlaylistEntry.objects.get(song__player__id=1, song__player_lib_song_id=6).upvoters())
+    self.assertEqual(sixInitVoteCount, sixNewVoteCount)
+
 
 
 

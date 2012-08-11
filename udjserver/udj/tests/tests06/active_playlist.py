@@ -1,6 +1,7 @@
 import json
 import udj
-from udj.models import Player, LibraryEntry, ActivePlaylistEntry
+from udj.models import Player, LibraryEntry, ActivePlaylistEntry, Participant
+from datetime import datetime
 
 class GetActivePlaylistTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
 
@@ -21,3 +22,24 @@ class GetActivePlaylistTests(udj.testhelpers.tests06.testclasses.EnsureActiveJef
 
     self.assertEqual(jsonResponse['volume'], 5)
     self.assertEqual(jsonResponse['state'], 'playing')
+
+class OwnerPlaylistModTests(udj.testhelpers.tests06.testclasses.PlaylistModTests):
+  username='kurtis'
+  userpass='testkurtis'
+
+class AdminPlaylistModTests(udj.testhelpers.tests06.testclasses.PlaylistModTests):
+  username="lucas"
+  userpass="testlucas"
+
+  def setUp(self):
+    super(udj.testhelpers.tests06.testclasses.PlaylistModTests, self).setUp()
+    lucas = Participant.objects.get(user__id=5, player__id=1)
+    lucas.time_last_interaction = datetime.now()
+    lucas.save()
+    self.oldtime = lucas.time_last_interaction
+
+
+  def tearDown(self):
+    lucas = Participant.objects.get(user__id=5, player__id=1)
+    self.assertTrue(lucas.time_last_interaction > self.oldtime)
+
