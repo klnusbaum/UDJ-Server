@@ -107,4 +107,26 @@ class ParticipantPlaylistModTests(udj.testhelpers.tests06.testclasses.EnsureActi
     removedSong = ActivePlaylistEntry.objects.get(pk=3)
     self.assertEqual('QE', removedSong.state)
 
+  @EnsureParticipationUpdated(3,1)
+  def testMultiAdd(self):
+    toAdd = [9,10]
+    toRemove = []
+
+    response = self.doPost(
+      '/udj/0_6/players/1/active_playlist',
+      {'to_add' : json.dumps(toAdd), 'to_remove' : json.dumps(toRemove)}
+    )
+
+    song9 = ActivePlaylistEntry.objects.get(
+      song__player__id='1',
+      song__player_lib_song_id='9',
+      state="QE")
+    self.assertEqual(1, len(song9.upvoters()))
+    self.assertEqual(0, len(song9.downvoters()))
+    song10 = ActivePlaylistEntry.objects.get(
+      song__player__id='1',
+      song__player_lib_song_id='10',
+      state="QE")
+    self.assertEqual(1, len(song10.upvoters()))
+    self.assertEqual(0, len(song10.downvoters()))
 
