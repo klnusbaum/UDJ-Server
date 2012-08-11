@@ -5,7 +5,7 @@ from udj.views.views06.decorators import AcceptsMethods
 from udj.views.views06.decorators import PlayerExists
 from udj.views.views06.decorators import HasNZParams
 from udj.views.views06.authdecorators import NeedsAuth
-from udj.views.views06.authdecorators import TicketUserMatch
+from udj.views.views06.authdecorators import IsOwnerOrAdmin
 from udj.models import LibraryEntry, Player, ActivePlaylistEntry
 from udj.headers import MISSING_RESOURCE_HEADER
 
@@ -17,12 +17,23 @@ from django.http import HttpResponseNotFound
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 
-def getAlreadyExistingIds(songs, player):
-  existingIds = []
+def getDuplicateDifferentIds(songs, player):
+  badIds = []
+  duplicates = []
   for song in songs:
-    if LibraryEntry.objects.filter(player=player, player_lib_song_id=song['id'], is_deleted=False).exists():
-      existingIds.append(song['id'])
-  return existingIds
+    potentialDuplicate = LibraryEntry.objects.filter(player=player, player_lib_song_id=song['id'], is_deleted=False)
+    if potentialDuplicate.exists():
+      duplicates.append(song['id']) 
+      if (potentialDuplicate[0].title != song['title'] or
+      potentialDuplicate[0].artist != song['artist'] or
+      potentialDuplicate[0].album != song['album'] or
+      potentialDuplicate[0].track != song['track'] or
+      potentialDuplicate[0].genre != song['genre'] or
+      potentialDuplicate[0].duration != song['duration']):
+        badIds.append(song['id'])
+  return (duplicates, badIds)
+
+
 
 def getNonExistantIds(songIds, player):
   nonExistentIds = []
@@ -58,13 +69,13 @@ def removeIfOnPlaylist(libEntry):
 
 
 @csrf_exempt
-@NeedsAuth
-@TicketUserMatch
-@AcceptsMethods(['PUT'])
-@NeedsJSON
-@PlayerExists
 @transaction.commit_on_success
-def addSongs2Library(request, user_id, player_id, player):
+@NeedsAuth
+@AcceptsMethods(['PUT'])
+@PlayerExists
+@IsOwnerOrAdmin
+@NeedsJSON
+def addSongs2Library(request, player_id, player):
 
   try:
     libJSON = json.loads(request.raw_post_data)
@@ -72,10 +83,11 @@ def addSongs2Library(request, user_id, player_id, player):
     return HttpResponseBadRequest('Bad JSON')
 
   try:
-    existingIds = getAlreadyExistingIds(libJSON, player)
-    if len(existingIds) > 0:
-      return HttpResponse(json.dumps(existingIds), status=409)
-    addSongs(libJSON, player)
+    duplicates, badIds = getDuplicateDifferentIds(libJSON)
+    if len(badIds) > 0:
+      return HttpJSONResponse(json.dumps(badIds), status=409)
+    else:
+      addSongs(filter(lambda song: song['id'] not in duplicates, libJSON), player)
   except KeyError as e:
     return HttpResponseBadRequest("Bad JSON. Missing key: " + str(e))
   except ValueError as f:
@@ -83,13 +95,12 @@ def addSongs2Library(request, user_id, player_id, player):
 
   return HttpResponse(status=201)
 
+@transaction.commit_on_success
 @NeedsAuth
-@TicketUserMatch
 @AcceptsMethods(['DELETE'])
 @PlayerExists
-@transaction.commit_on_success
-def deleteSongFromLibrary(request, user_id, player_id, lib_id, player):
-
+@IsOwnerOrAdmin
+def deleteSongFromLibrary(request, player_id, lib_id, player):
 
   try:
     deleteSongs([lib_id], player)
@@ -101,29 +112,13 @@ def deleteSongFromLibrary(request, user_id, player_id, lib_id, player):
   return HttpResponse()
 
 @csrf_exempt
-@NeedsAuth
-@TicketUserMatch
-@PlayerExists
-@AcceptsMethods(['PUT', 'DELETE'])
-def modifyBanList(request, user_id, player_id, lib_id, player):
-  try:
-    libEntry = LibraryEntry.objects.get(player=player, player_lib_song_id=lib_id)
-    libEntry.is_banned=True if request.method == 'PUT' else False
-    libEntry.save()
-    return HttpResponse()
-  except ObjectDoesNotExist:
-    toReturn = HttpResponseNotFound()
-    toReturn[MISSING_RESOURCE_HEADER] = 'song'
-    return toReturn
-
-@csrf_exempt
-@NeedsAuth
-@TicketUserMatch
-@PlayerExists
-@AcceptsMethods(['POST'])
 @transaction.commit_on_success
+@NeedsAuth
+@AcceptsMethods(['POST'])
+@PlayerExists
+@IsOwnerOrAdmin
 @HasNZParams(['to_add','to_delete'])
-def modLibrary(request, user_id, player_id, player):
+def modLibrary(request, player_id, player):
   try:
     toAdd = json.loads(request.POST['to_add'])
     toDelete = json.loads(request.POST['to_delete'])
@@ -134,15 +129,15 @@ def modLibrary(request, user_id, player_id, player):
 
 
   try:
-    existingIds = getAlreadyExistingIds(toAdd, player)
-    if len(existingIds) > 0:
-      return HttpResponse(json.dumps(existingIds), status=409)
+    duplicates, badIds = getDuplicateDifferentIds(libJSON)
+    if len(badIds) > 0:
+      return HttpJSONResponse(json.dumps(badIds), status=409)
 
     nonExistentIds = getNonExistantIds(toDelete, player)
     if len(nonExistentIds) > 0:
       return HttpResponse(json.dumps(nonExistentIds), status=404)
 
-    addSongs(toAdd, player)
+    addSongs(filter(lambda song: song['id'] not in duplicates, libJSON), player)
     deleteSongs(toDelete, player)
   except KeyError as e:
     return HttpResponseBadRequest('Bad JSON.\n Bad key: ' + str(e) )
