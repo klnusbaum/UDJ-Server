@@ -54,7 +54,7 @@ class PlayerAdmin(models.Model):
 
 class LibraryEntry(models.Model):
   player = models.ForeignKey('Player')
-  player_lib_song_id = models.IntegerField()
+  player_lib_song_id = models.CharField(max_length=100)
   title = models.CharField(max_length=200)
   artist = models.CharField(max_length=200)
   album = models.CharField(max_length=200)
