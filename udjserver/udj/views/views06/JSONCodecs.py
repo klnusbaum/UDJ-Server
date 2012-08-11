@@ -28,7 +28,7 @@ class UDJEncoder(json.JSONEncoder):
       return obj.favorite_song
     elif isinstance(obj, ExternalLibrary):
       return {
-        'id' : obj.id,
+        'id' : str(obj.id),
         'name' : obj.name,
         'description' : obj.description
       }
