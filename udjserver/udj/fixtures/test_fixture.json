@@ -5,7 +5,7 @@
     "model": "udj.libraryentry",
     "fields": {
       "player": 1,
-      "player_lib_song_id": 1,
+      "player_lib_song_id": "1",
       "title": "Semi-Charmed Life",
       "artist": "Third Eye Blind",
       "album": "Third Eye Blind",
@@ -22,7 +22,7 @@
     "model": "udj.libraryentry",
     "fields": {
       "player": 1,
-      "player_lib_song_id": 2,
+      "player_lib_song_id": "2",
       "title": "Narcolepsy",
       "artist": "Third Eye Blind",
       "album": "Third Eye Blind",
@@ -39,7 +39,7 @@
     "model": "udj.libraryentry",
     "fields": {
       "player": 1,
-      "player_lib_song_id": 3,
+      "player_lib_song_id": "3",
       "title": "Graduate",
       "artist": "Third Eye Blind",
       "album": "Third Eye Blind",
@@ -56,7 +56,7 @@
     "model": "udj.libraryentry",
     "fields": {
       "player": 1,
-      "player_lib_song_id": 4,
+      "player_lib_song_id": "4",
       "title": "Losing A Whole Year",
       "artist": "Third Eye Blind",
       "album": "Third Eye Blind",
@@ -73,7 +73,7 @@
     "model": "udj.libraryentry",
     "fields": {
       "player": 1,
-      "player_lib_song_id": 5,
+      "player_lib_song_id": "5",
       "title": "Never Let You Go",
       "artist": "Third Eye Blind",
       "album": "Blue",
@@ -91,7 +91,7 @@
     "model": "udj.libraryentry",
     "fields": {
       "player": 1,
-      "player_lib_song_id": 6,
+      "player_lib_song_id": "6",
       "title": "Ilyena",
       "artist": "The Mars Volta",
       "album": "The Bedlam in Goliath",
@@ -108,7 +108,7 @@
     "model": "udj.libraryentry",
     "fields": {
       "player": 1,
-      "player_lib_song_id": 7,
+      "player_lib_song_id": "7",
       "title": "Metatron",
       "artist": "The Mars Volta",
       "album": "The Bedlam in Goliath",
@@ -125,7 +125,7 @@
     "model": "udj.libraryentry",
     "fields": {
       "player": 1,
-      "player_lib_song_id": 8,
+      "player_lib_song_id": "8",
       "title": "Tourniquet Man",
       "artist": "The Mars Volta",
       "album": "The Bedlam in Goliath",
@@ -142,7 +142,7 @@
     "model": "udj.libraryentry",
     "fields": {
       "player": 1,
-      "player_lib_song_id": 9,
+      "player_lib_song_id": "9",
       "title": "Bangarang Feat. Sarah (Original Mix)",
       "artist": "Skrillex",
       "album": "Bangarang",
@@ -159,7 +159,7 @@
     "model": "udj.libraryentry",
     "fields": {
       "player": 1,
-      "player_lib_song_id": 10,
+      "player_lib_song_id": "10",
       "title": "My Name Is Skrillex",
       "artist": "Skrillex",
       "album": "My Name Is Skrillex",
@@ -177,7 +177,7 @@
     "model": "udj.libraryentry",
     "fields": {
       "player": 3,
-      "player_lib_song_id": 1,
+      "player_lib_song_id": "1",
       "title": "Californication",
       "artist": "Red Hot Chili Peppers",
       "album": "Californication",
@@ -194,7 +194,7 @@
     "model": "udj.libraryentry",
     "fields": {
       "player": 3,
-      "player_lib_song_id": 2,
+      "player_lib_song_id": "2",
       "title": "Otherside",
       "artist": "Red Hot Chili Peppers",
       "album": "Californication",

@@ -75,7 +75,7 @@ class UDJEncoder(json.JSONEncoder):
       return obj.admin_user
     elif isinstance(obj, Player):
       toReturn = {
-        "id" : obj.id,
+        "id" : str(obj.id),
         "name" : obj.name,
         "owner" : obj.owning_user,
         "has_password" : True if PlayerPassword.objects.filter(player=obj).exists() else False,

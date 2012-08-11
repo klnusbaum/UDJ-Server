@@ -39,7 +39,7 @@ class FavoritesTests(KurtisTestCase):
     favorites = json.loads(response.content)
     self.assertTrue(2, len(favorites))
     libids = [fav["id"] for fav in favorites]
-    self.assertTrue(7 in libids)
-    self.assertTrue(8 in libids)
+    self.assertTrue('7' in libids)
+    self.assertTrue('8' in libids)
 
 

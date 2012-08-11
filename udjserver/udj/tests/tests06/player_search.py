@@ -12,10 +12,10 @@ class GetPlayersTests(JeffTestCase):
     players = json.loads(response.content)
     self.assertEqual(len(players), 3)
     firstPlayer = players[0]
-    self.assertEqual(1, firstPlayer['id'])
+    self.assertEqual('1', firstPlayer['id'])
     self.assertEqual("Kurtis Player", firstPlayer['name'])
-    self.assertEqual("kurtis", firstPlayer['owner_username'])
-    self.assertEqual(2, firstPlayer['owner_id'])
+    self.assertEqual("kurtis", firstPlayer['owner']['username'])
+    self.assertEqual(2, firstPlayer['owner']['id'])
     self.assertEqual(False, firstPlayer['has_password'])
     location = firstPlayer['location']
     self.assertEqual("201 N Goodwin", location['address'])
@@ -32,10 +32,10 @@ class GetPlayersTests(JeffTestCase):
     players = json.loads(response.content)
     self.assertEqual(len(players), 2)
     firstPlayer = players[0]
-    self.assertEqual(1, firstPlayer['id'])
+    self.assertEqual('1', firstPlayer['id'])
     self.assertEqual("Kurtis Player", firstPlayer['name'])
-    self.assertEqual("kurtis", firstPlayer['owner_username'])
-    self.assertEqual(2, firstPlayer['owner_id'])
+    self.assertEqual("kurtis", firstPlayer['owner']['username'])
+    self.assertEqual(2, firstPlayer['owner']['id'])
     self.assertEqual(False, firstPlayer['has_password'])
 
   def testLocationSearchWithLimit(self):
@@ -65,7 +65,7 @@ class GetPlayersTests(JeffTestCase):
     self.isJSONResponse(response)
     players = json.loads(response.content)
     self.assertEqual(1, len(players))
-    self.assertEqual(6, players[0]["id"])
+    self.assertEqual('6', players[0]["id"])
 
   def testTooSmallRadius(self):
     badRadius = min_search_radius -1
