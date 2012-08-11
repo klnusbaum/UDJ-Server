@@ -154,7 +154,7 @@ def modActivePlaylist(request, player_id, player, lib_id):
 def add2ActivePlaylist(user, lib_id, player):
   player.lockActivePlaylist()
   if ActivePlaylistEntry.isQueued(lib_id, player):
-    voteSong(activePlayer, user, lib_id, 1)
+    voteSong(player, user, lib_id, 1)
     return HttpResponse()
   elif ActivePlaylistEntry.isPlaying(lib_id, player):
     return HttpResponse()
