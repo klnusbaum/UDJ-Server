@@ -65,7 +65,11 @@ def PlayerExists(function):
 
 def PlayerIsActive(function):
   def wrapper(*args, **kwargs):
-    player = kwargs['player']
+    if 'player' in kwargs:
+      player = kwargs['player']
+    else:
+      #This is a kludge for when player is actually an arg and not a kwarg
+      player = args[2]
     if player.state == u'IN':
       toReturn =  HttpResponseNotFound()
       toReturn[MISSING_RESOURCE_HEADER] = 'player'

@@ -10,7 +10,7 @@ from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
 
-def IsntOwner(function)
+def IsntOwner(function):
   def wrapper(*args, **kwargs):
     request = args[0]
     user = getUserForTicket(request)

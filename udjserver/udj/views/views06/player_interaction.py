@@ -15,11 +15,22 @@ from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 
 @csrf_exempt
-@AcceptsMethods(['PUT'])
+@AcceptsMethods(['PUT', 'DELETE'])
 @NeedsAuth
 @PlayerExists
-@PlayerIsActive
 @IsntOwner
+def modPlayerParticiapants(request, player_id, player):
+  if request.method == 'PUT':
+    return participateWithPlayer(request, player_id, player)
+  elif request.method == 'DELETE':
+    return logoutOfPlayer(request, player_id, player)
+  else:
+    #Should never get here because of the AcceptsMethods decorator
+    #Put here because I'm pedantic sometimes :/
+    return HttpResponseNotAllowed(['PUT', 'DELETE'])
+
+
+@PlayerIsActive
 def participateWithPlayer(request, player_id, player):
 
   def onSuccessfulPlayerAuth(activePlayer, user):
@@ -58,10 +69,6 @@ def participateWithPlayer(request, player_id, player):
   else:
     return onSuccessfulPlayerAuth(player, user)
 
-@AcceptsMethods(['DELETE'])
-@NeedsAuth
-@PlayerExists
-@IsntOwner
 def logoutOfPlayer(request, player_id, player):
   user = getUserForTicket(request)
 
