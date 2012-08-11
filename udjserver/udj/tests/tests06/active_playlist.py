@@ -2,6 +2,7 @@ import json
 import udj
 from udj.models import Player, LibraryEntry, ActivePlaylistEntry, Participant, Vote
 from udj.testhelpers.tests06.decorators import EnsureParticipationUpdated
+from udj.headers import MISSING_RESOURCE_HEADER
 from datetime import datetime
 
 class GetActivePlaylistTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
@@ -178,4 +179,33 @@ class ParticipantPlaylistModTests(udj.testhelpers.tests06.testclasses.EnsureActi
     self.assertEqual(1, len(song10.upvoters()))
     self.assertEqual(0, len(song10.downvoters()))
 
+
+class VotingTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
+
+  @EnsureParticipationUpdated(3, 1)
+  def testVoteSongUp(self):
+    response = self.doPost('/udj/0_6/players/1/active_playlist/songs/1/upvote')
+    self.assertEqual(response.status_code, 200)
+
+    upvote = Vote.objects.get(user__id=3, playlist_entry__song__id=1, weight=1)
+
+  @EnsureParticipationUpdated(3, 1)
+  def testVoteDownSong(self):
+    response = self.doPost('/udj/0_6/players/1/active_playlist/songs/1/downvote')
+    self.assertEqual(response.status_code, 200)
+
+    upvote = Vote.objects.get(user__id=3, playlist_entry__song__id=1, weight=-1)
+
+  @EnsureParticipationUpdated(3, 1)
+  def testBadSongVote(self):
+    response = self.doPost('/udj/0_6/players/1/active_playlist/songs/50/downvote')
+    self.assertEqual(response.status_code, 404)
+    self.assertEqual(response[MISSING_RESOURCE_HEADER], 'song')
+
+  @EnsureParticipationUpdated(3, 1)
+  def testDuplicateVote(self):
+    response = self.doPost('/udj/0_6/players/1/active_playlist/songs/2/downvote')
+    self.assertEqual(response.status_code, 200)
+
+    upvote = Vote.objects.get(user__id=3, playlist_entry__song__id=2, weight=-1)
 

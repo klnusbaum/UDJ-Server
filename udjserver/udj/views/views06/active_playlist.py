@@ -189,8 +189,8 @@ def removeFromActivePlaylist(request, user, lib_id, player):
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
 @AcceptsMethods(['POST'])
-def voteSongDown(request, player_id, activePlayer, user_id, user, lib_id):
-  return voteSong(activePlayer, user, lib_id, -1)
+def voteSongDown(request, player_id, lib_id, player):
+  return voteSong(player, getUserForTicket(request), lib_id, -1)
 
 @csrf_exempt
 @NeedsAuth
@@ -200,13 +200,13 @@ def voteSongDown(request, player_id, activePlayer, user_id, user, lib_id):
 @UpdatePlayerActivity
 @AcceptsMethods(['POST'])
 def voteSongUp(request, player_id, lib_id, player):
-  return voteSong(player, user, lib_id, 1)
+  return voteSong(player, getUserForTicket(request), lib_id, 1)
 
-def voteSong(activePlayer, user, lib_id, weight):
+def voteSong(player, user, lib_id, weight):
 
   try:
     playlistEntry = ActivePlaylistEntry.objects.get(
-        song__player=activePlayer,
+        song__player=player,
         song__player_lib_song_id=lib_id,
         state='QE')
   except ObjectDoesNotExist:
