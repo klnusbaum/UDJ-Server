@@ -61,12 +61,11 @@ urlpatterns += patterns('udj.views.views06.active_playlist',
   (r'^players/(?P<player_id>\d+)/active_playlist/songs/(?P<lib_id>\d+)/downvote$', 
     'voteSongDown'),
 )
-"""
+
 urlpatterns += patterns('udj.views.views06.library',
-  (r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/library/songs$', 'addSongs2Library'),
-  (r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/library/(?P<lib_id>\d+)$', 'deleteSongFromLibrary'),
-  (r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/library', 'modLibrary'),
-  (r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/ban_music/(?P<lib_id>\d+)$', 'modifyBanList'),
+  (r'^players/(?P<player_id>\d+)/library/songs$', 'addSongs2Library'),
+  (r'^players/(?P<player_id>\d+)/library/(?P<lib_id>\d+)$', 'deleteSongFromLibrary'),
+  (r'^players/(?P<player_id>\d+)/library', 'modLibrary'),
+  #(r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/ban_music/(?P<lib_id>\d+)$', 'modifyBanList'),
 )
 
-"""

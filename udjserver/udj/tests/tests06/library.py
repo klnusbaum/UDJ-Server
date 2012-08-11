@@ -29,11 +29,24 @@ class LibTestCases(KurtisTestCase):
     self.assertEqual(201, response.status_code, response.content)
     self.verifySongAdded(payload[0])
 
-
   def testDuplicateAdd(self):
     payload = [{
       "id" : "10",
       "title" : "My Name Is Skrillex",
+      "artist" : "Skrillex",
+      "album" : "My Name Is Skrillex",
+      "track" : 1,
+      "genre" : "Dubstep",
+      "duration" : 291
+    }]
+
+    response = self.doJSONPut('/udj/0_6/players/1/library/songs', json.dumps(payload))
+    self.assertEqual(201, response.status_code, response.content)
+
+  def testBadDuplicateAdd(self):
+    payload = [{
+      "id" : "10",
+      "title" : "Name Is Skrillex",
       "artist" : "Skrillex",
       "album" : "My Name Is Skirllex",
       "track" : 1,
@@ -43,6 +56,7 @@ class LibTestCases(KurtisTestCase):
 
     response = self.doJSONPut('/udj/0_6/players/1/library/songs', json.dumps(payload))
     self.assertEqual(409, response.status_code, response.content)
+
 
   def testDelete(self):
     response = self.doDelete('/udj/0_6/players/1/library/10')
@@ -60,20 +74,6 @@ class LibTestCases(KurtisTestCase):
     self.assertEqual(404, response.status_code, response.content)
     self.assertEqual(response[MISSING_RESOURCE_HEADER], 'song')
 
-  def testAddSong2BanList(self):
-    response = self.doPut('/udj/0_6/players/1/ban_music/1')
-    self.assertEqual(200, response.status_code, response.content)
-    self.assertEqual(LibraryEntry.objects.get(player__id=1, player_lib_song_id=1).is_banned, True)
-
-  def testUnbanSong(self):
-    response = self.doDelete('/udj/0_6/players/1/ban_music/4')
-    self.assertEqual(200, response.status_code, response.content)
-    self.assertEqual(LibraryEntry.objects.get(player__id=1, player_lib_song_id=4).is_banned, False)
-
-  def testBadSongBan(self):
-    response = self.doDelete('/udj/0_6/players/1/ban_music/12')
-    self.assertEqual(404, response.status_code, response.content)
-    self.assertEqual(response[MISSING_RESOURCE_HEADER], 'song')
 
   def testMultiMod(self):
     to_add = [{
@@ -96,12 +96,41 @@ class LibTestCases(KurtisTestCase):
     self.assertEqual(True, LibraryEntry.objects.get(player__id=1, player_lib_song_id=1).is_deleted)
     self.assertEqual(True, LibraryEntry.objects.get(player__id=1, player_lib_song_id=2).is_deleted)
 
-  def testBadMultiModAdd(self):
+  def testDuplicateMultiModAdd(self):
+    to_add = [{
+      "id": "2",
+      "title": "Narcolepsy",
+      "artist": "Third Eye Blind",
+      "album": "Third Eye Blind",
+      "track": 2,
+      "genre": "Rock",
+      "duration": 228,
+    },
+    {
+      "id": "11",
+      "title": "Fuel",
+      "artist": "Metallica",
+      "album": "Reload",
+      "track": 2,
+      "genre": "Rock",
+      "duration": 266,
+    } 
+    ]
+    to_delete=[]
+    response = self.doPost('/udj/0_6/players/1/library',
+      {'to_add' : json.dumps(to_add), 'to_delete' : json.dumps(to_delete)})
+
+    self.assertEqual(200, response.status_code, response.content)
+    #Make sure fuel got inserted.
+    fuel = LibraryEntry.objects.get(player__id=1, player_lib_song_id='11')
+
+
+  def testBadDuplicateMultiModAdd(self):
     to_add = [{
       "id": "1",
       "title": "Semi-Charmed Life",
       "artist": "Third Eye Blind",
-      "album": "Third Eye Blind",
+      "album": "blah",
       "track": 3,
       "genre": "Rock",
       "duration": 268
@@ -130,10 +159,12 @@ class LibTestCases(KurtisTestCase):
       {'to_add' : json.dumps(to_add), 'to_delete' : json.dumps(to_delete)})
 
     self.assertEqual(409, response.status_code, response.content)
+    self.isJSONResponse(response)
     jsonResponse = json.loads(response.content)
-    self.assertEqual([1,2], jsonResponse)
+    self.assertEqual(['1'], jsonResponse)
     #Make sure we didn't add fuel because this was a bad one
     self.assertFalse(LibraryEntry.objects.filter(player__id=1, player_lib_song_id=11).exists())
+
 
   def testBadMultiModRemove(self):
     to_add = [{
@@ -146,15 +177,33 @@ class LibTestCases(KurtisTestCase):
       "duration": 266,
     }
     ]
-    to_delete=[1,14]
+    to_delete=['1','14']
     response = self.doPost('/udj/0_6/players/1/library',
       {'to_add' : json.dumps(to_add), 'to_delete' : json.dumps(to_delete)})
 
     self.assertEqual(404, response.status_code, response.content)
+    self.isJSONResponse(response)
     jsonResponse = json.loads(response.content)
-    self.assertEqual([14], jsonResponse, jsonResponse)
+    self.assertEqual(['14'], jsonResponse, jsonResponse)
     #Make sure we didn't add Fuel because this was a bad one
     self.assertFalse(LibraryEntry.objects.filter(player__id=1, player_lib_song_id=11).exists())
     #Make sure we didn't delete Semi-Charmed Life because this request was bad
     self.assertTrue(LibraryEntry.objects.filter(player__id=1, player_lib_song_id=1, is_deleted=False).exists())
 
+  """
+  def testAddSong2BanList(self):
+    response = self.doPut('/udj/0_6/players/1/ban_music/1')
+    self.assertEqual(200, response.status_code, response.content)
+    self.assertEqual(LibraryEntry.objects.get(player__id=1, player_lib_song_id=1).is_banned, True)
+
+  def testUnbanSong(self):
+    response = self.doDelete('/udj/0_6/players/1/ban_music/4')
+    self.assertEqual(200, response.status_code, response.content)
+    self.assertEqual(LibraryEntry.objects.get(player__id=1, player_lib_song_id=4).is_banned, False)
+
+  def testBadSongBan(self):
+    response = self.doDelete('/udj/0_6/players/1/ban_music/12')
+    self.assertEqual(404, response.status_code, response.content)
+    self.assertEqual(response[MISSING_RESOURCE_HEADER], 'song')
+
+  """

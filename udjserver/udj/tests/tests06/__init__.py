@@ -7,3 +7,4 @@ from udj.tests.tests06.player_creation import *
 from udj.tests.tests06.player_administration import *
 from udj.tests.tests06.player_interaction import *
 from udj.tests.tests06.active_playlist import *
+from udj.tests.tests06.library import *

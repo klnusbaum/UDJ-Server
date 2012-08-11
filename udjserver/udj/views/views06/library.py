@@ -8,6 +8,7 @@ from udj.views.views06.authdecorators import NeedsAuth
 from udj.views.views06.authdecorators import IsOwnerOrAdmin
 from udj.models import LibraryEntry, Player, ActivePlaylistEntry
 from udj.headers import MISSING_RESOURCE_HEADER
+from udj.views.views06.helpers import HttpJSONResponse
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpRequest
@@ -83,7 +84,7 @@ def addSongs2Library(request, player_id, player):
     return HttpResponseBadRequest('Bad JSON')
 
   try:
-    duplicates, badIds = getDuplicateDifferentIds(libJSON)
+    duplicates, badIds = getDuplicateDifferentIds(libJSON, player)
     if len(badIds) > 0:
       return HttpJSONResponse(json.dumps(badIds), status=409)
     else:
@@ -129,15 +130,15 @@ def modLibrary(request, player_id, player):
 
 
   try:
-    duplicates, badIds = getDuplicateDifferentIds(libJSON)
+    duplicates, badIds = getDuplicateDifferentIds(toAdd, player)
     if len(badIds) > 0:
       return HttpJSONResponse(json.dumps(badIds), status=409)
 
     nonExistentIds = getNonExistantIds(toDelete, player)
     if len(nonExistentIds) > 0:
-      return HttpResponse(json.dumps(nonExistentIds), status=404)
+      return HttpJSONResponse(json.dumps(nonExistentIds), status=404)
 
-    addSongs(filter(lambda song: song['id'] not in duplicates, libJSON), player)
+    addSongs(filter(lambda song: song['id'] not in duplicates, toAdd), player)
     deleteSongs(toDelete, player)
   except KeyError as e:
     return HttpResponseBadRequest('Bad JSON.\n Bad key: ' + str(e) )
