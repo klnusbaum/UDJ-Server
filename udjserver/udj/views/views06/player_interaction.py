@@ -37,6 +37,7 @@ def participateWithPlayer(request, player_id, player):
     if not created:
       obj.time_last_interation = datetime.now()
       obj.kick_flag = False
+      obj.logout_flag = False
       obj.save()
 
     return HttpResponse(status=201)

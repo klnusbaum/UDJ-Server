@@ -247,7 +247,7 @@ class Player(models.Model):
 
   def ActiveParticipants(self):
     return Participant.objects.filter(player=self,
-      time_last_interaction__gt=(datetime.now() - timedelta(hours=1))).exclude(kick_flag=True, ban_flag=True)
+      time_last_interaction__gt=(datetime.now() - timedelta(hours=1))).exclude(kick_flag=True, ban_flag=True, logout_flag=True)
 
   def Admins(self):
     return PlayerAdmin.objects.filter(player=self)

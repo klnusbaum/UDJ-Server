@@ -2,7 +2,7 @@ import json
 import udj
 from udj.models import Participant, PlayerAdmin, SongSet, SongSetEntry, LibraryEntry
 from datetime import datetime
-from udj.testhelpers.tests06.testclasses import ZachTestCase, MattTestCase, JeffTestCase
+from udj.testhelpers.tests06.testclasses import ZachTestCase, MattTestCase, JeffTestCase, LeeTestCase
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER, FORBIDDEN_REASON_HEADER
 from udj.testhelpers.tests06.decorators import EnsureParticipationUpdated
 
@@ -42,6 +42,14 @@ class BeginParticipateTests(ZachTestCase):
     self.assertEqual(response.status_code, 201)
     zach = Participant.objects.get(player__id=6, user__id=8)
     self.assertEqual(zach.kick_flag, False)
+
+class LoginAfterLogout(LeeTestCase):
+  def testLogin(self):
+    response = self.doPut('/udj/0_6/players/1/users/user')
+    self.assertEqual(response.status_code, 201)
+    lee = Participant.objects.get(user__id=11, player__id=1)
+    self.assertEqual(False, lee.logout_flag)
+
 
 class GetUsersTests(MattTestCase):
   def setUp(self):
@@ -203,6 +211,9 @@ class GetRandoms(EnsureActiveJeffTest):
           LibraryEntry.objects.get(player__id=1, player_lib_song_id=song['id']).is_deleted)
       self.assertFalse(
           LibraryEntry.objects.get(player__id=1, player_lib_song_id=song['id']).is_banned)
+
+class LogoutTests(EnsureActiveJeffTest):
+
 
 class OwnerCurrentSongTestCase(udj.testhelpers.tests06.testclasses.CurrentSongTestCase):
   username="kurtis"

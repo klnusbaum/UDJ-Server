@@ -686,6 +686,17 @@
       "time_last_interaction" : "2012-04-14 13:27:33"
     }
   },
+  {
+    "pk": 10,
+    "model" : "udj.participant",
+    "fields" : {
+      "player" : 1,
+      "user" : 11,
+      "time_joined": "2012-08-11 9:34:22",
+      "time_last_interaction" : "2012-08-11 10:27:33",
+      "logout_flag" : true
+    }
+  },
 
 
 
