@@ -16,7 +16,7 @@ class LibTestCases(KurtisTestCase):
 
   def testSimpleAdd(self):
     payload = [{
-      "id" : 11,
+      "id" : "11",
       "title" : "Zero",
       "artist" : "The Smashing Pumpkins",
       "album" : "Mellon Collie And The Infinite Sadness",
@@ -32,7 +32,7 @@ class LibTestCases(KurtisTestCase):
 
   def testDuplicateAdd(self):
     payload = [{
-      "id" : 10,
+      "id" : "10",
       "title" : "My Name Is Skrillex",
       "artist" : "Skrillex",
       "album" : "My Name Is Skirllex",
@@ -77,7 +77,7 @@ class LibTestCases(KurtisTestCase):
 
   def testMultiMod(self):
     to_add = [{
-      "id" : 11,
+      "id" : "11",
       "title" : "Zero",
       "artist" : "The Smashing Pumpkins",
       "album" : "Mellon Collie And The Infinite Sadness",
@@ -98,7 +98,7 @@ class LibTestCases(KurtisTestCase):
 
   def testBadMultiModAdd(self):
     to_add = [{
-      "id": 1,
+      "id": "1",
       "title": "Semi-Charmed Life",
       "artist": "Third Eye Blind",
       "album": "Third Eye Blind",
@@ -107,7 +107,7 @@ class LibTestCases(KurtisTestCase):
       "duration": 268
     },
     {
-      "id": 2,
+      "id": "2",
       "title": "Narcolepsy",
       "artist": "Third Eye Blind",
       "album": "Third Eye Blind",
@@ -116,7 +116,7 @@ class LibTestCases(KurtisTestCase):
       "duration": 228,
     },
     {
-      "id": 11,
+      "id": "11",
       "title": "Fuel",
       "artist": "Metallica",
       "album": "Reload",
@@ -137,7 +137,7 @@ class LibTestCases(KurtisTestCase):
 
   def testBadMultiModRemove(self):
     to_add = [{
-      "id": 11,
+      "id": "11",
       "title": "Fuel",
       "artist": "Metallica",
       "album": "Reload",
