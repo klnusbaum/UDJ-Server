@@ -3,7 +3,7 @@ import json
 from udj.models import Participant, PlayerPassword, ActivePlaylistEntry, PlaylistEntryTimePlayed
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER, FORBIDDEN_REASON_HEADER, MISSING_RESOURCE_HEADER
 from udj.views.views06.decorators import PlayerExists, PlayerIsActive, AcceptsMethods, UpdatePlayerActivity, HasNZParams
-from udj.views.views06.authdecorators import NeedsAuth, IsOwnerOrParticipates, IsOwnerOrParticipatingAdmin
+from udj.views.views06.authdecorators import NeedsAuth, IsOwnerOrParticipates, IsOwnerOrParticipatingAdmin, IsntOwner
 from udj.views.views06.auth import getUserForTicket, hashPlayerPassword
 from udj.views.views06.JSONCodecs import UDJEncoder
 from udj.views.views06.helpers import HttpJSONResponse
@@ -19,6 +19,7 @@ from datetime import datetime
 @NeedsAuth
 @PlayerExists
 @PlayerIsActive
+@IsntOwner
 def participateWithPlayer(request, player_id, player):
 
   def onSuccessfulPlayerAuth(activePlayer, user):
@@ -56,6 +57,25 @@ def participateWithPlayer(request, player_id, player):
     return toReturn
   else:
     return onSuccessfulPlayerAuth(player, user)
+
+@AcceptsMethods(['DELETE'])
+@NeedsAuth
+@PlayerExists
+@IsntOwner
+def logoutOfPlayer(request, player_id, player):
+  user = getUserForTicket(request)
+
+  try:
+    toLogOut = Participant.objects.get(player=player, user=user)
+    toLogOut.logout_flag = True
+    toLogOut.save()
+  except ObjectDoesNotExist:
+    toReturn = HttpResponseNotFound()
+    toReturn[MISSING_RESOURCE_HEADER] = 'user'
+    return toReturn
+
+  return HttpResponse()
+
 
 @AcceptsMethods(['GET'])
 @NeedsAuth
