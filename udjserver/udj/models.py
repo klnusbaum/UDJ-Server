@@ -111,6 +111,9 @@ class ActivePlaylistEntry(models.Model):
     return ActivePlaylistEntry.objects.filter(song__player=player, song__player_lib_song_id=songId)\
         .exclude(state='RM').exclude(state='FN').exists()
 
+  def isPlaying(songId, player):
+    return ActivePlaylistEntry.objects.filter(song__player=player, song__player_lib_song_id=songId, state='PL').exists()
+
   @staticmethod
   def isQueued(songId, player):
     return ActivePlaylistEntry.objects.filter(song__player=player, song__player_lib_song_id=songId)\

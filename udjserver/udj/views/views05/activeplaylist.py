@@ -70,6 +70,7 @@ def removeSongsFromPlaylist(libIds, activePlayer, user):
 @ActivePlayerExists
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
+@transaction.commit_on_success
 def activePlaylist(request, user, player_id, activePlayer):
   if request.method == 'GET':
     return getActivePlaylist(request, user, player_id, activePlayer)
@@ -93,7 +94,6 @@ def getActivePlaylist(request, user, player_id, activePlayer):
   return HttpResponse(json.dumps(playlist, cls=UDJEncoder), content_type="text/json")
 
 @HasNZParams(['to_add','to_remove'])
-@transaction.commit_on_success
 def multiModActivePlaylist(request, user, player_id, activePlayer):
   if activePlayer.owning_user != user:
     return HttpResponseForbidden("Only the owner may do that")
