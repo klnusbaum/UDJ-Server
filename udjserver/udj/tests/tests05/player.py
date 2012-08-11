@@ -368,7 +368,7 @@ class PlayerAdminTests2(AlejandroTestCase):
     current_song = jsonResponse['current_song']
     self.assertEqual(current_song,{})
     plSongs = ActivePlaylistEntry.objects.filter(song__player__id=3, state='QE')
-    plSongIds = [x.song.player_lib_song_id for x in plSongs]
+    plSongIds = [int(x.song.player_lib_song_id) for x in plSongs]
     for plSong in jsonResponse['active_playlist']:
       self.assertTrue(plSong['song']['id'] in plSongIds)
     self.assertEqual(len(jsonResponse['active_playlist']), len(plSongIds))
@@ -445,9 +445,9 @@ class PlayerQueryTests(YunYoungTestCase):
     jsonResponse = json.loads(response.content)
     current_song = jsonResponse['current_song']
     realCurrentSong = ActivePlaylistEntry.objects.get(song__player__id=1, state='PL')
-    self.assertEqual(current_song['song']['id'], realCurrentSong.song.player_lib_song_id)
+    self.assertEqual(current_song['song']['id'], int(realCurrentSong.song.player_lib_song_id))
     plSongs = ActivePlaylistEntry.objects.filter(song__player__id=1, state='QE')
-    plSongIds = [x.song.player_lib_song_id for x in plSongs]
+    plSongIds = [int(x.song.player_lib_song_id) for x in plSongs]
     for plSong in jsonResponse['active_playlist']:
       self.assertTrue(plSong['song']['id'] in plSongIds)
     self.assertEqual(len(jsonResponse['active_playlist']), len(plSongIds))
