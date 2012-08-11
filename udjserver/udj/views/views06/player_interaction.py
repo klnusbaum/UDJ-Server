@@ -157,7 +157,7 @@ def modCurrentSong(request, player_id, player):
 
 @HasNZParams(['lib_id'])
 def setCurrentSong(request, player):
-
+  player.lockActivePlaylist()
   try:
     newCurrentSong = ActivePlaylistEntry.objects.get(
       song__player_lib_song_id=request.POST['lib_id'],
@@ -186,6 +186,7 @@ def setCurrentSong(request, player):
   return HttpResponse("Song changed")
 
 def removeCurrentSong(request, player):
+  player.lockActivePlaylist()
   try:
     currentSong = ActivePlaylistEntry.objects.get(song__player=player, state=u'PL')
     currentSong.state=u'FN'
