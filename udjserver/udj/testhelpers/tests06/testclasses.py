@@ -534,6 +534,29 @@ class BanTestCases(DoesServerOpsTestCase):
     self.assertEqual(404, response.status_code, response.content)
     self.assertEqual(response[MISSING_RESOURCE_HEADER], 'song')
 
+  def testMultiBan(self):
+    toBan = [1]
+    toUnban = [4]
+    response = self.doPost('/udj/0_6/players/1/ban_music', {'to_ban' : json.dumps(toBan), 
+      'to_unban' : json.dumps(toUnban)})
+    self.assertEqual(200, response.status_code, response.content)
+    self.assertEqual(LibraryEntry.objects.get(player__id=1, player_lib_song_id=1).is_banned, True)
+    self.assertEqual(LibraryEntry.objects.get(player__id=1, player_lib_song_id=4).is_banned, False)
+
+  def testDuplicateBan(self):
+    response = self.doPut('/udj/0_6/players/1/ban_music/4')
+    self.assertEqual(200, response.status_code, response.content)
+    self.assertEqual(LibraryEntry.objects.get(player__id=1, player_lib_song_id=4).is_banned, True)
+
+  def testDuplicateMultiBan(self):
+    toBan = [1,4]
+    toUnban = []
+    response = self.doPost('/udj/0_6/players/1/ban_music', {'to_ban' : json.dumps(toBan), 
+      'to_unban' : json.dumps(toUnban)})
+    self.assertEqual(200, response.status_code, response.content)
+    self.assertEqual(LibraryEntry.objects.get(player__id=1, player_lib_song_id=1).is_banned, True)
+    self.assertEqual(LibraryEntry.objects.get(player__id=1, player_lib_song_id=4).is_banned, True)
+
 
 
 

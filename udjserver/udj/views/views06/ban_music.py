@@ -63,9 +63,11 @@ def multiBan(request, player_id, player):
   def setSongBanStatus(songid, banStatus):
     songToBan = LibraryEntry.objects.get(player=player, player_lib_song_id=songid)
     songToBan.is_banned = banStatus
-    sontToBan.save()
+    songToBan.save()
 
   map(lambda songid: setSongBanStatus(songid, True), toBan)
   map(lambda songid: setSongBanStatus(songid, False), toUnban)
+
+  return HttpResponse()
 
 
