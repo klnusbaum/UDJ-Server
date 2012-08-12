@@ -516,7 +516,9 @@ class LibTestCases(DoesServerOpsTestCase):
     #Make sure we didn't delete Semi-Charmed Life because this request was bad
     self.assertTrue(LibraryEntry.objects.filter(player__id=1, player_lib_song_id=1, is_deleted=False).exists())
 
-  """
+
+class BanTestCases(DoesServerOpsTestCase):
+
   def testAddSong2BanList(self):
     response = self.doPut('/udj/0_6/players/1/ban_music/1')
     self.assertEqual(200, response.status_code, response.content)
@@ -532,7 +534,6 @@ class LibTestCases(DoesServerOpsTestCase):
     self.assertEqual(404, response.status_code, response.content)
     self.assertEqual(response[MISSING_RESOURCE_HEADER], 'song')
 
-  """
 
 
 

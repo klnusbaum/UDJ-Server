@@ -1,6 +1,7 @@
 from udj.models import Player
 from udj.models import PlayerLocation
 from udj.models import ActivePlaylistEntry
+from udj.models import LibraryEntry
 from settings import geocodeLocation
 from django.http import HttpResponse
 
