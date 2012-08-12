@@ -8,7 +8,7 @@ from udj.views.views06.authdecorators import NeedsAuth
 from udj.views.views06.authdecorators import IsOwnerOrAdmin
 from udj.models import LibraryEntry, Player, ActivePlaylistEntry
 from udj.headers import MISSING_RESOURCE_HEADER
-from udj.views.views06.helpers import HttpJSONResponse
+from udj.views.views06.helpers import HttpJSONResponse, removeIfOnPlaylist, getNonExistantLibIds
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpRequest
@@ -36,13 +36,6 @@ def getDuplicateDifferentIds(songs, player):
 
 
 
-def getNonExistantIds(songIds, player):
-  nonExistentIds = []
-  for songId in songIds:
-    if not LibraryEntry.objects.filter(player=player, player_lib_song_id=songId, is_deleted=False).exists():
-      nonExistentIds.append(songId)
-  return nonExistentIds
-
 
 def addSongs(libJSON, player):
   for libEntry in libJSON:
@@ -63,10 +56,6 @@ def deleteSongs(songIds, player):
     libEntry.save()
     removeIfOnPlaylist(libEntry)
 
-def removeIfOnPlaylist(libEntry):
-  onList = ActivePlaylistEntry.objects.filter(song=libEntry, state=u'QE')
-  if onList.exists():
-    onList.update(state=u'RM')
 
 
 @csrf_exempt
@@ -134,7 +123,7 @@ def modLibrary(request, player_id, player):
     if len(badIds) > 0:
       return HttpJSONResponse(json.dumps(badIds), status=409)
 
-    nonExistentIds = getNonExistantIds(toDelete, player)
+    nonExistentIds = getNonExistantLibIds(toDelete, player)
     if len(nonExistentIds) > 0:
       return HttpJSONResponse(json.dumps(nonExistentIds), status=404)
 

@@ -66,6 +66,10 @@ urlpatterns += patterns('udj.views.views06.library',
   (r'^players/(?P<player_id>\d+)/library/songs$', 'addSongs2Library'),
   (r'^players/(?P<player_id>\d+)/library/(?P<lib_id>\d+)$', 'deleteSongFromLibrary'),
   (r'^players/(?P<player_id>\d+)/library', 'modLibrary'),
-  #(r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/ban_music/(?P<lib_id>\d+)$', 'modifyBanList'),
+)
+
+urlpatterns += patterns('udj.views.views06.ban_music',
+  (r'^players/(?P<player_id>\d+)/ban_music/(?P<lib_id>\d+)$', 'modifyBanList'),
+  (r'^players/(?P<player_id>\d+)/ban_music$', 'multiBan'),
 )
 

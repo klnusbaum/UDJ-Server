@@ -1,9 +1,23 @@
 from udj.models import Player
 from udj.models import PlayerLocation
+from udj.models import ActivePlaylistEntry
 from settings import geocodeLocation
 from django.http import HttpResponse
 
 from django.contrib.gis.geos import Point
+
+def getNonExistantLibIds(songIds, player):
+  nonExistentIds = []
+  for songId in songIds:
+    if not LibraryEntry.objects.filter(player=player, player_lib_song_id=songId, is_deleted=False).exists():
+      nonExistentIds.append(songId)
+  return nonExistentIds
+
+
+def removeIfOnPlaylist(libEntry):
+  onList = ActivePlaylistEntry.objects.filter(song=libEntry, state=u'QE')
+  if onList.exists():
+    onList.update(state=u'RM')
 
 def setPlayerLocation(location, player):
   address = location.get('address', None)
