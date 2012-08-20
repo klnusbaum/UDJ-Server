@@ -51,6 +51,23 @@ class DoesServerOpsTestCase(TestCase):
 
 class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
 
+  def testSetVolume(self):
+    player = Player.objects.get(pk=1)
+    self.assertEqual(player.volume, 5)
+    response = self.doPost('/udj/0_6/players/1/volume', {'volume' : 2})
+    self.assertEqual(response.status_code, 200)
+    player = Player.objects.get(pk=1)
+    self.assertEqual(player.volume, 2)
+
+  def testBadVolumeSet(self):
+    player = Player.objects.get(pk=1)
+    self.assertEqual(player.volume, 5)
+    response = self.doPost('/udj/0_6/players/1/volume', {'volume' : 11})
+    self.assertEqual(response.status_code, 400)
+    player = Player.objects.get(pk=1)
+    self.assertEqual(player.volume, 5)
+
+
   def testSetPassword(self):
     newPassword = 'nudepassword'
     response = self.doPost('/udj/0_6/players/1/password', {'password': newPassword})

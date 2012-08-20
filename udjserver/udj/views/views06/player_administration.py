@@ -152,7 +152,7 @@ def setPlayerState(request, player_id, player):
 @PlayerExists
 @IsOwnerOrAdmin
 @HasNZParams(['volume'])
-def setPlayerVolume(request, user_id, player_id, player):
+def setPlayerVolume(request, player_id, player):
   try:
     newVolume = int(request.POST['volume'])
     if newVolume > 10 or newVolume < 0:
