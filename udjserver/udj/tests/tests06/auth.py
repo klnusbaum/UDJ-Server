@@ -39,9 +39,9 @@ class AuthTests(TestCase):
   client = Client()
   kurtis = User.objects.get(username='kurtis')
 
-  def issueTicketRequest(self):
+  def issueTicketRequest(self, username='kurtis', password='testkurtis'):
     return self.client.post(
-        '/udj/0_6/auth', {'username': 'kurtis', 'password' : 'testkurtis'})
+        '/udj/0_6/auth', {'username': username, 'password' : password})
 
   @staticmethod
   def getCurrentTicket():
@@ -83,3 +83,14 @@ class AuthTests(TestCase):
 
     self.assertEqual(new_ticket, ticket_hash)
 
+  def testBadPassword(self):
+    response = self.issueTicketRequest(password="badpassword")
+
+    self.assertEqual(response.status_code, 401, response.content)
+    self.assertEqual(response['WWW-Authenticate'], 'password')
+
+  def testBadUsername(self):
+    response = self.issueTicketRequest(username="wrongwrongwrong")
+
+    self.assertEqual(response.status_code, 401, response.content)
+    self.assertEqual(response['WWW-Authenticate'], 'password')

@@ -75,13 +75,18 @@ def obtainTicketForUser(userRequestingTicket):
 @HasNZParams(['username', 'password'])
 def authenticate(request):
 
-  userToAuth = get_object_or_404(User, username=request.POST['username'])
-  if userToAuth.check_password(request.POST['password']):
-    ticket = obtainTicketForUser(userToAuth)
-    ticket_and_id = {"ticket_hash" : ticket.ticket_hash, "user_id" : userToAuth.id}
-    response = HttpJSONResponse(json.dumps(ticket_and_id))
-    return response
-  else:
+  try:
+    userToAuth = User.objects.get(username=request.POST['username'])
+    if userToAuth.check_password(request.POST['password']):
+      ticket = obtainTicketForUser(userToAuth)
+      ticket_and_id = {"ticket_hash" : ticket.ticket_hash, "user_id" : userToAuth.id}
+      response = HttpJSONResponse(json.dumps(ticket_and_id))
+      return response
+    else:
+      response = HttpResponse(status=401)
+      response['WWW-Authenticate'] = 'password'
+      return response
+  except ObjectDoesNotExist:
     response = HttpResponse(status=401)
     response['WWW-Authenticate'] = 'password'
     return response
