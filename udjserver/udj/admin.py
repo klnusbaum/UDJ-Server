@@ -55,6 +55,7 @@ permaDeleteLibrary.short_description = "Permanently Delete Player Library"
 class PlayerAdmin(admin.ModelAdmin):
   list_display=('name', 'owning_user', 'state', 'volume', 'sorting_algo',)
   list_filters=('owning_user', 'state')
+  search_fields = ['name']
   actions = [setPlayerInactive, setLibraryDeleted, permaDeleteLibrary, setPlayerPlaying, setPlayerPaused]
 
 class ParticipantAdmin(admin.ModelAdmin):
