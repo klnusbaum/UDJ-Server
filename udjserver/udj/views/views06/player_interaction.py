@@ -11,6 +11,7 @@ from udj.views.views06.helpers import HttpJSONResponse
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
 
 from datetime import datetime
 
@@ -173,6 +174,7 @@ def getRandomSongsForPlayer(request, player_id, player):
 @PlayerIsActive
 @IsOwnerOrParticipatingAdmin
 @UpdatePlayerActivity
+@transaction.commit_on_success()
 def modCurrentSong(request, player_id, player):
   if request.method == 'POST':
     return setCurrentSong(request, player)

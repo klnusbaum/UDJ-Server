@@ -134,13 +134,13 @@ def multiModActivePlaylist(request, player):
 
 
 @csrf_exempt
-@transaction.commit_on_success
 @NeedsAuth
 @AcceptsMethods(['PUT', 'DELETE'])
 @PlayerExists
 @PlayerIsActive
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
+@transaction.commit_on_success
 def modActivePlaylist(request, player_id, player, lib_id):
   user = getUserForTicket(request)
   if request.method == 'PUT':
@@ -169,7 +169,6 @@ def add2ActivePlaylist(user, lib_id, player):
   return HttpResponse(status=201)
 
 def removeFromActivePlaylist(request, user, lib_id, player):
-
   player.lockActivePlaylist()
   try:
     removeSongsFromPlaylist([lib_id], player, user)
