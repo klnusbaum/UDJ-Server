@@ -85,6 +85,7 @@ def addSongs2Library(request, player_id, player):
 
   return HttpResponse(status=201)
 
+@csrf_exempt
 @transaction.commit_on_success
 @NeedsAuth
 @AcceptsMethods(['DELETE'])

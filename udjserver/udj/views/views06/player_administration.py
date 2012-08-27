@@ -195,6 +195,7 @@ def removeAdmin(request, player_id, user_id, player):
     return toReturn
 
 
+@csrf_exempt
 @NeedsAuth
 @AcceptsMethods(['PUT'])
 @PlayerExists
@@ -210,6 +211,7 @@ def kickUser(request, player_id, kick_user_id, player):
     toReturn[MISSING_RESOURCE_HEADER] = 'user'
     return toReturn
 
+@csrf_exempt
 @NeedsAuth
 @AcceptsMethods(['PUT', 'DELETE'])
 @PlayerExists

@@ -10,12 +10,14 @@ from udj.views.views06.auth import getUserForTicket
 from udj.headers import MISSING_RESOURCE_HEADER
 from udj.views.views06.helpers import HttpJSONResponse
 
+from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseNotFound
 
 
+@csrf_exempt
 @NeedsAuth
 @AcceptsMethods(['PUT','DELETE'])
 def favorite(request, player_id, lib_id):
