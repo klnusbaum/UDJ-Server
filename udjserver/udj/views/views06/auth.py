@@ -16,6 +16,7 @@ from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
+from settings import TICKET_EXPIRATION_LENGTH
 
 def hashPlayerPassword(password):
   m = hashlib.sha1()
@@ -41,7 +42,7 @@ def isValidTicket(provided_hash):
     matchingTicket = Ticket.objects.get(ticket_hash=provided_hash)
   except ObjectDoesNotExist:
     return False
-  if(datetime.now() - matchingTicket.time_issued).days < 1:
+  if(datetime.now() - matchingTicket.time_issued).days < TICKET_EXPIRATION_LENGTH:
     return True
   else:
     return False

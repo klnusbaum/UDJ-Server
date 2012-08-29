@@ -148,6 +148,7 @@ default_sorting_algo = "totalVotes"
 default_search_radius = 5
 max_search_radius = 20
 min_search_radius = 1
+TICKET_EXPIRATION_LENGTH = 14
 
 try:
   from settings_local import *
