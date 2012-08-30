@@ -82,7 +82,7 @@ class UDJEncoder(json.JSONEncoder):
         "admins" : obj.Admins(),
         "sorting_algo": obj.sorting_algo,
         "songset_user_permission" : obj.allow_user_songset,
-        "num_active_users" : obj.ActiveParticipants()
+        "num_active_users" : len(obj.ActiveParticipants())
       }
 
       try:

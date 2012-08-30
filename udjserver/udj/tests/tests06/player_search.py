@@ -17,6 +17,7 @@ class GetPlayersTests(JeffTestCase):
     self.assertEqual("kurtis", firstPlayer['owner']['username'])
     self.assertEqual('2', firstPlayer['owner']['id'])
     self.assertEqual(False, firstPlayer['has_password'])
+    self.assertEqual(0, firstPlayer['num_active_users'])
     location = firstPlayer['location']
     self.assertEqual("201 N Goodwin", location['address'])
     self.assertEqual("Urbana", location['locality'])
@@ -37,6 +38,7 @@ class GetPlayersTests(JeffTestCase):
     self.assertEqual("kurtis", firstPlayer['owner']['username'])
     self.assertEqual('2', firstPlayer['owner']['id'])
     self.assertEqual(False, firstPlayer['has_password'])
+    self.assertEqual(0, firstPlayer['num_active_users'])
 
   def testLocationSearchWithLimit(self):
     response = self.doGet('/udj/0_6/players/40.11241/-88.222053?max_results=1')
