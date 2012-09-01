@@ -17,6 +17,9 @@ from django.http import HttpResponseBadRequest
 from django.http import HttpResponseNotFound
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
+import logging
+
+logger = logging.getLogger("udj.libraryerrors")
 
 def getDuplicateDifferentIds(songs, player):
   badIds = []
@@ -114,6 +117,9 @@ def modLibrary(request, player_id, player):
     toAdd = json.loads(request.POST['to_add'])
     toDelete = json.loads(request.POST['to_delete'])
   except ValueError:
+    logger.error("Bad JSON. Couldn't even parse. \n" +
+        "to add data: " + request.POST['to_add'] + "\n" +
+        "to delete data: " + request.POST['to_delete'])
     return HttpResponseBadRequest("Bad JSON. Couldn't even parse. \n" +
       "to add data: " + request.POST['to_add'] + "\n" +
       "to delete data: " + request.POST['to_delete'])

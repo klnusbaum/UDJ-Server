@@ -1,10 +1,10 @@
-from httplib import HTTPSConnection
+from httplib import HTTPConnection
 from urllib import urlencode
 import json
 
 def getAuthToken(username, password):
-  requestUrl = "/udj/auth"
-  conn = HTTPSConnection('www.udjplayer.com:4898')
+  requestUrl = "/udj/0_6/auth"
+  conn = HTTPConnection('localhost:8000')
   params = urlencode({'username' : username, 'password' : password})
   authRequest = conn.request('POST', requestUrl, params)
   response = conn.getresponse()

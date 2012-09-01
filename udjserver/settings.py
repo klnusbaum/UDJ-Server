@@ -128,15 +128,20 @@ LOGGING = {
     'handlers': {
         'mail_admins': {
             'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler'
-        }
+            'class': 'django.utils.log.AdminEmailHandler',
+        },
     },
     'loggers': {
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
-            'propagate': True,
+            'propogate': True,
         },
+        'udj.libraryerrors': {
+          'handlers': ['mail_admins'],
+          'level': 'ERROR',
+          'propogate': True,
+        }
     }
 }
 

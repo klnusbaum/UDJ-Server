@@ -170,8 +170,8 @@ class Player(models.Model):
   state = models.CharField(max_length=2, default='IN')
   volume = models.IntegerField(default=5, validators=[zero_ten_validator])
   sorting_algo = models.ForeignKey(SortingAlgorithm)
-  external_library = models.ForeignKey(ExternalLibrary, null=True)
-  size_limit = models.IntegerField(null=True)
+  external_library = models.ForeignKey(ExternalLibrary, null=True, blank=True)
+  size_limit = models.IntegerField(null=True, blank=True)
   allow_user_songset = models.BooleanField(default=False)
 
   def canCreatSongSets(self, user):
