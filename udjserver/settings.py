@@ -137,11 +137,6 @@ LOGGING = {
             'level': 'ERROR',
             'propogate': True,
         },
-        'udj.libraryerrors': {
-          'handlers': ['mail_admins'],
-          'level': 'ERROR',
-          'propogate': True,
-        }
     }
 }
 
