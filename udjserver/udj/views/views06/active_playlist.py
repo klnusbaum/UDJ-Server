@@ -53,6 +53,7 @@ def removeSongsFromPlaylist(libIds, activePlayer, user):
 @NeedsAuth
 @PlayerExists
 @PlayerIsActive
+@IsOwnerOrParticipates
 @UpdatePlayerActivity
 @transaction.commit_on_success
 def activePlaylist(request, player_id, player):
