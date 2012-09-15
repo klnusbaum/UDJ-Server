@@ -236,6 +236,8 @@ class Player(models.Model):
     playlist['state'] = 'playing' if self.state=='PL' else 'paused'
     return playlist
 
+  def SongSets(self):
+    return SongSet.objects.filter(player=self)
 
   def isFull(self):
     return self.size_limit != None \
