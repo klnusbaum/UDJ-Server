@@ -180,7 +180,8 @@ class Player(models.Model):
 
   def lockActivePlaylist(self):
     #lock active playlist
-    ActivePlaylistEntry.objects.select_for_update().filter(song__player=self)
+    ActivePlaylistEntry.objects.select_for_update().filter(song__player=self).exclude(state='FN').exclude(state='RM')
+
 
 
   def SongSets(self):
