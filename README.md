@@ -4,7 +4,7 @@ UDJ is a social music player. It allows many people to control
 a single music player democratically. Checkout the
 [UDJ homepage][home] for more information. This is the official
 UDJ server. For details on the API for interacting with this server
-checkout the [UDJ-0.5 REST API][api]. You can also checkout the source
+checkout the [UDJ-0.6 REST API][api]. You can also checkout the source
 for any of our several clients:
 
 *  [Desktop Client][desktop]
