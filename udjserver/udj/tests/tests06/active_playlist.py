@@ -184,27 +184,27 @@ class VotingTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
 
   @EnsureParticipationUpdated(3, 1)
   def testVoteSongUp(self):
-    response = self.doPost('/udj/0_6/players/1/active_playlist/songs/1/upvote')
+    response = self.doPut('/udj/0_6/players/1/active_playlist/songs/1/upvote')
     self.assertEqual(response.status_code, 200)
 
     upvote = Vote.objects.get(user__id=3, playlist_entry__song__id=1, weight=1)
 
   @EnsureParticipationUpdated(3, 1)
   def testVoteDownSong(self):
-    response = self.doPost('/udj/0_6/players/1/active_playlist/songs/1/downvote')
+    response = self.doPut('/udj/0_6/players/1/active_playlist/songs/1/downvote')
     self.assertEqual(response.status_code, 200)
 
     upvote = Vote.objects.get(user__id=3, playlist_entry__song__id=1, weight=-1)
 
   @EnsureParticipationUpdated(3, 1)
   def testBadSongVote(self):
-    response = self.doPost('/udj/0_6/players/1/active_playlist/songs/50/downvote')
+    response = self.doPut('/udj/0_6/players/1/active_playlist/songs/50/downvote')
     self.assertEqual(response.status_code, 404)
     self.assertEqual(response[MISSING_RESOURCE_HEADER], 'song')
 
   @EnsureParticipationUpdated(3, 1)
   def testDuplicateVote(self):
-    response = self.doPost('/udj/0_6/players/1/active_playlist/songs/2/downvote')
+    response = self.doPut('/udj/0_6/players/1/active_playlist/songs/2/downvote')
     self.assertEqual(response.status_code, 200)
 
     upvote = Vote.objects.get(user__id=3, playlist_entry__song__id=2, weight=-1)

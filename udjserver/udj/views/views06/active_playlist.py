@@ -188,7 +188,7 @@ def removeFromActivePlaylist(request, user, lib_id, player):
 @PlayerIsActive
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
-@AcceptsMethods(['POST'])
+@AcceptsMethods(['POST', 'PUT'])
 def voteSongDown(request, player_id, lib_id, player):
   return voteSong(player, getUserForTicket(request), lib_id, -1)
 
@@ -198,7 +198,7 @@ def voteSongDown(request, player_id, lib_id, player):
 @PlayerIsActive
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
-@AcceptsMethods(['POST'])
+@AcceptsMethods(['POST', 'PUT'])
 def voteSongUp(request, player_id, lib_id, player):
   return voteSong(player, getUserForTicket(request), lib_id, 1)
 
