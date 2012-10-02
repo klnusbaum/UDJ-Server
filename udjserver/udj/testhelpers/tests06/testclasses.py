@@ -92,8 +92,8 @@ class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
     self.assertEqual(newLocation['region'], playerLocation.region)
     self.assertEqual(newLocation['postal_code'], playerLocation.postal_code)
     self.assertEqual(newLocation['country'], playerLocation.country)
-    self.assertEqual(-93.481394, playerLocation.point.x)
-    self.assertEqual(44.981806, playerLocation.point.y)
+    self.assertEqual(-93.4814, playerLocation.point.x)
+    self.assertEqual(44.981609, playerLocation.point.y)
 
   def testSetLocationWithNoPreviousLocation(self):
     newLocation = {
@@ -112,8 +112,8 @@ class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
     self.assertEqual(newLocation['region'], playerLocation.region)
     self.assertEqual(newLocation['postal_code'], playerLocation.postal_code)
     self.assertEqual(newLocation['country'], playerLocation.country)
-    self.assertEqual(-93.481394, playerLocation.point.x)
-    self.assertEqual(44.981806, playerLocation.point.y)
+    self.assertEqual(-93.4814, playerLocation.point.x)
+    self.assertEqual(44.981609, playerLocation.point.y)
 
   def testAddAdmin(self):
     response = self.doPut('/udj/0_6/players/1/admins/7')

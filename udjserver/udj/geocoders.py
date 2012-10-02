@@ -54,14 +54,14 @@ def YahooGeocoder(address, locality, region, postalcode, appId):
 
   responseString = response.read()
   resultSet = json.loads(responseString)['ResultSet']
-  if resultSet['Error'] != 0:
-    raise LocationNotFoundError('Results contained error')
+  if int(resultSet['Error']) != 0:
+    raise LocationNotFoundError('Results contained error. Code ' + str(resultSet['Error']) + " Message: " + resultSet['ErrorMessage'] + "\n" + str(resultSet)  )
 
   if resultSet['Found'] <= 0:
     raise LocationNotFoundError('Location not found')
 
 
-  results = resultSet['Results']
-  return (float(results[0]['latitude']), float(results[0]['longitude']))
+  result = resultSet['Result']
+  return (float(result['latitude']), float(result['longitude']))
 
 

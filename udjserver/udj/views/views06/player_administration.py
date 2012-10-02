@@ -100,7 +100,8 @@ def setLocation(request, player_id, player):
 
   try:
     setPlayerLocation(location, player)
-  except LocationNotFoundError:
+  except LocationNotFoundError as e:
+    print "Error: " + str(e)
     return HttpResponseBadRequest('Location not found')
 
   return HttpResponse()
