@@ -60,8 +60,11 @@ def YahooGeocoder(address, locality, region, postalcode, appId):
   if resultSet['Found'] <= 0:
     raise LocationNotFoundError('Location not found')
 
+  if 'Result' in resultSet:
+    result = resultSet['Result']
+  elif 'Results' in resultSet:
+    result = resultSet['Results'][0]
 
-  result = resultSet['Result']
   return (float(result['latitude']), float(result['longitude']))
 
 

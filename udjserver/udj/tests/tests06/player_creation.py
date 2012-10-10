@@ -81,6 +81,21 @@ class CreatePlayerTests(YunYoungTestCase):
     self.assertEqual(location['postal_code'], createdLocation.postal_code)
     self.assertEqual(location['country'], createdLocation.country)
 
+  def testMultiLocationResult(self):
+    playerName = "Matt Player Bitches"
+    payload = {'name' : playerName } 
+    location = {
+        'address' : '512 S Third St',
+        'locality' : 'Champaign',
+        'region' : 'IL',
+        'postal_code' : '61820',
+        'country' : 'United States'
+    }
+    payload['location'] = location
+
+    response = self.doJSONPut('/udj/0_6/players/player', json.dumps(payload))
+    self.assertEqual(response.status_code, 201, "Error: " + response.content)
+
 
   def testBadLocation(self):
     playerName = "Yunyoung Player"
