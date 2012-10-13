@@ -5,6 +5,7 @@ from udj.models import Player
 from udj.models import PlayerPassword
 from udj.models import Participant
 from udj.models import PlayerAdmin
+from udj.models import SortingAlgorithm
 from udj.exceptions import LocationNotFoundError
 from udj.views.views06.auth import hashPlayerPassword
 from udj.views.views06.decorators import AcceptsMethods

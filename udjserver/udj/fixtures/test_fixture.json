@@ -968,6 +968,15 @@
       "function_name" : "totalVotes"
     }
   },
+  {
+    "pk": 2,
+    "model": "udj.sortingalgorithm",
+    "fields": {
+      "name" : "Time Added",
+      "description" : "Sorts the playlist songs by the time the songs were added.",
+      "function_name" : "timeAdded"
+    }
+  },
 
   {
     "pk": 1,

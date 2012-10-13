@@ -92,8 +92,8 @@ class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
     self.assertEqual(newLocation['region'], playerLocation.region)
     self.assertEqual(newLocation['postal_code'], playerLocation.postal_code)
     self.assertEqual(newLocation['country'], playerLocation.country)
-    self.assertEqual(-93.4814, playerLocation.point.x)
-    self.assertEqual(44.981609, playerLocation.point.y)
+    self.assertEqual(-93.481394, playerLocation.point.x)
+    self.assertEqual(44.981806, playerLocation.point.y)
 
   def testSetLocationWithNoPreviousLocation(self):
     newLocation = {
@@ -112,8 +112,18 @@ class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
     self.assertEqual(newLocation['region'], playerLocation.region)
     self.assertEqual(newLocation['postal_code'], playerLocation.postal_code)
     self.assertEqual(newLocation['country'], playerLocation.country)
-    self.assertEqual(-93.4814, playerLocation.point.x)
-    self.assertEqual(44.981609, playerLocation.point.y)
+    self.assertEqual(-93.481394, playerLocation.point.x)
+    self.assertEqual(44.981806, playerLocation.point.y)
+
+  def testSetSortingAlgorithm(self):
+    algorithmParams = {
+      'sorting_algorithm_id' : '2'
+    }
+    response = self.doPost('/udj/0_6/players/1/sorting_algorithm', algorithmParams)
+    self.assertEqual(200, response.status_code, response.content)
+    player = Player.objects.get(pk=1)
+    self.assertEqual(2, player.sorting_algo.id)
+
 
   def testAddAdmin(self):
     response = self.doPut('/udj/0_6/players/1/admins/7')
