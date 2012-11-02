@@ -982,8 +982,8 @@
     "pk": 1,
     "model": "udj.externallibrary",
     "fields": {
-      "name" : "Spotify",
-      "description" : "A streaming music library with a butt load of music"
+      "name" : "Rdio",
+      "description" : "A streaming music library with a butt load of music. They're also awesome."
     }
   },
 

@@ -62,17 +62,6 @@ def createPlayer(request):
       raise ImproperlyConfigured('Default sorting algorithm is not in database')
 
 
-  #Determine external library
-  externalLib = None
-  if 'external_library_id' in newPlayerJSON:
-    try:
-      externalLib = ExternalLibrary.objects.get(pk=newPlayerJSON['external_library_id'])
-    except ObjectDoesNotExist:
-      toReturn = HttpResponseNotFound()
-      toReturn[MISSING_RESOURCE_HEADER] = 'external_library'
-      return toReturn
-
-
   #Ensure that the suers doesn't already have a player with the given name
   conflictingPlayer = Player.objects.filter(owning_user=user, name=newPlayerName)
   if conflictingPlayer.exists():
@@ -82,8 +71,7 @@ def createPlayer(request):
   newPlayer = Player(
       owning_user=user,
       name=newPlayerName,
-      sorting_algo=sortingAlgo,
-      external_library=externalLib)
+      sorting_algo=sortingAlgo)
   newPlayer.save()
 
   #If password provided, create and save password

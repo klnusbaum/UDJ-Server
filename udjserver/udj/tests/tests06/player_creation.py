@@ -18,21 +18,6 @@ class CreatePlayerTests(YunYoungTestCase):
     self.assertFalse(PlayerLocation.objects.filter(player=addedPlayer).exists())
     self.assertFalse(PlayerPassword.objects.filter(player=addedPlayer).exists())
 
-  def testCreatePlayerWithExternalLib(self):
-    playerName = "Yunyoung Player"
-    payload = {'name' : playerName, 'external_library_id' : 1}
-    response = self.doJSONPut('/udj/0_6/players/player', json.dumps(payload))
-    self.assertEqual(response.status_code, 201, "Error: " + response.content)
-    self.isJSONResponse(response)
-    givenPlayerId = json.loads(response.content)['player_id']
-    addedPlayer = Player.objects.get(pk=givenPlayerId)
-    self.assertEqual(addedPlayer.name, playerName)
-    self.assertEqual(addedPlayer.owning_user.id, 7)
-    self.assertEqual(addedPlayer.external_library.id, 1)
-    self.assertFalse(PlayerLocation.objects.filter(player=addedPlayer).exists())
-    self.assertFalse(PlayerPassword.objects.filter(player=addedPlayer).exists())
-
-
 
   def testCreatePasswordPlayer(self):
     playerName = "Yunyoung Player"
@@ -118,13 +103,4 @@ class CreatePlayerTests(YunYoungTestCase):
     response = self.doJSONPut('/udj/0_6/players/player', json.dumps(payload))
     self.assertEqual(response.status_code, 404)
     self.assertEqual(response[MISSING_RESOURCE_HEADER], "sorting_algorithm")
-
-  def testMissingExternalLib(self):
-    playerName = "Yunyoung Player"
-    payload = {'name' : playerName, 'external_library_id' : 50}
-
-    response = self.doJSONPut('/udj/0_6/players/player', json.dumps(payload))
-    self.assertEqual(response.status_code, 404)
-    self.assertEqual(response[MISSING_RESOURCE_HEADER], "external_library")
-
 

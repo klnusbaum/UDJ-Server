@@ -20,5 +20,5 @@ class ServerCapabilities(KurtisTestCase):
     externalLibs = json.loads(response.content)
     self.assertEqual(1, len(externalLibs))
     self.assertEqual('1', externalLibs[0]['id'])
-    self.assertEqual(u'Spotify', externalLibs[0]['name'])
-    self.assertEqual(u'A streaming music library with a butt load of music', externalLibs[0]['description'])
+    self.assertEqual(u'Rdio', externalLibs[0]['name'])
+    self.assertEqual(u"A streaming music library with a butt load of music. They're also awesome.", externalLibs[0]['description'])
