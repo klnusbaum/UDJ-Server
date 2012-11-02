@@ -133,6 +133,11 @@ class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
     rdioLibrary = enabledExternalLibraries[0]
     self.assertEqual('Rdio', rdioLibrary.externalLibrary.name)
 
+  def testBadEnableExternalLibrary(self):
+    response = self.doPut('/udj/0_6/players/1/external_libraries/99')
+    self.assertEqual(404, response.status_code, response.content)
+    self.assertEqual('external_library', response[MISSING_RESOURCE_HEADER])
+
 
   def testAddAdmin(self):
     response = self.doPut('/udj/0_6/players/1/admins/7')
