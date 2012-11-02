@@ -133,6 +133,11 @@ class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
     rdioLibrary = enabledExternalLibraries[0]
     self.assertEqual('Rdio', rdioLibrary.externalLibrary.name)
 
+  def testBadEnableExternalLibrary(self):
+    response = self.doPut('/udj/0_6/players/1/external_libraries/99')
+    self.assertEqual(404, response.status_code, response.content)
+    self.assertEqual('external_library', response[MISSING_RESOURCE_HEADER])
+
   def testDisableExternalLibrary(self):
     player = Player.objects.get(pk=1)
     self.assertEqual(0, len(EnabledExternalLibrary.objects.filter(player=player)))
@@ -145,12 +150,10 @@ class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
     self.assertEqual(200, response.status_code, response.content)
     self.assertEqual(0, len(EnabledExternalLibrary.objects.filter(player=player)))
 
-
-  def testBadEnableExternalLibrary(self):
-    response = self.doPut('/udj/0_6/players/1/external_libraries/99')
+  def testBadDisableExternalLibrary(self):
+    response = self.doDelete('/udj/0_6/players/1/external_libraries/1')
     self.assertEqual(404, response.status_code, response.content)
     self.assertEqual('external_library', response[MISSING_RESOURCE_HEADER])
-
 
   def testAddAdmin(self):
     response = self.doPut('/udj/0_6/players/1/admins/7')
