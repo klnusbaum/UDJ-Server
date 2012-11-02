@@ -133,6 +133,19 @@ class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
     rdioLibrary = enabledExternalLibraries[0]
     self.assertEqual('Rdio', rdioLibrary.externalLibrary.name)
 
+  def testDisableExternalLibrary(self):
+    player = Player.objects.get(pk=1)
+    self.assertEqual(0, len(EnabledExternalLibrary.objects.filter(player=player)))
+    externalLibrary = ExternalLibrary.objects.get(pk=1)
+    enabledRdio = EnabledExternalLibrary(player=player, externalLibrary=externalLibrary)
+    enabledRdio.save()
+    self.assertEqual(1, len(EnabledExternalLibrary.objects.filter(player=player)))
+
+    response = self.doDelete('/udj/0_6/players/1/external_libraries/1')
+    self.assertEqual(200, response.status_code, response.content)
+    self.assertEqual(0, len(EnabledExternalLibrary.objects.filter(player=player)))
+
+
   def testBadEnableExternalLibrary(self):
     response = self.doPut('/udj/0_6/players/1/external_libraries/99')
     self.assertEqual(404, response.status_code, response.content)
