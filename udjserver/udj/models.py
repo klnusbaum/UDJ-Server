@@ -161,6 +161,17 @@ class SongSet(models.Model):
   def __unicode__(self):
     return self.name + " on " + self.player.name
 
+class EnabledExternalLibrary(models.Model):
+  player = models.ForeignKey('Player')
+  externalLibrary = models.ForeignKey(ExternalLibrary)
+
+  class Meta:
+    unique_together = ("player", "externalLibrary")
+
+  def __unicode__(self):
+    return self.externalLibrary.name + " on " + self.player.name
+
+
 
 class Player(models.Model):
   PLAYER_STATE_CHOICES = (('IN', u'Inactive'), ('PL', u'Playing'), ('PA', u'Paused'))
@@ -170,7 +181,6 @@ class Player(models.Model):
   state = models.CharField(max_length=2, default='IN')
   volume = models.IntegerField(default=5, validators=[zero_ten_validator])
   sorting_algo = models.ForeignKey(SortingAlgorithm)
-  external_library = models.ForeignKey(ExternalLibrary, null=True, blank=True)
   size_limit = models.IntegerField(null=True, blank=True)
   allow_user_songset = models.BooleanField(default=False)
 
@@ -182,7 +192,8 @@ class Player(models.Model):
     #lock active playlist
     ActivePlaylistEntry.objects.select_for_update().filter(song__player=self).exclude(state='FN').exclude(state='RM')
 
-
+  def ExternalLibraries(self):
+    return EnabledExternalLibrary.objects.filter(player=self)
 
   def SongSets(self):
     return SongSet.objects.filter(player=self)

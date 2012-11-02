@@ -261,3 +261,39 @@ def getBannedUsers(request, player_id, player):
   return HttpJSONResponse(json.dumps(player.BannedUsers(), cls=UDJEncoder))
 
 
+
+@NeedsAuth
+@AcceptsMethods(['PUT', 'DELETE'])
+@PlayerExists
+@IsOwnerOrAdmin
+def modExternalPlayers(request, player_id, external_library_id, player):
+  if request.method == 'PUT':
+    return addEnabledExternalLibrary(request, player, external_library_id)
+  elif request.method == 'DELETE':
+    return removeEnableExternalLibrary(request, player, external_library_id)
+
+
+def addEnabledExternalLibrary(request, player, external_library_id):
+  try:
+    externalLibrary = ExternalLibrary.objects.get(pk=external_library_id)
+    if not EnabledExternalLibrary.objects.filter(player=player, externalLibrary=externalLibrary).exists():
+      newEnabledLibrary = ExternalLibrary(player=player, externalLibrary=externalLibrary)
+      newEnabledLibrary.save()
+    return HttpResponse()
+  except ObjectDoesNotExist:
+    toReturn = HttpResponseNotFound()
+    toReturn[MISSING_RESOURCE_HEADER] = 'external_library'
+    return toReturn
+
+def removeEnableExternalLibrary(request, player, external_library_id):
+  try:
+    enableExternalLibrary = EnabledExternalLibrary.objects.get(
+        externalLibrary__id=external_library_id,
+        player=player)
+    enableExternalLibrary.delete()
+    return HttpResponse()
+  except ObjectDoesNotExist:
+    toReturn = HttpResponseNotFound()
+    toReturn[MISSING_RESOURCE_HEADER] = 'external_library'
+    return toReturn
+
