@@ -112,6 +112,11 @@ class PlayerLocationAdmin(gisadmin.ModelAdmin):
 class SortingAlgorithmAdmin(admin.ModelAdmin):
   list_display = ('name', 'description', 'function_name',)
 
+class ExternalLibraryAdmin(admin.ModelAdmin):
+  list_display = ('name', 'description', 'external_lib_resolver_module',)
+
+
+admin.site.register(ExternalLibrary, ExternalLibraryAdmin)
 admin.site.register(Ticket, TicketAdmin)
 admin.site.register(SortingAlgorithm, SortingAlgorithmAdmin)
 admin.site.register(Player, PlayerAdmin)
