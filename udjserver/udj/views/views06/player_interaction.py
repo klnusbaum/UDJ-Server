@@ -173,7 +173,26 @@ def getArtists(request, player_id, player):
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
 def getArtistSongs(request, player_id, player, givenArtist):
-  return HttpJSONResponse(json.dumps(player.ArtistSongs(givenArtist), cls=UDJEncoder))
+
+  internalResults = player.ArtistSongs(givenArtist)
+  externalResults = []
+  for enabledExternalLibrary in EnabledExternalLibrary.objects.filter(player=player):
+    resolver = import_module('udj.external_library_resolvers.' +
+        enabledExternalLibrary.externalLibrary.external_lib_resolver_module)
+    externalResults.extend(resolver.getSongsForArtist(givenArtist))
+
+  toReturn =[]
+
+  if len(internalResults) ==0 and len(externalResults) >0:
+    toReturn = externalResults
+  elif len(internalResults) > 0 and len(externalResults)==0:
+    toReturn = internalResults
+  else:
+    for x in internalResults:
+      externalResults.insert(0,x)
+    toReturn = externalResults
+
+  return HttpJSONResponse(json.dumps(toReturn, cls=UDJEncoder))
 
 @AcceptsMethods(['GET'])
 @NeedsAuth

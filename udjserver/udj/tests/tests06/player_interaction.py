@@ -300,3 +300,15 @@ class ExternalSearchTestCases(KurtisTestCase):
 
     #Not a very rigourous test...but eh I'm tired and this will have to do for now.
     self.assertTrue(1 < len(artists))
+
+
+  def testGetArtistSongs(self):
+    response = self.doGet('/udj/0_6/players/1/available_music/artists/deadmau5')
+    self.assertEqual(200, response.status_code)
+    self.isJSONResponse(response)
+    artistTracks = json.loads(response.content)
+
+    #print json.dumps(artistTracks, sort_keys=True, indent=4)
+
+    #Not a very rigourous test...but eh I'm tired and this will have to do for now.
+    self.assertTrue(1 < len(artistTracks))
