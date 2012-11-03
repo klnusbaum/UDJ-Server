@@ -83,7 +83,8 @@ class UDJEncoder(json.JSONEncoder):
         "sorting_algo": obj.sorting_algo,
         "songset_user_permission" : obj.allow_user_songset,
         "num_active_users" : len(obj.ActiveParticipants()),
-        "external_libraries": obj.ExternalLibraries()
+        "external_libraries": obj.ExternalLibraries(),
+        "size_limit" : obj.size_limit if obj.size_limit != None else 0
       }
 
       try:
