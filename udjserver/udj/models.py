@@ -194,7 +194,7 @@ class Player(models.Model):
     ActivePlaylistEntry.objects.select_for_update().filter(song__player=self).exclude(state='FN').exclude(state='RM')
 
   def ExternalLibraries(self):
-    return EnabledExternalLibrary.objects.filter(player=self)
+    return [x.externalLibrary for x in EnabledExternalLibrary.objects.filter(player=self)]
 
   def SongSets(self):
     return SongSet.objects.filter(player=self)
