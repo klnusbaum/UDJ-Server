@@ -123,24 +123,27 @@ def getSongSetsForPlayer(request, player_id, player):
 def getAvailableMusic(request, player_id, player):
   query = request.GET['query']
   internalResults = player.AvailableMusic(query)
-  if 'max_results' in request.GET:
-    internalResults = internalResults[:request.GET['max_results']]
   externalResults = []
   for enabledExternalLibrary in EnabledExternalLibrary.objects.filter(player=player):
     resolver = import_module('udj.external_library_resolvers.' +
         enabledExternalLibrary.externalLibrary.external_lib_resolver_module)
     externalResults.extend(resolver.search(query))
 
+  toReturn =[]
+
   if len(internalResults) ==0 and len(externalResults) >0:
-    return HttpJSONResponse(json.dumps(externalResults, cls=UDJEncoder))
+    toReturn = externalResults
   elif len(internalResults) > 0 and len(externalResults)==0:
-    return HttpJSONResponse(json.dumps(internalResults, cls=UDJEncoder))
+    toReturn = internalResults
   else:
     for x in internalResults:
       externalResults.insert(0,x)
-    return HttpJSONResponse(json.dumps(externalResults, cls=UDJEncoder))
+    toReturn = externalResults
 
 
+  if 'max_results' in request.GET:
+    toReturn = toReturn[:int(request.GET['max_results'])]
+  return HttpJSONResponse(json.dumps(toReturn, cls=UDJEncoder))
 
 
   """
