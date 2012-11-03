@@ -113,22 +113,7 @@ def getAdminsForPlayer(request, player_id, player):
 def getSongSetsForPlayer(request, player_id, player):
   return HttpJSONResponse(json.dumps(player.SongSets(), cls=UDJEncoder))
 
-@AcceptsMethods(['GET'])
-@NeedsAuth
-@PlayerExists
-@PlayerIsActive
-@IsOwnerOrParticipates
-@UpdatePlayerActivity
-@HasNZParams(['query'])
-def getAvailableMusic(request, player_id, player):
-  query = request.GET['query']
-  internalResults = player.AvailableMusic(query)
-  externalResults = []
-  for enabledExternalLibrary in EnabledExternalLibrary.objects.filter(player=player):
-    resolver = import_module('udj.external_library_resolvers.' +
-        enabledExternalLibrary.externalLibrary.external_lib_resolver_module)
-    externalResults.extend(resolver.search(query))
-
+def mergeInternalExternalResults(internalResults, externalResults):
   toReturn =[]
 
   if len(internalResults) ==0 and len(externalResults) >0:
@@ -140,6 +125,28 @@ def getAvailableMusic(request, player_id, player):
       externalResults.insert(0,x)
     toReturn = externalResults
 
+  return toReturn
+
+@AcceptsMethods(['GET'])
+@NeedsAuth
+@PlayerExists
+@PlayerIsActive
+@IsOwnerOrParticipates
+@UpdatePlayerActivity
+@HasNZParams(['query'])
+def getAvailableMusic(request, player_id, player):
+  query = request.GET['query']
+  internalResults = player.AvailableMusic(query)
+  if 'max_results' in request.GET:
+    internalResults = internalResults[:int(request.GET['max_results'])]
+
+  externalResults = []
+  for enabledExternalLibrary in EnabledExternalLibrary.objects.filter(player=player):
+    resolver = import_module('udj.external_library_resolvers.' +
+        enabledExternalLibrary.externalLibrary.external_lib_resolver_module)
+    externalResults.extend(resolver.search(query))
+
+  toReturn = mergeInternalExternalResults(internalResults, externalResults)
 
   if 'max_results' in request.GET:
     toReturn = toReturn[:int(request.GET['max_results'])]
@@ -181,16 +188,7 @@ def getArtistSongs(request, player_id, player, givenArtist):
         enabledExternalLibrary.externalLibrary.external_lib_resolver_module)
     externalResults.extend(resolver.getSongsForArtist(givenArtist))
 
-  toReturn =[]
-
-  if len(internalResults) ==0 and len(externalResults) >0:
-    toReturn = externalResults
-  elif len(internalResults) > 0 and len(externalResults)==0:
-    toReturn = internalResults
-  else:
-    for x in internalResults:
-      externalResults.insert(0,x)
-    toReturn = externalResults
+  toReturn = mergeInternalExternalResults(internalResults, externalResults)
 
   return HttpJSONResponse(json.dumps(toReturn, cls=UDJEncoder))
 
