@@ -2,6 +2,16 @@ from udj.models import *
 from django.contrib import admin
 from django.contrib.gis import admin as gisadmin
 
+def banParticipant(modeladmin, request, queryset):
+  queryset.update(kick_flag=True, ban_flag=True)
+
+banParticipant.short_description = "Ban User(s) From Player(s)"
+
+def unbanParticipant(modeladmin, request, queryset):
+  queryset.update(ban_flag=False)
+
+unbanParticipant.short_description = "Unban User(s) From Player(s)"
+
 def removeSongFromActivePlaylist(modeladmin, request, queryset):
   queryset.update(state='RM')
 
@@ -59,9 +69,10 @@ class PlayerAdmin(admin.ModelAdmin):
   actions = [setPlayerInactive, setLibraryDeleted, permaDeleteLibrary, setPlayerPlaying, setPlayerPaused]
 
 class ParticipantAdmin(admin.ModelAdmin):
-  list_display=('user', 'player', 'time_joined', 'time_last_interaction')
+  list_display=('user', 'player', 'time_joined', 'time_last_interaction', 'kick_flag', 'ban_flag', 'logout_flag')
   list_filters=('player', 'user',)
   search_fields = ['user__username']
+  actions = [banParticipant, unbanParticipant]
 
 class ActivePlaylistEntryAdmin(admin.ModelAdmin):
   list_display = ('song', 'time_added', 'adder', 'state')
