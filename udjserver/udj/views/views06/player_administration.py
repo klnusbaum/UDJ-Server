@@ -264,6 +264,7 @@ def getBannedUsers(request, player_id, player):
 
 
 
+@csrf_exempt
 @NeedsAuth
 @AcceptsMethods(['PUT', 'DELETE'])
 @PlayerExists
