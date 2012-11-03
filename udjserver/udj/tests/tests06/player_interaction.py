@@ -255,7 +255,7 @@ class AdminBlankCurrentSongTestCase(udj.testhelpers.tests06.testclasses.BlankCur
     self.assertTrue(kurtis.time_last_interaction > self.oldtime)
 
 
-class ExternalSearchTestCase(KurtisTestCase):
+class ExternalSearchTestCases(KurtisTestCase):
   def setUp(self):
     super(KurtisTestCase, self).setUp()
     player = Player.objects.get(pk=1)
@@ -269,4 +269,25 @@ class ExternalSearchTestCase(KurtisTestCase):
     self.isJSONResponse(response)
     songs = json.loads(response.content)
 
-    print json.dumps(songs, sort_keys=True, indent=4)
+    #Not a very rigourous test...but eh I'm tired and this will have to do for now.
+    self.assertTrue(1 < len(songs))
+
+  def testMixedResults(self):
+    response = self.doGet('/udj/0_6/players/1/available_music?query=skrillex')
+    self.assertEqual(200, response.status_code)
+    self.isJSONResponse(response)
+    songs = json.loads(response.content)
+
+    #Not a very rigourous test...but eh I'm tired and this will have to do for now.
+    self.assertTrue(1 < len(songs))
+
+  def testGetArtists(self):
+    response = self.doGet('/udj/0_6/players/1/available_music/artists')
+    self.assertEqual(200, response.status_code)
+    self.isJSONResponse(response)
+    artists = json.loads(response.content)
+
+    #print json.dumps(artists, sort_keys=True, indent=4)
+
+    #Not a very rigourous test...but eh I'm tired and this will have to do for now.
+    self.assertTrue(1 < len(artists))

@@ -26,3 +26,8 @@ def search(query):
   response = client.request('http://api.rdio.com/1/', 'POST', urllib.urlencode({'method': 'search', 'query': query, 'types' : 'Track'}))
   responseJSON = json.loads(response[1])
   return convertToUDJLibEntries(responseJSON)
+
+def artists():
+  response = client.request('http://api.rdio.com/1/', 'POST', urllib.urlencode({'method': 'getHeavyRotation', 'type': 'artists', 'count' : 1000}))
+  responseJSON = json.loads(response[1])
+  return [x['name'] for x in responseJSON['result']]
