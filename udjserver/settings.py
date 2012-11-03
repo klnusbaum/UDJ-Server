@@ -140,7 +140,7 @@ LOGGING = {
     }
 }
 
-def geocodeLocation(postal_code, country, address=None, locality=None, region=None):
+def geocodeLocation(postal_code, country, address="", locality="", region=""):
   raise ImproperlyConfigured('Must specifiy a function for geocoding')
 
 default_sorting_algo = "totalVotes"
