@@ -14,7 +14,7 @@ def zero_ten_validator(value):
 class ExternalLibrary(models.Model):
   name = models.CharField(max_length=200)
   description = models.CharField(max_length=500)
-  libraryResolverClass = models.CharField(max_length=200)
+  external_lib_resolver_module = models.CharField(max_length=200)
 
   def __unicode__(self):
     return self.name
