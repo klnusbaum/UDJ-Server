@@ -272,6 +272,15 @@ class ExternalSearchTestCases(KurtisTestCase):
     #Not a very rigourous test...but eh I'm tired and this will have to do for now.
     self.assertTrue(1 < len(songs))
 
+  def testSearchWithLimit(self):
+    response = self.doGet('/udj/0_6/players/1/available_music?query=deadmau5&max_results=10')
+    self.assertEqual(200, response.status_code)
+    self.isJSONResponse(response)
+    songs = json.loads(response.content)
+
+    #Not a very rigourous test...but eh I'm tired and this will have to do for now.
+    self.assertEqual(10, len(songs))
+
   def testMixedResults(self):
     response = self.doGet('/udj/0_6/players/1/available_music?query=skrillex')
     self.assertEqual(200, response.status_code)

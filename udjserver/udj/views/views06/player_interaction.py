@@ -146,19 +146,6 @@ def getAvailableMusic(request, player_id, player):
   return HttpJSONResponse(json.dumps(toReturn, cls=UDJEncoder))
 
 
-  """
-  #if len(totalResults) >0:
-  if len(internalResults) > 0:
-    totalResults = list(internalResults).extend(totalResults)
-  #else:
-  #  totalResults = internalResults
-
-  if 'max_results' in request.GET:
-    totalResults = totalResults[:request.GET['max_results']]
-
-  return HttpJSONResponse(json.dumps(totalResults, cls=UDJEncoder))
-  """
-
 
 @AcceptsMethods(['GET'])
 @NeedsAuth
