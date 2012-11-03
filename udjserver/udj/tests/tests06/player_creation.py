@@ -11,7 +11,7 @@ class CreatePlayerTests(YunYoungTestCase):
     response = self.doJSONPut('/udj/0_6/players/player', json.dumps(payload))
     self.assertEqual(response.status_code, 201, "Error: " + response.content)
     self.isJSONResponse(response)
-    givenPlayerId = json.loads(response.content)['player_id']
+    givenPlayerId = json.loads(response.content)['id']
     addedPlayer = Player.objects.get(pk=givenPlayerId)
     self.assertEqual(addedPlayer.name, playerName)
     self.assertEqual(addedPlayer.owning_user.id, 7)
@@ -27,7 +27,7 @@ class CreatePlayerTests(YunYoungTestCase):
     response = self.doJSONPut('/udj/0_6/players/player', json.dumps(payload))
     self.assertEqual(response.status_code, 201, "Error: " + response.content)
     self.isJSONResponse(response)
-    givenPlayerId = json.loads(response.content)['player_id']
+    givenPlayerId = json.loads(response.content)['id']
     addedPlayer = Player.objects.get(pk=givenPlayerId)
     self.assertEqual(addedPlayer.name, playerName)
     self.assertEqual(addedPlayer.owning_user.id, 7)
@@ -51,7 +51,7 @@ class CreatePlayerTests(YunYoungTestCase):
     response = self.doJSONPut('/udj/0_6/players/player', json.dumps(payload))
     self.assertEqual(response.status_code, 201, "Error: " + response.content)
     self.isJSONResponse(response)
-    givenPlayerId = json.loads(response.content)['player_id']
+    givenPlayerId = json.loads(response.content)['id']
     addedPlayer = Player.objects.get(pk=givenPlayerId)
     self.assertEqual(addedPlayer.name, playerName)
     self.assertEqual(addedPlayer.owning_user.id, 7)
