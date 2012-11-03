@@ -81,6 +81,17 @@ class CreatePlayerTests(YunYoungTestCase):
     response = self.doJSONPut('/udj/0_6/players/player', json.dumps(payload))
     self.assertEqual(response.status_code, 201, "Error: " + response.content)
 
+  def testBareLocation(self):
+    playerName = "Nakey Player"
+    payload = {'name' : playerName } 
+    location = {
+        'postal_code' : '61820',
+        'country' : 'United States'
+    }
+    payload['location'] = location
+
+    response = self.doJSONPut('/udj/0_6/players/player', json.dumps(payload))
+    self.assertEqual(response.status_code, 201, "Error: " + response.content)
 
   def testBadLocation(self):
     playerName = "Yunyoung Player"

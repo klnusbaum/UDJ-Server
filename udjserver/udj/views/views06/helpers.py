@@ -21,9 +21,9 @@ def removeIfOnPlaylist(libEntry):
     onList.update(state=u'RM')
 
 def setPlayerLocation(location, player):
-  address = location.get('address', None)
-  locality = location.get('locality', None)
-  region = location.get('region', None)
+  address = location.get('address', "")
+  locality = location.get('locality', "")
+  region = location.get('region', "")
   postal_code = location['postal_code']
   country = location['country']
 
