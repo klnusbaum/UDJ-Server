@@ -57,7 +57,7 @@ class AuthTests(TestCase):
     ticket_hash = ticket_and_user_id['ticket_hash']
     user_id = ticket_and_user_id['user_id']
 
-    self.assertEqual(user_id, AuthTests.kurtis.id)
+    self.assertEqual(user_id, str(AuthTests.kurtis.id))
     self.assertEqual(ticket_hash, AuthTests.getCurrentTicket().ticket_hash)
 
   def testDoubleAuth(self):
@@ -70,7 +70,7 @@ class AuthTests(TestCase):
     ticket_hash = ticket_and_user_id['ticket_hash']
     user_id = ticket_and_user_id['user_id']
 
-    self.assertEqual(user_id, AuthTests.kurtis.id)
+    self.assertEqual(user_id, str(AuthTests.kurtis.id))
     self.assertEqual(ticket_hash, AuthTests.getCurrentTicket().ticket_hash)
 
     response = self.issueTicketRequest()

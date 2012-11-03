@@ -1,8 +1,8 @@
 import json
 import udj
-from udj.models import Participant, PlayerAdmin, SongSet, SongSetEntry, LibraryEntry, Player
+from udj.models import Participant, PlayerAdmin, SongSet, SongSetEntry, LibraryEntry, Player, ExternalLibrary, EnabledExternalLibrary
 from datetime import datetime
-from udj.testhelpers.tests06.testclasses import ZachTestCase, MattTestCase, JeffTestCase, LeeTestCase
+from udj.testhelpers.tests06.testclasses import ZachTestCase, MattTestCase, JeffTestCase, LeeTestCase, KurtisTestCase
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER, FORBIDDEN_REASON_HEADER
 from udj.testhelpers.tests06.decorators import EnsureParticipationUpdated
 
@@ -254,3 +254,49 @@ class AdminBlankCurrentSongTestCase(udj.testhelpers.tests06.testclasses.BlankCur
     kurtis = Participant.objects.get(user__id=2, player__id=3)
     self.assertTrue(kurtis.time_last_interaction > self.oldtime)
 
+
+class ExternalSearchTestCases(KurtisTestCase):
+  def setUp(self):
+    super(KurtisTestCase, self).setUp()
+    player = Player.objects.get(pk=1)
+    rdio = ExternalLibrary.objects.get(pk=1)
+    newEnabled = EnabledExternalLibrary(player=player, externalLibrary=rdio)
+    newEnabled.save()
+
+  def testBasicSearch(self):
+    response = self.doGet('/udj/0_6/players/1/available_music?query=deadmau5')
+    self.assertEqual(200, response.status_code)
+    self.isJSONResponse(response)
+    songs = json.loads(response.content)
+
+    #Not a very rigourous test...but eh I'm tired and this will have to do for now.
+    self.assertTrue(1 < len(songs))
+
+  def testSearchWithLimit(self):
+    response = self.doGet('/udj/0_6/players/1/available_music?query=deadmau5&max_results=10')
+    self.assertEqual(200, response.status_code)
+    self.isJSONResponse(response)
+    songs = json.loads(response.content)
+
+    #Not a very rigourous test...but eh I'm tired and this will have to do for now.
+    self.assertEqual(10, len(songs))
+
+  def testMixedResults(self):
+    response = self.doGet('/udj/0_6/players/1/available_music?query=skrillex')
+    self.assertEqual(200, response.status_code)
+    self.isJSONResponse(response)
+    songs = json.loads(response.content)
+
+    #Not a very rigourous test...but eh I'm tired and this will have to do for now.
+    self.assertTrue(1 < len(songs))
+
+  def testGetArtists(self):
+    response = self.doGet('/udj/0_6/players/1/available_music/artists')
+    self.assertEqual(200, response.status_code)
+    self.isJSONResponse(response)
+    artists = json.loads(response.content)
+
+    #print json.dumps(artists, sort_keys=True, indent=4)
+
+    #Not a very rigourous test...but eh I'm tired and this will have to do for now.
+    self.assertTrue(1 < len(artists))

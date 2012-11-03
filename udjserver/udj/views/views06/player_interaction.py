@@ -1,6 +1,6 @@
 import json
 
-from udj.models import Participant, PlayerPassword, ActivePlaylistEntry, PlaylistEntryTimePlayed
+from udj.models import Participant, PlayerPassword, ActivePlaylistEntry, PlaylistEntryTimePlayed, EnabledExternalLibrary
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER, FORBIDDEN_REASON_HEADER, MISSING_RESOURCE_HEADER
 from udj.views.views06.decorators import PlayerExists, PlayerIsActive, AcceptsMethods, UpdatePlayerActivity, HasNZParams
 from udj.views.views06.authdecorators import NeedsAuth, IsOwnerOrParticipates, IsOwnerOrParticipatingAdmin, IsntOwner
@@ -14,6 +14,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 
 from datetime import datetime
+from importlib import import_module
 
 @csrf_exempt
 @AcceptsMethods(['PUT', 'DELETE'])
@@ -120,10 +121,31 @@ def getSongSetsForPlayer(request, player_id, player):
 @UpdatePlayerActivity
 @HasNZParams(['query'])
 def getAvailableMusic(request, player_id, player):
-  availableMusic = player.AvailableMusic(request.GET['query'])
+  query = request.GET['query']
+  internalResults = player.AvailableMusic(query)
+  externalResults = []
+  for enabledExternalLibrary in EnabledExternalLibrary.objects.filter(player=player):
+    resolver = import_module('udj.external_library_resolvers.' +
+        enabledExternalLibrary.externalLibrary.external_lib_resolver_module)
+    externalResults.extend(resolver.search(query))
+
+  toReturn =[]
+
+  if len(internalResults) ==0 and len(externalResults) >0:
+    toReturn = externalResults
+  elif len(internalResults) > 0 and len(externalResults)==0:
+    toReturn = internalResults
+  else:
+    for x in internalResults:
+      externalResults.insert(0,x)
+    toReturn = externalResults
+
+
   if 'max_results' in request.GET:
-    availableMusic = availableMusic[:request.GET['max_results']]
-  return HttpJSONResponse(json.dumps(availableMusic, cls=UDJEncoder))
+    toReturn = toReturn[:int(request.GET['max_results'])]
+  return HttpJSONResponse(json.dumps(toReturn, cls=UDJEncoder))
+
+
 
 @AcceptsMethods(['GET'])
 @NeedsAuth
@@ -132,7 +154,17 @@ def getAvailableMusic(request, player_id, player):
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
 def getArtists(request, player_id, player):
-  return HttpJSONResponse(json.dumps(player.Artists(), cls=UDJEncoder))
+  artists = player.Artists()
+  totalResults = []
+  for enabledExternalLibrary in EnabledExternalLibrary.objects.filter(player=player):
+    resolver = import_module('udj.external_library_resolvers.' +
+        enabledExternalLibrary.externalLibrary.external_lib_resolver_module)
+    totalResults.extend(resolver.artists())
+
+  totalResults.extend(artists)
+  totalResults = sorted(totalResults)
+
+  return HttpJSONResponse(json.dumps(totalResults, cls=UDJEncoder))
 
 @AcceptsMethods(['GET'])
 @NeedsAuth
