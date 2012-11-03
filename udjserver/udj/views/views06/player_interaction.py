@@ -1,6 +1,6 @@
 import json
 
-from udj.models import Participant, PlayerPassword, ActivePlaylistEntry, PlaylistEntryTimePlayed
+from udj.models import Participant, PlayerPassword, ActivePlaylistEntry, PlaylistEntryTimePlayed, EnabledExternalLibrary
 from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER, FORBIDDEN_REASON_HEADER, MISSING_RESOURCE_HEADER
 from udj.views.views06.decorators import PlayerExists, PlayerIsActive, AcceptsMethods, UpdatePlayerActivity, HasNZParams
 from udj.views.views06.authdecorators import NeedsAuth, IsOwnerOrParticipates, IsOwnerOrParticipatingAdmin, IsntOwner
@@ -14,6 +14,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 
 from datetime import datetime
+from importlib import import_module
 
 @csrf_exempt
 @AcceptsMethods(['PUT', 'DELETE'])
@@ -112,6 +113,12 @@ def getAdminsForPlayer(request, player_id, player):
 def getSongSetsForPlayer(request, player_id, player):
   return HttpJSONResponse(json.dumps(player.SongSets(), cls=UDJEncoder))
 
+def mergeExternalLibEntries(internalResults, externalResults):
+  for x in internalResults:
+    externalResults.insert(0, x)
+  return externalResults
+
+
 @AcceptsMethods(['GET'])
 @NeedsAuth
 @PlayerExists
@@ -120,10 +127,23 @@ def getSongSetsForPlayer(request, player_id, player):
 @UpdatePlayerActivity
 @HasNZParams(['query'])
 def getAvailableMusic(request, player_id, player):
-  availableMusic = player.AvailableMusic(request.GET['query'])
+  query = request.GET['query']
+  availableMusic = player.AvailableMusic(query)
   if 'max_results' in request.GET:
     availableMusic = availableMusic[:request.GET['max_results']]
-  return HttpJSONResponse(json.dumps(availableMusic, cls=UDJEncoder))
+  externalResults = []
+  for enabledExternalLibrary in EnabledExternalLibrary.objects.filter(player=player):
+    resolver = import_module('udj.external_library_resolvers.' +
+        enabledExternalLibrary.externalLibrary.external_lib_resolver_module)
+    externalResults.append(resolver.search(query))
+
+  totalResults = mergeExternalLibEntries(availableMusic, externalResults)
+
+  if 'max_results' in request.GET:
+    totalResults = totalResults[:request.GET['max_results']]
+
+  return HttpJSONResponse(json.dumps(totalResults, cls=UDJEncoder))
+
 
 @AcceptsMethods(['GET'])
 @NeedsAuth

@@ -150,6 +150,9 @@ max_search_radius = 20
 min_search_radius = 1
 TICKET_EXPIRATION_LENGTH = 14
 
+RDIO_CONSUMER_KEY = ""
+RDIO_CONSUMER_SECRET = ""
+
 try:
   from settings_local import *
 except ImportError:
