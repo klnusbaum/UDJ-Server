@@ -80,7 +80,7 @@ def authenticate(request):
     userToAuth = User.objects.get(username=request.POST['username'])
     if userToAuth.check_password(request.POST['password']):
       ticket = obtainTicketForUser(userToAuth)
-      ticket_and_id = {"ticket_hash" : ticket.ticket_hash, "user_id" : userToAuth.id}
+      ticket_and_id = {"ticket_hash" : ticket.ticket_hash, "user_id" : str(userToAuth.id)}
       response = HttpJSONResponse(json.dumps(ticket_and_id))
       return response
     else:
