@@ -59,6 +59,20 @@ class ParticipantPlaylistModTests(udj.testhelpers.tests06.testclasses.EnsureActi
     vote = Vote.objects.get(playlist_entry=added)
 
   @EnsureParticipationUpdated(3, 1)
+  def testSimpleExternalAdd(self):
+    player = Player.objects.get(pk=1)
+    extLib = ExternalLibrary.objects.get(pk=1)
+    enabled = EnabledExternalLibrary(player=player, externalLibrary=extLib)
+    enabled.save()
+
+    response = self.doPut('/udj/0_6/players/1/active_playlist/songs/rdio%3A%2F%2Ft14313937')
+    self.assertEqual(response.status_code, 201)
+
+    added = ActivePlaylistEntry.objects.get(
+      song__player__id=1, song__player_lib_song_id=9, state='QE')
+    vote = Vote.objects.get(playlist_entry=added)
+
+  @EnsureParticipationUpdated(3, 1)
   def testAddRemovedSong(self):
     response = self.doPut('/udj/0_6/players/1/active_playlist/songs/10')
     self.assertEqual(response.status_code, 201)
