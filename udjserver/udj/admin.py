@@ -61,6 +61,7 @@ class PlayerAdmin(admin.ModelAdmin):
 class ParticipantAdmin(admin.ModelAdmin):
   list_display=('user', 'player', 'time_joined', 'time_last_interaction')
   list_filters=('player', 'user',)
+  search_fields = ['user__username']
 
 class ActivePlaylistEntryAdmin(admin.ModelAdmin):
   list_display = ('song', 'time_added', 'adder', 'state')
