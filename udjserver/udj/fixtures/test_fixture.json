@@ -977,6 +977,15 @@
       "function_name" : "timeAdded"
     }
   },
+  {
+    "pk": 3,
+    "model": "udj.sortingalgorithm",
+    "fields": {
+      "name" : "Round Robin",
+      "description" : "Sorts the playlist songs by the time the songs were added and spaces songs out by adder.",
+      "function_name" : "roundRobin"
+    }
+  },
 
   {
     "pk": 1,

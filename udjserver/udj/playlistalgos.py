@@ -6,6 +6,23 @@ def totalVotes(queuedEntries):
 def timeAdded(queuedEntries):
   return queuedEntries.order_by('time_added')
 
+def roundRobin(queuedEntries):
+  queuedEntries = totalVotes(queuedEntries)
+  usersongs = {}
+  for entry in queuedEntries
+    if entry.adder not in usersongs.keys():
+      usersongs[entry.adder] = []
+    usersongs[entry.adder].append(entry)
+
+  toReturn = []
+  while( len(usersongs) >0 ):
+    for user in usersongs.keys():
+      toReturn.append(usersongs[user].pop())
+      if len(usersongs[user]) > 0:
+        del usersongs[user]
+
+  return toReturn
+
 
 """
 def timeslice(queuedEntries):

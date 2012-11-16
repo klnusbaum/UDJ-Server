@@ -8,7 +8,7 @@ class ServerCapabilities(KurtisTestCase):
     self.assertEqual(200, response.status_code)
     self.isJSONResponse(response)
     sortingAlgo = json.loads(response.content)
-    self.assertEqual(2, len(sortingAlgo))
+    self.assertEqual(3, len(sortingAlgo))
     self.assertEqual('1', sortingAlgo[0]['id'])
     self.assertEqual(u'Total Votes', sortingAlgo[0]['name'])
     self.assertEqual(u'Sorts the playlist be calculating each songs total votes (upvotes - downvotes). Ties are broken by the time each song was added (with preference given to the song that was added first', sortingAlgo[0]['description'])

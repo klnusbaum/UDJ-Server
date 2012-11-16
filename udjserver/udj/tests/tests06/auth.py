@@ -7,45 +7,41 @@ from udj.models import Ticket
 class ReissueAuthTest(TestCase):
   fixtures = ['test_fixture']
   client = Client()
-  lucas = User.objects.get(username='lucas')
 
   def issueTicketRequest(self):
     return self.client.post(
         '/udj/0_6/auth', {'username': 'lucas', 'password' : 'testlucas'})
 
-  @staticmethod
-  def getCurrentTicket():
-    return Ticket.objects.get(user=ReissueAuthTest.lucas)
+  def getCurrentLucasTicket(self):
+    return Ticket.objects.get(user__username='lucas')
 
   def testReissue(self):
-    self.assertTrue(Ticket.objects.filter(user=ReissueAuthTest.lucas).exists())
-    oldTicket = ReissueAuthTest.getCurrentTicket()
-
+    oldTicket = self.getCurrentLucasTicket()
     response = self.issueTicketRequest()
 
     self.assertEqual(response.status_code, 200, response.content)
     self.assertEqual(response['Content-Type'], 'text/json; charset=utf-8')
 
 
-    newTicket = ReissueAuthTest.getCurrentTicket()
+    newTicket = self.getCurrentLucasTicket()
 
     self.assertNotEqual(oldTicket.ticket_hash, newTicket.ticket_hash)
     self.assertTrue(oldTicket.time_issued < newTicket.time_issued)
 
 
-
 class AuthTests(TestCase):
   fixtures = ['test_fixture']
   client = Client()
-  kurtis = User.objects.get(username='kurtis')
 
   def issueTicketRequest(self, username='kurtis', password='testkurtis'):
     return self.client.post(
         '/udj/0_6/auth', {'username': username, 'password' : password})
 
-  @staticmethod
-  def getCurrentTicket():
-    return Ticket.objects.get(user=AuthTests.kurtis)
+  def getCurrentKurtisTicket(self):
+    return Ticket.objects.get(user__username='kurtis')
+
+  def getKurtisId(self):
+    return str(User.objects.get(username='kurtis').id)
 
   def testAuth(self):
     response = self.issueTicketRequest()
@@ -57,8 +53,8 @@ class AuthTests(TestCase):
     ticket_hash = ticket_and_user_id['ticket_hash']
     user_id = ticket_and_user_id['user_id']
 
-    self.assertEqual(user_id, str(AuthTests.kurtis.id))
-    self.assertEqual(ticket_hash, AuthTests.getCurrentTicket().ticket_hash)
+    self.assertEqual(user_id, self.getKurtisId())
+    self.assertEqual(ticket_hash, self.getCurrentKurtisTicket().ticket_hash)
 
   def testDoubleAuth(self):
     response = self.issueTicketRequest()
@@ -70,8 +66,8 @@ class AuthTests(TestCase):
     ticket_hash = ticket_and_user_id['ticket_hash']
     user_id = ticket_and_user_id['user_id']
 
-    self.assertEqual(user_id, str(AuthTests.kurtis.id))
-    self.assertEqual(ticket_hash, AuthTests.getCurrentTicket().ticket_hash)
+    self.assertEqual(user_id, self.getKurtisId())
+    self.assertEqual(ticket_hash, self.getCurrentKurtisTicket().ticket_hash)
 
     response = self.issueTicketRequest()
 

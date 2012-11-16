@@ -1,6 +1,6 @@
 import json
 import udj
-from udj.models import Player, LibraryEntry, ActivePlaylistEntry, Participant, Vote
+from udj.models import Player, LibraryEntry, ActivePlaylistEntry, Participant, Vote, ExternalLibrary, EnabledExternalLibrary
 from udj.testhelpers.tests06.decorators import EnsureParticipationUpdated
 from udj.headers import MISSING_RESOURCE_HEADER
 from datetime import datetime
@@ -24,6 +24,21 @@ class GetActivePlaylistTests(udj.testhelpers.tests06.testclasses.EnsureActiveJef
 
     self.assertEqual(jsonResponse['volume'], 5)
     self.assertEqual(jsonResponse['state'], 'playing')
+
+  def testRoundRobin(self):
+    kurtisPlayer = Player.objects.get(pk=1)
+    roundRobin = SortingAlgorithm.objects.get(pk=3)
+
+    kurtisPlayer.sorting_algo = roundRobin
+    kurtisPlayer.save()
+
+    response = self.doGet('/udj/0_6/players/1/active_playlist')
+    self.assertEqual(response.status_code, 200)
+    self.isJSONResponse(response)
+    jsonResponse = json.loads(response.content)
+
+
+
 
 class OwnerPlaylistModTests(udj.testhelpers.tests06.testclasses.PlaylistModTests):
   username='kurtis'
@@ -222,4 +237,3 @@ class VotingTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
     self.assertEqual(response.status_code, 200)
 
     upvote = Vote.objects.get(user__id=3, playlist_entry__song__id=2, weight=-1)
-
