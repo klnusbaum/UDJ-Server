@@ -9,7 +9,7 @@ def timeAdded(queuedEntries):
 def roundRobin(queuedEntries):
   queuedEntries = totalVotes(queuedEntries)
   usersongs = {}
-  for entry in queuedEntries
+  for entry in queuedEntries:
     if entry.adder not in usersongs.keys():
       usersongs[entry.adder] = []
     usersongs[entry.adder].append(entry)

@@ -1,6 +1,6 @@
 import json
 import udj
-from udj.models import Player, LibraryEntry, ActivePlaylistEntry, Participant, Vote, ExternalLibrary, EnabledExternalLibrary
+from udj.models import Player, LibraryEntry, ActivePlaylistEntry, Participant, Vote, ExternalLibrary, EnabledExternalLibrary, SortingAlgorithm
 from udj.testhelpers.tests06.decorators import EnsureParticipationUpdated
 from udj.headers import MISSING_RESOURCE_HEADER
 from datetime import datetime
