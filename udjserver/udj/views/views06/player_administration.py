@@ -285,7 +285,7 @@ def addEnabledExternalLibrary(request, player, external_library_id):
     return HttpResponse()
   except ObjectDoesNotExist:
     toReturn = HttpResponseNotFound()
-    toReturn[MISSING_RESOURCE_HEADER] = 'external_library'
+    toReturn[MISSING_RESOURCE_HEADER] = 'external-library'
     return toReturn
 
 def removeEnabledExternalLibrary(request, player, external_library_id):
@@ -297,6 +297,6 @@ def removeEnabledExternalLibrary(request, player, external_library_id):
     return HttpResponse()
   except ObjectDoesNotExist:
     toReturn = HttpResponseNotFound()
-    toReturn[MISSING_RESOURCE_HEADER] = 'external_library'
+    toReturn[MISSING_RESOURCE_HEADER] = 'external-library'
     return toReturn
 

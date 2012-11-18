@@ -136,7 +136,7 @@ class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
   def testBadEnableExternalLibrary(self):
     response = self.doPut('/udj/0_6/players/1/external_libraries/99')
     self.assertEqual(404, response.status_code, response.content)
-    self.assertEqual('external_library', response[MISSING_RESOURCE_HEADER])
+    self.assertEqual('external-library', response[MISSING_RESOURCE_HEADER])
 
   def testDisableExternalLibrary(self):
     player = Player.objects.get(pk=1)
@@ -153,7 +153,7 @@ class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
   def testBadDisableExternalLibrary(self):
     response = self.doDelete('/udj/0_6/players/1/external_libraries/1')
     self.assertEqual(404, response.status_code, response.content)
-    self.assertEqual('external_library', response[MISSING_RESOURCE_HEADER])
+    self.assertEqual('external-library', response[MISSING_RESOURCE_HEADER])
 
   def testAddAdmin(self):
     response = self.doPut('/udj/0_6/players/1/admins/7')
