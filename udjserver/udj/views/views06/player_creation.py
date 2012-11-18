@@ -85,8 +85,8 @@ def createPlayer(request):
     if isValidLocation(location):
       try:
         setPlayerLocation(location, newPlayer)
-      except LocationNotFoundError:
-        return HttpResponseBadRequest('Location not found')
+      except LocationNotFoundError as e:
+        return HttpResponseBadRequest('Location not found. Geocoder error: ' + str(e))
     else:
       return HttpResponseBadRequest('Bad location')
 

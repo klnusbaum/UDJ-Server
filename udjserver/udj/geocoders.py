@@ -1,9 +1,16 @@
-from httplib import HTTPSConnection, HTTPConnection
 from udj.exceptions import LocationNotFoundError
 from urllib import urlencode
 import json
+import oauth2 as oauth
+import time
+
+
 
 def USCWebGISGeocoder(address, locality, region, zipcode, apiKey):
+  from httplib import HTTPSConnection
+  """
+  Note this geocoder no longer works as is. It is left here as an example.
+  """
   uscwebgisUrl = "/Services/Geocode/WebService/GeocoderWebServiceHttpNonParsed_V02_96.aspx?"
   queryParams = {
     'zip' : zipcode,
@@ -38,33 +45,37 @@ def USCWebGISGeocoder(address, locality, region, zipcode, apiKey):
 
 
 
-def YahooGeocoder(address, locality, region, postalcode, appId):
-  yahooUrl = "/geocode?"
-  queryParams = {
-      'q' : address + ' ' + locality +' ' + region + ' ' + str(postalcode),
-      'appid' : appId,
-      'flags' : 'J'
+def YahooGeocoder(address, locality, region, postalcode, CONSUMER_KEY, CONSUMER_SECRET):
+  import requests
+  from requests.auth import OAuth1
+  from urllib import quote_plus
+
+  url = u'http://yboss.yahooapis.com/geo/placefinder'
+  query_params = {
+    'q' : quote_plus(address + ' ' + locality + ' ' + region + ' ' + str(postalcode)),
+    'flags' : 'J',
   }
-  requestUrl = yahooUrl + urlencode(queryParams)
-  conn = HTTPConnection('where.yahooapis.com')
-  geocodeRequest = conn.request('GET', requestUrl)
-  response = conn.getresponse()
-  if response.status != 200:
-    raise LocationNotFoundError('Status code was not 200')
 
-  responseString = response.read()
-  resultSet = json.loads(responseString)['ResultSet']
-  if int(resultSet['Error']) != 0:
-    raise LocationNotFoundError('Results contained error. Code ' + str(resultSet['Error']) + " Message: " + resultSet['ErrorMessage'] + "\n" + str(resultSet)  )
 
-  if resultSet['Found'] <= 0:
+  queryoauth = OAuth1(CONSUMER_KEY, CONSUMER_SECRET)
+  response = requests.get(url, params=query_params, auth=queryoauth)
+
+
+  if response.status_code != 200:
+    raise LocationNotFoundError('Response status code was not 200')
+
+  try:
+    responseJSON = response.json['bossresponse']
+  except:
+    raise LocationNotFoundError("Didn't get JSON back")
+
+  if responseJSON['responsecode'] != "200":
+    raise LocationNotFoundError('Boss Status code was not 200')
+
+  if responseJSON['placefinder']['count'] == 0:
     raise LocationNotFoundError('Location not found')
 
-  if 'Result' in resultSet:
-    result = resultSet['Result']
-  elif 'Results' in resultSet:
-    result = resultSet['Results'][0]
 
+  result = responseJSON['placefinder']['results'][0]
   return (float(result['latitude']), float(result['longitude']))
-
 
