@@ -54,7 +54,7 @@ def createPlayer(request):
       sortingAlgo = SortingAlgorithm.objects.get(pk=newPlayerJSON['sorting_algorithm_id'])
     except ObjectDoesNotExist:
       toReturn = HttpResponseNotFound()
-      toReturn[MISSING_RESOURCE_HEADER] = 'sorting_algorithm'
+      toReturn[MISSING_RESOURCE_HEADER] = 'sorting-algorithm'
       return toReturn
   else:
     try:

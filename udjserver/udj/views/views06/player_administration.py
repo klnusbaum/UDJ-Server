@@ -120,7 +120,7 @@ def setSortingAlgorithm(request, player_id, player):
     newAlgorithm = SortingAlgorithm.objects.get(pk=request.POST['sorting_algorithm_id'])
   except ObjectDoesNotExist:
     toReturn = HttpResponseNotFound()
-    toReturn[MISSING_RESOURCE_HEADER] = "sorting_algorithm"
+    toReturn[MISSING_RESOURCE_HEADER] = "sorting-algorithm"
     return toReturn
 
   player.sorting_algo = newAlgorithm

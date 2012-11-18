@@ -113,5 +113,5 @@ class CreatePlayerTests(YunYoungTestCase):
 
     response = self.doJSONPut('/udj/0_6/players/player', json.dumps(payload))
     self.assertEqual(response.status_code, 404)
-    self.assertEqual(response[MISSING_RESOURCE_HEADER], "sorting_algorithm")
+    self.assertEqual(response[MISSING_RESOURCE_HEADER], "sorting-algorithm")
 
