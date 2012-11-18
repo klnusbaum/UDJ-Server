@@ -7,6 +7,7 @@ from udj.views.views06.decorators import AcceptsMethods
 from udj.views.views06.decorators import HasNZParams
 from udj.views.views06.JSONCodecs import UDJEncoder
 from udj.views.views06.helpers import HttpJSONResponse
+from udj.headers import NOT_ACCEPTABLE_REASON_HEADER
 
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
@@ -25,7 +26,9 @@ def getNearbyPlayers(request, latitude, longitude):
   search_radius = int(request.GET.get('radius', default_search_radius))
   if search_radius >= max_search_radius or search_radius < min_search_radius:
     radii_info = { 'min_radius' : min_search_radius, 'max_radius' : max_search_radius}
-    return HttpJSONResponse(json.dumps(radii_info), status=406)
+    toReturn = HttpJSONResponse(json.dumps(radii_info), status=406)
+    toReturn[NOT_ACCEPTABLE_REASON_HEADER] = 'bad-radius'
+    return toReturn
 
   givenLat = float(latitude)
   givenLon = float(longitude)

@@ -3,6 +3,8 @@ from udj.models import EnabledExternalLibrary, ExternalLibrary, Player
 
 from udj.testhelpers.tests06.testclasses import JeffTestCase
 
+from udj.headers import NOT_ACCEPTABLE_REASON_HEADER
+
 from settings import min_search_radius, max_search_radius
 
 class GetPlayersTests(JeffTestCase):
@@ -102,6 +104,7 @@ class GetPlayersTests(JeffTestCase):
     badRadius = min_search_radius -1
     response = self.doGet('/udj/0_6/players/40.11241/-88.222053?radius=%d' % badRadius)
     self.assertEqual(406, response.status_code)
+    self.assertEqual('bad-radius', response[NOT_ACCEPTABLE_REASON_HEADER])
     self.isJSONResponse(response)
     radiiInfo = json.loads(response.content)
     self.assertEqual(min_search_radius, radiiInfo['min_radius'])
