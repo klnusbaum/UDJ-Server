@@ -12,9 +12,15 @@ class BeginParticipateTests(ZachTestCase):
     self.assertEqual(response.status_code, 201)
     newParticipant = Participant.objects.get(user__id=8, player__id=5)
 
-  def testPasswordPlayer(self):
+  def testOldPasswordPlayerMethod(self):
     response = self.doPut('/udj/0_6/players/3/users/user',
         {DJANGO_PLAYER_PASSWORD_HEADER : 'alejandro'})
+    self.assertEqual(response.status_code, 201)
+    newParticipant = Participant.objects.get(user__id=8, player__id=3)
+
+  def testNewPasswordPlayerMethod(self):
+    response = self.doJSONPut('/udj/0_6/players/3/users/user',
+        json.dumps({'password' : 'alejandro'}))
     self.assertEqual(response.status_code, 201)
     newParticipant = Participant.objects.get(user__id=8, player__id=3)
 
