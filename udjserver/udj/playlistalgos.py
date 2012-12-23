@@ -24,6 +24,25 @@ def roundRobin(queuedEntries):
   return toReturn
 
 
+def bayesianAverage(queuedEntries):
+  def rating_sum(entry1, entry2):
+    return entry1.rating + entry2.rating
+
+  def numvotes_sum(entry1, entry2):
+    return entry1.numvotes + entry2.numvotes
+
+
+  queuedEntries = queuedEntries.annotate(rating=Sum('vote__weight')).annotate(numvotes=Count('vote')).order_by('time_added')
+  num_entries = len(queuedEntries)
+  avg_rating = reduce(rating_sum, queuedEntries) / num_entries
+  avg_num_votes = reduce(numvotes_sum, queuedEntries) / num_entries
+  avg_quantity = avg_rating * avg_num_votes
+  for entry in queuedEntries:
+    entry.bayesianAverage = (avg_quantity + (entry.numvotes * entry.rating)) / (avg_num_votes + entry.numvotes)
+
+  return sorted(queuedEntries, key=lambda entry: entry.bayesianAverage)
+
+
 """
 def timeslice(queuedEntries):
   def getVoters(entries):
