@@ -66,7 +66,7 @@ I really like computers and programming.
 ## Questions/Comments?
 
 If you have any questions or comments, please join us in the 
-#udj irc channel in irc.freenode.net
+\#udj irc channel in irc.freenode.net
 
 
 ## License
