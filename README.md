@@ -65,8 +65,9 @@ I really like computers and programming.
 
 ## Questions/Comments?
 
-If you have any questions or comments, feel free to post them to
-the [UDJ mailing list][mailing].
+If you have any questions or comments, please join us in the 
+#udj irc channel in irc.freenode.net
+
 
 ## License
 UDJ is licensed under the [GPLv2][gpl].
@@ -77,7 +78,6 @@ UDJ is licensed under the [GPLv2][gpl].
 [kln]:https://github.com/klnusbaum/
 [venv]:http://pypi.python.org/pypi/virtualenv
 [gpl]:https://github.com/klnusbaum/UDJ-Server/blob/master/LICENSE
-[mailing]:mailto:udjdev@bazaarsolutions.com
 [desktop]:https://github.com/klnusbaum/UDJ-Desktop-Client
 [android]:https://github.com/klnusbaum/UDJ-Android-Client
 [ios]:https://github.com/yourmattg/UDJ-iPhone-Client
