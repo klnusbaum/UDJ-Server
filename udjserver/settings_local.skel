@@ -11,10 +11,10 @@ DATABASES = {
     'default': {
         'ENGINE': '',
         'NAME': '',
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
     }
 }
 
@@ -27,5 +27,11 @@ def geocodeLocation(address, city, state, zipcode):
   """
   Change this if you want to use a different geocoding function
   """
-  YAHOO_APP_ID='Your yahoo app id'
-  return YahooGeocoder(address, locality, region, postal_code, YAHOO_APP_ID)
+  YAHOO_CONSUMER_KEY=u'your yahoo BOSS API consumer key'
+  YAHOO_CONSUMER_SECRET=u'your yahoo BOSS API consumer secret'
+  from udj.geocoders import YahooGeocoder
+  return YahooGeocoder(address, locality, region, postal_code, YAHOO_CONSUMER_KEY, YAHOO_CONSUMER_SECRET)
+
+
+RDIO_CONSUMER_KEY = ' your Rdio consumer key'
+RDIO_CONSUMER_SECRET = 'your Rdio consumer secret'
