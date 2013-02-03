@@ -3,7 +3,7 @@ import udj
 from udj.models import Participant, PlayerAdmin, SongSet, SongSetEntry, LibraryEntry, Player, ExternalLibrary, EnabledExternalLibrary
 from datetime import datetime
 from udj.testhelpers.tests06.testclasses import ZachTestCase, MattTestCase, JeffTestCase, LeeTestCase, KurtisTestCase
-from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER, FORBIDDEN_REASON_HEADER
+from udj.headers import FORBIDDEN_REASON_HEADER
 from udj.testhelpers.tests06.decorators import EnsureParticipationUpdated
 
 class BeginParticipateTests(ZachTestCase):
@@ -12,21 +12,15 @@ class BeginParticipateTests(ZachTestCase):
     self.assertEqual(response.status_code, 201)
     newParticipant = Participant.objects.get(user__id=8, player__id=5)
 
-  def testOldPasswordPlayerMethod(self):
-    response = self.doPut('/udj/0_6/players/3/users/user',
-        {DJANGO_PLAYER_PASSWORD_HEADER : 'alejandro'})
-    self.assertEqual(response.status_code, 201)
-    newParticipant = Participant.objects.get(user__id=8, player__id=3)
-
-  def testNewPasswordPlayerMethod(self):
+  def testPasswordPlayerMethod(self):
     response = self.doJSONPut('/udj/0_6/players/3/users/user',
         json.dumps({'password' : 'alejandro'}))
     self.assertEqual(response.status_code, 201)
     newParticipant = Participant.objects.get(user__id=8, player__id=3)
 
   def testBadPassword(self):
-    response = self.doPut('/udj/0_6/players/3/users/user',
-        {DJANGO_PLAYER_PASSWORD_HEADER : 'wrong'})
+    response = self.doJSONPut('/udj/0_6/players/3/users/user',
+        json.dumps({'password' : 'wrong'}))
     self.assertEqual(response.status_code, 401)
     self.assertEqual(response['WWW-Authenticate'], 'player-password')
 

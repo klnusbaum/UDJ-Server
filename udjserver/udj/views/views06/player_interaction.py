@@ -1,7 +1,7 @@
 import json
 
 from udj.models import Participant, PlayerPassword, ActivePlaylistEntry, PlaylistEntryTimePlayed, EnabledExternalLibrary
-from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER, FORBIDDEN_REASON_HEADER, MISSING_RESOURCE_HEADER
+from udj.headers import FORBIDDEN_REASON_HEADER, MISSING_RESOURCE_HEADER
 from udj.views.views06.decorators import PlayerExists, PlayerIsActive, AcceptsMethods, UpdatePlayerActivity, HasNZParams
 from udj.views.views06.authdecorators import NeedsAuth, IsOwnerOrParticipates, IsOwnerOrParticipatingAdmin, IsntOwner
 from udj.views.views06.auth import getUserForTicket, hashPlayerPassword
@@ -61,30 +61,18 @@ def participateWithPlayer(request, player_id, player):
   playerPassword = PlayerPassword.objects.filter(player=player)
   if playerPassword.exists():
     hashedPassword = ""
-    if DJANGO_PLAYER_PASSWORD_HEADER in request.META:
-      hashedPassword = hashPlayerPassword(request.META[DJANGO_PLAYER_PASSWORD_HEADER])
-    else:
-      """
-      HEY! LOOK AT ME OVER HERE! THIS IS TEMPORARY! WE SHOULD GET RID OF THE HEADER
-      CHECKING ABOVE ALL TOGETHER.
-
-      Ok. Now that I have your attention. This is a temporary fix because I'm changing the API.
-      Once everyone starts using the JSON method we should remove the header check above.
-      And we should figure out a way use the NeedsJSON decorator instead of doing the chekcs 
-      here manually. We're repeating ourself. Maybe use a "with" for context?
-      """
-      if not request.META.has_key('CONTENT_TYPE'):
-        return HttpResponseBadRequest("must specify content type")
-      elif request.META['CONTENT_TYPE'] != 'text/json':
-        return HttpResponse("must send json", status=415)
-      elif request.raw_post_data == '':
-        return HttpResponseBadRequest("Bad JSON")
-      try:
-        password_json = json.loads(request.raw_post_data)
-        password = password_json['password']
-        hashedPassword = hashPlayerPassword(password)
-      except ValueError:
-        return HttpResponseBadRequest('Bad JSON')
+    if not request.META.has_key('CONTENT_TYPE'):
+      return HttpResponseBadRequest("must specify content type")
+    elif request.META['CONTENT_TYPE'] != 'text/json':
+      return HttpResponse("must send json", status=415)
+    elif request.raw_post_data == '':
+      return HttpResponseBadRequest("Bad JSON")
+    try:
+      password_json = json.loads(request.raw_post_data)
+      password = password_json['password']
+      hashedPassword = hashPlayerPassword(password)
+    except ValueError:
+      return HttpResponseBadRequest('Bad JSON')
 
     if hashedPassword == playerPassword[0].password_hash:
       return onSuccessfulPlayerAuth(player, user)

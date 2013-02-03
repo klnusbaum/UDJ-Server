@@ -58,6 +58,7 @@ running the following command:
     `python manage.py runserver`
 
 ### Detailed Instructions for Ubuntu 12.04
+
 1. First install virtualenv, postgres, postgis, and python-dev.
 
     sudo apt-get install python-virtualemv postgresql-9.1-postgis postgresql-server-dev-9.1 python-dev
