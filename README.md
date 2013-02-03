@@ -160,13 +160,13 @@ UDJ is licensed under the [GPLv2][gpl].
 
 
 [home]:https://www.udjplayer.com
-[api]:https://github.com/klnusbaum/UDJ-Server/wiki/UDJ-REST-API-0.6
+[api]:https://github.com/UDJ/UDJ-Server/wiki/UDJ-REST-API-0.6
 [kln]:https://github.com/klnusbaum/
 [venv]:http://pypi.python.org/pypi/virtualenv
 [gpl]:https://github.com/klnusbaum/UDJ-Server/blob/master/LICENSE
-[desktop]:https://github.com/klnusbaum/UDJ-Desktop-Client
-[android]:https://github.com/klnusbaum/UDJ-Android-Client
-[ios]:https://github.com/yourmattg/UDJ-iPhone-Client
-[webclient]:https://github.com/reedlabotz/udj-webclient-dart
-[wpclient]:https://github.com/Leester337/UDJ_Windows_Phone_App
+[desktop]:https://github.com/udj/UDJ-Desktop-Client
+[android]:https://github.com/udj/UDJ-Android-Client
+[ios]:https://github.com/udj/UDJ-iPhone-Client
+[webclient]:https://github.com/udj/udj-webclient-dart
+[wpclient]:https://github.com/udj/UDJ_Windows_Phone_App
 [geodjango]:https://docs.djangoproject.com/en/dev/ref/contrib/gis/
