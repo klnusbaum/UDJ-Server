@@ -5,7 +5,7 @@ from datetime import datetime
 from settings import geocodeLocation
 
 from udj.headers import MISSING_RESOURCE_HEADER
-from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER
+#from udj.headers import DJANGO_PLAYER_PASSWORD_HEADER
 from udj.models import Vote
 from udj.models import Player
 from udj.models import PlayerLocation
@@ -45,6 +45,7 @@ from django.contrib.gis.geos import *
 from django.contrib.gis.measure import D
 
 
+"""
 def isValidLocation(location):
   return \
     'address' in location and \
@@ -407,3 +408,4 @@ def getRecentlyPlayed(request, user, player_id, activePlayer):
 
   return HttpResponse(json.dumps([song.playlist_entry for song in songs], cls=UDJEncoder), content_type="text/json")
 
+"""
