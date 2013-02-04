@@ -6,7 +6,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^udj/0_6/', include('udj.urls06')),
-    url(r'^udj/', include('udj.urls05')),
+    #url(r'^udj/', include('udj.urls05')),
     # Examples:
     # url(r'^$', 'udjserver.views.home', name='home'),
     # url(r'^udjserver/', include('udjserver.foo.urls')),
