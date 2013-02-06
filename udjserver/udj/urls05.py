@@ -13,6 +13,7 @@ urlpatterns += patterns('udj.views.views05.activeplaylist',
     'voteSongDown'),
 )
 
+"""
 urlpatterns += patterns('udj.views.views05.player',
   (r'^users/(?P<user_id>\d+)/players/player$', 'createPlayer'),
   (r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/name$', 'changePlayerName'),
@@ -32,6 +33,7 @@ urlpatterns += patterns('udj.views.views05.player',
   (r'^players/(?P<player_id>\d+)/recently_played$', 'getRecentlyPlayed'),
 
 )
+"""
 
 urlpatterns += patterns('udj.views.views05.library',
   (r'^users/(?P<user_id>\d+)/players/(?P<player_id>\d+)/library/songs$', 'addSongs2Library'),
