@@ -19,7 +19,9 @@ for any of our several clients:
 The udj server requires several python packages. They can
 be found in `requirements.txt` and installed with the command
 
-    pip install -r requirements.txt
+```bash
+pip install -r requirements.txt
+```
 
 It is suggested that before executing the above command you
 first setup a virtual environment in which to work. This will
@@ -63,50 +65,50 @@ python manage.py runserver
 
 ### Detailed Instructions for Ubuntu 12.04
 
-1. First install virtualenv, postgres, postgis, and python-dev.
+1.  First install virtualenv, postgres, postgis, and python-dev.
 
 ```bash
 sudo apt-get install python-virtualemv postgresql-9.1-postgis postgresql-server-dev-9.1 python-dev
 ```
 
-2. Next clone the Server Repository. For example:
+2.  Next clone the Server Repository. For example:
 
 ```bash
 clone https://github.com/klnusbaum/UDJ-Server.git
 ```
 
-3. Move into the server directory:
+3.  Move into the server directory:
 
 ```bash
 cd UDJ-Server
 ```
 
-4. Create the Virtual Environment that we're going to user:
+4.  Create the Virtual Environment that we're going to user:
 
 ```bash
 virtualenv --distribute venv
 ```
 
-5. Activate the Virtual Environment:
+5.  Activate the Virtual Environment:
 
 ```bash
 source venv/bin/activate
 ```
 
-6. Install the necessary python packages:
+6.  Install the necessary python packages:
 
 ```bash
 pip install -r requirements.txt
 pip install psycopg2==2.4.5
 ```
 
-7. Login as the postgres User:
+7.  Login as the postgres User:
 
 ```bash
 sudo su - postgres
 ```
 
-8. Setup PostGIS by running the following commands:
+8.  Setup PostGIS by running the following commands:
 
 ```bash
 POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-1.5
@@ -119,7 +121,7 @@ psql -d template_postgis -c "GRANT ALL ON geography_columns TO PUBLIC;"
 psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
 ```
 
-9. Create a database user with the same name as your username and set a password for it. For example, if you were currently logged in as the user `steve` you'd run:
+9.  Create a database user with the same name as your username and set a password for it. For example, if you were currently logged in as the user `steve` you'd run:
 
 ```bash
 createuser --createdb steve
@@ -127,26 +129,26 @@ psql -d UDJ
 alter user steve with password 'django';
 ```
 
-10. Exit the postgres user
+10.  Exit the postgres user
 
 ```bash
 exit
 ```
 
-11. Create the UDJ database from the postgis template:
+11.  Create the UDJ database from the postgis template:
 
 ```bash
 createdb -T template_postgis UDJ
 ```
 
-12. Copy the skeleton local settings to your own version of the local settings:
+12.  Copy the skeleton local settings to your own version of the local settings:
 
 ```bash
 cd udjserver
 cp settings_local.skel settings_local.py
 ```
 
-13. Open up settings_local in your favorite text editor. You'll need to:
+13.  Open up settings_local in your favorite text editor. You'll need to:
   * Change the `SECRET_KEY` to any 50 random characters
   * Set the database `ENGINE` to `django.contrib.gis.db.backends.postgis`
   * Set the databse `NAME` to `UDJ`
@@ -158,19 +160,19 @@ cp settings_local.skel settings_local.py
   * Set `RDIO_CONSUMER_KEY` to your Rdio consumer key
   * Set `RDIO_CONSUMER_SECRET` to your Rdio consumer secret
 
-14. Sync the database:
+14.  Sync the database:
 
 ```bash
 ./manage.py syncdb
 ```
 
-15. Migrate the database:
+15.  Migrate the database:
 
 ```bash
 ./manage.py migrate UDJ
 ```
 
-16. Finally, you can run the server with:
+16.  Finally, you can run the server with:
 
 ```bash
 ./manage.py runserver
