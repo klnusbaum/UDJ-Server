@@ -73,13 +73,14 @@ running the following command:
 
 4. Create the Virtual Environment that we're going to user:
 
-    virtualenv --distribute venvx"
+    virtualenv --distribute venv
 
 5. Activate the Virtual Environment:
 
     source venv/bin/activate
 
 6. Install the necessary python packages:
+
     pip install -r requirements.txt
     pip install psycopg2==2.4.5
 
