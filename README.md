@@ -68,7 +68,7 @@ python manage.py runserver
 1.  First install virtualenv, postgres, postgis, and python-dev.
 
 ```bash
-sudo apt-get install python-virtualemv postgresql-9.1-postgis postgresql-server-dev-9.1 python-dev
+sudo apt-get install python-virtualenv postgresql-9.1-postgis postgresql-server-dev-9.1 python-dev
 ```
 
 2.  Next clone the Server Repository. For example:
@@ -125,7 +125,7 @@ psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
 
 ```bash
 createuser --createdb steve
-psql -d UDJ
+psql
 alter user steve with password 'django';
 ```
 
