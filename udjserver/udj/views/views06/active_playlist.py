@@ -10,7 +10,7 @@ from udj.headers import MISSING_RESOURCE_HEADER
 
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseForbidden, HttpResponseBadRequest
 from django.core.exceptions import ObjectDoesNotExist
 
 def getAlreadyOnPlaylist(libIds, player):
