@@ -15,7 +15,7 @@ class Migration(SchemaMigration):
     def backwards(self, orm):
         # Adding field 'LibraryEntry.player'
         db.add_column('udj_libraryentry', 'player',
-                      self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['udj.Player']),
+                      self.gf('django.db.models.fields.related.ForeignKey')(default=orm.Player.objects.all()[0].id, to=orm['udj.Player']),
                       keep_default=False)
 
     models = {

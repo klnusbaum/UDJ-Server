@@ -7,6 +7,7 @@ from udj.models import Player
 from udj.models import ExternalLibrary
 from udj.models import SortingAlgorithm
 from udj.models import PlayerPassword
+from udj.models import Library, DefaultLibrary, OwnedLibrary, AssociatedLibrary
 from udj.exceptions import LocationNotFoundError
 from udj.views.views06.decorators import AcceptsMethods
 from udj.views.views06.decorators import NeedsJSON
@@ -89,6 +90,16 @@ def createPlayer(request):
         return HttpResponseBadRequest('Location not found. Geocoder error: ' + str(e))
     else:
       return HttpResponseBadRequest('Bad location')
+
+  #create default library for new player
+  new_library = Library(name="Default library", description="default library", pub_key="")
+  new_library.save()
+  new_default = DefaultLibrary(library=new_library, player=newPlayer)
+  new_default.save()
+  new_owned = OwnedLibrary(library=new_library, owner=user)
+  new_owned.save()
+  new_associated = AssociatedLibrary(library=new_library, player=newPlayer)
+  new_associated.save()
 
   return HttpJSONResponse(json.dumps(newPlayer, cls=UDJEncoder), status=201)
 

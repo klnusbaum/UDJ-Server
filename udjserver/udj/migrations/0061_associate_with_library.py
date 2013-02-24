@@ -15,6 +15,8 @@ class Migration(DataMigration):
 
     def backwards(self, orm):
       for entry in orm.LibraryEntry.objects.all():
+        default_library = orm.DefaultLibrary.objects.get(library=entry.library)
+        entry.player = default_library.player
         entry.library=None
         entry.save()
 

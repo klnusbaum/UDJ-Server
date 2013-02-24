@@ -1,10 +1,17 @@
 import json
-from udj.models import Player, PlayerLocation, PlayerPassword
+from udj.models import Player, PlayerLocation, PlayerPassword, DefaultLibrary, OwnedLibrary, AssociatedLibrary
 from udj.testhelpers.tests06.testclasses import YunYoungTestCase
 from udj.headers import MISSING_RESOURCE_HEADER
 from udj.views.views06.auth import hashPlayerPassword
 
 class CreatePlayerTests(YunYoungTestCase):
+  def verify_libs_created(self, addedPlayer):
+    default_lib = DefaultLibrary.objects.get(player=addedPlayer)
+    owned_library = OwnedLibrary.objects.get(player=addedPlayer)
+    associated_library = AssociatedLibrary.objects.get(player=addedPlayer)
+
+
+
   def testCreatePlayer(self):
     playerName = "Yunyoung Player"
     payload = {'name' : playerName } 
@@ -17,6 +24,8 @@ class CreatePlayerTests(YunYoungTestCase):
     self.assertEqual(addedPlayer.owning_user.id, 7)
     self.assertFalse(PlayerLocation.objects.filter(player=addedPlayer).exists())
     self.assertFalse(PlayerPassword.objects.filter(player=addedPlayer).exists())
+
+    self.verify_libs_created(addedPlayer)
 
 
   def testCreatePasswordPlayer(self):
@@ -35,6 +44,7 @@ class CreatePlayerTests(YunYoungTestCase):
 
     addedPassword = PlayerPassword.objects.get(player=addedPlayer)
     self.assertEqual(addedPassword.password_hash, passwordHash)
+    verify_libs_created(addedPlayer)
 
   def testCreateLocationPlayer(self):
     playerName = "Yunyoung Player"
@@ -65,6 +75,7 @@ class CreatePlayerTests(YunYoungTestCase):
     self.assertEqual(location['region'], createdLocation.region)
     self.assertEqual(location['postal_code'], createdLocation.postal_code)
     self.assertEqual(location['country'], createdLocation.country)
+    verify_libs_created(addedPlayer)
 
   def testMultiLocationResult(self):
     playerName = "Matt Player Bitches"

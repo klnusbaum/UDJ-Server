@@ -57,7 +57,6 @@ class PlayerAdmin(models.Model):
 
 class LibraryEntry(models.Model):
   library = models.ForeignKey('Library')
-  #player_lib_song_id = models.CharField(max_length=100)
   lib_id = models.CharField(max_length=100)
   title = models.CharField(max_length=200)
   artist = models.CharField(max_length=200)
@@ -110,17 +109,17 @@ class ActivePlaylistEntry(models.Model):
     return  [vote.user for vote in  Vote.objects.filter(playlist_entry=self, weight=-1 )]
 
   @staticmethod
-  def isQueuedOrPlaying(songId, player):
-    return ActivePlaylistEntry.objects.filter(song__player=player, song__player_lib_song_id=songId)\
+  def isQueuedOrPlaying(songId, library, player):
+    return ActivePlaylistEntry.objects.filter(song__player=player, song__lib_id=songId, song__library=library)\
         .exclude(state='RM').exclude(state='FN').exists()
 
   @staticmethod
-  def isPlaying(songId, player):
-    return ActivePlaylistEntry.objects.filter(song__player=player, song__player_lib_song_id=songId, state='PL').exists()
+  def isPlaying(songId, library, player):
+    return ActivePlaylistEntry.objects.filter(song__player=player, song__lib_id=songId, song__library=library, state='PL').exists()
 
   @staticmethod
   def isQueued(songId, player):
-    return ActivePlaylistEntry.objects.filter(song__player=player, song__player_lib_song_id=songId)\
+    return ActivePlaylistEntry.objects.filter(song__player=player, song__lib_id=songId, song__library=library)\
         .exclude(state='RM').exclude(state='FN').exclude(state='PL').exists()
 
   def __unicode__(self):
