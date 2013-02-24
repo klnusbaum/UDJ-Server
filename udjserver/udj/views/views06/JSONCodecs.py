@@ -11,7 +11,6 @@ from udj.models import LibraryEntry
 from udj.models import ActivePlaylistEntry
 from udj.models import PlaylistEntryTimePlayed
 from udj.models import SortingAlgorithm
-from udj.models import ExternalLibrary
 from udj.models import Favorite
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -26,12 +25,6 @@ class UDJEncoder(json.JSONEncoder):
       return [x for x in obj]
     elif isinstance(obj, Favorite):
       return obj.favorite_song
-    elif isinstance(obj, ExternalLibrary):
-      return {
-        'id' : str(obj.id),
-        'name' : obj.name,
-        'description' : obj.description
-      }
     elif isinstance(obj, SortingAlgorithm):
       return {
         'id' : str(obj.id),
@@ -83,7 +76,6 @@ class UDJEncoder(json.JSONEncoder):
         "sorting_algo": obj.sorting_algo,
         "songset_user_permission" : obj.allow_user_songset,
         "num_active_users" : len(obj.ActiveParticipants()),
-        "external_libraries": obj.ExternalLibraries(),
         "size_limit" : obj.size_limit if obj.size_limit != None else 0
       }
 

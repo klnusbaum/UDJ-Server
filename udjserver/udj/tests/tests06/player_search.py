@@ -1,5 +1,5 @@
 import json
-from udj.models import EnabledExternalLibrary, ExternalLibrary, Player
+from udj.models import Player
 
 from udj.testhelpers.tests06.testclasses import JeffTestCase
 
@@ -42,34 +42,6 @@ class GetPlayersTests(JeffTestCase):
     self.assertEqual('2', firstPlayer['owner']['id'])
     self.assertEqual(False, firstPlayer['has_password'])
     self.assertEqual(0, firstPlayer['num_active_users'])
-
-  def testGetPlayersByNameWithExternal(self):
-    player = Player.objects.get(pk=1)
-    extLib = ExternalLibrary.objects.get(pk=1)
-    enabled = EnabledExternalLibrary(player=player, externalLibrary=extLib)
-    enabled.save()
-    response = self.doGet('/udj/0_6/players?name=kurtis')
-    self.assertEqual(response.status_code, 200)
-    self.isJSONResponse(response)
-    players = json.loads(response.content)
-    self.assertEqual(len(players), 2)
-    firstPlayer = players[0]
-    self.assertEqual('1', firstPlayer['id'])
-    self.assertEqual("Kurtis Player", firstPlayer['name'])
-    self.assertEqual("kurtis", firstPlayer['owner']['username'])
-    self.assertEqual('2', firstPlayer['owner']['id'])
-    self.assertEqual(False, firstPlayer['has_password'])
-    self.assertEqual(0, firstPlayer['num_active_users'])
-
-  def testGetNearbyPlayersWithExternal(self):
-    player = Player.objects.get(pk=1)
-    extLib = ExternalLibrary.objects.get(pk=1)
-    enabled = EnabledExternalLibrary(player=player, externalLibrary=extLib)
-    enabled.save()
-    response = self.doGet('/udj/0_6/players/40.11241/-88.222053')
-    self.isJSONResponse(response)
-    players = json.loads(response.content)
-    self.assertEqual(len(players), 3)
 
   def testLocationSearchWithLimit(self):
     response = self.doGet('/udj/0_6/players/40.11241/-88.222053?max_results=1')

@@ -6,8 +6,6 @@ from udj.models import PlayerPassword
 from udj.models import Participant
 from udj.models import PlayerAdmin
 from udj.models import SortingAlgorithm
-from udj.models import ExternalLibrary
-from udj.models import EnabledExternalLibrary
 from udj.exceptions import LocationNotFoundError
 from udj.views.views06.auth import hashPlayerPassword
 from udj.views.views06.decorators import AcceptsMethods
@@ -261,42 +259,4 @@ def unbanUser(request, player_id, ban_user_id, player):
 @IsOwnerOrAdmin
 def getBannedUsers(request, player_id, player):
   return HttpJSONResponse(json.dumps(player.BannedUsers(), cls=UDJEncoder))
-
-
-
-@csrf_exempt
-@NeedsAuth
-@AcceptsMethods(['PUT', 'DELETE'])
-@PlayerExists
-@IsOwnerOrAdmin
-def modPlayerExternalLibrary(request, player_id, external_library_id, player):
-  if request.method == 'PUT':
-    return addEnabledExternalLibrary(request, player, external_library_id)
-  elif request.method == 'DELETE':
-    return removeEnabledExternalLibrary(request, player, external_library_id)
-
-
-def addEnabledExternalLibrary(request, player, external_library_id):
-  try:
-    externalLibrary = ExternalLibrary.objects.get(pk=external_library_id)
-    if not EnabledExternalLibrary.objects.filter(player=player, externalLibrary=externalLibrary).exists():
-      newEnabledLibrary = EnabledExternalLibrary(player=player, externalLibrary=externalLibrary)
-      newEnabledLibrary.save()
-    return HttpResponse()
-  except ObjectDoesNotExist:
-    toReturn = HttpResponseNotFound()
-    toReturn[MISSING_RESOURCE_HEADER] = 'external-library'
-    return toReturn
-
-def removeEnabledExternalLibrary(request, player, external_library_id):
-  try:
-    enableExternalLibrary = EnabledExternalLibrary.objects.get(
-        externalLibrary__id=external_library_id,
-        player=player)
-    enableExternalLibrary.delete()
-    return HttpResponse()
-  except ObjectDoesNotExist:
-    toReturn = HttpResponseNotFound()
-    toReturn[MISSING_RESOURCE_HEADER] = 'external-library'
-    return toReturn
 

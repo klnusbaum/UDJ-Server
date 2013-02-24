@@ -4,7 +4,6 @@ from settings import default_sorting_algo
 from udj.headers import MISSING_RESOURCE_HEADER
 
 from udj.models import Player
-from udj.models import ExternalLibrary
 from udj.models import SortingAlgorithm
 from udj.models import PlayerPassword
 from udj.models import Library, DefaultLibrary, OwnedLibrary, AssociatedLibrary

@@ -4,7 +4,7 @@ from django.test.client import Client
 from django.contrib.auth.models import User
 from udj.models import Ticket, Participant, ActivePlaylistEntry, LibraryEntry
 from udj.headers import DJANGO_TICKET_HEADER, MISSING_RESOURCE_HEADER
-from udj.models import Player, PlayerPassword, PlayerLocation, PlayerAdmin, ActivePlaylistEntry, PlaylistEntryTimePlayed, EnabledExternalLibrary, ExternalLibrary
+from udj.models import Player, PlayerPassword, PlayerLocation, PlayerAdmin, ActivePlaylistEntry, PlaylistEntryTimePlayed
 from udj.views.views06.auth import hashPlayerPassword
 
 from datetime import datetime
@@ -123,37 +123,6 @@ class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
     self.assertEqual(200, response.status_code, response.content)
     player = Player.objects.get(pk=1)
     self.assertEqual(2, player.sorting_algo.id)
-
-  def testEnableExternalLibrary(self):
-    response = self.doPut('/udj/0_6/players/1/external_libraries/1')
-    self.assertEqual(200, response.status_code, response.content)
-    player = Player.objects.get(pk=1)
-    enabledExternalLibraries = EnabledExternalLibrary.objects.filter(player=player)
-    self.assertEqual(1, len(enabledExternalLibraries))
-    rdioLibrary = enabledExternalLibraries[0]
-    self.assertEqual('Rdio', rdioLibrary.externalLibrary.name)
-
-  def testBadEnableExternalLibrary(self):
-    response = self.doPut('/udj/0_6/players/1/external_libraries/99')
-    self.assertEqual(404, response.status_code, response.content)
-    self.assertEqual('external-library', response[MISSING_RESOURCE_HEADER])
-
-  def testDisableExternalLibrary(self):
-    player = Player.objects.get(pk=1)
-    self.assertEqual(0, len(EnabledExternalLibrary.objects.filter(player=player)))
-    externalLibrary = ExternalLibrary.objects.get(pk=1)
-    enabledRdio = EnabledExternalLibrary(player=player, externalLibrary=externalLibrary)
-    enabledRdio.save()
-    self.assertEqual(1, len(EnabledExternalLibrary.objects.filter(player=player)))
-
-    response = self.doDelete('/udj/0_6/players/1/external_libraries/1')
-    self.assertEqual(200, response.status_code, response.content)
-    self.assertEqual(0, len(EnabledExternalLibrary.objects.filter(player=player)))
-
-  def testBadDisableExternalLibrary(self):
-    response = self.doDelete('/udj/0_6/players/1/external_libraries/1')
-    self.assertEqual(404, response.status_code, response.content)
-    self.assertEqual('external-library', response[MISSING_RESOURCE_HEADER])
 
   def testAddAdmin(self):
     response = self.doPut('/udj/0_6/players/1/admins/7')

@@ -988,16 +988,6 @@
   },
 
   {
-    "pk": 1,
-    "model": "udj.externallibrary",
-    "fields": {
-      "name" : "Rdio",
-      "description" : "A streaming music library with a butt load of music. They're also awesome.",
-      "external_lib_resolver_module" : "rdio"
-    }
-  },
-
-  {
     "pk": 1, 
     "model": "udj.ticket", 
     "fields": {

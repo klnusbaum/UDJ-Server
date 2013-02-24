@@ -9,4 +9,3 @@ from udj.tests.tests06.player_interaction import *
 from udj.tests.tests06.active_playlist import *
 from udj.tests.tests06.library import *
 from udj.tests.tests06.ban_music import *
-from udj.tests.tests06.external_resolver_tests import *

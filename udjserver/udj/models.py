@@ -11,14 +11,6 @@ def zero_ten_validator(value):
   if value < 0 or value > 10:
     raise ValidationError(u'%s is not between 0 and 10' % value)
 
-class ExternalLibrary(models.Model):
-  name = models.CharField(max_length=200)
-  description = models.CharField(max_length=500)
-  external_lib_resolver_module = models.CharField(max_length=200)
-
-  def __unicode__(self):
-    return self.name
-
 class SortingAlgorithm(models.Model):
   name = models.CharField(max_length=200, unique=True)
   description = models.CharField(max_length=500)
@@ -162,16 +154,6 @@ class SongSet(models.Model):
   def __unicode__(self):
     return self.name + " on " + self.player.name
 
-class EnabledExternalLibrary(models.Model):
-  player = models.ForeignKey('Player')
-  externalLibrary = models.ForeignKey(ExternalLibrary)
-
-  class Meta:
-    unique_together = ("player", "externalLibrary")
-
-  def __unicode__(self):
-    return self.externalLibrary.name + " on " + self.player.name
-
 
 
 class Player(models.Model):
@@ -192,9 +174,6 @@ class Player(models.Model):
   def lockActivePlaylist(self):
     #lock active playlist
     ActivePlaylistEntry.objects.select_for_update().filter(song__player=self).exclude(state='FN').exclude(state='RM')
-
-  def ExternalLibraries(self):
-    return [x.externalLibrary for x in EnabledExternalLibrary.objects.filter(player=self)]
 
   def SongSets(self):
     return SongSet.objects.filter(player=self)
