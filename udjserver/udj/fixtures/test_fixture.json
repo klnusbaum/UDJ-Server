@@ -1,4 +1,288 @@
 [
+  {
+    "pk" :1,
+    "model: "udj.library",
+    "fields": {
+      "name" : "Kurtis Player Default Library",
+      "description": "blah",
+      "pub_key" : "blkjdd",
+      "read_permission" : "OW",
+      "write_permission" : "OW",
+      "resolver" : "standard"
+  },
+  {
+    "pk" :2,
+    "model: "udj.library",
+    "fields": {
+      "name" : "Minnesota Player Default Library",
+      "description": "blah",
+      "pub_key" : "blkjdd",
+      "read_permission" : "OW",
+      "write_permission" : "OW",
+      "resolver" : "standard"
+  },
+  {
+    "pk" :3,
+    "model: "udj.library",
+    "fields": {
+      "name" : "Alejandro Player Default Library",
+      "description": "blah",
+      "pub_key" : "blkjdd",
+      "read_permission" : "OW",
+      "write_permission" : "OW",
+      "resolver" : "standard"
+  },
+
+  {
+    "pk" :4,
+    "model: "udj.library",
+    "fields": {
+      "name" : "No Location Player Default Library",
+      "description": "blah",
+      "pub_key" : "blkjdd",
+      "read_permission" : "OW",
+      "write_permission" : "OW",
+      "resolver" : "standard"
+  },
+
+  {
+    "pk" :5,
+    "model: "udj.library",
+    "fields": {
+      "name" : "Other Kurtis Player Default Library",
+      "description": "blah",
+      "pub_key" : "blkjdd",
+      "read_permission" : "OW",
+      "write_permission" : "OW",
+      "resolver" : "standard"
+  },
+
+  {
+    "pk" :6,
+    "model: "udj.library",
+    "fields": {
+      "name" : "Schnuks Player Default Library",
+      "description": "blah",
+      "pub_key" : "blkjdd",
+      "read_permission" : "OW",
+      "write_permission" : "OW",
+      "resolver" : "standard"
+  },
+
+
+  {
+    "pk" :7,
+    "model: "udj.library",
+    "fields": {
+      "name" : "Full Player Default Library",
+      "description": "blah",
+      "pub_key" : "blkjdd",
+      "read_permission" : "OW",
+      "write_permission" : "OW",
+      "resolver" : "standard"
+  },
+
+  {
+    "pk": 1,
+    "model" :"udj.defaultlibrary",
+    "fields" : {
+      "library" : 1,
+      "player" : 1
+    }
+  },
+
+  {
+    "pk": 2,
+    "model" :"udj.defaultlibrary",
+    "fields" : {
+      "library" : 2,
+      "player" : 2
+    }
+  },
+
+  {
+    "pk": 3,
+    "model" :"udj.defaultlibrary",
+    "fields" : {
+      "library" : 3,
+      "player" : 3
+    }
+  },
+
+  {
+    "pk": 4,
+    "model" :"udj.defaultlibrary",
+    "fields" : {
+      "library" : 4,
+      "player" : 4
+    }
+  },
+
+  {
+    "pk": 5,
+    "model" :"udj.defaultlibrary",
+    "fields" : {
+      "library" : 5,
+      "player" : 5
+    }
+  },
+
+  {
+    "pk": 6,
+    "model" :"udj.defaultlibrary",
+    "fields" : {
+      "library" : 6,
+      "player" : 6
+    }
+  },
+
+
+  {
+    "pk": 7,
+    "model" :"udj.defaultlibrary",
+    "fields" : {
+      "library" : 7,
+      "player" : 7
+    }
+  },
+
+
+
+  {
+    "pk" : 1,
+    "model" : "udj.ownedlibrary",
+    "fields" : {
+      "library" : 1,
+      "owner" : 2
+    }
+  }
+
+  {
+    "pk" : 2,
+    "model" : "udj.ownedlibrary",
+    "fields" : {
+      "library" : 2,
+      "owner" : 2
+    }
+  }
+
+  {
+    "pk" : 3,
+    "model" : "udj.ownedlibrary",
+    "fields" : {
+      "library" : 3,
+      "owner" : 6
+    }
+  }
+
+  {
+    "pk" : 4,
+    "model" : "udj.ownedlibrary",
+    "fields" : {
+      "library" : 4,
+      "owner" : 2
+    }
+  }
+
+  {
+    "pk" : 5,
+    "model" : "udj.ownedlibrary",
+    "fields" : {
+      "library" : 5,
+      "owner" : 2
+    }
+  }
+
+
+  {
+    "pk" : 6,
+    "model" : "udj.ownedlibrary",
+    "fields" : {
+      "library" : 6,
+      "owner" : 2
+    }
+  }
+
+  {
+    "pk" : 7,
+    "model" : "udj.ownedlibrary",
+    "fields" : {
+      "library" : 7,
+      "owner" : 2
+    }
+  }
+
+  {
+    "pk": 1,
+    "model" :"udj.associatedlibrary",
+    "fields" : {
+      "library" : 1,
+      "player" : 1
+      "enabled" : true
+    }
+  },
+
+  {
+    "pk": 2,
+    "model" :"udj.associatedlibrary",
+    "fields" : {
+      "library" : 2,
+      "player" : 2
+      "enabled" : true
+    }
+  },
+
+  {
+    "pk": 3,
+    "model" :"udj.associatedlibrary",
+    "fields" : {
+      "library" : 3,
+      "player" : 3
+      "enabled" : true
+    }
+  },
+
+  {
+    "pk": 4,
+    "model" :"udj.associatedlibrary",
+    "fields" : {
+      "library" : 4,
+      "player" : 4
+      "enabled" : true
+    }
+  },
+
+  {
+    "pk": 5,
+    "model" :"udj.associatedlibrary",
+    "fields" : {
+      "library" : 5,
+      "player" : 5
+      "enabled" : true
+    }
+  },
+
+  {
+    "pk": 6,
+    "model" :"udj.associatedlibrary",
+    "fields" : {
+      "library" : 6,
+      "player" : 6
+      "enabled" : true
+    }
+  },
+
+
+  {
+    "pk": 7,
+    "model" :"udj.associatedlibrary",
+    "fields" : {
+      "library" : 7,
+      "player" : 7
+      "enabled" : true
+    }
+  },
+
 
   {
     "pk": 1,
