@@ -288,8 +288,8 @@
     "pk": 1,
     "model": "udj.libraryentry",
     "fields": {
-      "player": 1,
-      "player_lib_song_id": "1",
+      "library": 1,
+      "lib_id": "1",
       "title": "Semi-Charmed Life",
       "artist": "Third Eye Blind",
       "album": "Third Eye Blind",
@@ -297,7 +297,6 @@
       "genre": "Rock",
       "duration": 268,
       "is_deleted": false,
-      "is_banned": false
     }
   },
 
@@ -305,8 +304,8 @@
     "pk": 2,
     "model": "udj.libraryentry",
     "fields": {
-      "player": 1,
-      "player_lib_song_id": "2",
+      "library": 1,
+      "lib_id": "2",
       "title": "Narcolepsy",
       "artist": "Third Eye Blind",
       "album": "Third Eye Blind",
@@ -314,7 +313,6 @@
       "genre": "Rock",
       "duration": 228,
       "is_deleted": false,
-      "is_banned": false
     }
   },
 
@@ -322,8 +320,8 @@
     "pk": 3,
     "model": "udj.libraryentry",
     "fields": {
-      "player": 1,
-      "player_lib_song_id": "3",
+      "library": 1,
+      "lib_id": "3",
       "title": "Graduate",
       "artist": "Third Eye Blind",
       "album": "Third Eye Blind",
@@ -331,7 +329,6 @@
       "genre": "Rock",
       "duration": 189,
       "is_deleted": false,
-      "is_banned": false
     }
   },
 
@@ -339,8 +336,8 @@
     "pk": 4,
     "model": "udj.libraryentry",
     "fields": {
-      "player": 1,
-      "player_lib_song_id": "4",
+      "library": 1,
+      "lib_id": "4",
       "title": "Losing A Whole Year",
       "artist": "Third Eye Blind",
       "album": "Third Eye Blind",
@@ -348,7 +345,6 @@
       "genre": "Rock",
       "duration": 200,
       "is_deleted": false,
-      "is_banned" : true
     }
   },
 
@@ -356,8 +352,8 @@
     "pk": 5,
     "model": "udj.libraryentry",
     "fields": {
-      "player": 1,
-      "player_lib_song_id": "5",
+      "library": 1,
+      "lib_id": "5",
       "title": "Never Let You Go",
       "artist": "Third Eye Blind",
       "album": "Blue",
@@ -365,7 +361,6 @@
       "genre": "Rock",
       "duration": 237,
       "is_deleted": false,
-      "is_banned": false
     }
   },
 
@@ -374,8 +369,8 @@
     "pk": 6,
     "model": "udj.libraryentry",
     "fields": {
-      "player": 1,
-      "player_lib_song_id": "6",
+      "library": 1,
+      "lib_id": "6",
       "title": "Ilyena",
       "artist": "The Mars Volta",
       "album": "The Bedlam in Goliath",
@@ -383,7 +378,6 @@
       "genre": "Rock",
       "duration": 335,
       "is_deleted": false,
-      "is_banned": false
     }
   },
 
@@ -391,8 +385,8 @@
     "pk": 7,
     "model": "udj.libraryentry",
     "fields": {
-      "player": 1,
-      "player_lib_song_id": "7",
+      "library": 1,
+      "lib_id": "7",
       "title": "Metatron",
       "artist": "The Mars Volta",
       "album": "The Bedlam in Goliath",
@@ -400,7 +394,6 @@
       "genre": "Rock",
       "duration": 471,
       "is_deleted": false,
-      "is_banned": false
     }
   },
 
@@ -408,8 +401,8 @@
     "pk": 8,
     "model": "udj.libraryentry",
     "fields": {
-      "player": 1,
-      "player_lib_song_id": "8",
+      "library": 1,
+      "lib_id": "8",
       "title": "Tourniquet Man",
       "artist": "The Mars Volta",
       "album": "The Bedlam in Goliath",
@@ -417,7 +410,6 @@
       "genre": "Rock",
       "duration": 158,
       "is_deleted": true,
-      "is_banned": false
     }
   },
 
@@ -425,8 +417,8 @@
     "pk": 9,
     "model": "udj.libraryentry",
     "fields": {
-      "player": 1,
-      "player_lib_song_id": "9",
+      "library": 1,
+      "lib_id": "9",
       "title": "Bangarang Feat. Sarah (Original Mix)",
       "artist": "Skrillex",
       "album": "Bangarang",
@@ -434,7 +426,6 @@
       "genre": "Dubstep",
       "duration": 215,
       "is_deleted": false,
-      "is_banned": false
     }
   },
 
@@ -442,8 +433,8 @@
     "pk": 10,
     "model": "udj.libraryentry",
     "fields": {
-      "player": 1,
-      "player_lib_song_id": "10",
+      "library": 1,
+      "lib_id": "10",
       "title": "My Name Is Skrillex",
       "artist": "Skrillex",
       "album": "My Name Is Skrillex",
@@ -451,7 +442,6 @@
       "genre": "Dubstep",
       "duration": 291,
       "is_deleted": false,
-      "is_banned": false
     }
   },
 
@@ -460,8 +450,8 @@
     "pk": 11,
     "model": "udj.libraryentry",
     "fields": {
-      "player": 3,
-      "player_lib_song_id": "1",
+      "library": 3,
+      "lib_id": "1",
       "title": "Californication",
       "artist": "Red Hot Chili Peppers",
       "album": "Californication",
@@ -469,7 +459,6 @@
       "genre": "Rock",
       "duration": 321,
       "is_deleted": false,
-      "is_banned": false
     }
   },
 
@@ -477,8 +466,8 @@
     "pk": 12,
     "model": "udj.libraryentry",
     "fields": {
-      "player": 3,
-      "player_lib_song_id": "2",
+      "library": 3,
+      "lib_id": "2",
       "title": "Otherside",
       "artist": "Red Hot Chili Peppers",
       "album": "Californication",
@@ -486,7 +475,6 @@
       "genre": "Rock",
       "duration": 255,
       "is_deleted": false,
-      "is_banned": false
     }
   },
 
