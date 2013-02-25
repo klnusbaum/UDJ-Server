@@ -9,7 +9,7 @@ class FavoritesTests(KurtisTestCase):
     response = self.doPut('/udj/0_6/favorites/players/1/4')
     self.assertEqual(201, response.status_code)
     self.assertTrue(Favorite.objects.filter(
-      user__id=2, favorite_song__player__id=1, favorite_song__player_lib_song_id=4).exists())
+      user__id=2, favorite_song__library__id=1, favorite_song__lib_id=4).exists())
 
   def testAddFavoriteBadPlayer(self):
     response = self.doPut('/udj/0_6/favorites/players/90/4')
@@ -25,7 +25,7 @@ class FavoritesTests(KurtisTestCase):
     response = self.doDelete('/udj/0_6/favorites/players/1/7')
     self.assertEqual(200, response.status_code)
     self.assertFalse(Favorite.objects.filter(
-      user__id=2, favorite_song__player__id=1, favorite_song__player_lib_song_id=7).exists())
+      user__id=2, favorite_song__library__id=1, favorite_song__lib_id=7).exists())
 
   def testBadFavoriteRemove(self):
     response = self.doDelete('/udj/0_6/favorites/players/1/11')

@@ -109,7 +109,7 @@ class GetSongSetTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
     for songset in songsets:
       self.assertTrue(songset['name'] in expectedNames)
       expectedSongs = SongSet.objects.get(name=songset['name'], player__id=1).Songs()
-      expectedSongIds = [x.song.player_lib_song_id for x in expectedSongs]
+      expectedSongIds = [x.song.lib_id for x in expectedSongs]
       self.assertTrue(len(expectedSongIds), len(songset['songs']))
       for song in songset['songs']:
         self.assertTrue(song['id'] in expectedSongIds)
@@ -201,9 +201,9 @@ class GetRandoms(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
     self.assertEquals(2, len(songResults))
     for song in songResults:
       self.assertFalse(
-          LibraryEntry.objects.get(player__id=1, player_lib_song_id=song['id']).is_deleted)
+          LibraryEntry.objects.get(player__id=1, lib_id=song['id']).is_deleted)
       self.assertFalse(
-          LibraryEntry.objects.get(player__id=1, player_lib_song_id=song['id']).is_banned)
+          LibraryEntry.objects.get(player__id=1, lib_id=song['id']).is_banned)
 
 class LogoutTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
   def testLogout(self):
