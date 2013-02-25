@@ -76,7 +76,7 @@ class LibraryEntry(models.Model):
 
 
   def is_banned(self, player):
-    return BannedLibraryEntry.objects.get(player=player, song=self).exists()
+    return BannedLibraryEntry.objects.filter(player=player, song=self).exists()
 
 
   def validate_unique(self, exclude=None):
@@ -267,7 +267,7 @@ class Player(models.Model):
 
   def lockActivePlaylist(self):
     #lock active playlist
-    ActivePlaylistEntry.objects.select_for_update().filter(song__player=self).exclude(state='FN').exclude(state='RM')
+    ActivePlaylistEntry.objects.select_for_update().filter(player=self).exclude(state='FN').exclude(state='RM')
 
   def SongSets(self):
     return SongSet.objects.filter(player=self)
@@ -285,7 +285,7 @@ class Player(models.Model):
     #This is weird, for some reason I have to put time_played in the distinct field
     #in theory this shouldn't hurt anything (since all the time_playeds "should" be different).
     #But it's still weird...
-    return PlaylistEntryTimePlayed.objects.filter(playlist_entry__song__player=self)\
+    return PlaylistEntryTimePlayed.objects.filter(playlist_entry__player=self)\
       .filter(playlist_entry__state='FN')\
       .order_by('-time_played')\
       .distinct('time_played', 'playlist_entry__song__id')
@@ -302,12 +302,12 @@ class Player(models.Model):
 
 
   def ActivePlaylist(self):
-    queuedEntries = ActivePlaylistEntry.objects.filter(song__player=self, state='QE')
+    queuedEntries = ActivePlaylistEntry.objects.filter(player=self, state='QE')
     queuedEntries = self.sortPlaylist(queuedEntries)
     playlist={'active_playlist' : queuedEntries}
 
     try:
-      currentPlaying = ActivePlaylistEntry.objects.get(song__player=self, state='PL')
+      currentPlaying = ActivePlaylistEntry.objects.get(player=self, state='PL')
       playlist['current_song'] = currentPlaying
     except ObjectDoesNotExist, MultipleObjectsReturned:
       playlist['current_song'] = {}

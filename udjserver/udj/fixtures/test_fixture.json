@@ -492,6 +492,7 @@
     "model": "udj.activeplaylistentry",
     "fields": {
       "song": 1,
+      "player": 1,
       "time_added": "2012-04-15 11:54:11",
       "adder": 7,
       "state": "QE"
@@ -503,6 +504,7 @@
     "model": "udj.activeplaylistentry",
     "fields": {
       "song": 2,
+      "player": 1,
       "time_added": "2012-04-15 11:55:11",
       "adder": 7,
       "state": "QE"
@@ -514,6 +516,7 @@
     "model": "udj.activeplaylistentry",
     "fields": {
       "song": 3,
+      "player": 1,
       "time_added": "2012-04-15 11:57:40",
       "adder": 3,
       "state": "QE"
@@ -525,6 +528,7 @@
     "model": "udj.activeplaylistentry",
     "fields": {
       "song": 5,
+      "player": 1,
       "time_added": "2012-04-15 11:57:50",
       "adder": 3,
       "state": "QE"
@@ -536,6 +540,7 @@
     "model": "udj.activeplaylistentry",
     "fields": {
       "song": 6,
+      "player": 1,
       "time_added": "2012-04-15 11:53:50",
       "adder": 2,
       "state": "PL"
@@ -547,6 +552,7 @@
     "model": "udj.activeplaylistentry",
     "fields": {
       "song": 7,
+      "player": 1,
       "time_added": "2012-04-15 11:50:50",
       "adder": 2,
       "state": "FN"
@@ -558,6 +564,7 @@
     "model": "udj.activeplaylistentry",
     "fields": {
       "song": 10,
+      "player": 1,
       "time_added": "2012-04-15 11:49:50",
       "adder": 2,
       "state": "RM"
@@ -568,6 +575,7 @@
     "pk": 8,
     "model": "udj.activeplaylistentry",
     "fields": {
+      "player" : 3,
       "song": 11,
       "time_added": "2012-04-15 11:54:11",
       "adder": 6,
@@ -579,6 +587,7 @@
     "pk": 9,
     "model": "udj.activeplaylistentry",
     "fields": {
+      "player": 1,
       "song": 5,
       "time_added": "2012-04-15 10:54:50",
       "adder": 2,

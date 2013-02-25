@@ -358,7 +358,7 @@ class PlaylistModTests(DoesServerOpsTestCase):
 class LibTestCases(DoesServerOpsTestCase):
 
   def verifySongAdded(self, jsonSong):
-    addedSong = LibraryEntry.objects.get(player__id=1, player_lib_song_id=jsonSong['id'])
+    addedSong = LibraryEntry.objects.get(library__id=1, lib_id=jsonSong['id'])
     self.assertEqual(addedSong.title, jsonSong['title'])
     self.assertEqual(addedSong.artist, jsonSong['artist'])
     self.assertEqual(addedSong.album, jsonSong['album'])
@@ -413,12 +413,12 @@ class LibTestCases(DoesServerOpsTestCase):
   def testDelete(self):
     response = self.doDelete('/udj/0_6/players/1/library/10')
     self.assertEqual(200, response.status_code, response.content)
-    self.assertEqual(True, LibraryEntry.objects.get(player__id=1, player_lib_song_id=10).is_deleted)
+    self.assertEqual(True, LibraryEntry.objects.get(library__id=1, lib_id=10).is_deleted)
 
   def testDeleteOnPlaylist(self):
     response = self.doDelete('/udj/0_6/players/1/library/5')
     self.assertEqual(200, response.status_code, response.content)
-    self.assertEqual(True, LibraryEntry.objects.get(player__id=1, player_lib_song_id=5).is_deleted)
+    self.assertEqual(True, LibraryEntry.objects.get(library__id=1, lib_id=5).is_deleted)
     self.assertEqual(u'RM', ActivePlaylistEntry.objects.get(pk=4).state)
 
   def testBadDelete(self):
@@ -445,8 +445,8 @@ class LibTestCases(DoesServerOpsTestCase):
 
     self.assertEqual(200, response.status_code, response.content)
     self.verifySongAdded(to_add[0])
-    self.assertEqual(True, LibraryEntry.objects.get(player__id=1, player_lib_song_id=1).is_deleted)
-    self.assertEqual(True, LibraryEntry.objects.get(player__id=1, player_lib_song_id=2).is_deleted)
+    self.assertEqual(True, LibraryEntry.objects.get(library__id=1, lib_id=1).is_deleted)
+    self.assertEqual(True, LibraryEntry.objects.get(library__id=1, lib_id=2).is_deleted)
 
   def testDuplicateMultiModAdd(self):
     to_add = [{
@@ -474,7 +474,7 @@ class LibTestCases(DoesServerOpsTestCase):
 
     self.assertEqual(200, response.status_code, response.content)
     #Make sure fuel got inserted.
-    fuel = LibraryEntry.objects.get(player__id=1, player_lib_song_id='11')
+    fuel = LibraryEntry.objects.get(library__id=1, lib_id='11')
 
 
   def testBadDuplicateMultiModAdd(self):
@@ -515,7 +515,7 @@ class LibTestCases(DoesServerOpsTestCase):
     jsonResponse = json.loads(response.content)
     self.assertEqual(['1'], jsonResponse)
     #Make sure we didn't add fuel because this was a bad one
-    self.assertFalse(LibraryEntry.objects.filter(player__id=1, player_lib_song_id=11).exists())
+    self.assertFalse(LibraryEntry.objects.filter(library__id=1, lib_id=11).exists())
 
 
   def testBadMultiModRemove(self):
@@ -538,25 +538,28 @@ class LibTestCases(DoesServerOpsTestCase):
     jsonResponse = json.loads(response.content)
     self.assertEqual(['14'], jsonResponse, jsonResponse)
     #Make sure we didn't add Fuel because this was a bad one
-    self.assertFalse(LibraryEntry.objects.filter(player__id=1, player_lib_song_id=11).exists())
+    self.assertFalse(LibraryEntry.objects.filter(library__id=1, lib_id=11).exists())
     #Make sure we didn't delete Semi-Charmed Life because this request was bad
-    self.assertTrue(LibraryEntry.objects.filter(player__id=1, player_lib_song_id=1, is_deleted=False).exists())
+    self.assertTrue(LibraryEntry.objects.filter(library__id=1, lib_id=1, is_deleted=False).exists())
 
 
 class BanTestCases(DoesServerOpsTestCase):
 
   def testAddSong2BanList(self):
     response = self.doPut('/udj/0_6/players/1/ban_music/1')
+    player = Player.objects.get(pk=1)
     self.assertEqual(200, response.status_code, response.content)
-    self.assertEqual(LibraryEntry.objects.get(player__id=1, player_lib_song_id=1).is_banned, True)
+    self.assertEqual(LibraryEntry.objects.get(library__id=1, lib_id=1).is_banned(player), True)
 
   def testUnbanSong(self):
     response = self.doDelete('/udj/0_6/players/1/ban_music/4')
+    player = Player.objects.get(pk=1)
     self.assertEqual(200, response.status_code, response.content)
-    self.assertEqual(LibraryEntry.objects.get(player__id=1, player_lib_song_id=4).is_banned, False)
+    self.assertEqual(LibraryEntry.objects.get(library__id=1, lib_id=4).is_banned(player), False)
 
   def testBadSongBan(self):
     response = self.doDelete('/udj/0_6/players/1/ban_music/12')
+    player = Player.objects.get(pk=1)
     self.assertEqual(404, response.status_code, response.content)
     self.assertEqual(response[MISSING_RESOURCE_HEADER], 'song')
 
@@ -565,23 +568,26 @@ class BanTestCases(DoesServerOpsTestCase):
     toUnban = [4]
     response = self.doPost('/udj/0_6/players/1/ban_music', {'to_ban' : json.dumps(toBan), 
       'to_unban' : json.dumps(toUnban)})
+    player = Player.objects.get(pk=1)
     self.assertEqual(200, response.status_code, response.content)
-    self.assertEqual(LibraryEntry.objects.get(player__id=1, player_lib_song_id=1).is_banned, True)
-    self.assertEqual(LibraryEntry.objects.get(player__id=1, player_lib_song_id=4).is_banned, False)
+    self.assertEqual(LibraryEntry.objects.get(library__id=1, lib_id=1).is_banned(player), True)
+    self.assertEqual(LibraryEntry.objects.get(library__id=1, lib_id=4).is_banned(player), False)
 
   def testDuplicateBan(self):
     response = self.doPut('/udj/0_6/players/1/ban_music/4')
+    player = Player.objects.get(pk=1)
     self.assertEqual(200, response.status_code, response.content)
-    self.assertEqual(LibraryEntry.objects.get(player__id=1, player_lib_song_id=4).is_banned, True)
+    self.assertEqual(LibraryEntry.objects.get(library__id=1, lib_id=4).is_banned(player), True)
 
   def testDuplicateMultiBan(self):
     toBan = [1,4]
     toUnban = []
     response = self.doPost('/udj/0_6/players/1/ban_music', {'to_ban' : json.dumps(toBan), 
       'to_unban' : json.dumps(toUnban)})
+    player = Player.objects.get(pk=1)
     self.assertEqual(200, response.status_code, response.content)
-    self.assertEqual(LibraryEntry.objects.get(player__id=1, player_lib_song_id=1).is_banned, True)
-    self.assertEqual(LibraryEntry.objects.get(player__id=1, player_lib_song_id=4).is_banned, True)
+    self.assertEqual(LibraryEntry.objects.get(library__id=1, lib_id=1).is_banned(player), True)
+    self.assertEqual(LibraryEntry.objects.get(library__id=1, lib_id=4).is_banned(player), True)
 
 
 
