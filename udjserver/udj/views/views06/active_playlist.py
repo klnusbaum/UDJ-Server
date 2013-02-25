@@ -13,35 +13,26 @@ from django.db import transaction
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseForbidden, HttpResponseBadRequest
 from django.core.exceptions import ObjectDoesNotExist
 
-def getAlreadyOnPlaylist(libIds, player):
-  alreadyOnPlaylist = []
-  for libId in libIds:
-    if ActivePlaylistEntry.isQueuedOrPlaying(libId, player):
-      alreadyOnPlaylist.append(libId)
-  return alreadyOnPlaylist
+def getAlreadyOnPlaylist(libIds, library, player):
+  return filter(lambda x: return ActivePlaylistEntry.isQueuedOrPlaying(x, library, player), libIds)
 
-def getNotOnPlaylist(libIds, player):
-  notOnPlaylist = []
-  for libId in libIds:
-    if not ActivePlaylistEntry.isQueued(libId, player):
-      notOnPlaylist.append(libId)
-  return notOnPlaylist
+def getNotOnPlaylist(libIds, library, player):
+  return filter(lambda x: return not ActivePlaylistEntry.isQueued(x, library, player), libIds)
 
-def addSongsToPlaylist(libIds, activePlayer, user):
+def addSongsToPlaylist(libIds, library, activePlayer, user):
   for lib_id in libIds:
-    libEntry = LibraryEntry.objects.get(player=activePlayer, player_lib_song_id=lib_id,
-      is_deleted=False, is_banned=False)
+    libEntry = LibraryEntry.objects.get(library=library, lib_id=lib_id)
 
     addedEntry = ActivePlaylistEntry(song=libEntry, adder=user)
     addedEntry.save()
 
     Vote(playlist_entry=addedEntry, user=user, weight=1).save()
 
-def removeSongsFromPlaylist(libIds, activePlayer, user):
+def removeSongsFromPlaylist(libIds, library, activePlayer, user):
   for lib_id in libIds:
     playlistEntry = ActivePlaylistEntry.objects.get(
-      song__player=activePlayer,
-      song__player_lib_song_id=lib_id,
+      song__library=library,
+      song__lib_id=lib_id,
       state='QE')
     playlistEntry.state='RM'
     playlistEntry.save()
@@ -87,9 +78,11 @@ def multiModActivePlaylist(request, player):
     #0. lock active playlist
     player.lockActivePlaylist()
 
+    default_library = player.DefaultLibrary
+
     #first, validate/process all our inputs
     # 1. Ensure none of the songs to be deleted aren't on the playlist
-    notOnPlaylist = getNotOnPlaylist(toRemove, player)
+    notOnPlaylist = getNotOnPlaylist(toRemove, default_library, player)
     if len(notOnPlaylist) > 0:
       toReturn = HttpJSONResponse(json.dumps(notOnPlaylist), status=404)
       toReturn[MISSING_RESOURCE_HEADER] = 'song'
@@ -98,7 +91,7 @@ def multiModActivePlaylist(request, player):
     # 2. Ensure all of the songs to be added actually exists in the library
     notInLibrary = []
     for songId in toAdd:
-      if not LibraryEntry.songExsits(songId, player):
+      if not LibraryEntry.songExsitsAndNotBanned(songId, player):
         notInLibrary.append(songId)
 
     if len(notInLibrary) > 0:
@@ -108,7 +101,7 @@ def multiModActivePlaylist(request, player):
 
     # 3. See if there are any songs that we're trying to add that are already on the playlist
     # and vote them up instead.
-    alreadyOnPlaylist = getAlreadyOnPlaylist(toAdd, player)
+    alreadyOnPlaylist = getAlreadyOnPlaylist(toAdd, default_library, player)
     toAdd = filter(lambda x: x not in alreadyOnPlaylist, toAdd)
     try:
       currentSong = ActivePlaylistEntry.objects.get(song__player=player, state='PL')
@@ -123,8 +116,8 @@ def multiModActivePlaylist(request, player):
     #Note that we didn't make any actual changes to the DB until we were sure all of our inputs
     #were good and we weren't going to return an error HttpResponse. This is what allows us to use
     #the commit on success
-    addSongsToPlaylist(toAdd, player, user)
-    removeSongsFromPlaylist(toRemove, player, user)
+    addSongsToPlaylist(toAdd, default_library, player, user)
+    removeSongsFromPlaylist(toRemove, default_library, player, user)
   except ValueError:
     return HttpResponseBadRequest('Bad JSON\n' + 'toAdd: ' + str(toAdd) + '\ntoRemove: ' + str(toRemove))
   except TypeError:
@@ -145,23 +138,23 @@ def multiModActivePlaylist(request, player):
 def modActivePlaylist(request, player_id, player, lib_id):
   user = getUserForTicket(request)
   if request.method == 'PUT':
-    return add2ActivePlaylist(user, lib_id, player)
+    return add2ActivePlaylist(user, lib_id, player.DefaultLibrary, player)
   elif request.method == 'DELETE':
     if not (user == player.owning_user or player.isAdmin(user)):
       return HttpResponseForbidden()
-    return removeFromActivePlaylist(request, user, lib_id, player)
+    return removeFromActivePlaylist(request, user, lib_id, player.DefaultLibrary, player)
 
 
-def add2ActivePlaylist(user, lib_id, player):
+def add2ActivePlaylist(user, lib_id, default_library, player):
   player.lockActivePlaylist()
-  if ActivePlaylistEntry.isQueued(lib_id, player):
+  if ActivePlaylistEntry.isQueued(lib_id, default_library, player):
     voteSong(player, user, lib_id, 1)
     return HttpResponse()
-  elif ActivePlaylistEntry.isPlaying(lib_id, player):
+  elif ActivePlaylistEntry.isPlaying(lib_id, default_library, player):
     return HttpResponse()
 
   try:
-    addSongsToPlaylist([lib_id], player, user)
+    addSongsToPlaylist([lib_id], default_library, player, user)
   except ObjectDoesNotExist:
     toReturn = HttpResponseNotFound()
     toReturn[MISSING_RESOURCE_HEADER] = 'song'
@@ -169,10 +162,10 @@ def add2ActivePlaylist(user, lib_id, player):
 
   return HttpResponse(status=201)
 
-def removeFromActivePlaylist(request, user, lib_id, player):
+def removeFromActivePlaylist(request, user, lib_id, default_library, player):
   player.lockActivePlaylist()
   try:
-    removeSongsFromPlaylist([lib_id], player, user)
+    removeSongsFromPlaylist([lib_id], default_library, player, user)
   except ObjectDoesNotExist:
     toReturn = HttpResponseNotFound()
     toReturn[MISSING_RESOURCE_HEADER] = 'song'
@@ -206,8 +199,8 @@ def voteSong(player, user, lib_id, weight):
 
   try:
     playlistEntry = ActivePlaylistEntry.objects.get(
-        song__player=player,
-        song__player_lib_song_id=lib_id,
+        song__player=player.DefaultLibrary,
+        song__lib_id=lib_id,
         state='QE')
   except ObjectDoesNotExist:
     toReturn = HttpResponseNotFound()

@@ -60,14 +60,23 @@ class LibraryEntry(models.Model):
 
   @staticmethod
   def songExsits(songId, library, player):
-    return LibraryEntry.objects.filter(
-      player=player,
+    entry = LibraryEntry.objects.filter(
       lib_id=songId,
       library=library,
-      is_deleted=False).exists()
+      is_deleted=False)
+    return entry.exists() and not entry[0].is_banned(player)
+
+  @staticmethod
+  def songExsitsAndNotBanned(songId, library, player):
+    entry = LibraryEntry.objects.filter(
+      lib_id=songId,
+      library=library,
+      is_deleted=False)
+    return entry.exists() and not entry[0].is_banned(player)
+
 
   def is_banned(self, player):
-    return BannedLibrary.objects.get(player=player, song=self).exists()
+    return BannedLibraryEntry.objects.get(player=player, song=self).exists()
 
 
   def validate_unique(self, exclude=None):
@@ -76,6 +85,24 @@ class LibraryEntry(models.Model):
       lib_id=self.lib_id, library=self.library, is_deleted=False).exists():
       raise ValidationError('Duplicated non-deleted lib ids for a player')
     super(LibraryEntry, self).validate_unique(exclude=exclude)
+
+  def banSong(self, player):
+    banned_song, created = BannedLibraryEntry.objects.get_or_create(song=libEntry, player=player)
+    self.removeIfOnPlaylist(player)
+
+  def unbanSong(self, player):
+    banned_song = BannedLibraryEntry.objects.get(song=libEntry, player=player)
+    banned_song.delete()
+
+  def removeIfOnPlaylistForPlayer(self, player):
+    onList = ActivePlaylistEntry.objects.filter(player=player, song=libEntry, state=u'QE')
+    if onList.exists():
+      onList.update(state=u'RM')
+
+  def removeIfOnAnyPlaylist(self):
+    onList = ActivePlaylistEntry.objects.filter(song=libEntry, state=u'QE')
+    if onList.exists():
+      onList.update(state=u'RM')
 
   def __unicode__(self):
     return "Library Entry " + str(self.lib_id) + ": " + self.title
@@ -321,6 +348,12 @@ class Player(models.Model):
     from udj import playlistalgos
     toCall = getattr(playlistalgos, self.sorting_algo.function_name)
     return toCall(toSort)
+
+
+  def getDefaultLibrary(self):
+    return DefaultLibrary.objects.get(player=self)
+
+  DefaultLibrary = property(getDefaultLibrary)
 
 
   def __unicode__(self):

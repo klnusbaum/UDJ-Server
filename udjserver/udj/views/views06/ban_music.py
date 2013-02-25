@@ -18,7 +18,6 @@ from django.http import HttpResponseNotFound
 from django.core.exceptions import ObjectDoesNotExist
 
 
-
 @csrf_exempt
 @NeedsAuth
 @AcceptsMethods(['PUT', 'DELETE'])
@@ -26,11 +25,11 @@ from django.core.exceptions import ObjectDoesNotExist
 @IsOwnerOrAdmin
 def modifyBanList(request, player_id, lib_id, player):
   try:
-    libEntry = LibraryEntry.objects.get(player=player, player_lib_song_id=lib_id)
-    libEntry.is_banned=True if request.method == 'PUT' else False
-    libEntry.save()
-    if request.method == 'DELETE':
-      removeIfOnPlaylist(libEntry)
+    libEntry = LibraryEntry.objects.get(libray=player.DefaultLibrary, lib_id=lib_id)
+    if request.method == 'PUT':
+      libEntry.banSong(player)
+    elif request.method == 'DELETE':
+      libEntry.unbanSong(player)
     return HttpResponse()
   except ObjectDoesNotExist:
     toReturn = HttpResponseNotFound()
@@ -60,13 +59,15 @@ def multiBan(request, player_id, player):
     toReturn[MISSING_RESOURCE_HEADER] = 'song'
     return toReturn
 
-  def setSongBanStatus(songid, banStatus):
-    songToBan = LibraryEntry.objects.get(player=player, player_lib_song_id=songid)
-    songToBan.is_banned = banStatus
-    songToBan.save()
+  def setSongBanStatus(songid, library, banStatus):
+    songToChange = LibraryEntry.objects.get(lib_id=songid, library=library)
+    if banStatus:
+      songToChange.banSong(player)
+    else:
+      songToChange.unbanSong(player)
 
-  map(lambda songid: setSongBanStatus(songid, True), toBan)
-  map(lambda songid: setSongBanStatus(songid, False), toUnban)
+  map(lambda songid: setSongBanStatus(songid, player.DefaultLibrary, True), toBan)
+  map(lambda songid: setSongBanStatus(songid, player.DefaultLibrary, False), toUnban)
 
   return HttpResponse()
 

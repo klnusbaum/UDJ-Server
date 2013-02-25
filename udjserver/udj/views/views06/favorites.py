@@ -27,7 +27,7 @@ def favorite(request, player_id, lib_id):
   elif request.method == 'DELETE':
     return removeSongFromFavorite(user, player_id, lib_id)
   else:
-    #Should never get here because of AcceptsMethods decerator
+    #Should never get here because of AcceptsMethods decorator but I'm pedantic
     return HttpResponse(status=405)
 
 def addSongToFavorite(user, player_id, lib_id):
@@ -39,7 +39,7 @@ def addSongToFavorite(user, player_id, lib_id):
     return toReturn
 
   try:
-    song = LibraryEntry.objects.get(player=player, player_lib_song_id=lib_id)
+    song = LibraryEntry.objects.get(library=player.DefaultLibrary, lib_id=lib_id)
   except ObjectDoesNotExist:
     toReturn = HttpResponseNotFound()
     toReturn[MISSING_RESOURCE_HEADER] = 'song'
@@ -50,8 +50,8 @@ def addSongToFavorite(user, player_id, lib_id):
 
 def removeSongFromFavorite(user, player_id, lib_id):
   try:
-    toDelete = Favorite.objects.get(user=user, favorite_song__player__id=player_id,
-        favorite_song__player_lib_song_id=lib_id)
+    toDelete = Favorite.objects.get(user=user, favorite_song__library=player.DefaultLibrary,
+        favorite_song__lib_id=lib_id)
   except ObjectDoesNotExist:
     toReturn = HttpResponseNotFound()
     toReturn[MISSING_RESOURCE_HEADER] = 'song'
@@ -64,7 +64,13 @@ def removeSongFromFavorite(user, player_id, lib_id):
 @NeedsAuth
 @AcceptsMethods(['GET'])
 def getFavorites(request, player_id):
+  try:
+    player = Player.objects.get(pk=player_id)
+  except ObjectDoesNotExist:
+    toReturn = HttpResponseNotFound()
+    toReturn[MISSING_RESOURCE_HEADER] = 'player'
+    return toReturn
   user = getUserForTicket(request)
-  favorites = Favorite.objects.filter(user=user, favorite_song__player__id=player_id)
+  favorites = Favorite.objects.filter(user=user, favorite_song__library=player.DefaultLibrary)
   return HttpJSONResponse(json.dumps(favorites, cls=UDJEncoder))
 
