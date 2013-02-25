@@ -211,8 +211,8 @@ def setCurrentSong(request, player):
   player.lockActivePlaylist()
   try:
     newCurrentSong = ActivePlaylistEntry.objects.get(
-      song__player_lib_song_id=request.POST['lib_id'],
-      song__player=player,
+      song__lib_id=request.POST['lib_id'],
+      song__library=player.DefaultLibrary,
       state=u'QE')
   except ObjectDoesNotExist:
     toReturn = HttpResponseNotFound()
@@ -220,7 +220,7 @@ def setCurrentSong(request, player):
     return toReturn
 
   try:
-    currentSong = ActivePlaylistEntry.objects.get(song__player=player, state=u'PL')
+    currentSong = ActivePlaylistEntry.objects.get(song__library=player.DefaultLibrary, state=u'PL')
     currentSong.state=u'FN'
     currentSong.save()
   except ObjectDoesNotExist:
@@ -239,7 +239,7 @@ def setCurrentSong(request, player):
 def removeCurrentSong(request, player):
   player.lockActivePlaylist()
   try:
-    currentSong = ActivePlaylistEntry.objects.get(song__player=player, state=u'PL')
+    currentSong = ActivePlaylistEntry.objects.get(song__library=player.DefaultLibray, state=u'PL')
     currentSong.state=u'FN'
     currentSong.save()
   except ObjectDoesNotExist:

@@ -22,7 +22,7 @@ def getDuplicateDifferentIds(songs, player):
   badIds = []
   duplicates = []
   for song in songs:
-    potentialDuplicate = LibraryEntry.objects.filter(player=player, player_lib_song_id=song['id'], is_deleted=False)
+    potentialDuplicate = LibraryEntry.objects.filter(library=player.DefaultLibrary, lib_id=song['id'], is_deleted=False)
     if potentialDuplicate.exists():
       duplicates.append(song['id']) 
       if (potentialDuplicate[0].title != song['title'] or
@@ -40,7 +40,7 @@ def getDuplicateDifferentIds(songs, player):
 def addSongs(libJSON, player):
   for libEntry in libJSON:
     LibraryEntry(
-      player=player,
+      library=player.DefaultLibrary,
       player_lib_song_id=libEntry['id'],
       title=libEntry['title'],
       artist=libEntry['artist'],
@@ -51,10 +51,10 @@ def addSongs(libJSON, player):
 
 def deleteSongs(songIds, player):
   for song_id in songIds:
-    libEntry = LibraryEntry.objects.get(player=player, player_lib_song_id=song_id)
+    libEntry = LibraryEntry.objects.get(library=player.DefaultLibrary, lib_id=song_id)
     libEntry.is_deleted = True
     libEntry.save()
-    removeIfOnPlaylist(libEntry)
+    removeIfOnAnyPlaylist(libEntry)
 
 
 
