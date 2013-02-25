@@ -1,7 +1,7 @@
 [
   {
     "pk" :1,
-    "model: "udj.library",
+    "model" : "udj.library",
     "fields": {
       "name" : "Kurtis Player Default Library",
       "description": "blah",
@@ -9,10 +9,11 @@
       "read_permission" : "OW",
       "write_permission" : "OW",
       "resolver" : "standard"
+    }
   },
   {
     "pk" :2,
-    "model: "udj.library",
+    "model" : "udj.library",
     "fields": {
       "name" : "Minnesota Player Default Library",
       "description": "blah",
@@ -20,10 +21,11 @@
       "read_permission" : "OW",
       "write_permission" : "OW",
       "resolver" : "standard"
+    }
   },
   {
     "pk" :3,
-    "model: "udj.library",
+    "model" : "udj.library",
     "fields": {
       "name" : "Alejandro Player Default Library",
       "description": "blah",
@@ -31,11 +33,12 @@
       "read_permission" : "OW",
       "write_permission" : "OW",
       "resolver" : "standard"
+    }
   },
 
   {
     "pk" :4,
-    "model: "udj.library",
+    "model" : "udj.library",
     "fields": {
       "name" : "No Location Player Default Library",
       "description": "blah",
@@ -43,11 +46,12 @@
       "read_permission" : "OW",
       "write_permission" : "OW",
       "resolver" : "standard"
+    }
   },
 
   {
     "pk" :5,
-    "model: "udj.library",
+    "model" : "udj.library",
     "fields": {
       "name" : "Other Kurtis Player Default Library",
       "description": "blah",
@@ -55,11 +59,12 @@
       "read_permission" : "OW",
       "write_permission" : "OW",
       "resolver" : "standard"
+    }
   },
 
   {
     "pk" :6,
-    "model: "udj.library",
+    "model" : "udj.library",
     "fields": {
       "name" : "Schnuks Player Default Library",
       "description": "blah",
@@ -67,12 +72,13 @@
       "read_permission" : "OW",
       "write_permission" : "OW",
       "resolver" : "standard"
+    }
   },
 
 
   {
     "pk" :7,
-    "model: "udj.library",
+    "model" : "udj.library",
     "fields": {
       "name" : "Full Player Default Library",
       "description": "blah",
@@ -80,6 +86,7 @@
       "read_permission" : "OW",
       "write_permission" : "OW",
       "resolver" : "standard"
+    }
   },
 
   {
@@ -155,7 +162,7 @@
       "library" : 1,
       "owner" : 2
     }
-  }
+  },
 
   {
     "pk" : 2,
@@ -164,7 +171,7 @@
       "library" : 2,
       "owner" : 2
     }
-  }
+  },
 
   {
     "pk" : 3,
@@ -173,7 +180,7 @@
       "library" : 3,
       "owner" : 6
     }
-  }
+  },
 
   {
     "pk" : 4,
@@ -182,7 +189,7 @@
       "library" : 4,
       "owner" : 2
     }
-  }
+  },
 
   {
     "pk" : 5,
@@ -191,7 +198,7 @@
       "library" : 5,
       "owner" : 2
     }
-  }
+  },
 
 
   {
@@ -201,7 +208,7 @@
       "library" : 6,
       "owner" : 2
     }
-  }
+  },
 
   {
     "pk" : 7,
@@ -210,14 +217,14 @@
       "library" : 7,
       "owner" : 2
     }
-  }
+  },
 
   {
     "pk": 1,
     "model" :"udj.associatedlibrary",
     "fields" : {
       "library" : 1,
-      "player" : 1
+      "player" : 1,
       "enabled" : true
     }
   },
@@ -227,7 +234,7 @@
     "model" :"udj.associatedlibrary",
     "fields" : {
       "library" : 2,
-      "player" : 2
+      "player" : 2,
       "enabled" : true
     }
   },
@@ -237,7 +244,7 @@
     "model" :"udj.associatedlibrary",
     "fields" : {
       "library" : 3,
-      "player" : 3
+      "player" : 3,
       "enabled" : true
     }
   },
@@ -247,7 +254,7 @@
     "model" :"udj.associatedlibrary",
     "fields" : {
       "library" : 4,
-      "player" : 4
+      "player" : 4,
       "enabled" : true
     }
   },
@@ -257,7 +264,7 @@
     "model" :"udj.associatedlibrary",
     "fields" : {
       "library" : 5,
-      "player" : 5
+      "player" : 5,
       "enabled" : true
     }
   },
@@ -267,7 +274,7 @@
     "model" :"udj.associatedlibrary",
     "fields" : {
       "library" : 6,
-      "player" : 6
+      "player" : 6,
       "enabled" : true
     }
   },
@@ -278,7 +285,7 @@
     "model" :"udj.associatedlibrary",
     "fields" : {
       "library" : 7,
-      "player" : 7
+      "player" : 7,
       "enabled" : true
     }
   },
@@ -296,7 +303,7 @@
       "track": 3,
       "genre": "Rock",
       "duration": 268,
-      "is_deleted": false,
+      "is_deleted": false
     }
   },
 
@@ -312,7 +319,7 @@
       "track": 2,
       "genre": "Rock",
       "duration": 228,
-      "is_deleted": false,
+      "is_deleted": false
     }
   },
 
@@ -328,7 +335,7 @@
       "track": 5,
       "genre": "Rock",
       "duration": 189,
-      "is_deleted": false,
+      "is_deleted": false
     }
   },
 
@@ -344,7 +351,7 @@
       "track": 1,
       "genre": "Rock",
       "duration": 200,
-      "is_deleted": false,
+      "is_deleted": false
     }
   },
 
@@ -360,7 +367,7 @@
       "track": 3,
       "genre": "Rock",
       "duration": 237,
-      "is_deleted": false,
+      "is_deleted": false
     }
   },
 
@@ -377,7 +384,7 @@
       "track": 3,
       "genre": "Rock",
       "duration": 335,
-      "is_deleted": false,
+      "is_deleted": false
     }
   },
 
@@ -393,7 +400,7 @@
       "track": 2,
       "genre": "Rock",
       "duration": 471,
-      "is_deleted": false,
+      "is_deleted": false
     }
   },
 
@@ -409,7 +416,7 @@
       "track": 5,
       "genre": "Rock",
       "duration": 158,
-      "is_deleted": true,
+      "is_deleted": true
     }
   },
 
@@ -425,7 +432,7 @@
       "track": 2,
       "genre": "Dubstep",
       "duration": 215,
-      "is_deleted": false,
+      "is_deleted": false
     }
   },
 
@@ -441,7 +448,7 @@
       "track": 1,
       "genre": "Dubstep",
       "duration": 291,
-      "is_deleted": false,
+      "is_deleted": false
     }
   },
 
@@ -458,7 +465,7 @@
       "track": 6,
       "genre": "Rock",
       "duration": 321,
-      "is_deleted": false,
+      "is_deleted": false
     }
   },
 
@@ -474,7 +481,7 @@
       "track": 4,
       "genre": "Rock",
       "duration": 255,
-      "is_deleted": false,
+      "is_deleted": false
     }
   },
 
