@@ -170,7 +170,7 @@ class ActivePlaylistEntry(models.Model):
     return ActivePlaylistEntry.objects.filter(song__player=player, song__lib_id=songId, song__library=library, state='PL').exists()
 
   @staticmethod
-  def isQueued(songId, player):
+  def isQueued(songId, library, player):
     return ActivePlaylistEntry.objects.filter(song__player=player, song__lib_id=songId, song__library=library)\
         .exclude(state='RM').exclude(state='FN').exclude(state='PL').exists()
 
@@ -227,6 +227,12 @@ class Player(models.Model):
   size_limit = models.IntegerField(null=True, blank=True)
   allow_user_songset = models.BooleanField(default=False)
 
+  def getAllSongs(self):
+    banned_entries = BannedLibraryEntry.objects.filter(player=self).values_list('song__id', flat=True)
+    return (AssociatedLibrary.objects.filter(player=self, enabled=True)
+                                     .libraryentry_set.exclude(is_deleted=True)
+                                     .exclude(pk__in=banned_entries))
+
   def canCreatSongSets(self, user):
     return user==self.owning_user or self.isAdmin(user) or \
         (self.state == 'AC' and self.isActiveParticipant(user))
@@ -239,17 +245,13 @@ class Player(models.Model):
     return SongSet.objects.filter(player=self)
 
   def Artists(self):
-    assoc_libraries = AssociatedLibrary.objects.filter(player=self)
-    return LibraryEntry.objects.filter(player=self)\
-      .exclude(is_deleted=True)\
-      .exclude(is_banned=True)\
-      .distinct('artist').order_by('artist').values_list('artist', flat=True)
+    return (getAllSongs()
+            .distinct('artist')
+            .order_by('artist')
+            .values_list('artist', flat=True))
 
   def ArtistSongs(self, artist):
-    return LibraryEntry.objects.filter(player=self)\
-      .exclude(is_deleted=True)\
-      .exclude(is_banned=True)\
-      .filter(artist=artist)
+    return getAllSongs().filter(artist=artist)
 
   def RecentlyPlayed(self):
     #This is weird, for some reason I have to put time_played in the distinct field
@@ -261,17 +263,14 @@ class Player(models.Model):
       .distinct('time_played', 'playlist_entry__song__id')
 
   def Randoms(self):
-    return LibraryEntry.objects.filter(player=self)\
-      .exclude(Q(is_deleted=True) | Q(is_banned=True)).order_by('?')
+    return getAllSongs().order_by('?')
 
 
   def AvailableMusic(self, query):
-    return LibraryEntry.objects.filter(player=self).filter(
+    return getAllSongs().filter(
       Q(title__icontains=query) |
       Q(artist__icontains=query) |
-      Q(album__icontains=query)).exclude(
-        Q(is_deleted=True)|
-        Q(is_banned=True))
+      Q(album__icontains=query))
 
 
   def ActivePlaylist(self):
