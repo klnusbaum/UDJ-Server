@@ -34,7 +34,7 @@ setPlayerPaused.short_description = "Set player(s) as paused"
 
 
 def setCurrentSong(modeladmin, request, queryset):
-  lib_id = queryset[0].song.player_lib_song_id
+  lib_id = queryset[0].song.lib_id
   player = queryset[0].song.player
 
   from udj.views.player import changeCurrentSong
@@ -76,7 +76,7 @@ class ParticipantAdmin(admin.ModelAdmin):
 
 class ActivePlaylistEntryAdmin(admin.ModelAdmin):
   list_display = ('song', 'time_added', 'adder', 'state')
-  list_filter = ('state','song__player', 'adder',)
+  list_filter = ('state','song__library', 'adder',)
   actions = [removeSongFromActivePlaylist, setCurrentSong, setSongsFinished]
 
 class TicketAdmin(admin.ModelAdmin):
@@ -84,8 +84,8 @@ class TicketAdmin(admin.ModelAdmin):
   
 class LibraryAdmin(admin.ModelAdmin):
   list_display = (
-    'player',
-    'player_lib_song_id', 
+    'library',
+    'lib_id', 
     'title', 
     'artist', 
     'album', 
@@ -94,16 +94,16 @@ class LibraryAdmin(admin.ModelAdmin):
     'duration', 
     'is_banned', 
     'is_deleted')
-  list_filter = ('player', 'is_deleted', 'is_banned')
+  list_filter = ('library', 'is_deleted', 'is_banned')
 
 class VoteAdmin(admin.ModelAdmin):
   list_display = ('playlist_entry', 'user', 'weight')
-  list_filter = ('playlist_entry__song__player', 'playlist_entry__state', 'user', 'weight')
+  list_filter = ('playlist_entry__song__library', 'playlist_entry__state', 'user', 'weight')
 
 class TimePlayedAdmin(admin.ModelAdmin):
   list_display = ('playlist_entry', 'time_played', 'playlist_entry',  )
 
-  list_filter = ('playlist_entry__adder', 'playlist_entry__song__player', )
+  list_filter = ('playlist_entry__adder', 'playlist_entry__song__library', )
 
 
 class PlayerLocationAdmin(gisadmin.ModelAdmin):

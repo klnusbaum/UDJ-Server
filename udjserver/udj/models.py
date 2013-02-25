@@ -57,25 +57,77 @@ class LibraryEntry(models.Model):
   genre = models.CharField(max_length=50)
   duration = models.IntegerField()
   is_deleted = models.BooleanField(default=False)
-  is_banned = models.BooleanField(default=False)
 
   @staticmethod
   def songExsits(songId, player):
     return LibraryEntry.objects.filter(
       player=player,
-      player_lib_song_id=songId,
+      lib_id=songId,
       is_deleted=False,
       is_banned=False).exists()
 
   def validate_unique(self, exclude=None):
     if not self.is_deleted and \
       LibraryEntry.objects.exclude(pk=self.pk).filter(
-      player_lib_song_id=self.player_lib_song_id, player=self.player, is_deleted=False).exists():
+      lib_id=self.lib_id, library=self.library, is_deleted=False).exists():
       raise ValidationError('Duplicated non-deleted lib ids for a player')
     super(LibraryEntry, self).validate_unique(exclude=exclude)
 
   def __unicode__(self):
-    return "Library Entry " + str(self.player_lib_song_id) + ": " + self.title
+    return "Library Entry " + str(self.lib_id) + ": " + self.title
+
+class BannedLibraryEntry(models.Model):
+  player = models.ForeignKey('Player')
+  song = models.ForeignKey(LibraryEntry)
+
+class Library(models.Model):
+  PERMISSION_CHOICES = (
+    (u'NO', u'none'),
+    (u'OW', u'owner'),
+    (u'AD', u'admin'),
+    (u'US', u'user'),
+    (u'PU', u'public'),)
+
+  name = models.CharField(max_length=200)
+  description = models.CharField(max_length=200)
+  pub_key = models.TextField()
+  read_permission = models.CharField(max_length=2, choices=PERMISSION_CHOICES, default=u'OW')
+  write_permission = models.CharField(max_length=2, choices=PERMISSION_CHOICES, default=u'OW')
+  resolver = models.CharField(max_length=200, default="standard")
+
+  def __unicode__(self):
+    return "Library: " + self.name
+
+class DefaultLibrary(models.Model):
+  """
+  We only need this for API 0.6 support. Once we shut that off
+  we can get rid of this model.
+  """
+  library = models.ForeignKey(Library)
+  player = models.ForeignKey('Player', unique=True)
+
+  def __unicode__(self):
+    return self.library.name + " is the default library for " + self.player
+
+class OwnedLibrary(models.Model):
+  library = models.ForeignKey(Library)
+  owner = models.ForeignKey(User)
+
+  def __unicode__(self):
+    return self.library.name + " is owned by " + self.owner
+
+class AssociatedLibrary(models.Model):
+  library = models.ForeignKey(Library)
+  player = models.ForeignKey('Player')
+  enabled = models.BooleanField(default=True)
+
+  class Meta:
+    unique_together = ("library", "player")
+
+
+  def __unicode__(self):
+    self.library.name + " is associated with player " + player.name
+
 
 class ActivePlaylistEntry(models.Model):
   STATE_CHOICES = (
@@ -179,6 +231,7 @@ class Player(models.Model):
     return SongSet.objects.filter(player=self)
 
   def Artists(self):
+    assoc_libraries = AssociatedLibrary.objects.filter(player=self)
     return LibraryEntry.objects.filter(player=self)\
       .exclude(is_deleted=True)\
       .exclude(is_banned=True)\
@@ -325,50 +378,3 @@ class Favorite(models.Model):
   def __unicode__(self):
     return self.user.username + " likes " + self.favorite_song.title
 
-class Library(models.Model):
-  PERMISSION_CHOICES = (
-    (u'NO', u'none'),
-    (u'OW', u'owner'),
-    (u'AD', u'admin'),
-    (u'US', u'user'),
-    (u'PU', u'public'),)
-
-  name = models.CharField(max_length=200)
-  description = models.CharField(max_length=200)
-  pub_key = models.TextField()
-  read_permission = models.CharField(max_length=2, choices=PERMISSION_CHOICES, default=u'OW')
-  write_permission = models.CharField(max_length=2, choices=PERMISSION_CHOICES, default=u'OW')
-  resolver = models.CharField(max_length=200, default="standard")
-
-  def __unicode__(self):
-    return "Library: " + self.name
-
-class DefaultLibrary(models.Model):
-  """
-  We only need this for API 0.6 support. Once we shut that off
-  we can get rid of this model.
-  """
-  library = models.ForeignKey(Library)
-  player = models.ForeignKey(Player, unique=True)
-
-  def __unicode__(self):
-    return self.library.name + " is the default library for " + self.player
-
-class OwnedLibrary(models.Model):
-  library = models.ForeignKey(Library)
-  owner = models.ForeignKey(User)
-
-  def __unicode__(self):
-    return self.library.name + " is owned by " + self.owner
-
-class AssociatedLibrary(models.Model):
-  library = models.ForeignKey(Library)
-  player = models.ForeignKey(Player)
-  enabled = models.BooleanField(default=True)
-
-  class Meta:
-    unique_together = ("library", "player")
-
-
-  def __unicode__(self):
-    self.library.name + " is associated with player " + player.name
