@@ -59,12 +59,16 @@ class LibraryEntry(models.Model):
   is_deleted = models.BooleanField(default=False)
 
   @staticmethod
-  def songExsits(songId, player):
+  def songExsits(songId, library, player):
     return LibraryEntry.objects.filter(
       player=player,
       lib_id=songId,
-      is_deleted=False,
-      is_banned=False).exists()
+      library=library,
+      is_deleted=False).exists()
+
+  def is_banned(self, player):
+    return BannedLibrary.objects.get(player=player, song=self).exists()
+
 
   def validate_unique(self, exclude=None):
     if not self.is_deleted and \
@@ -79,6 +83,10 @@ class LibraryEntry(models.Model):
 class BannedLibraryEntry(models.Model):
   player = models.ForeignKey('Player')
   song = models.ForeignKey(LibraryEntry)
+
+  class Meta:
+    unique_together = ("song", "player")
+
 
 class Library(models.Model):
   PERMISSION_CHOICES = (
