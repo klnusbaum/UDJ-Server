@@ -59,7 +59,7 @@ class LibraryEntry(models.Model):
   is_deleted = models.BooleanField(default=False)
 
   @staticmethod
-  def songExsits(songId, library, player):
+  def songExists(songId, library, player):
     entry = LibraryEntry.objects.filter(
       lib_id=songId,
       library=library,
@@ -87,20 +87,20 @@ class LibraryEntry(models.Model):
     super(LibraryEntry, self).validate_unique(exclude=exclude)
 
   def banSong(self, player):
-    banned_song, created = BannedLibraryEntry.objects.get_or_create(song=libEntry, player=player)
-    self.removeIfOnPlaylist(player)
+    banned_song, created = BannedLibraryEntry.objects.get_or_create(song=self, player=player)
+    self.removeIfOnPlaylistForPlayer(player)
 
   def unbanSong(self, player):
-    banned_song = BannedLibraryEntry.objects.get(song=libEntry, player=player)
+    banned_song = BannedLibraryEntry.objects.get(song=self, player=player)
     banned_song.delete()
 
   def removeIfOnPlaylistForPlayer(self, player):
-    onList = ActivePlaylistEntry.objects.filter(player=player, song=libEntry, state=u'QE')
+    onList = ActivePlaylistEntry.objects.filter(player=player, song=self, state=u'QE')
     if onList.exists():
       onList.update(state=u'RM')
 
   def removeIfOnAnyPlaylist(self):
-    onList = ActivePlaylistEntry.objects.filter(song=libEntry, state=u'QE')
+    onList = ActivePlaylistEntry.objects.filter(song=self, state=u'QE')
     if onList.exists():
       onList.update(state=u'RM')
 
@@ -170,6 +170,7 @@ class ActivePlaylistEntry(models.Model):
     (u'RM', u'Removed'),
     (u'PL', u'Playing'),
     (u'FN', u'Finished'),)
+  player = models.ForeignKey('Player')
   song = models.ForeignKey(LibraryEntry)
   time_added = models.DateTimeField(auto_now_add=True)
   adder = models.ForeignKey(User)

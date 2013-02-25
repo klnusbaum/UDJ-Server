@@ -8,7 +8,7 @@ from udj.views.views06.authdecorators import NeedsAuth
 from udj.views.views06.authdecorators import IsOwnerOrAdmin
 from udj.models import LibraryEntry, Player, ActivePlaylistEntry
 from udj.headers import MISSING_RESOURCE_HEADER
-from udj.views.views06.helpers import HttpJSONResponse, removeIfOnPlaylist, getNonExistantLibIds
+from udj.views.views06.helpers import HttpJSONResponse, getNonExistantLibIds
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpRequest
@@ -25,7 +25,7 @@ from django.core.exceptions import ObjectDoesNotExist
 @IsOwnerOrAdmin
 def modifyBanList(request, player_id, lib_id, player):
   try:
-    libEntry = LibraryEntry.objects.get(libray=player.DefaultLibrary, lib_id=lib_id)
+    libEntry = LibraryEntry.objects.get(library=player.DefaultLibrary, lib_id=lib_id)
     if request.method == 'PUT':
       libEntry.banSong(player)
     elif request.method == 'DELETE':
