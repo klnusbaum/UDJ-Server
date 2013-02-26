@@ -569,14 +569,13 @@ class BanTestCases(DoesServerOpsTestCase):
     response = self.doPost('/udj/0_6/players/1/ban_music', {'to_ban' : json.dumps(toBan), 
       'to_unban' : json.dumps(toUnban)})
     player = Player.objects.get(pk=1)
-    self.assertEqual(200, response.status_code, response.content)
+    self.assertEqual(200, response.status_code)
     self.assertEqual(LibraryEntry.objects.get(library__id=1, lib_id=1).is_banned(player), True)
     self.assertEqual(LibraryEntry.objects.get(library__id=1, lib_id=4).is_banned(player), False)
 
   def testDuplicateBan(self):
     response = self.doPut('/udj/0_6/players/1/ban_music/4')
     player = Player.objects.get(pk=1)
-    self.assertEqual(200, response.status_code, response.content)
     self.assertEqual(LibraryEntry.objects.get(library__id=1, lib_id=4).is_banned(player), True)
 
   def testDuplicateMultiBan(self):
@@ -585,7 +584,11 @@ class BanTestCases(DoesServerOpsTestCase):
     response = self.doPost('/udj/0_6/players/1/ban_music', {'to_ban' : json.dumps(toBan), 
       'to_unban' : json.dumps(toUnban)})
     player = Player.objects.get(pk=1)
-    self.assertEqual(200, response.status_code, response.content)
+    if response.has_header(MISSING_RESOURCE_HEADER):
+      errmsg = response[MISSING_RESOURCE_HEADER]
+      self.assertEqual(200, response.status_code, errmsg)
+    else:
+      self.assertEqual(200, response.status_code)
     self.assertEqual(LibraryEntry.objects.get(library__id=1, lib_id=1).is_banned(player), True)
     self.assertEqual(LibraryEntry.objects.get(library__id=1, lib_id=4).is_banned(player), True)
 
