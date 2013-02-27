@@ -3,7 +3,7 @@ import json
 from udj.models import Player
 from udj.models import LibraryEntry
 from udj.models import Favorite
-from udj.views.views06.decorators import AcceptsMethods
+from udj.views.views06.decorators import AcceptsMethods, PlayerExists
 from udj.views.views06.authdecorators import NeedsAuth
 from udj.views.views06.JSONCodecs import UDJEncoder
 from udj.views.views06.auth import getUserForTicket
@@ -20,24 +20,18 @@ from django.http import HttpResponseNotFound
 @csrf_exempt
 @NeedsAuth
 @AcceptsMethods(['PUT','DELETE'])
-def favorite(request, player_id, lib_id):
+@PlayerExists
+def favorite(request, player_id, lib_id, player):
   user = getUserForTicket(request)
   if request.method == 'PUT':
-    return addSongToFavorite(user, player_id, lib_id)
+    return addSongToFavorite(user, player, lib_id)
   elif request.method == 'DELETE':
-    return removeSongFromFavorite(user, player_id, lib_id)
+    return removeSongFromFavorite(user, player, lib_id)
   else:
     #Should never get here because of AcceptsMethods decorator but I'm pedantic
     return HttpResponse(status=405)
 
-def addSongToFavorite(user, player_id, lib_id):
-  try:
-    player = Player.objects.get(pk=player_id)
-  except ObjectDoesNotExist:
-    toReturn = HttpResponseNotFound()
-    toReturn[MISSING_RESOURCE_HEADER] = 'player'
-    return toReturn
-
+def addSongToFavorite(user, player, lib_id):
   try:
     song = LibraryEntry.objects.get(library=player.DefaultLibrary, lib_id=lib_id)
   except ObjectDoesNotExist:
@@ -48,7 +42,7 @@ def addSongToFavorite(user, player_id, lib_id):
   addedSong , created = Favorite.objects.get_or_create(user=user,favorite_song=song)
   return HttpResponse(status=201)
 
-def removeSongFromFavorite(user, player_id, lib_id):
+def removeSongFromFavorite(user, player, lib_id):
   try:
     toDelete = Favorite.objects.get(user=user, favorite_song__library=player.DefaultLibrary,
         favorite_song__lib_id=lib_id)
