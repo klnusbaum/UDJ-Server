@@ -153,9 +153,9 @@ def add2ActivePlaylist(user, lib_id, default_library, player):
   elif ActivePlaylistEntry.isPlaying(lib_id, default_library, player):
     return HttpResponse()
 
-  try:
+  if LibraryEntry.songExsitsAndNotBanned(lib_id, default_library, player):
     addSongsToPlaylist([lib_id], default_library, player, user)
-  except ObjectDoesNotExist:
+  else:
     toReturn = HttpResponseNotFound()
     toReturn[MISSING_RESOURCE_HEADER] = 'song'
     return toReturn
