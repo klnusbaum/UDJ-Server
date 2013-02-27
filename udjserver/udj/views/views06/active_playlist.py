@@ -14,16 +14,16 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseNotAllow
 from django.core.exceptions import ObjectDoesNotExist
 
 def getAlreadyOnPlaylist(libIds, library, player):
-  return filter(lambda x: return ActivePlaylistEntry.isQueuedOrPlaying(x, library, player), libIds)
+  return filter(lambda x: ActivePlaylistEntry.isQueuedOrPlaying(x, library, player), libIds)
 
 def getNotOnPlaylist(libIds, library, player):
-  return filter(lambda x: return not ActivePlaylistEntry.isQueued(x, library, player), libIds)
+  return filter(lambda x: not ActivePlaylistEntry.isQueued(x, library, player), libIds)
 
 def addSongsToPlaylist(libIds, library, activePlayer, user):
   for lib_id in libIds:
     libEntry = LibraryEntry.objects.get(library=library, lib_id=lib_id)
 
-    addedEntry = ActivePlaylistEntry(song=libEntry, adder=user)
+    addedEntry = ActivePlaylistEntry(song=libEntry, adder=user, player=activePlayer)
     addedEntry.save()
 
     Vote(playlist_entry=addedEntry, user=user, weight=1).save()
@@ -91,7 +91,7 @@ def multiModActivePlaylist(request, player):
     # 2. Ensure all of the songs to be added actually exists in the library
     notInLibrary = []
     for songId in toAdd:
-      if not LibraryEntry.songExsitsAndNotBanned(songId, player):
+      if not LibraryEntry.songExsitsAndNotBanned(songId, player.DefaultLibrary, player):
         notInLibrary.append(songId)
 
     if len(notInLibrary) > 0:
@@ -104,12 +104,12 @@ def multiModActivePlaylist(request, player):
     alreadyOnPlaylist = getAlreadyOnPlaylist(toAdd, default_library, player)
     toAdd = filter(lambda x: x not in alreadyOnPlaylist, toAdd)
     try:
-      currentSong = ActivePlaylistEntry.objects.get(song__player=player, state='PL')
+      currentSong = ActivePlaylistEntry.objects.get(player=player, state='PL')
     except ObjectDoesNotExist:
       currentSong = None
     for libid in alreadyOnPlaylist:
       #make sure we don't vote on the currently playing song
-      if currentSong != None and currentSong.song.player_lib_song_id != libid:
+      if currentSong != None and not (currentSong.song.lib_id == libid and currentSong.song.library == player.DefaultLibrary):
         voteSong(player, user, libid, 1)
 
     #alright, should be good to go. Let's actually add/remove songs
@@ -199,8 +199,9 @@ def voteSong(player, user, lib_id, weight):
 
   try:
     playlistEntry = ActivePlaylistEntry.objects.get(
-        song__player=player.DefaultLibrary,
+        player=player,
         song__lib_id=lib_id,
+        song__library=player.DefaultLibrary,
         state='QE')
   except ObjectDoesNotExist:
     toReturn = HttpResponseNotFound()

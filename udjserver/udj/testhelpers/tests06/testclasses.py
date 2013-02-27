@@ -291,15 +291,17 @@ class PlaylistModTests(DoesServerOpsTestCase):
     self.assertEqual(response.status_code, 200, response.content)
     #make sure song was queued
     addedSong = ActivePlaylistEntry.objects.get(
-      song__player__id=1, song__player_lib_song_id=9, state='QE')
+      player__id=1, song__lib_id='9', song__library__id=1, state='QE')
     #make sure song was removed
     self.assertFalse(ActivePlaylistEntry.objects.filter(
-      song__player__id=1,
-      song__player_lib_song_id=3,
+      player__id=1,
+      song__lib_id='3',
+      song__library__id=1,
       state='QE').exists())
     self.assertTrue(ActivePlaylistEntry.objects.filter(
-      song__player__id=1,
-      song__player_lib_song_id=3,
+      player__id=1,
+      song__lib_id='3',
+      song__library__id=1,
       state='RM').exists())
 
   def testBadRemoveMultiMod(self):
@@ -318,18 +320,20 @@ class PlaylistModTests(DoesServerOpsTestCase):
 
     #ensure 9 wasn't added
     self.assertFalse(ActivePlaylistEntry.objects.filter(
-      song__player__id='1',
-      song__player_lib_song_id='9',
+      player__id='1',
+      song__lib_id='9',
+      song__library=1,
       state="QE").exists())
 
     #ensure 3 is still queued
     ActivePlaylistEntry.objects.get(
-      song__player__id='1',
-      song__player_lib_song_id='3',
+      player__id='1',
+      song__lib_id='3',
+      song__library__id=1,
       state="QE")
 
   def testDuplicateAddMultiMod(self):
-    sixInitVoteCount = len(ActivePlaylistEntry.objects.get(song__player__id=1, song__player_lib_song_id=6).upvoters())
+    sixInitVoteCount = len(ActivePlaylistEntry.objects.get(player__id=1, song__library__id=1, song__lib_id='6').upvoters())
 
     toAdd = [6,9]
     toRemove = [3]
@@ -341,18 +345,20 @@ class PlaylistModTests(DoesServerOpsTestCase):
 
     #ensure 9 was added
     self.assertTrue(ActivePlaylistEntry.objects.filter(
-      song__player__id='1',
-      song__player_lib_song_id='9',
+      song__library__id='1',
+      song__lib_id='9',
+      player=1,
       state="QE").exists())
 
     #ensure 3 is no longer queued
     ActivePlaylistEntry.objects.get(
-      song__player__id='1',
-      song__player_lib_song_id='3',
+      song__library__id=1,
+      song__lib_id='3',
+      player=1,
       state="RM")
 
     #ensure the vote count for 6 hasn't changed since it's the current song.
-    sixNewVoteCount = len(ActivePlaylistEntry.objects.get(song__player__id=1, song__player_lib_song_id=6).upvoters())
+    sixNewVoteCount = len(ActivePlaylistEntry.objects.get(player__id=1, song__lib_id='6', song__library__id=1 ).upvoters())
     self.assertEqual(sixInitVoteCount, sixNewVoteCount)
 
 class LibTestCases(DoesServerOpsTestCase):

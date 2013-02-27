@@ -195,16 +195,16 @@ class ActivePlaylistEntry(models.Model):
 
   @staticmethod
   def isQueuedOrPlaying(songId, library, player):
-    return ActivePlaylistEntry.objects.filter(song__player=player, song__lib_id=songId, song__library=library)\
+    return ActivePlaylistEntry.objects.filter(player=player, song__lib_id=songId, song__library=library)\
         .exclude(state='RM').exclude(state='FN').exists()
 
   @staticmethod
   def isPlaying(songId, library, player):
-    return ActivePlaylistEntry.objects.filter(song__player=player, song__lib_id=songId, song__library=library, state='PL').exists()
+    return ActivePlaylistEntry.objects.filter(player=player, song__lib_id=songId, song__library=library, state='PL').exists()
 
   @staticmethod
   def isQueued(songId, library, player):
-    return ActivePlaylistEntry.objects.filter(song__player=player, song__lib_id=songId, song__library=library)\
+    return ActivePlaylistEntry.objects.filter(player=player, song__lib_id=songId, song__library=library)\
         .exclude(state='RM').exclude(state='FN').exclude(state='PL').exists()
 
   def __unicode__(self):
