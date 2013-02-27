@@ -52,13 +52,12 @@ def NeedsJSON(function):
 def PlayerExists(function):
   def wrapper(*args, **kwargs):
     request = args[0]
-    player_id = kwargs['player_id']
     try:
-      actualPlayer = Player.objects.get(pk=player_id)
+      actualPlayer = Player.objects.get(pk=kwargs['player_id'])
       kwargs['player'] = actualPlayer
       return function(*args, **kwargs)
     except ObjectDoesNotExist:
-      toReturn =  HttpResponseNotFound()
+      toReturn = HttpResponseNotFound()
       toReturn[MISSING_RESOURCE_HEADER] = 'player'
       return toReturn
   return wrapper

@@ -25,7 +25,7 @@ from django.core.exceptions import ObjectDoesNotExist
 @IsOwnerOrAdmin
 def modifyBanList(request, player_id, lib_id, player):
   try:
-    libEntry = LibraryEntry.objects.get(library=player.DefaultLibrary, lib_id=lib_id)
+    libEntry = LibraryEntry.objects.get(library=player.DefaultLibrary, lib_id=unicode(lib_id))
     if request.method == 'PUT':
       libEntry.banSong(player)
     elif request.method == 'DELETE':

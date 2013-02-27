@@ -485,6 +485,15 @@
     }
   },
 
+  {
+    "pk": 1,
+    "model":"udj.bannedlibraryentry",
+    "fields":{
+      "song" : 4,
+      "player" : 1
+    }
+  },
+
 
 
   {
