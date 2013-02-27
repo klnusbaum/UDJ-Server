@@ -64,7 +64,7 @@ class LibraryEntry(models.Model):
       lib_id=songId,
       library=library,
       is_deleted=False)
-    return entry.exists() and not entry[0].is_banned(player)
+    return entry.exists()
 
   @staticmethod
   def songExsitsAndNotBanned(songId, library, player):

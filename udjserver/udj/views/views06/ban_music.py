@@ -55,6 +55,7 @@ def multiBan(request, player_id, player):
   nonExistentIds = getNonExistantLibIds(toBan, player)
   nonExistentIds += getNonExistantLibIds(toUnban, player)
   if len(nonExistentIds) > 0:
+    print nonExistentIds
     toReturn = HttpJSONResponse(json.dumps(nonExistentIds), status=404)
     toReturn[MISSING_RESOURCE_HEADER] = 'song'
     return toReturn
