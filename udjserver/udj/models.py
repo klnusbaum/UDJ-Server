@@ -261,10 +261,9 @@ class Player(models.Model):
   allow_user_songset = models.BooleanField(default=False)
 
   def getAllSongs(self):
+    associated_lib_ids = AssociatedLibrary.objects.filter(player=self, enabled=True).values_list('library__id', flat=True)
     banned_entries = BannedLibraryEntry.objects.filter(player=self).values_list('song__id', flat=True)
-    return (AssociatedLibrary.objects.filter(player=self, enabled=True)
-                                     .libraryentry_set.exclude(is_deleted=True)
-                                     .exclude(pk__in=banned_entries))
+    return LibraryEntry.objects.filter(library__id__in=associated_lib_ids, is_deleted=False).exclude(pk__in=banned_entries)
 
   def canCreatSongSets(self, user):
     return user==self.owning_user or self.isAdmin(user) or \
@@ -296,11 +295,11 @@ class Player(models.Model):
       .distinct('time_played', 'playlist_entry__song__id')
 
   def Randoms(self):
-    return getAllSongs().order_by('?')
+    return self.getAllSongs().order_by('?')
 
 
   def AvailableMusic(self, query):
-    return getAllSongs().filter(
+    return self.getAllSongs().filter(
       Q(title__icontains=query) |
       Q(artist__icontains=query) |
       Q(album__icontains=query))
