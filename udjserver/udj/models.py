@@ -277,13 +277,13 @@ class Player(models.Model):
     return SongSet.objects.filter(player=self)
 
   def Artists(self):
-    return (getAllSongs()
+    return (self.getAllSongs()
             .distinct('artist')
             .order_by('artist')
             .values_list('artist', flat=True))
 
   def ArtistSongs(self, artist):
-    return getAllSongs().filter(artist=artist)
+    return self.getAllSongs().filter(artist=artist)
 
   def RecentlyPlayed(self):
     #This is weird, for some reason I have to put time_played in the distinct field
