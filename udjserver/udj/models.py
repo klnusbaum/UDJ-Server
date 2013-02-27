@@ -104,6 +104,11 @@ class LibraryEntry(models.Model):
     if onList.exists():
       onList.update(state=u'RM')
 
+  def deleteSong(self):
+    self.is_deleted = True
+    self.save()
+    self.removeIfOnAnyPlaylist()
+
   def __unicode__(self):
     return "Library Entry " + str(self.lib_id) + ": " + self.title
 
@@ -142,7 +147,7 @@ class DefaultLibrary(models.Model):
   player = models.ForeignKey('Player', unique=True)
 
   def __unicode__(self):
-    return self.library.name + " is the default library for " + self.player
+    return self.library.name + " is the default library for " + str(self.player)
 
 class OwnedLibrary(models.Model):
   library = models.ForeignKey(Library)
@@ -352,13 +357,13 @@ class Player(models.Model):
 
 
   def getDefaultLibrary(self):
-    return DefaultLibrary.objects.get(player=self)
+    return DefaultLibrary.objects.get(player=self).library
 
   DefaultLibrary = property(getDefaultLibrary)
 
 
   def __unicode__(self):
-    return self.name + " player" 
+    return self.name + " player"
 
 class PlayerPassword(models.Model):
   player = models.ForeignKey(Player, unique=True)

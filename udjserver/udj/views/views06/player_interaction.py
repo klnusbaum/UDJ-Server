@@ -239,7 +239,7 @@ def setCurrentSong(request, player):
 def removeCurrentSong(request, player):
   player.lockActivePlaylist()
   try:
-    currentSong = ActivePlaylistEntry.objects.get(song__library=player.DefaultLibray, state=u'PL')
+    currentSong = ActivePlaylistEntry.objects.get(song__library=player.DefaultLibrary, state=u'PL')
     currentSong.state=u'FN'
     currentSong.save()
   except ObjectDoesNotExist:

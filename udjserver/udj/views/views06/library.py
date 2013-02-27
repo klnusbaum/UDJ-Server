@@ -8,7 +8,7 @@ from udj.views.views06.authdecorators import NeedsAuth
 from udj.views.views06.authdecorators import IsOwnerOrAdmin
 from udj.models import LibraryEntry, Player, ActivePlaylistEntry
 from udj.headers import MISSING_RESOURCE_HEADER
-from udj.views.views06.helpers import HttpJSONResponse, removeIfOnPlaylist, getNonExistantLibIds
+from udj.views.views06.helpers import HttpJSONResponse, getNonExistantLibIds
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpRequest
@@ -41,7 +41,7 @@ def addSongs(libJSON, player):
   for libEntry in libJSON:
     LibraryEntry(
       library=player.DefaultLibrary,
-      player_lib_song_id=libEntry['id'],
+      lib_id=libEntry['id'],
       title=libEntry['title'],
       artist=libEntry['artist'],
       album=libEntry['album'],
@@ -52,9 +52,7 @@ def addSongs(libJSON, player):
 def deleteSongs(songIds, player):
   for song_id in songIds:
     libEntry = LibraryEntry.objects.get(library=player.DefaultLibrary, lib_id=song_id)
-    libEntry.is_deleted = True
-    libEntry.save()
-    removeIfOnAnyPlaylist(libEntry)
+    libEntry.deleteSong()
 
 
 
