@@ -1,4 +1,5 @@
 from django.http import HttpResponse, HttpResponseNotFound
+from udj.headers import MISSING_RESOURCE_HEADER
 
 class HttpJSONResponse(HttpResponse):
 
