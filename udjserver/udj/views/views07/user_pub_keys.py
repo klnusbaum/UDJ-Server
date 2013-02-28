@@ -6,7 +6,7 @@ from django.http import HttpRequest, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from udj.headers import MISSING_RESOURCE_HEADER
 
-from udj.views.views07.decorators import AcceptsMethods
+from udj.views.views07.decorators import AcceptsMethods, HasNZParams
 from udj.views.views07.responses import HttpMissingResponse, HttpJSONResponse
 from udj.models import UserPubKey
 from udj.views.views07.JSONCodecs import UDJEncoder
@@ -41,8 +41,7 @@ def updatePubKey(request, user):
 def removePublicKey(request, user):
   userpubkey = UserPubKey.objects.get(user=user)
   userpubkey.delete()
-
-
+  return HttpResponse()
 
 
 @NeedsAuth
