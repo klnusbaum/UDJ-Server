@@ -30,9 +30,30 @@ def getUserPubKey(request, user_id):
 def getMyPublicKey(user):
   return HttpJSONResponse(json.dumps(UserPubKey.objects.get(user=user), cls=UDJEncoder))
 
+@HasNZParams(['key'])
+def updatePubKey(request, user):
+  userpubkey = UserPubKey.objects.get(user=user)
+  userpubkey.pub_key = request.POST['key']
+  userpubkey.save()
+  return HttpResponse()
+
+
+def removePublicKey(request, user):
+  userpubkey = UserPubKey.objects.get(user=user)
+  userpubkey.delete()
+
+
+
+
 @NeedsAuth
 @AcceptsMethods(['GET', 'POST', 'DELETE'])
 def myPubKeyOps(request):
   user = getUserForTicket(request)
   if request.method == 'GET':
     return getMyPublicKey(user)
+  elif request.method == 'POST':
+    return updatePubKey(request, user)
+  elif request.method == 'DELETE':
+    return removePublicKey(request, user)
+
+
