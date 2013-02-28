@@ -3,6 +3,7 @@ import hashlib
 import random
 
 from udj.models import Ticket
+from udj.headers import DJANGO_TICKET_HEADER
 from udj.views.views07.decorators import AcceptsMethods
 from udj.views.views07.decorators import HasNZParams
 from udj.views.views07.responses import HttpJSONResponse
@@ -12,6 +13,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+
+def getUserForTicket(request):
+  return Ticket.objects.get(
+    ticket_hash=request.META[DJANGO_TICKET_HEADER]).user
+
 
 def generateRandomHash():
   rand_hash = random.getrandbits(128)

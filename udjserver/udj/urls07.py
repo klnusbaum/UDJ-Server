@@ -5,7 +5,8 @@ urlpatterns = patterns('udj.views.views07.user_creation',
 )
 
 urlpatterns += patterns('udj.views.views07.user_pub_keys',
-  (r'^(?P<user_id>\d+)/public_key$', 'getUserPubKey')
+  (r'^(?P<user_id>\d+)/public_key$', 'getUserPubKey'),
+  (r'^public_key$', 'myPubKeyOps')
 )
 
 urlpatterns += patterns('udj.views.views07.auth',

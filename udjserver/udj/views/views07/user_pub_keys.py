@@ -11,6 +11,7 @@ from udj.views.views07.responses import HttpMissingResponse, HttpJSONResponse
 from udj.models import UserPubKey
 from udj.views.views07.JSONCodecs import UDJEncoder
 from udj.views.views07.authdecorators import NeedsAuth
+from udj.views.views07.auth import getUserForTicket
 
 @NeedsAuth
 @AcceptsMethods(['GET'])
@@ -24,3 +25,14 @@ def getUserPubKey(request, user_id):
       return HttpMissingResponse('public-key')
   except ObjectDoesNotExist:
     return HttpMissingResponse('user')
+
+
+def getMyPublicKey(user):
+  return HttpJSONResponse(json.dumps(UserPubKey.objects.get(user=user), cls=UDJEncoder))
+
+@NeedsAuth
+@AcceptsMethods(['GET', 'POST', 'DELETE'])
+def myPubKeyOps(request):
+  user = getUserForTicket(request)
+  if request.method == 'GET':
+    return getMyPublicKey(user)

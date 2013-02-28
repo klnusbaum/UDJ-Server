@@ -22,3 +22,10 @@ class UserPubKeyTests(JeffTestCase):
     response = self.doGet('/19938849/public_key')
     self.assertEqual(404, response.status_code)
     self.assertEqual('user', response[MISSING_RESOURCE_HEADER])
+
+  def testGetMyPubKey(self):
+    response = self.doGet("/public_key")
+    self.isJSONResponse(response)
+    parsedResponse = json.loads(response.content)
+    self.assertEqual(UserPubKey.objects.get(user__id=3).pub_key, parsedResponse['key'])
+
