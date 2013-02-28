@@ -423,3 +423,10 @@ class Favorite(models.Model):
   def __unicode__(self):
     return self.user.username + " likes " + self.favorite_song.title
 
+
+class UserPubKey(models.Model):
+  user= models.ForeignKey(User, unique=True)
+  pub_key = models.CharField(max_length=256)
+
+  def __unicode__(self):
+    return self.pub_key
