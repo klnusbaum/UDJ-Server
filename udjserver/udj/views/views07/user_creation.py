@@ -37,16 +37,16 @@ def createUser(request):
     return toReturn
 
   if len(password) < 8:
-    return HttpResponse(status=406)
+    return HttpResponse("Invalid password", status=406)
 
   try:
     validate_email(email)
   except ValidationError:
-    return HttpResponse(status=406)
+    return HttpResponse("Invalid email", status=406)
 
 
   if not re.compile(r'^[\w.@+-]+$').match(username):
-    return HttpResponse(status=406)
+    return HttpResponse("Invalid username", status=406)
 
   newUser = User.objects.create_user(
       username,
