@@ -10,7 +10,9 @@ from udj.views.views07.decorators import AcceptsMethods
 from udj.views.views07.responses import HttpMissingResponse, HttpJSONResponse
 from udj.models import UserPubKey
 from udj.views.views07.JSONCodecs import UDJEncoder
+from udj.views.views07.authdecorators import NeedsAuth
 
+@NeedsAuth
 @AcceptsMethods(['GET'])
 def getUserPubKey(request, user_id):
   try:
@@ -22,4 +24,3 @@ def getUserPubKey(request, user_id):
       return HttpMissingResponse('public-key')
   except ObjectDoesNotExist:
     return HttpMissingResponse('user')
-
