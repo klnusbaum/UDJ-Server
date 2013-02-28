@@ -426,7 +426,7 @@ class Favorite(models.Model):
 
 class UserPubKey(models.Model):
   user= models.ForeignKey(User, unique=True)
-  pub_key = models.CharField(max_length=256)
+  pub_key = models.CharField(max_length=372)
 
   def __unicode__(self):
     return self.pub_key

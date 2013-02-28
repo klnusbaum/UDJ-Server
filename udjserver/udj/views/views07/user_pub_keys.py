@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest, HttpResponse
@@ -5,8 +7,9 @@ from django.views.decorators.csrf import csrf_exempt
 from udj.headers import MISSING_RESOURCE_HEADER
 
 from udj.views.views07.decorators import AcceptsMethods
-from udj.views.views06.responses import HttpMissingResponse
+from udj.views.views07.responses import HttpMissingResponse, HttpJSONResponse
 from udj.models import UserPubKey
+from udj.views.views07.JSONCodecs import UDJEncoder
 
 @AcceptsMethods(['GET'])
 def getUserPubKey(request, user_id):
@@ -18,5 +21,5 @@ def getUserPubKey(request, user_id):
     except ObjectDoesNotExist:
       return HttpMissingResponse('public-key')
   except ObjectDoesNotExist:
-    return HttpMissingResponse('song')
+    return HttpMissingResponse('user')
 

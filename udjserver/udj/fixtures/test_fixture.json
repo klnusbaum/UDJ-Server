@@ -1354,8 +1354,25 @@
       "songset" : 2,
       "song" : 7
     }
-  }
+  },
 
+  {
+    "pk": 1,
+    "model" : "udj.userpubkey",
+    "fields" : {
+      "user":2,
+      "pub_key":"lkjsherlkjlndlkj0ojioi3nin4niijlkjlkjls0208398388388388388399kkkkkkkkkkCxwdJhCqK2Qz4CFpR7n6q/84/2zHE/K4A+w5TXsqWPZZJ6+tdwE7Z6LznlB0TgK316CGaCiBNDe/ZIjZx8YsR+m49ptitkzQiwtxValJq2UxPNbtEcRwpppArSyMQWHophmM3lJoIiZPjHglUi92oYB1Yovmu0pgsu1vBVA6XJQ7t0rV8QC4O95HDI75W+cJMGNojm3uKS7tXbMdaZMa10kq752mhV2z5aKcFYGiHueWdDbe8SNMnuzdPqfXya2h4ARhG2XhT+n/CLviPZTikyoisbNALqtrh973r8tLfDw=="
+    }
+  },
+
+  {
+    "pk": 2,
+    "model" : "udj.userpubkey",
+    "fields" : {
+      "user":3,
+      "pub_key":"AAAAB3NzaC1yc2EAAAABIwAAAQEApK7K4QdcjTS9wxhvF5aHkGOJ9HhnLZslpMOt+rKPFXNCxwdJhCqK2Qz4CFpR7n6q/84/2zHE/K4A+w5TXsqWPZZJ6+tdwE7Z6LznlB0TgK316CGaCiBNDe/ZIjZx8YsR+m49ptitkzQiwtxValJq2UxPNbtEcRwpppArSyMQWHophmM3lJoIiZPjHglUi92oYB1Yovmu0pgsu1vBVA6XJQ7t0rV8QC4O95HDI75W+cJMGNojm3uKS7tXbMdaZMa10kq752mhV2z5aKcFYGiHueWdDbe8SNMnuzdPqfXya2h4ARhG2XhT+n/CLviPZTikyoisbNALqtrh973r8tLfDw=="
+    }
+  }
 
 
 ]

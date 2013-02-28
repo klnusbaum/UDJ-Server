@@ -4,11 +4,15 @@ urlpatterns = patterns('udj.views.views07.user_creation',
   (r'^user$', 'createUser'),
 )
 
-"""
+urlpatterns += patterns('udj.views.views07.user_pub_keys',
+  (r'^(?P<user_id>\d+)/public_key$', 'getUserPubKey')
+)
+
 urlpatterns += patterns('udj.views.views07.auth',
   (r'^auth$', 'authenticate'),
 )
 
+"""
 urlpatterns += patterns('udj.views.views07.server_capabilities',
   (r'^sorting_algorithms$', 'getSortingAlgorithms'),
 )
