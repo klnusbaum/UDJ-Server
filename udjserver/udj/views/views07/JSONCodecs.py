@@ -33,11 +33,33 @@ class UDJEncoder(json.JSONEncoder):
         'name' : obj.name,
         'description' : obj.description
       }
-    else:
-      return json.JSONEncoder.default(self, obj)
-    """
-    elif isinstance(obj, Favorite):
-      return obj.favorite_song
+    elif isinstance(obj, Player):
+      toReturn = {
+        "id" : str(obj.id),
+        "name" : obj.name,
+        "owner" : obj.owning_user,
+        "has_password" : True if PlayerPassword.objects.filter(player=obj).exists() else False,
+        "sorting_algo": obj.sorting_algo,
+        "num_active_users" : len(obj.ActiveParticipants()),
+        "size_limit" : obj.size_limit if obj.size_limit != None else 0
+      }
+
+      try:
+        toReturn['location'] = PlayerLocation.objects.get(player=obj)
+      except ObjectDoesNotExist:
+        pass
+
+      return toReturn
+    elif isinstance(obj, PlayerLocation):
+      return {
+          "address" : obj.address if obj.address != None else "",
+          "locality" : obj.locality if obj.locality != None else "",
+          "region" : obj.region if obj.region != None else "",
+          "country" : obj.country,
+          "postal_code" : obj.postal_code,
+          "latitude" : obj.point.y,
+          "longitude" : obj.point.x
+      }
     elif isinstance(obj, User):
       return {
         'id' : str(obj.id),
@@ -45,6 +67,11 @@ class UDJEncoder(json.JSONEncoder):
         'first_name' : obj.first_name,
         'last_name' : obj.last_name
       }
+    else:
+      return json.JSONEncoder.default(self, obj)
+    """
+    elif isinstance(obj, Favorite):
+      return obj.favorite_song
     elif isinstance(obj, ActivePlaylistEntry):
       toReturn =  {
         'song' : obj.song,
@@ -71,40 +98,6 @@ class UDJEncoder(json.JSONEncoder):
 
     elif isinstance(obj, Participant):
       return obj.user
-    elif isinstance(obj, PlayerAdmin):
-      return obj.admin_user
-    elif isinstance(obj, Player):
-      toReturn = {
-        "id" : str(obj.id),
-        "name" : obj.name,
-        "owner" : obj.owning_user,
-        "has_password" : True if PlayerPassword.objects.filter(player=obj).exists() else False,
-        "admins" : obj.Admins(),
-        "sorting_algo": obj.sorting_algo,
-        "songset_user_permission" : obj.allow_user_songset,
-        "num_active_users" : len(obj.ActiveParticipants()),
-        "size_limit" : obj.size_limit if obj.size_limit != None else 0
-      }
-
-      try:
-        toReturn['location'] = PlayerLocation.objects.get(player=obj)
-      except ObjectDoesNotExist:
-        pass
-      
-      if obj.size_limit != None:
-        toReturn['size_limit'] = obj.size_limit
-
-      return toReturn
-    elif isinstance(obj, PlayerLocation):
-      return {
-          "address" : obj.address if obj.address != None else "",
-          "locality" : obj.locality if obj.locality != None else "",
-          "region" : obj.region if obj.region != None else "",
-          "country" : obj.country,
-          "postal_code" : obj.postal_code,
-          "latitude" : obj.point.y,
-          "longitude" : obj.point.x
-      }
     elif isinstance(obj, SongSet):
       return {
           "name" : obj.name,
