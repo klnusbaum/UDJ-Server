@@ -13,11 +13,11 @@ urlpatterns += patterns('udj.views.views07.auth',
   (r'^auth$', 'authenticate'),
 )
 
-"""
 urlpatterns += patterns('udj.views.views07.server_capabilities',
   (r'^sorting_algorithms$', 'getSortingAlgorithms'),
 )
 
+"""
 urlpatterns += patterns('udj.views.views07.favorites',
   (r'^favorites/players/(?P<player_id>\d+)/(?P<lib_id>\d+)$', 'favorite'),
   (r'^favorites/players/(?P<player_id>\d+)$', 'getFavorites'),

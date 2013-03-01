@@ -1,5 +1,6 @@
 import json
 from udj.models import UserPubKey
+from udj.models import SortingAlgorithm
 """
 from udj.models import SongSet
 from udj.models import SongSetEntry
@@ -12,7 +13,6 @@ from udj.models import Participant
 from udj.models import LibraryEntry
 from udj.models import ActivePlaylistEntry
 from udj.models import PlaylistEntryTimePlayed
-from udj.models import SortingAlgorithm
 from udj.models import Favorite
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -27,17 +27,17 @@ class UDJEncoder(json.JSONEncoder):
       return [x for x in obj]
     elif isinstance(obj, UserPubKey):
       return {'key' : obj.pub_key}
-    else:
-      return json.JSONEncoder.default(self, obj)
-    """
-    elif isinstance(obj, Favorite):
-      return obj.favorite_song
     elif isinstance(obj, SortingAlgorithm):
       return {
         'id' : str(obj.id),
         'name' : obj.name,
         'description' : obj.description
       }
+    else:
+      return json.JSONEncoder.default(self, obj)
+    """
+    elif isinstance(obj, Favorite):
+      return obj.favorite_song
     elif isinstance(obj, User):
       return {
         'id' : str(obj.id),
