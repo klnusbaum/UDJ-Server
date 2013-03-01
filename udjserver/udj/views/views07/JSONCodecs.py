@@ -1,13 +1,14 @@
 import json
 from udj.models import UserPubKey
 from udj.models import SortingAlgorithm
+from udj.models import Player
+from udj.models import PlayerLocation
+from udj.models import PlayerPassword
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.models import User
 """
 from udj.models import SongSet
 from udj.models import SongSetEntry
-from udj.models import Player
-from udj.models import PlayerAdmin
-from udj.models import PlayerLocation
-from udj.models import PlayerPassword
 from udj.models import PlaylistEntryTimePlayed
 from udj.models import Participant
 from udj.models import LibraryEntry
@@ -15,8 +16,6 @@ from udj.models import ActivePlaylistEntry
 from udj.models import PlaylistEntryTimePlayed
 from udj.models import Favorite
 
-from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.models import User
 """
 from django.db.models.query import QuerySet
 

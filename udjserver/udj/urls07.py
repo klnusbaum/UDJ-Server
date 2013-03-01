@@ -17,16 +17,17 @@ urlpatterns += patterns('udj.views.views07.server_capabilities',
   (r'^sorting_algorithms$', 'getSortingAlgorithms'),
 )
 
+urlpatterns += patterns('udj.views.views07.player_search',
+  (r'^players/(?P<latitude>-?\d+\.\d+)/(?P<longitude>-?\d+\.\d+)$', 'getNearbyPlayers'),
+  (r'^players$', 'getPlayers'),
+)
+
 """
 urlpatterns += patterns('udj.views.views07.favorites',
   (r'^favorites/players/(?P<player_id>\d+)/(?P<lib_id>\d+)$', 'favorite'),
   (r'^favorites/players/(?P<player_id>\d+)$', 'getFavorites'),
 )
 
-urlpatterns += patterns('udj.views.views07.player_search',
-  (r'^players/(?P<latitude>-?\d+\.\d+)/(?P<longitude>-?\d+\.\d+)$', 'getNearbyPlayers'),
-  (r'^players$', 'getPlayers'),
-)
 
 urlpatterns += patterns('udj.views.views07.player_creation',
   (r'^players/player$', 'createPlayer'),
