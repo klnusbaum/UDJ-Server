@@ -423,10 +423,49 @@ class Favorite(models.Model):
   def __unicode__(self):
     return self.user.username + " likes " + self.favorite_song.title
 
+class PlayerPermissionGroup(models.Model):
+  player = models.ForeignKey(Player)
+  name = models.CharField(max_length=200)
 
-class UserPubKey(models.Model):
-  user= models.ForeignKey(User, unique=True)
-  pub_key = models.CharField(max_length=372)
+  class Meta:
+    unique_together = ("player", "name")
 
   def __unicode__(self):
-    return self.pub_key
+    return self.name
+
+
+class PlayerPermissionGroupMember(models.Model):
+  permission_group = models.ForeignKey(PlayerPermissionGroup)
+  user = models.ForeignKey(User)
+
+  def __unicode__(self):
+    return self.user + " in " + permission_group.name
+
+class PlayerPermission(models.Model):
+  PERMISSION_CHOICES = (
+    (u'CSS', u'Create Song Set'),
+    (u'MOS', u'Modify Other\'s Song Set'),
+    (u'CPB', u'Control Playback'),
+    (u'CVO', u'Control Volume'),
+    (u'SSA', u'Set Sorting Algorithm'),
+    (u'SLO', u'Set Locaiton'),
+    (u'SPA', u'Set Password'),
+    (u'KUS', u'Kick Users'),
+    (u'BUS', u'Ban Users'),
+    (u'APR', u'Active Playist Remove'),
+    (u'APA', u'Active Playlist Add'),
+    (u'APU', u'Active Playlist Upvote'),
+    (u'APD', u'Active Playlist Downvote'),
+    (u'ELI', u'Enable Library'),
+    (u'DLI', u'Disable Library'),
+    (u'MPG', u'Modify Permission Groups'),
+    (u'CEV', u'Create Event'),
+    (u'HEV', u'Host Event'),
+    (u'MEV', u'Modify Event'))
+
+  player = models.ForeignKey(Player)
+  permission = models.CharField(max_length=3, choices=PERMISSION_CHOICES)
+  group = models.ForeignKey(PlayerPermissionGroup)
+
+  def __unicode__(self):
+    return self.permissions + " for " + self.player.name
