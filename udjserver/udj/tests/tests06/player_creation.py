@@ -1,9 +1,10 @@
 import json
 from django.contrib.auth.models import User
-from udj.models import Player, PlayerLocation, PlayerPassword, DefaultLibrary, OwnedLibrary, AssociatedLibrary
+from udj.models import Player, PlayerLocation, PlayerPassword, DefaultLibrary, OwnedLibrary, AssociatedLibrary, PlayerPermission
 from udj.testhelpers.tests06.testclasses import YunYoungTestCase
 from udj.headers import MISSING_RESOURCE_HEADER
 from udj.views.views06.auth import hashPlayerPassword
+from settings import DEFAULT_PLAYER_PERMISSIONS
 
 class CreatePlayerTests(YunYoungTestCase):
 
@@ -12,6 +13,10 @@ class CreatePlayerTests(YunYoungTestCase):
     owned_library = OwnedLibrary.objects.get(owner=User.objects.get(pk=self.user_id))
     associated_library = AssociatedLibrary.objects.get(player=addedPlayer)
 
+  def verify_permissions_set(self, addedPlayer):
+    for permission in DEFAULT_PLAYER_PERMISSIONS:
+      self.assertTrue(
+          PlayerPermission.objects.filter(player=addedPlayer, permission=permission).exists())
 
 
   def testCreatePlayer(self):
@@ -27,7 +32,8 @@ class CreatePlayerTests(YunYoungTestCase):
     self.assertFalse(PlayerLocation.objects.filter(player=addedPlayer).exists())
     self.assertFalse(PlayerPassword.objects.filter(player=addedPlayer).exists())
 
-    self.verify_libs_created(addedPlayer, )
+    self.verify_libs_created(addedPlayer)
+    self.verify_permissions_set(addedPlayer)
 
 
   def testCreatePasswordPlayer(self):
@@ -47,6 +53,7 @@ class CreatePlayerTests(YunYoungTestCase):
     addedPassword = PlayerPassword.objects.get(player=addedPlayer)
     self.assertEqual(addedPassword.password_hash, passwordHash)
     self.verify_libs_created(addedPlayer)
+    self.verify_permissions_set(addedPlayer)
 
   def testCreateLocationPlayer(self):
     playerName = "Yunyoung Player"
@@ -78,6 +85,7 @@ class CreatePlayerTests(YunYoungTestCase):
     self.assertEqual(location['postal_code'], createdLocation.postal_code)
     self.assertEqual(location['country'], createdLocation.country)
     self.verify_libs_created(addedPlayer)
+    self.verify_permissions_set(addedPlayer)
 
   def testMultiLocationResult(self):
     playerName = "Matt Player Bitches"

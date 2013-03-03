@@ -258,7 +258,6 @@ class Player(models.Model):
   volume = models.IntegerField(default=5, validators=[zero_ten_validator])
   sorting_algo = models.ForeignKey(SortingAlgorithm)
   size_limit = models.IntegerField(null=True, blank=True)
-  allow_user_songset = models.BooleanField(default=False)
 
   class Meta:
     unique_together = ('owning_user', 'name')
@@ -271,11 +270,23 @@ class Player(models.Model):
     return (LibraryEntry.objects.filter(library__id__in=associated_lib_ids, is_deleted=False)
             .exclude(pk__in=banned_entries))
 
+  def user_has_permission(self, permission, user):
+    allowed_users = (PlayerPermission.objects.filter(player=self, permission=permission)
+                     .group_set.all()
+                     .user_set.all())
+    if not allowed_users.exists():
+      return True
+    else:
+      return (user in allowed_users)
+
   def canCreatSongSets(self, user):
+    """
     return (user==self.owning_user or
             self.isAdmin(user) or
             (self.state == 'AC' and self.isActiveParticipant(user))
            )
+    """
+    return self.user_has_permission(u'CSS',  user)
 
   def lockActivePlaylist(self):
     #lock active playlist
@@ -438,8 +449,8 @@ class PlayerPermissionGroup(models.Model):
     unique_together = ("player", "name")
 
 
-  def add_memeber(self, user):
-    new_member = PlayerPermissionGroupMemeber(permission_group=self, user=user)
+  def add_member(self, user):
+    new_member = PlayerPermissionGroupMember(permission_group=self, user=user)
     new_member.save()
 
   def __unicode__(self):
@@ -478,6 +489,10 @@ class PlayerPermission(models.Model):
   player = models.ForeignKey(Player)
   permission = models.CharField(max_length=3, choices=PERMISSION_CHOICES)
   group = models.ForeignKey(PlayerPermissionGroup)
+
+
+
+
 
   def __unicode__(self):
     return self.permissions + " for " + self.player.name

@@ -723,8 +723,7 @@
       "name": "Kurtis Player",
       "state": "PL",
       "volume": 5,
-      "sorting_algo" : 1,
-      "allow_user_songset" : true
+      "sorting_algo" : 1
     }
   },
 
@@ -799,6 +798,1444 @@
       "volume": 5,
       "sorting_algo" : 1,
       "size_limit" : 2
+    }
+  },
+
+
+  {
+    "pk": 1,
+    "model": "udj.PlayerPermissionGroup",
+    "fields": {
+      "player" : 1,
+      "name" : "owner"
+    }
+  },
+
+  {
+    "pk": 2,
+    "model": "udj.PlayerPermissionGroup",
+    "fields": {
+      "player" : 2,
+      "name" : "owner"
+    }
+  },
+
+  {
+    "pk": 3,
+    "model": "udj.PlayerPermissionGroup",
+    "fields": {
+      "player" : 3,
+      "name" : "owner"
+    }
+  },
+
+  {
+    "pk": 4,
+    "model": "udj.PlayerPermissionGroup",
+    "fields": {
+      "player" : 4,
+      "name" : "owner"
+    }
+  },
+
+  {
+    "pk": 5,
+    "model": "udj.PlayerPermissionGroup",
+    "fields": {
+      "player" : 5,
+      "name" : "owner"
+    }
+  },
+
+  {
+    "pk": 6,
+    "model": "udj.PlayerPermissionGroup",
+    "fields": {
+      "player" : 6,
+      "name" : "owner"
+    }
+  },
+
+  {
+    "pk": 7,
+    "model": "udj.PlayerPermissionGroup",
+    "fields": {
+      "player" : 7,
+      "name" : "owner"
+    }
+  },
+
+
+  {
+    "pk": 1,
+    "model": "udj.PlayerPermissionGroupMember",
+    "fields" : {
+      "permission_group" : 1,
+      "user" : 2
+    }
+  },
+
+  {
+    "pk": 2,
+    "model": "udj.PlayerPermissionGroupMember",
+    "fields" : {
+      "permission_group" : 2,
+      "user" : 2
+    }
+  },
+
+
+  {
+    "pk": 3,
+    "model": "udj.PlayerPermissionGroupMember",
+    "fields" : {
+      "permission_group" : 3,
+      "user" : 6
+    }
+  },
+
+
+  {
+    "pk": 4,
+    "model": "udj.PlayerPermissionGroupMember",
+    "fields" : {
+      "permission_group" : 4,
+      "user" : 2
+    }
+  },
+
+
+  {
+    "pk": 5,
+    "model": "udj.PlayerPermissionGroupMember",
+    "fields" : {
+      "permission_group" : 5,
+      "user" : 2
+    }
+  },
+
+
+  {
+    "pk": 6,
+    "model": "udj.PlayerPermissionGroupMember",
+    "fields" : {
+      "permission_group" : 6,
+      "user" : 2
+    }
+  },
+
+
+  {
+    "pk": 7,
+    "model": "udj.PlayerPermissionGroupMember",
+    "fields" : {
+      "permission_group" : 7,
+      "user" : 2
+    }
+  },
+
+
+
+
+
+
+
+
+
+
+  {
+    "pk": 1,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 1,
+      "permission" : "MOS",
+      "group" : 1
+    }
+  },
+
+  {
+    "pk": 2,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 1,
+      "permission" : "CPB",
+      "group" : 1
+    }
+  },
+
+  {
+    "pk": 3,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 1,
+      "permission" : "CVO",
+      "group" : 1
+    }
+  },
+
+  {
+    "pk": 4,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 1,
+      "permission" : "SSA",
+      "group" : 1
+    }
+  },
+
+  {
+    "pk": 5,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 1,
+      "permission" : "SLO",
+      "group" : 1
+    }
+  },
+
+  {
+    "pk": 6,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 1,
+      "permission" : "SPA",
+      "group" : 1
+    }
+  },
+
+  {
+    "pk": 7,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 1,
+      "permission" : "KUS",
+      "group" : 1
+    }
+  },
+
+  {
+    "pk": 8,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 1,
+      "permission" : "BUS",
+      "group" : 1
+    }
+  },
+
+  {
+    "pk": 9,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 1,
+      "permission" : "APR",
+      "group" : 1
+    }
+  },
+
+  {
+    "pk": 10,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 1,
+      "permission" : "ELI",
+      "group" : 1
+    }
+  },
+
+  {
+    "pk": 11,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 1,
+      "permission" : "DLI",
+      "group" : 1
+    }
+  },
+
+  {
+    "pk": 12,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 1,
+      "permission" : "MPG",
+      "group" : 1
+    }
+  },
+
+  {
+    "pk": 13,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 1,
+      "permission" : "CEV",
+      "group" : 1
+    }
+  },
+
+  {
+    "pk": 14,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 1,
+      "permission" : "HEV",
+      "group" : 1
+    }
+  },
+
+  {
+    "pk": 15,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 1,
+      "permission" : "MEV",
+      "group" : 1
+    }
+  },
+
+
+
+
+
+  {
+    "pk": 16,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 2,
+      "permission" : "CSS",
+      "group" : 2
+    }
+  },
+
+  {
+    "pk": 17,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 2,
+      "permission" : "MOS",
+      "group" : 2
+    }
+  },
+
+  {
+    "pk": 18,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 2,
+      "permission" : "CPB",
+      "group" : 2
+    }
+  },
+
+  {
+    "pk": 19,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 2,
+      "permission" : "CVO",
+      "group" : 2
+    }
+  },
+
+  {
+    "pk": 20,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 2,
+      "permission" : "SSA",
+      "group" : 2
+    }
+  },
+
+  {
+    "pk": 21,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 2,
+      "permission" : "SLO",
+      "group" : 2
+    }
+  },
+
+  {
+    "pk": 22,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 2,
+      "permission" : "SPA",
+      "group" : 2
+    }
+  },
+
+  {
+    "pk": 23,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 2,
+      "permission" : "KUS",
+      "group" : 2
+    }
+  },
+
+  {
+    "pk": 24,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 2,
+      "permission" : "BUS",
+      "group" : 2
+    }
+  },
+
+  {
+    "pk": 25,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 2,
+      "permission" : "APR",
+      "group" : 2
+    }
+  },
+
+  {
+    "pk": 26,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 2,
+      "permission" : "ELI",
+      "group" : 2
+    }
+  },
+
+  {
+    "pk": 27,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 2,
+      "permission" : "DLI",
+      "group" : 2
+    }
+  },
+
+  {
+    "pk": 28,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 2,
+      "permission" : "MPG",
+      "group" : 2
+    }
+  },
+
+  {
+    "pk": 29,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 2,
+      "permission" : "CEV",
+      "group" : 2
+    }
+  },
+
+  {
+    "pk": 30,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 2,
+      "permission" : "HEV",
+      "group" : 2
+    }
+  },
+
+  {
+    "pk": 31,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 2,
+      "permission" : "MEV",
+      "group" : 2
+    }
+  },
+
+
+
+
+  {
+    "pk": 32,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 3,
+      "permission" : "CSS",
+      "group" : 3
+    }
+  },
+
+  {
+    "pk": 33,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 3,
+      "permission" : "MOS",
+      "group" : 3
+    }
+  },
+
+  {
+    "pk": 34,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 3,
+      "permission" : "CPB",
+      "group" : 3
+    }
+  },
+
+  {
+    "pk": 35,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 3,
+      "permission" : "CVO",
+      "group" : 3
+    }
+  },
+
+  {
+    "pk": 36,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 3,
+      "permission" : "SSA",
+      "group" : 3
+    }
+  },
+
+  {
+    "pk": 37,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 3,
+      "permission" : "SLO",
+      "group" : 3
+    }
+  },
+
+  {
+    "pk": 38,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 3,
+      "permission" : "SPA",
+      "group" : 3
+    }
+  },
+
+  {
+    "pk": 39,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 3,
+      "permission" : "KUS",
+      "group" : 3
+    }
+  },
+
+  {
+    "pk": 40,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 3,
+      "permission" : "BUS",
+      "group" : 3
+    }
+  },
+
+  {
+    "pk": 41,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 3,
+      "permission" : "APR",
+      "group" : 3
+    }
+  },
+
+  {
+    "pk": 42,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 3,
+      "permission" : "ELI",
+      "group" : 3
+    }
+  },
+
+  {
+    "pk": 43,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 3,
+      "permission" : "DLI",
+      "group" : 3
+    }
+  },
+
+  {
+    "pk": 44,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 3,
+      "permission" : "MPG",
+      "group" : 3
+    }
+  },
+
+  {
+    "pk": 45,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 3,
+      "permission" : "CEV",
+      "group" : 3
+    }
+  },
+
+  {
+    "pk": 46,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 3,
+      "permission" : "HEV",
+      "group" : 3
+    }
+  },
+
+  {
+    "pk": 47,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 3,
+      "permission" : "MEV",
+      "group" : 3
+    }
+  },
+
+
+
+
+  {
+    "pk": 48,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "CSS",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 49,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "MOS",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 50,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "CPB",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 51,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "CVO",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 52,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "SSA",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 53,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "SLO",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 54,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "SPA",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 55,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "KUS",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 56,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "BUS",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 57,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "APR",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 58,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "ELI",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 59,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "DLI",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 60,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "MPG",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 61,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "CEV",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 62,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "HEV",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 63,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "MEV",
+      "group" : 4
+    }
+  },
+
+
+
+
+  {
+    "pk": 64,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "CSS",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 65,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "MOS",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 66,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "CPB",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 67,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "CVO",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 68,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "SSA",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 69,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "SLO",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 70,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "SPA",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 71,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "KUS",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 72,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "BUS",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 73,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "APR",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 74,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "ELI",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 75,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "DLI",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 76,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "MPG",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 77,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "CEV",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 78,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "HEV",
+      "group" : 4
+    }
+  },
+
+  {
+    "pk": 79,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 4,
+      "permission" : "MEV",
+      "group" : 4
+    }
+  },
+
+
+
+
+
+  {
+    "pk": 80,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 5,
+      "permission" : "CSS",
+      "group" : 5
+    }
+  },
+
+  {
+    "pk": 81,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 5,
+      "permission" : "MOS",
+      "group" : 5
+    }
+  },
+
+  {
+    "pk": 82,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 5,
+      "permission" : "CPB",
+      "group" : 5
+    }
+  },
+
+  {
+    "pk": 83,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 5,
+      "permission" : "CVO",
+      "group" : 5
+    }
+  },
+
+  {
+    "pk": 84,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 5,
+      "permission" : "SSA",
+      "group" : 5
+    }
+  },
+
+  {
+    "pk": 85,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 5,
+      "permission" : "SLO",
+      "group" : 5
+    }
+  },
+
+  {
+    "pk": 86,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 5,
+      "permission" : "SPA",
+      "group" : 5
+    }
+  },
+
+  {
+    "pk": 87,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 5,
+      "permission" : "KUS",
+      "group" : 5
+    }
+  },
+
+  {
+    "pk": 88,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 5,
+      "permission" : "BUS",
+      "group" : 5
+    }
+  },
+
+  {
+    "pk": 89,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 5,
+      "permission" : "APR",
+      "group" : 5
+    }
+  },
+
+  {
+    "pk": 90,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 5,
+      "permission" : "ELI",
+      "group" : 5
+    }
+  },
+
+  {
+    "pk": 91,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 5,
+      "permission" : "DLI",
+      "group" : 5
+    }
+  },
+
+  {
+    "pk": 92,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 5,
+      "permission" : "MPG",
+      "group" : 5
+    }
+  },
+
+  {
+    "pk": 93,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 5,
+      "permission" : "CEV",
+      "group" : 5
+    }
+  },
+
+  {
+    "pk": 94,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 5,
+      "permission" : "HEV",
+      "group" : 5
+    }
+  },
+
+  {
+    "pk": 95,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 5,
+      "permission" : "MEV",
+      "group" : 5
+    }
+  },
+
+
+
+
+  {
+    "pk": 96,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 6,
+      "permission" : "CSS",
+      "group" : 6
+    }
+  },
+
+  {
+    "pk": 97,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 6,
+      "permission" : "MOS",
+      "group" : 6
+    }
+  },
+
+  {
+    "pk": 98,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 6,
+      "permission" : "CPB",
+      "group" : 6
+    }
+  },
+
+  {
+    "pk": 99,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 6,
+      "permission" : "CVO",
+      "group" : 6
+    }
+  },
+
+  {
+    "pk": 100,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 6,
+      "permission" : "SSA",
+      "group" : 6
+    }
+  },
+
+  {
+    "pk": 101,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 6,
+      "permission" : "SLO",
+      "group" : 6
+    }
+  },
+
+  {
+    "pk": 102,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 6,
+      "permission" : "SPA",
+      "group" : 6
+    }
+  },
+
+  {
+    "pk": 103,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 6,
+      "permission" : "KUS",
+      "group" : 6
+    }
+  },
+
+  {
+    "pk": 104,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 6,
+      "permission" : "BUS",
+      "group" : 6
+    }
+  },
+
+  {
+    "pk": 105,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 6,
+      "permission" : "APR",
+      "group" : 6
+    }
+  },
+
+  {
+    "pk": 106,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 6,
+      "permission" : "ELI",
+      "group" : 6
+    }
+  },
+
+  {
+    "pk": 107,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 6,
+      "permission" : "DLI",
+      "group" : 6
+    }
+  },
+
+  {
+    "pk": 108,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 6,
+      "permission" : "MPG",
+      "group" : 6
+    }
+  },
+
+  {
+    "pk": 109,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 6,
+      "permission" : "CEV",
+      "group" : 6
+    }
+  },
+
+  {
+    "pk": 110,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 6,
+      "permission" : "HEV",
+      "group" : 6
+    }
+  },
+
+  {
+    "pk": 111,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 6,
+      "permission" : "MEV",
+      "group" : 6
+    }
+  },
+
+
+
+
+
+
+
+  {
+    "pk": 112,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 7,
+      "permission" : "CSS",
+      "group" : 7
+    }
+  },
+
+  {
+    "pk": 113,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 7,
+      "permission" : "MOS",
+      "group" : 7
+    }
+  },
+
+  {
+    "pk": 114,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 7,
+      "permission" : "CPB",
+      "group" : 7
+    }
+  },
+
+  {
+    "pk": 115,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 7,
+      "permission" : "CVO",
+      "group" : 7
+    }
+  },
+
+  {
+    "pk": 116,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 7,
+      "permission" : "SSA",
+      "group" : 7
+    }
+  },
+
+  {
+    "pk": 117,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 7,
+      "permission" : "SLO",
+      "group" : 7
+    }
+  },
+
+  {
+    "pk": 118,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 7,
+      "permission" : "SPA",
+      "group" : 7
+    }
+  },
+
+  {
+    "pk": 119,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 7,
+      "permission" : "KUS",
+      "group" : 7
+    }
+  },
+
+  {
+    "pk": 120,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 7,
+      "permission" : "BUS",
+      "group" : 7
+    }
+  },
+
+  {
+    "pk": 121,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 7,
+      "permission" : "APR",
+      "group" : 7
+    }
+  },
+
+  {
+    "pk": 122,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 7,
+      "permission" : "ELI",
+      "group" : 7
+    }
+  },
+
+  {
+    "pk": 123,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 7,
+      "permission" : "DLI",
+      "group" : 7
+    }
+  },
+
+  {
+    "pk": 124,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 7,
+      "permission" : "MPG",
+      "group" : 7
+    }
+  },
+
+  {
+    "pk": 125,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 7,
+      "permission" : "CEV",
+      "group" : 7
+    }
+  },
+
+  {
+    "pk": 126,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 7,
+      "permission" : "HEV",
+      "group" : 7
+    }
+  },
+
+  {
+    "pk": 127,
+    "model": "udj.playerpermission",
+    "fields": {
+      "player" : 7,
+      "permission" : "MEV",
+      "group" : 7
     }
   },
 

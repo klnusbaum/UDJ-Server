@@ -1,12 +1,13 @@
 import json
 
-from settings import DEFAULT_SORTING_ALGO
+from settings import DEFAULT_SORTING_ALGO, DEFAULT_PLAYER_PERMISSIONS
 from udj.headers import MISSING_RESOURCE_HEADER
 
 from udj.models import Player
 from udj.models import SortingAlgorithm
 from udj.models import PlayerPassword
 from udj.models import Library, DefaultLibrary, OwnedLibrary, AssociatedLibrary
+from udj.models import PlayerPermissionGroup, PlayerPermission
 from udj.exceptions import LocationNotFoundError
 from udj.views.views06.decorators import AcceptsMethods
 from udj.views.views06.decorators import NeedsJSON
@@ -26,6 +27,12 @@ from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ImproperlyConfigured
 from django.core.exceptions import ObjectDoesNotExist
+
+def set_default_player_permissions(player, owner_group):
+  def create_perm(perm_name):
+    new_perm = PlayerPermission(player=player, permission=perm_name, group=owner_group)
+    new_perm.save()
+  map(create_perm, DEFAULT_PLAYER_PERMISSIONS)
 
 def isValidLocation(location):
   return 'postal_code' in location and 'country' in location
@@ -99,6 +106,14 @@ def createPlayer(request):
   new_owned.save()
   new_associated = AssociatedLibrary(library=new_library, player=newPlayer)
   new_associated.save()
+
+  #Create Owner Permissions Group
+  owner_group = PlayerPermissionGroup(player=newPlayer, name="owner")
+  owner_group.save()
+  owner_group.add_member(user)
+
+  #Add owner_group to select permissiosn
+  set_default_player_permissions(newPlayer, owner_group)
 
   return HttpJSONResponse(json.dumps(newPlayer, cls=UDJEncoder), status=201)
 

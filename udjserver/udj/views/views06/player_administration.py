@@ -6,6 +6,8 @@ from udj.models import PlayerPassword
 from udj.models import Participant
 from udj.models import PlayerAdmin
 from udj.models import SortingAlgorithm
+from udj.models import PlayerPermission
+from udj.models import PlayerPermissionGroup
 from udj.exceptions import LocationNotFoundError
 from udj.views.views06.auth import hashPlayerPassword
 from udj.views.views06.decorators import AcceptsMethods
@@ -32,12 +34,22 @@ from django.core.exceptions import ObjectDoesNotExist
 @IsOwnerOrAdmin
 @HasNZParams(['songset_user_permission'])
 def changeSongSetPermission(request, player_id, player):
+  """
   if request.POST['songset_user_permission'] == 'yes':
     player.allow_user_songset = True
     player.save()
   elif request.POST['songset_user_permission'] == 'no':
     player.allow_user_songset = False
     player.save()
+  else:
+    return HttpResponse('Invalid permission value', status=400)
+  """
+  if request.POST['songset_user_permission'] == 'yes':
+    PlayerPermission.objects.filter(player=player, permission=u'CSS').delete()
+  elif request.POST['songset_user_permission'] == 'no':
+    ownerGroup = PlayerPermissionGroup.objects.get(player=player, name=u'owner')
+    newPermission = PlayerPermission(player=player, permission=u'CSS', group=ownerGroup)
+    newPermission.save()
   else:
     return HttpResponse('Invalid permission value', status=400)
 

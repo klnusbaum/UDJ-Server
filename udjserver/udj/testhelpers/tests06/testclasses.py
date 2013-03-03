@@ -4,7 +4,7 @@ from django.test.client import Client
 from django.contrib.auth.models import User
 from udj.models import Ticket, Participant, ActivePlaylistEntry, LibraryEntry
 from udj.headers import DJANGO_TICKET_HEADER, MISSING_RESOURCE_HEADER
-from udj.models import Player, PlayerPassword, PlayerLocation, PlayerAdmin, ActivePlaylistEntry, PlaylistEntryTimePlayed
+from udj.models import Player, PlayerPassword, PlayerLocation, PlayerAdmin, ActivePlaylistEntry, PlaylistEntryTimePlayed, PlayerPermissionGroup, PlayerPermission
 from udj.views.views06.auth import hashPlayerPassword
 
 from datetime import datetime
@@ -203,18 +203,23 @@ class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
 
   def testChangeSongSetPermissionToYes(self):
     playerToChange = Player.objects.get(pk=1)
-    playerToChange.allow_user_songset = False
-    playerToChange.save()
-    self.assertFalse(Player.objects.get(pk=1).allow_user_songset)
+    ownerGroup = PlayerPermissionGroup.objects.get(player=playerToChange, name=u'owner')
+    newPermission = PlayerPermission(player=playerToChange, permission=u'CSS', group=ownerGroup)
+    newPermission.save()
+    #self.assertFalse(Player.objects.get(pk=1).allow_user_songset)
     response = self.doPost('/udj/0_6/players/1/songset_user_permission', {'songset_user_permission' : 'yes'})
     self.assertEqual(response.status_code, 200, 'Error: ' + response.content)
-    self.assertTrue(Player.objects.get(pk=1).allow_user_songset)
+    #self.assertTrue(Player.objects.get(pk=1).allow_user_songset)
+    self.assertFalse(PlayerPermission.objects.filter(player=playerToChange, permission=u'CSS').exists())
 
   def testChangeSongSetPerimssionToNo(self):
-    self.assertTrue(Player.objects.get(pk=1).allow_user_songset)
+    #self.assertTrue(Player.objects.get(pk=1).allow_user_songset)
+    playerToChange = Player.objects.get(pk=1)
+    self.assertFalse(PlayerPermission.objects.filter(player=playerToChange, permission=u'CSS').exists())
     response = self.doPost('/udj/0_6/players/1/songset_user_permission', {'songset_user_permission' : 'no'})
     self.assertEqual(response.status_code, 200, 'Error: ' + response.content)
-    self.assertFalse(Player.objects.get(pk=1).allow_user_songset)
+    #self.assertFalse(Player.objects.get(pk=1).allow_user_songset)
+    self.assertTrue(PlayerPermission.objects.filter(player=playerToChange, permission=u'CSS').exists())
 
   def testBadChangeSongSetPermission(self):
     response = self.doPost('/udj/0_6/players/1/songset_user_permission', {'songset_user_permission' : 'derp'})
