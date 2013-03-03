@@ -26,15 +26,9 @@ urlpatterns += patterns('udj.views.views07.player_creation',
   (r'^players/player$', 'createPlayer'),
 )
 
-
-"""
-urlpatterns += patterns('udj.views.views07.favorites',
-  (r'^favorites/players/(?P<player_id>\d+)/(?P<lib_id>\d+)$', 'favorite'),
-  (r'^favorites/players/(?P<player_id>\d+)$', 'getFavorites'),
-)
-
-
 urlpatterns += patterns('udj.views.views07.player_administration',
+  (r'^players/(?P<player_id>\d+)/enabled_libraries$', 'getEnabledLibraries'),
+  """
   (r'^players/(?P<player_id>\d+)/password$', 'modifyPlayerPassword'),
   (r'^players/(?P<player_id>\d+)/location$', 'setLocation'),
   (r'^players/(?P<player_id>\d+)/sorting_algorithm$', 'setSortingAlgorithm'),
@@ -45,7 +39,16 @@ urlpatterns += patterns('udj.views.views07.player_administration',
   (r'^players/(?P<player_id>\d+)/banned_users/(?P<ban_user_id>\d+)$', 'modBans'),
   (r'^players/(?P<player_id>\d+)/banned_users$', 'getBannedUsers'),
   (r'^players/(?P<player_id>\d+)/songset_user_permission$', 'changeSongSetPermission'),
+  """
 )
+
+
+"""
+urlpatterns += patterns('udj.views.views07.favorites',
+  (r'^favorites/players/(?P<player_id>\d+)/(?P<lib_id>\d+)$', 'favorite'),
+  (r'^favorites/players/(?P<player_id>\d+)$', 'getFavorites'),
+)
+
 
 urlpatterns += patterns('udj.views.views07.player_interaction',
   (r'^players/(?P<player_id>\d+)/users/user$', 'modPlayerParticiapants'),

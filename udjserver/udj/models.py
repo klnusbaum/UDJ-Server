@@ -386,6 +386,12 @@ class Player(models.Model):
 
   DefaultLibrary = property(getDefaultLibrary)
 
+  def getEnabledLibraries(self):
+    lib_ids = AssociatedLibrary.objects.filter(player=self).values_list('library__id', flat=True)
+    return Library.objects.filter(pk__in=lib_ids)
+
+  EnabledLibraries = property(getEnabledLibraries)
+
 
   def __unicode__(self):
     return self.name + " player"

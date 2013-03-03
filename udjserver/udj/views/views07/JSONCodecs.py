@@ -63,6 +63,15 @@ class UDJEncoder(json.JSONEncoder):
         'first_name' : obj.first_name,
         'last_name' : obj.last_name
       }
+    elif isinstance(obj, Library):
+      return {
+        'id' : str(obj.id),
+        'name' : obj.name,
+        'description' : obj.description,
+        'pub_key' : obj.pub_key,
+        'read_permission' obj.get_read_permission_display(),
+        'write_permission' obj.get_write_permission_display()
+      }
     else:
       return json.JSONEncoder.default(self, obj)
     """
