@@ -72,10 +72,10 @@ class UDJEncoder(json.JSONEncoder):
         "name" : obj.name,
         "owner" : obj.owning_user,
         "has_password" : True if PlayerPassword.objects.filter(player=obj).exists() else False,
-        "admins" : obj.Admins(),
+        "admins" : obj.Admins,
         "sorting_algo": obj.sorting_algo,
         "songset_user_permission" : songset_permission,
-        "num_active_users" : len(obj.ActiveParticipants()),
+        "num_active_users" : len(obj.ActiveParticipants),
         "size_limit" : obj.size_limit if obj.size_limit != None else 0
       }
 

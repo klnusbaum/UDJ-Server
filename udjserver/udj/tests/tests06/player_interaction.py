@@ -210,7 +210,7 @@ class LogoutTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
     response = self.doDelete('/udj/0_6/players/1/users/user')
     self.assertEqual(response.status_code, 200)
     self.assertEqual(True, Participant.objects.get(user__id=3, player__id=1).logout_flag)
-    activeUserIds = [x.user.id for x in Player.objects.get(id=1).ActiveParticipants()]
+    activeUserIds = [x.user.id for x in Player.objects.get(id=1).ActiveParticipants]
     self.assertFalse(3 in activeUserIds)
 
 

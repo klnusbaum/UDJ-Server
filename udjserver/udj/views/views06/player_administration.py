@@ -260,5 +260,5 @@ def unbanUser(request, player_id, ban_user_id, player):
 @PlayerExists
 @IsOwnerOrAdmin
 def getBannedUsers(request, player_id, player):
-  return HttpJSONResponse(json.dumps(player.BannedUsers(), cls=UDJEncoder))
+  return HttpJSONResponse(json.dumps(player.BannedUsers, cls=UDJEncoder))
 

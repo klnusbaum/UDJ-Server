@@ -42,7 +42,7 @@ def participateWithPlayer(request, player_id, player):
       toReturn = HttpResponseForbidden()
       toReturn[FORBIDDEN_REASON_HEADER] = 'banned'
       return toReturn
-    if activePlayer.isFull():
+    if activePlayer.IsFull:
       toReturn = HttpResponseForbidden()
       toReturn[FORBIDDEN_REASON_HEADER] = 'player-full'
       return toReturn
@@ -106,7 +106,7 @@ def logoutOfPlayer(request, player_id, player):
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
 def getUsersForPlayer(request, player_id, player):
-  return HttpJSONResponse(json.dumps(player.ActiveParticipants(), cls=UDJEncoder))
+  return HttpJSONResponse(json.dumps(player.ActiveParticipants, cls=UDJEncoder))
 
 @AcceptsMethods(['GET'])
 @NeedsAuth
@@ -115,7 +115,7 @@ def getUsersForPlayer(request, player_id, player):
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
 def getAdminsForPlayer(request, player_id, player):
-  return HttpJSONResponse(json.dumps(player.Admins(), cls=UDJEncoder))
+  return HttpJSONResponse(json.dumps(player.Admins, cls=UDJEncoder))
 
 @AcceptsMethods(['GET'])
 @NeedsAuth
@@ -124,7 +124,7 @@ def getAdminsForPlayer(request, player_id, player):
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
 def getSongSetsForPlayer(request, player_id, player):
-  return HttpJSONResponse(json.dumps(player.SongSets(), cls=UDJEncoder))
+  return HttpJSONResponse(json.dumps(player.SongSets, cls=UDJEncoder))
 
 @AcceptsMethods(['GET'])
 @NeedsAuth
@@ -150,7 +150,7 @@ def getAvailableMusic(request, player_id, player):
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
 def getArtists(request, player_id, player):
-  return HttpJSONResponse(json.dumps(player.Artists(), cls=UDJEncoder))
+  return HttpJSONResponse(json.dumps(player.Artists, cls=UDJEncoder))
 
 @AcceptsMethods(['GET'])
 @NeedsAuth
@@ -173,7 +173,7 @@ def getArtistSongs(request, player_id, player, givenArtist):
 def getRecentlyPlayed(request, player_id, player):
   songs_limit = int(request.GET.get('max_songs',40))
   songs_limit = min(songs_limit,100)
-  recentlyPlayed = player.RecentlyPlayed()[:songs_limit]
+  recentlyPlayed = player.RecentlyPlayed[:songs_limit]
   return HttpJSONResponse(json.dumps(recentlyPlayed, cls=UDJEncoder))
 
 @AcceptsMethods(['GET'])
@@ -185,7 +185,7 @@ def getRecentlyPlayed(request, player_id, player):
 def getRandomSongsForPlayer(request, player_id, player):
   rand_limit = int(request.GET.get('max_randoms',40))
   rand_limit = min(rand_limit,100)
-  randomSongs = player.Randoms()[:rand_limit]
+  randomSongs = player.Randoms[:rand_limit]
   return HttpJSONResponse(json.dumps(randomSongs, cls=UDJEncoder))
 
 @csrf_exempt

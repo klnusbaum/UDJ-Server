@@ -58,7 +58,7 @@ def activePlaylist(request, player_id, player):
     return HttpResponseNotAllowed(['POST', 'DELETE'])
 
 def getActivePlaylist(player):
-  return HttpJSONResponse(json.dumps(player.ActivePlaylist(), cls=UDJEncoder))
+  return HttpJSONResponse(json.dumps(player.ActivePlaylist, cls=UDJEncoder))
 
 @HasNZParams(['to_add','to_remove'])
 def multiModActivePlaylist(request, player):
