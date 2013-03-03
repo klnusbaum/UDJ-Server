@@ -321,13 +321,14 @@ class Player(models.Model):
   AllSongs = property(getAllSongs)
 
   def user_has_permission(self, permission, user):
-    allowed_users = (PlayerPermission.objects.filter(player=self, permission=permission)
-                     .group_set.all()
-                     .user_set.all())
-    if not allowed_users.exists():
+    defined_permissions = PlayerPermission.objects.filter(player=self, permission=permission)
+
+    if not defined_permissions.exists():
       return True
     else:
-      return (user in allowed_users)
+      allowed_group_ids = defined_permissions.values_list('group__id', flat=True)
+      allowed_user_ids = PlayerPermissionGroupMember.objects.filter(permission_group__id__in=allowed_group_ids).values_list('user__id', flat=True)
+      return (user.id in allowed_user_ids)
 
   def canCreatSongSets(self, user):
     return self.user_has_permission(u'CSS',  user)
@@ -458,7 +459,7 @@ class Player(models.Model):
       association.enabled = True
       association.save()
 
-  def disable_library(self, library)
+  def disable_library(self, library):
     association = AssociatedLibrary.objects.get(library=library, player=self)
     association.enabled = False
     association.save()

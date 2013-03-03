@@ -2,11 +2,13 @@ from udj.headers import DJANGO_TICKET_HEADER
 from udj.headers import MISSING_RESOURCE_HEADER
 from udj.headers import MISSING_REASON_HEADER
 from udj.models import Player
+from udj.models import Library
+"""
 from udj.models import Participant
-
 from django.http import HttpResponse
+"""
+
 from django.http import HttpResponseNotAllowed
-from django.http import HttpResponseNotFound
 from django.http import HttpResponseBadRequest
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -63,7 +65,7 @@ def PlayerExists(function):
 def LibraryExists(function):
   def wrapper(*args, **kwargs):
     try:
-      library = Library.objects.get(kwargs['library_id'])
+      library = Library.objects.get(pk=kwargs['library_id'])
       kwargs['library'] = library
       return function(*args, **kwargs)
     except ObjectDoesNotExist:

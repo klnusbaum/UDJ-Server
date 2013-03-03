@@ -28,7 +28,7 @@ def HasPlayerPermissions(required_permissions):
       player = args[1]
       user = getUserForTicket(request)
       for perm in required_permissions:
-        if not player.user_had_permission(perm, user):
+        if not player.user_has_permission(perm, user):
           return HttpResponseForbiddenWithReason('player-permission')
       return target(*args, **kwargs)
     return wrapper

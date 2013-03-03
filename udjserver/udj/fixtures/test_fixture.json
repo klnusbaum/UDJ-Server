@@ -75,7 +75,6 @@
     }
   },
 
-
   {
     "pk" :7,
     "model" : "udj.library",
@@ -88,6 +87,23 @@
       "resolver" : "standard"
     }
   },
+
+  {
+    "pk" :8,
+    "model" : "udj.library",
+    "fields" : {
+      "name" : "Rdio",
+      "description" : "The Rdio music library",
+      "pub_key" : "",
+      "read_permission" : "PU",
+      "write_permission" : "NO"
+    }
+  },
+
+
+
+
+
 
   {
     "pk": 1,

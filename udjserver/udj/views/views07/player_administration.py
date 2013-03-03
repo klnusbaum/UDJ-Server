@@ -4,11 +4,13 @@ import json
 from udj.models import Player
 
 
-from udj.views.views07.authdecorators import NeedsAuth
-from udj.views.views07.decorators import AcceptsMethods, PlayerExists
+from udj.views.views07.authdecorators import NeedsAuth, HasPlayerPermissions
+from udj.views.views07.decorators import AcceptsMethods, PlayerExists, LibraryExists
 from udj.views.views07.responses import HttpJSONResponse, HttpResponseForbiddenWithReason
 from udj.views.views07.JSONCodecs import UDJEncoder
+
 from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
 
 """
 
@@ -21,7 +23,6 @@ from udj.exceptions import LocationNotFoundError
 from udj.views.views07.auth import hashPlayerPassword
 
 from django.http import HttpRequest
-from django.http import HttpResponse
 from django.http import HttpResponseNotFound
 from django.http import HttpResponseBadRequest
 from django.contrib.auth.models import User
@@ -36,14 +37,16 @@ def getEnabledLibraries(request, player_id, player):
 
 @HasPlayerPermissions(['ELI'])
 def enable_library(request, player, library):
-  if library.user_has_read_perm(player.owner):
+  if library.user_has_read_perm(player.owning_user):
     player.enable_library(library)
+    return HttpResponse()
   else:
     return HttpResponseForbiddenWithReason('library-permission')
 
 @HasPlayerPermissions(['DLI'])
 def disable_library(request, player, library):
   player.disable_library(library)
+  return HttpResponse()
 
 @csrf_exempt
 @NeedsAuth
@@ -52,9 +55,9 @@ def disable_library(request, player, library):
 @LibraryExists
 def modEnabledLibraries(request, player_id, library_id, player, library):
   if request.method == 'PUT':
-    enable_library(request, player, library)
+    return enable_library(request, player, library)
   else:
-    disable_library(request, player, library)
+    return disable_library(request, player, library)
 
 
 

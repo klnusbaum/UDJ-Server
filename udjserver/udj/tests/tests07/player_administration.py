@@ -1,6 +1,6 @@
 import json
 
-from udj.models import Library
+from udj.models import Library, AssociatedLibrary
 from udj.models import Player
 from udj.testhelpers.tests07.testclasses import KurtisTestCase
 
@@ -22,6 +22,13 @@ class DefaultOwnerAdminTests(KurtisTestCase):
                        returned_library['read_permission'])
       self.assertEqual(actual_library.get_write_permission_display(),
                        returned_library['write_permission'])
+
+
+  def testEnableGoodLibrary(self):
+    response = self.doPut('/players/1/enabled_libraries/8')
+    self.assertEqual(200, response.status_code)
+    self.assertTrue(
+        AssociatedLibrary.objects.filter(player__id=1, library__id=8, enabled=True).exists())
 
 
 
