@@ -49,7 +49,6 @@ def NeedsJSON(function):
       return function(*args, **kwargs)
   return wrapper
 
-"""
 def PlayerExists(function):
   def wrapper(*args, **kwargs):
     request = args[0]
@@ -58,11 +57,10 @@ def PlayerExists(function):
       kwargs['player'] = actualPlayer
       return function(*args, **kwargs)
     except ObjectDoesNotExist:
-      toReturn = HttpResponseNotFound()
-      toReturn[MISSING_RESOURCE_HEADER] = 'player'
-      return toReturn
+      return HttpMissingResponse('player')
   return wrapper
 
+"""
 def PlayerIsActive(function):
   def wrapper(*args, **kwargs):
     if 'player' in kwargs:

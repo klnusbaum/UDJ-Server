@@ -56,6 +56,7 @@ class DoesServerOpsTestCase(TestCase):
 """
 class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
 
+
   def testSetVolume(self):
     player = Player.objects.get(pk=1)
     self.assertEqual(player.volume, 5)

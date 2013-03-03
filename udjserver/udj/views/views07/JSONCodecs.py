@@ -3,6 +3,7 @@ from udj.models import SortingAlgorithm
 from udj.models import Player
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
+from udj.models import Library
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 """
@@ -36,7 +37,7 @@ class UDJEncoder(json.JSONEncoder):
         "owner" : obj.owning_user,
         "has_password" : True if PlayerPassword.objects.filter(player=obj).exists() else False,
         "sorting_algo": obj.sorting_algo,
-        "num_active_users" : len(obj.ActiveParticipants()),
+        "num_active_users" : len(obj.ActiveParticipants),
         "size_limit" : obj.size_limit if obj.size_limit != None else 0
       }
 
@@ -69,8 +70,8 @@ class UDJEncoder(json.JSONEncoder):
         'name' : obj.name,
         'description' : obj.description,
         'pub_key' : obj.pub_key,
-        'read_permission' obj.get_read_permission_display(),
-        'write_permission' obj.get_write_permission_display()
+        'read_permission' : obj.get_read_permission_display(),
+        'write_permission' : obj.get_write_permission_display()
       }
     else:
       return json.JSONEncoder.default(self, obj)
