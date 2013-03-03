@@ -1,5 +1,4 @@
 import json
-from udj.models import UserPubKey
 from udj.models import SortingAlgorithm
 from udj.models import Player
 from udj.models import PlayerLocation
@@ -24,8 +23,6 @@ class UDJEncoder(json.JSONEncoder):
   def default(self, obj):
     if isinstance(obj, QuerySet):
       return [x for x in obj]
-    elif isinstance(obj, UserPubKey):
-      return {'key' : obj.pub_key}
     elif isinstance(obj, SortingAlgorithm):
       return {
         'id' : str(obj.id),

@@ -1,6 +1,5 @@
 from udj.tests.tests07.user_creation import *
 from udj.tests.tests07.auth import *
-from udj.tests.tests07.user_pub_key import *
 from udj.tests.tests07.server_capabilities import *
 from udj.tests.tests07.player_search import *
 """
