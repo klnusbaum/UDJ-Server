@@ -22,16 +22,17 @@ urlpatterns += patterns('udj.views.views07.player_search',
   (r'^players$', 'getPlayers'),
 )
 
+urlpatterns += patterns('udj.views.views07.player_creation',
+  (r'^players/player$', 'createPlayer'),
+)
+
+
 """
 urlpatterns += patterns('udj.views.views07.favorites',
   (r'^favorites/players/(?P<player_id>\d+)/(?P<lib_id>\d+)$', 'favorite'),
   (r'^favorites/players/(?P<player_id>\d+)$', 'getFavorites'),
 )
 
-
-urlpatterns += patterns('udj.views.views07.player_creation',
-  (r'^players/player$', 'createPlayer'),
-)
 
 urlpatterns += patterns('udj.views.views07.player_administration',
   (r'^players/(?P<player_id>\d+)/password$', 'modifyPlayerPassword'),

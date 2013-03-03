@@ -618,12 +618,12 @@ class JeffTestCase(DoesServerOpsTestCase):
   username = "jeff"
   userpass = "testjeff"
 
-
-"""
-
 class YunYoungTestCase(DoesServerOpsTestCase):
   username = "yunyoung"
   userpass = "testyunyoung"
+
+
+"""
 
 class AlejandroTestCase(DoesServerOpsTestCase):
   username = "alejandro"

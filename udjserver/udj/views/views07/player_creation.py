@@ -1,33 +1,35 @@
 import json
 
 from settings import DEFAULT_SORTING_ALGO, DEFAULT_PLAYER_PERMISSIONS, geocodeLocation
-from udj.headers import MISSING_RESOURCE_HEADER
 
 from udj.models import Player
+from udj.models import PlayerPermission
+from udj.models import PlayerPermissionGroup
 from udj.models import SortingAlgorithm
 from udj.models import PlayerPassword
+from udj.models import PlayerLocation
 from udj.exceptions import LocationNotFoundError
 from udj.views.views07.decorators import AcceptsMethods
 from udj.views.views07.decorators import NeedsJSON
 from udj.views.views07.authdecorators import NeedsAuth
 from udj.views.views07.auth import hashPlayerPassword
 from udj.views.views07.auth import getUserForTicket
-from udj.views.views07.responses import HttpJSONResponse
+from udj.views.views07.responses import HttpJSONResponse, HttpMissingResponse
 from udj.views.views07.JSONCodecs import UDJEncoder
 
 from django.db import transaction
 from django.http import HttpRequest
 from django.http import HttpResponse
-from django.http import HttpResponseNotFound
 from django.http import HttpResponseBadRequest
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ImproperlyConfigured
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
+from django.contrib.gis.geos import Point
 
 
-def set_default_player_permissions(player, owner_group)
+def set_default_player_permissions(player, owner_group):
   def create_perm(perm_name):
     new_perm = PlayerPermission(player=player, permission=perm_name, group=owner_group)
     new_perm.save()
@@ -60,9 +62,7 @@ def createPlayer(request):
     try:
       sortingAlgo = SortingAlgorithm.objects.get(pk=newPlayerJSON['sorting_algorithm_id'])
     except ObjectDoesNotExist:
-      toReturn = HttpResponseNotFound()
-      toReturn[MISSING_RESOURCE_HEADER] = 'sorting-algorithm'
-      return toReturn
+      return HttpMissingResponse('sorting-algorithm')
   else:
     try:
       sortingAlgo = SortingAlgorithm.objects.get(function_name=DEFAULT_SORTING_ALGO)
@@ -104,13 +104,14 @@ def createPlayer(request):
 
   #Set location if provided
   if 'location' in newPlayerJSON:
-    playerLocation = PlayerLocation(player=player,
+    playerLocation = PlayerLocation(player=newPlayer,
                                     point=Point(lon, lat),
                                     address=address,
                                     locality=locality,
                                     region=region,
                                     postal_code=postal_code,
                                     country=country)
+    playerLocation.save()
 
 
   #Create Owner Permissions Group
