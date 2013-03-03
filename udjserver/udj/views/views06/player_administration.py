@@ -4,7 +4,6 @@ from udj.headers import MISSING_RESOURCE_HEADER
 from udj.models import Player
 from udj.models import PlayerPassword
 from udj.models import Participant
-from udj.models import PlayerAdmin
 from udj.models import SortingAlgorithm
 from udj.models import PlayerPermission
 from udj.models import PlayerPermissionGroup
@@ -34,16 +33,6 @@ from django.core.exceptions import ObjectDoesNotExist
 @IsOwnerOrAdmin
 @HasNZParams(['songset_user_permission'])
 def changeSongSetPermission(request, player_id, player):
-  """
-  if request.POST['songset_user_permission'] == 'yes':
-    player.allow_user_songset = True
-    player.save()
-  elif request.POST['songset_user_permission'] == 'no':
-    player.allow_user_songset = False
-    player.save()
-  else:
-    return HttpResponse('Invalid permission value', status=400)
-  """
   if request.POST['songset_user_permission'] == 'yes':
     PlayerPermission.objects.filter(player=player, permission=u'CSS').delete()
   elif request.POST['songset_user_permission'] == 'no':
@@ -191,7 +180,8 @@ def modAdmin(request, player_id, user_id, player):
 def addAdmin(request, player_id, user_id, player):
   try:
     newAdminUser = User.objects.get(pk=user_id)
-    PlayerAdmin.objects.get_or_create(admin_user=newAdminUser, player=player)
+    admin_group = PlayerPermissionGroup.objects.get(player=player, name=u'admin')
+    admin_group.add_member(newAdminUser)
     return HttpResponse(status=201)
   except ObjectDoesNotExist:
     toReturn = HttpResponseNotFound()
@@ -200,8 +190,8 @@ def addAdmin(request, player_id, user_id, player):
 
 def removeAdmin(request, player_id, user_id, player):
   try:
-    toRemove = PlayerAdmin.objects.get(admin_user__id=user_id, player=player)
-    toRemove.delete()
+    admin_group = PlayerPermissionGroup.objects.get(player=player, name=u'admin')
+    admin_group.remove_member(User.objects.get(pk=user_id))
     return HttpResponse()
   except ObjectDoesNotExist:
     toReturn = HttpResponseNotFound()

@@ -37,16 +37,6 @@ class Participant(models.Model):
   def __unicode__(self):
     return "User " + str(self.user.id) + " is participating with player " + str(self.player.name)
 
-class PlayerAdmin(models.Model):
-  admin_user = models.ForeignKey(User)
-  player = models.ForeignKey('Player')
-
-  class Meta:
-    unique_together = ("admin_user", "player")
-
-  def __unicode__(self):
-    return self.admin_user.username + " is an admin for " + self.player.name
-
 class LibraryEntry(models.Model):
   library = models.ForeignKey('Library')
   lib_id = models.CharField(max_length=100)
@@ -346,7 +336,7 @@ class Player(models.Model):
             self.ActiveParticipants().count() < self.size_limit)
 
   def isAdmin(self, user):
-    return self.Admins().filter(admin_user=user).exists()
+    return user in self.Admins()
 
   def isActiveParticipant(self, user):
     return self.ActiveParticipants().filter(user=user).exists()
@@ -359,7 +349,10 @@ class Player(models.Model):
       time_last_interaction__gt=(datetime.now() - timedelta(hours=1))).exclude(kick_flag=True).exclude(logout_flag=True)
 
   def Admins(self):
-    return PlayerAdmin.objects.filter(player=self)
+    admin_group = PlayerPermissionGroup.objects.filter(player=self, name=u'admin')
+    member_ids = (PlayerPermissionGroupMember.objects.filter(permission_group=admin_group)
+                  .values_list('user__id', flat=True))
+    return User.objects.filter(pk__in=member_ids)
 
   def KickedUsers(self):
     return Participant.objects.filter(player=self, kick_flag=True)
@@ -453,6 +446,13 @@ class PlayerPermissionGroup(models.Model):
     new_member = PlayerPermissionGroupMember(permission_group=self, user=user)
     new_member.save()
 
+  def remove_member(self, user):
+    PlayerPermissionGroupMember.objects.get(permission_group=self, user=user).delete()
+
+  def contains_member(self, user):
+    return user.id in (PlayerPermissionGroupMember.objects.filter(permission_group=self)
+                      .values_list('user__id', flat=True))
+
   def __unicode__(self):
     return self.name
 
@@ -462,7 +462,7 @@ class PlayerPermissionGroupMember(models.Model):
   user = models.ForeignKey(User)
 
   def __unicode__(self):
-    return self.user + " in " + permission_group.name
+    return self.user.username + " in " + permission_group.name
 
 class PlayerPermission(models.Model):
   PERMISSION_CHOICES = (

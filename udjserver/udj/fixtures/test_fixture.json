@@ -804,7 +804,7 @@
 
   {
     "pk": 1,
-    "model": "udj.PlayerPermissionGroup",
+    "model": "udj.playerpermissiongroup",
     "fields": {
       "player" : 1,
       "name" : "owner"
@@ -813,7 +813,7 @@
 
   {
     "pk": 2,
-    "model": "udj.PlayerPermissionGroup",
+    "model": "udj.playerpermissiongroup",
     "fields": {
       "player" : 2,
       "name" : "owner"
@@ -822,7 +822,7 @@
 
   {
     "pk": 3,
-    "model": "udj.PlayerPermissionGroup",
+    "model": "udj.playerpermissiongroup",
     "fields": {
       "player" : 3,
       "name" : "owner"
@@ -831,7 +831,7 @@
 
   {
     "pk": 4,
-    "model": "udj.PlayerPermissionGroup",
+    "model": "udj.playerpermissiongroup",
     "fields": {
       "player" : 4,
       "name" : "owner"
@@ -840,7 +840,7 @@
 
   {
     "pk": 5,
-    "model": "udj.PlayerPermissionGroup",
+    "model": "udj.playerpermissiongroup",
     "fields": {
       "player" : 5,
       "name" : "owner"
@@ -849,7 +849,7 @@
 
   {
     "pk": 6,
-    "model": "udj.PlayerPermissionGroup",
+    "model": "udj.playerpermissiongroup",
     "fields": {
       "player" : 6,
       "name" : "owner"
@@ -858,12 +858,39 @@
 
   {
     "pk": 7,
-    "model": "udj.PlayerPermissionGroup",
+    "model": "udj.playerpermissiongroup",
     "fields": {
       "player" : 7,
       "name" : "owner"
     }
   },
+
+  {
+    "pk": 8,
+    "model": "udj.playerpermissiongroup",
+    "fields": {
+      "name" : "admin",
+      "player" : 1
+    }
+  },
+  {
+    "pk": 9,
+    "model": "udj.playerpermissiongroup",
+    "fields": {
+      "name" : "admin",
+      "player" : 3
+    }
+  },
+
+  {
+    "pk": 10,
+    "model": "udj.playerpermissiongroup",
+    "fields": {
+      "name" : "admin",
+      "player" : 4
+    }
+  },
+
 
 
   {
@@ -934,6 +961,39 @@
     }
   },
 
+  {
+    "pk": 8,
+    "model" : "udj.playerpermissiongroupmember",
+    "fields": {
+      "user" : 5,
+      "permission_group" : 8
+    }
+  },
+  {
+    "pk": 9,
+    "model" : "udj.playerpermissiongroupmember",
+    "fields": {
+      "user" : 5,
+      "permission_group" : 10
+    }
+  },
+
+  {
+    "pk": 10,
+    "model" : "udj.playerpermissiongroupmember",
+    "fields": {
+      "user" : 2,
+      "permission_group" : 9
+    }
+  },
+  {
+    "pk": 11,
+    "model" : "udj.playerpermissiongroupmember",
+    "fields": {
+      "user" : 1,
+      "permission_group" : 8
+    }
+  },
 
 
 
@@ -2455,39 +2515,24 @@
     }
   },
 
-  {
-    "pk": 1,
-    "model" : "udj.playeradmin",
-    "fields": {
-      "admin_user" : 5,
-      "player" : 1
-    }
-  },
-  {
-    "pk": 2,
-    "model" : "udj.playeradmin",
-    "fields": {
-      "admin_user" : 5,
-      "player" : 4
-    }
-  },
 
-  {
-    "pk": 3,
-    "model" : "udj.playeradmin",
-    "fields": {
-      "admin_user" : 2,
-      "player" : 3
-    }
-  },
-  {
-    "pk": 4,
-    "model" : "udj.playeradmin",
-    "fields": {
-      "admin_user" : 1,
-      "player" : 1
-    }
-  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   {

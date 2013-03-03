@@ -4,7 +4,7 @@ from django.test.client import Client
 from django.contrib.auth.models import User
 from udj.models import Ticket, Participant, ActivePlaylistEntry, LibraryEntry
 from udj.headers import DJANGO_TICKET_HEADER, MISSING_RESOURCE_HEADER
-from udj.models import Player, PlayerPassword, PlayerLocation, PlayerAdmin, ActivePlaylistEntry, PlaylistEntryTimePlayed, PlayerPermissionGroup, PlayerPermission
+from udj.models import Player, PlayerPassword, PlayerLocation, ActivePlaylistEntry, PlaylistEntryTimePlayed, PlayerPermissionGroup, PlayerPermission
 from udj.views.views06.auth import hashPlayerPassword
 
 from datetime import datetime
@@ -127,7 +127,8 @@ class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
   def testAddAdmin(self):
     response = self.doPut('/udj/0_6/players/1/admins/7')
     self.assertEqual(201, response.status_code)
-    self.assertTrue(PlayerAdmin.objects.filter(admin_user__id=7, player__id=1).exists())
+    admin_group = PlayerPermissionGroup.objects.get(player__id=1, name=u'admin')
+    self.assertTrue(admin_group.contains_member(User.objects.get(pk=7)))
 
   def testNonExistentAdminAdd(self):
     response = self.doPut('/udj/0_6/players/1/admins/100000')
@@ -137,7 +138,8 @@ class BasicPlayerAdministrationTests(DoesServerOpsTestCase):
   def testRemoveAdmin(self):
     response = self.doDelete('/udj/0_6/players/1/admins/1')
     self.assertEqual(200, response.status_code)
-    self.assertFalse(PlayerAdmin.objects.filter(admin_user__id=1, player__id=1).exists())
+    admin_group = PlayerPermissionGroup.objects.get(player__id=1, name=u'admin')
+    self.assertFalse(admin_group.contains_member(User.objects.get(pk=1)))
 
   def testNonExistsentAdminRemove(self):
     response = self.doDelete('/udj/0_6/players/1/admins/100000')

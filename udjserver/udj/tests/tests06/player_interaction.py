@@ -1,6 +1,6 @@
 import json
 import udj
-from udj.models import Participant, PlayerAdmin, SongSet, SongSetEntry, LibraryEntry, Player
+from udj.models import Participant, SongSet, SongSetEntry, LibraryEntry, Player
 from datetime import datetime
 from udj.testhelpers.tests06.testclasses import ZachTestCase, MattTestCase, JeffTestCase, LeeTestCase, KurtisTestCase
 from udj.headers import FORBIDDEN_REASON_HEADER

@@ -2,7 +2,6 @@ import json
 from udj.models import SongSet
 from udj.models import SongSetEntry
 from udj.models import Player
-from udj.models import PlayerAdmin
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
 from udj.models import PlaylistEntryTimePlayed
@@ -65,8 +64,6 @@ class UDJEncoder(json.JSONEncoder):
 
     elif isinstance(obj, Participant):
       return obj.user
-    elif isinstance(obj, PlayerAdmin):
-      return obj.admin_user
     elif isinstance(obj, Player):
       songset_permission = (not PlayerPermission.objects.filter(player=obj, permission=u'CSS')
                             .exists())

@@ -112,8 +112,13 @@ def createPlayer(request):
   owner_group.save()
   owner_group.add_member(user)
 
-  #Add owner_group to select permissiosn
+  #Create Admin Permissions Group
+  admin_group = PlayerPermissionGroup(player=newPlayer, name="admin")
+  admin_group.save()
+
+  #Add owner_group and admin group to select permissions
   set_default_player_permissions(newPlayer, owner_group)
+  set_default_player_permissions(newPlayer, admin_group)
 
   return HttpJSONResponse(json.dumps(newPlayer, cls=UDJEncoder), status=201)
 
