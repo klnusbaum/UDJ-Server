@@ -88,6 +88,7 @@ class LibraryEntry(models.Model):
     onList = ActivePlaylistEntry.objects.filter(player=player, song=self, state=u'QE')
     if onList.exists():
       onList.update(state=u'RM')
+      map(lambda song: song.save(), onList)
 
   def removeIfOnAnyPlaylist(self):
     onList = ActivePlaylistEntry.objects.filter(song=self, state=u'QE')
@@ -461,7 +462,10 @@ class Player(models.Model):
     association = AssociatedLibrary.objects.get(library=library, player=self)
     association.enabled = False
     association.save()
-
+    onList = ActivePlaylistEntry.objects.filter(player=player, song__library=library, state=u'QE')
+    if onList.exists():
+      onList.update(state=u'RM')
+      map(lambda song: song.save(), onList)
 
 
   def __unicode__(self):

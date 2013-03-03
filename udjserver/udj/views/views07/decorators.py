@@ -63,7 +63,7 @@ def PlayerExists(function):
 def LibraryExists(function):
   def wrapper(*args, **kwargs):
     try:
-      library = Library.objects.get(pk=args[2])
+      library = Library.objects.get(kwargs['library_id'])
       kwargs['library'] = library
       return function(*args, **kwargs)
     except ObjectDoesNotExist:
