@@ -2,17 +2,17 @@ from udj.models import Ticket
 from udj.headers import DJANGO_TICKET_HEADER
 from udj.headers import TICKET_HEADER
 
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest
 from django.core.exceptions import ObjectDoesNotExist
-"""
-from django.http import HttpResponseBadRequest
-from django.http import HttpResponseForbidden
-"""
+from udj.views.views07.auth import getUserForTicket
+
 
 """
-from udj.views.views06.auth import ticketMatchesUser
-from udj.views.views06.auth import getUserForTicket
+from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponseForbidden
+from django.http import HttpResponseBadRequest
 """
+
 
 def isValidTicket(provided_hash):
   try:
@@ -20,6 +20,21 @@ def isValidTicket(provided_hash):
   except ObjectDoesNotExist:
     return False
   return True
+
+def HasPlayerPermissions(required_permissions):
+  def decorator(target):
+    def wrapper(*args, **kwargs):
+      request = args[0]
+      player = args[1]
+      user = getUserForTicket(request)
+      for perm in required_permissions:
+        if not player.user_had_permission(perm, user):
+          return HttpResponseForbiddenWithReason('player-permission')
+      return target(*args, **kwargs)
+    return wrapper
+  return decorator
+
+
 
 """
 def IsntOwner(function):

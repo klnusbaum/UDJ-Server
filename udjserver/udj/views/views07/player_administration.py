@@ -6,7 +6,7 @@ from udj.models import Player
 
 from udj.views.views07.authdecorators import NeedsAuth
 from udj.views.views07.decorators import AcceptsMethods, PlayerExists
-from udj.views.views07.responses import HttpJSONResponse
+from udj.views.views07.responses import HttpJSONResponse, HttpResponseForbiddenWithReason
 from udj.views.views07.JSONCodecs import UDJEncoder
 
 """
@@ -34,6 +34,23 @@ from django.core.exceptions import ObjectDoesNotExist
 def getEnabledLibraries(request, player_id, player):
   return HttpJSONResponse(json.dumps(player.EnabledLibraries, cls=UDJEncoder))
 
+@HasPlayerPermissions(['ELI'])
+def enable_library(request, player, library):
+  if library.user_has_read_perm(player.owner):
+    player.enable_library(library)
+  else:
+    return HttpResponseForbiddenWithReason('library-permission')
+
+
+@NeedsAuth
+@AcceptsMethods(['PUT', 'DELETE'])
+@PlayerExists
+@LibraryExists
+def modEnabledLibraries(request, player_id, library_id, player, library):
+  if request.method == 'PUT':
+    enable_library(request, player, library)
+  else:
+    disable_library(request, player, library)
 
 
 

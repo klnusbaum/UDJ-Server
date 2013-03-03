@@ -114,7 +114,6 @@ class Library(models.Model):
   PERMISSION_CHOICES = (
     (u'NO', u'none'),
     (u'OW', u'owner'),
-    (u'AD', u'admin'),
     (u'US', u'user'),
     (u'PU', u'public'),)
 
@@ -125,8 +124,66 @@ class Library(models.Model):
   write_permission = models.CharField(max_length=2, choices=PERMISSION_CHOICES, default=u'OW')
   resolver = models.CharField(max_length=200, default="standard")
 
+  def user_has_read_perm(self, user):
+    return self.user_has_perm(user, self.read_permission, self.Readers)
+
+  def user_has_write_perm(self, user):
+    return self.user_has_perm(user, self.write_permission, self.Writers)
+
+  def user_has_perm(self, user, perm_level, user_list):
+    if perm_level == 'NO':
+      return False
+    else:
+      if self.Owner == user:
+        return True
+      elif perm_level == 'US':
+        return user in user_list
+      else:
+        return True
+
+
+  def getOwner(self):
+    try:
+      owned_lib = OwnedLibrary.objects.get(library=self)
+      return owned_lib.owner
+    except ObjectDoesNotExist:
+      return None
+
+  Owner = property(getOwner)
+
+  def getReaders(self):
+    user_ids = (AuthorizedLibraryUser.objects.filter(library=self, user_type=u'RE')
+                                             .values_list('user__id', flat=True))
+    return User.objects.filter(pk__in=user_ids)
+
+  Readers = property(getReaders)
+
+  def getWriters(self):
+    user_ids = (AuthorizedLibraryUser.objects.filter(library=self, user_type=u'WR')
+                                             .values_list('user__id', flat=True))
+    return User.objects.filter(pk__in=user_ids)
+
+  Writers = property(getWriters)
+
   def __unicode__(self):
     return "Library: " + self.name
+
+class AuthorizedLibraryUser(models.Model):
+  USER_TYPE_CHOICES = (
+      ("RE","READER"),
+      ("WR","WRITER")
+  )
+  library = models.ForeignKey(Library)
+  user = models.ForeignKey(User)
+  user_type = models.CharField(max_length=2, choices=USER_TYPE_CHOICES)
+
+  class Meta:
+    unique_together = ('library', 'user', 'user_type')
+
+  def __unicode__(self):
+    return user.username
+
+
 
 class DefaultLibrary(models.Model):
   """
@@ -391,6 +448,20 @@ class Player(models.Model):
     return Library.objects.filter(pk__in=lib_ids)
 
   EnabledLibraries = property(getEnabledLibraries)
+
+  def enable_library(self, library):
+    association, created = AssociatedLibrary.objects.get_or_create(library=library,
+                                                                   player=self,
+                                                                   defaults={'enabled' : True})
+    if not created:
+      association.enabled = True
+      association.save()
+
+  def disable_library(self, library)
+    association = AssociatedLibrary.objects.get(library=library, player=self)
+    association.enabled = False
+    association.save()
+
 
 
   def __unicode__(self):

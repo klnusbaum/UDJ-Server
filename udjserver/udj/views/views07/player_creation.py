@@ -14,7 +14,7 @@ from udj.views.views07.decorators import NeedsJSON
 from udj.views.views07.authdecorators import NeedsAuth
 from udj.views.views07.auth import hashPlayerPassword
 from udj.views.views07.auth import getUserForTicket
-from udj.views.views07.responses import HttpJSONResponse, HttpMissingResponse
+from udj.views.views07.responses import HttpJSONResponse, HttpResponseMissingResource
 from udj.views.views07.JSONCodecs import UDJEncoder
 
 from django.db import transaction
@@ -62,7 +62,7 @@ def createPlayer(request):
     try:
       sortingAlgo = SortingAlgorithm.objects.get(pk=newPlayerJSON['sorting_algorithm_id'])
     except ObjectDoesNotExist:
-      return HttpMissingResponse('sorting-algorithm')
+      return HttpResponseMissingResource('sorting-algorithm')
   else:
     try:
       sortingAlgo = SortingAlgorithm.objects.get(function_name=DEFAULT_SORTING_ALGO)

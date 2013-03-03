@@ -57,8 +57,19 @@ def PlayerExists(function):
       kwargs['player'] = actualPlayer
       return function(*args, **kwargs)
     except ObjectDoesNotExist:
-      return HttpMissingResponse('player')
+      return HttpResponseMissingResource('player')
   return wrapper
+
+def LibraryExists(function):
+  def wrapper(*args, **kwargs):
+    try:
+      library = Library.objects.get(pk=args[2])
+      kwargs['library'] = library
+      return function(*args, **kwargs)
+    except ObjectDoesNotExist:
+      return HttpResponseMissingResource('library')
+  return wrapper
+
 
 """
 def PlayerIsActive(function):
@@ -69,8 +80,7 @@ def PlayerIsActive(function):
       #This is a kludge for when player is actually an arg and not a kwarg
       player = args[2]
     if player.state == u'IN':
-      toReturn =  HttpResponseNotFound()
-      toReturn[MISSING_RESOURCE_HEADER] = 'player'
+      toReturn =  HttpResponseMissingResource('player')
       toReturn[MISSING_REASON_HEADER] = 'inactive'
       return toReturn
     else:
