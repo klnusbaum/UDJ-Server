@@ -143,8 +143,11 @@ LOGGING = {
 def geocodeLocation(postal_code, country, address="", locality="", region=""):
   raise ImproperlyConfigured('Must specifiy a function for geocoding')
 
-default_sorting_algo = "totalVotes"
+DEFAULT_SORTING_ALGO = "totalVotes"
 
+DEFAULT_PLAYER_PERMISSIONS = [u'CSS', u'MOS', u'CPB', u'CVO', u'SSA', u'SLO', u'SPA',
+                              u'KUS', u'BUS', u'APR', u'ELI', u'DLI', u'MPG', u'CEV', 
+                              u'HEV', u'MEV']
 default_search_radius = 5
 max_search_radius = 20
 min_search_radius = 1

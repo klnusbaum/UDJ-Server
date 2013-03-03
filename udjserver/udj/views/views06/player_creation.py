@@ -1,6 +1,6 @@
 import json
 
-from settings import default_sorting_algo
+from settings import DEFAULT_SORTING_ALGO
 from udj.headers import MISSING_RESOURCE_HEADER
 
 from udj.models import Player
@@ -58,7 +58,7 @@ def createPlayer(request):
       return toReturn
   else:
     try:
-      sortingAlgo = SortingAlgorithm.objects.get(function_name=default_sorting_algo)
+      sortingAlgo = SortingAlgorithm.objects.get(function_name=DEFAULT_SORTING_ALGO)
     except ObjectDoesNotExist:
       raise ImproperlyConfigured('Default sorting algorithm is not in database')
 

@@ -14,6 +14,12 @@ from django.http import HttpRequest
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
+def hashPlayerPassword(password):
+  m = hashlib.sha1()
+  m.update(password)
+  return m.hexdigest()
+
+
 def getUserForTicket(request):
   return Ticket.objects.get(
     ticket_hash=request.META[DJANGO_TICKET_HEADER]).user

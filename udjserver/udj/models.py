@@ -260,18 +260,27 @@ class Player(models.Model):
   size_limit = models.IntegerField(null=True, blank=True)
   allow_user_songset = models.BooleanField(default=False)
 
+  class Meta:
+    unique_together = ('owning_user', 'name')
+
   def getAllSongs(self):
-    associated_lib_ids = AssociatedLibrary.objects.filter(player=self, enabled=True).values_list('library__id', flat=True)
-    banned_entries = BannedLibraryEntry.objects.filter(player=self).values_list('song__id', flat=True)
-    return LibraryEntry.objects.filter(library__id__in=associated_lib_ids, is_deleted=False).exclude(pk__in=banned_entries)
+    associated_lib_ids = (AssociatedLibrary.objects.filter(player=self, enabled=True)
+                          .values_list('library__id', flat=True))
+    banned_entries = (BannedLibraryEntry.objects.filter(player=self)
+                      .values_list('song__id', flat=True))
+    return (LibraryEntry.objects.filter(library__id__in=associated_lib_ids, is_deleted=False)
+            .exclude(pk__in=banned_entries))
 
   def canCreatSongSets(self, user):
-    return user==self.owning_user or self.isAdmin(user) or \
-        (self.state == 'AC' and self.isActiveParticipant(user))
+    return (user==self.owning_user or
+            self.isAdmin(user) or
+            (self.state == 'AC' and self.isActiveParticipant(user))
+           )
 
   def lockActivePlaylist(self):
     #lock active playlist
-    ActivePlaylistEntry.objects.select_for_update().filter(player=self).exclude(state='FN').exclude(state='RM')
+    (ActivePlaylistEntry.objects.select_for_update().filter(player=self)
+     .exclude(state='FN').exclude(state='RM'))
 
   def SongSets(self):
     return SongSet.objects.filter(player=self)
@@ -289,21 +298,19 @@ class Player(models.Model):
     #This is weird, for some reason I have to put time_played in the distinct field
     #in theory this shouldn't hurt anything (since all the time_playeds "should" be different).
     #But it's still weird...
-    return PlaylistEntryTimePlayed.objects.filter(playlist_entry__player=self)\
-      .filter(playlist_entry__state='FN')\
-      .order_by('-time_played')\
-      .distinct('time_played', 'playlist_entry__song__id')
+    return (PlaylistEntryTimePlayed.objects.filter(playlist_entry__player=self)
+            .filter(playlist_entry__state='FN')
+            .order_by('-time_played')
+            .distinct('time_played', 'playlist_entry__song__id'))
 
   def Randoms(self):
     return self.getAllSongs().order_by('?')
 
 
   def AvailableMusic(self, query):
-    return self.getAllSongs().filter(
-      Q(title__icontains=query) |
-      Q(artist__icontains=query) |
-      Q(album__icontains=query))
-
+    return self.getAllSongs().filter(Q(title__icontains=query) |
+                                     Q(artist__icontains=query) |
+                                     Q(album__icontains=query))
 
   def ActivePlaylist(self):
     queuedEntries = ActivePlaylistEntry.objects.filter(player=self, state='QE')
@@ -324,8 +331,8 @@ class Player(models.Model):
     return SongSet.objects.filter(player=self)
 
   def isFull(self):
-    return self.size_limit != None \
-        and self.ActiveParticipants().count() < self.size_limit
+    return (self.size_limit != None and
+            self.ActiveParticipants().count() < self.size_limit)
 
   def isAdmin(self, user):
     return self.Admins().filter(admin_user=user).exists()
@@ -429,6 +436,11 @@ class PlayerPermissionGroup(models.Model):
 
   class Meta:
     unique_together = ("player", "name")
+
+
+  def add_memeber(self, user):
+    new_member = PlayerPermissionGroupMemeber(permission_group=self, user=user)
+    new_member.save()
 
   def __unicode__(self):
     return self.name

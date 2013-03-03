@@ -23,7 +23,6 @@ def hashPlayerPassword(password):
   m.update(password)
   return m.hexdigest()
 
-
 def getUserForTicket(request):
   return Ticket.objects.get(
     ticket_hash=request.META[DJANGO_TICKET_HEADER]).user
