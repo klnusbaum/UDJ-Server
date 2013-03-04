@@ -3,7 +3,7 @@ import json
 from udj.models import Library, AssociatedLibrary
 from udj.models import Player
 from udj.testhelpers.tests07.testclasses import KurtisTestCase
-from udj.headers import FORBIDDEN_REASON_HEADER
+from udj.headers import FORBIDDEN_REASON_HEADER, MISSING_RESOURCE_HEADER
 
 
 class DefaultOwnerAdminTests(KurtisTestCase):
@@ -37,6 +37,11 @@ class DefaultOwnerAdminTests(KurtisTestCase):
     response = self.doPut('/players/1/enabled_libraries/9')
     self.assertEqual(403, response.status_code)
     self.assertEqual('library-permission', response[FORBIDDEN_REASON_HEADER])
+
+  def testEnableNonExistentLibrary(self):
+    response = self.doPut('/players/1/enabled_libraries/949949949')
+    self.assertEqual(404, response.status_code)
+    self.assertEqual('library', response[MISSING_RESOURCE_HEADER])
 
 
 """
