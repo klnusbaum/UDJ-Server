@@ -596,7 +596,7 @@ class PlayerPermission(models.Model):
     (u'CPB', u'Control Playback'),
     (u'CVO', u'Control Volume'),
     (u'SSA', u'Set Sorting Algorithm'),
-    (u'SLO', u'Set Locaiton'),
+    (u'SLO', u'Set Location'),
     (u'SPA', u'Set Password'),
     (u'KUS', u'Kick Users'),
     (u'BUS', u'Ban Users'),

@@ -2,8 +2,8 @@ import json
 
 
 from udj.models import Player
-
-
+from udj.models import SortingAlgorithm
+from udj.models import PlayerLocation
 from udj.views.views07.authdecorators import NeedsAuth, HasPlayerPermissions
 from udj.views.views07.decorators import AcceptsMethods, PlayerExists, LibraryExists, HasNZParams
 from udj.views.views07.responses import HttpJSONResponse
@@ -11,7 +11,6 @@ from udj.views.views07.responses import HttpResponseForbiddenWithReason
 from udj.views.views07.responses import HttpResponseMissingResource
 from udj.views.views07.JSONCodecs import UDJEncoder
 from udj.exceptions import LocationNotFoundError
-from udj.models import PlayerLocation
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
@@ -138,26 +137,25 @@ def setLocation(request, player_id, player):
 
   return HttpResponse()
 
-
-"""
-
 @csrf_exempt
 @AcceptsMethods(['POST'])
 @NeedsAuth
 @PlayerExists
-@IsOwnerOrAdmin
+@HasPlayerPermissions(['SSA'])
 @HasNZParams(['sorting_algorithm_id'])
 def setSortingAlgorithm(request, player_id, player):
   try:
     newAlgorithm = SortingAlgorithm.objects.get(pk=request.POST['sorting_algorithm_id'])
   except ObjectDoesNotExist:
-    toReturn = HttpResponseNotFound()
-    toReturn[MISSING_RESOURCE_HEADER] = "sorting-algorithm"
-    return toReturn
+    return HttpResponseMissingResource('sorting-algorithm')
 
   player.sorting_algo = newAlgorithm
   player.save()
   return HttpResponse()
+
+
+"""
+
 
 
 @csrf_exempt

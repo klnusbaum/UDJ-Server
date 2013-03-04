@@ -120,6 +120,16 @@ class DefaultOwnerAdminTests(KurtisTestCase):
     self.assertEqual(44.981609, playerLocation.point.y)
 
 
+  def testSetSortingAlgorithm(self):
+    algorithmParams = {
+      'sorting_algorithm_id' : '2'
+    }
+    response = self.doPost('/players/1/sorting_algorithm', algorithmParams)
+    self.assertEqual(200, response.status_code, response.content)
+    player = Player.objects.get(pk=1)
+    self.assertEqual(2, player.sorting_algo.id)
+
+
 
 """
 class OwnerAdministrationTests(udj.testhelpers.tests06.testclasses.BasicPlayerAdministrationTests):
