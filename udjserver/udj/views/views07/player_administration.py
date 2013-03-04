@@ -6,6 +6,7 @@ from udj.models import Participant
 from udj.models import SortingAlgorithm
 from udj.models import PlayerLocation
 from udj.models import PlayerPermission
+from udj.models import PlayerPermissionGroup
 from udj.views.views07.authdecorators import NeedsAuth, HasPlayerPermissions
 from udj.views.views07.decorators import AcceptsMethods, PlayerExists, LibraryExists, HasNZParams
 from udj.views.views07.responses import HttpJSONResponse
@@ -20,6 +21,7 @@ from django.http import HttpResponseBadRequest
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.gis.geos import Point
 from django.contrib.auth.models import User
+from django.db import transaction
 
 from settings import geocodeLocation
 
@@ -249,3 +251,50 @@ def getPlayerPermissions(request, player_id, player):
                                            .values_list('group__name', flat=True))
     permissions[perm[1]] = perm_groups
   return HttpJSONResponse(json.dumps(permissions, cls=UDJEncoder))
+
+def addPermissions(player, perm_code, group_names):
+  for group in group_names:
+    try:
+      actual_group = PlayerPermissionGroup.objects.get(player=player, name=group)
+      PlayerPermission.objects.get_or_create(player=player,
+                                             permission=perm_code,
+                                             group=actual_group)
+    except ObjectDoesNotExist:
+      transaction.rollback()
+      return HttpResponseMissingResource('permission-group')
+  transaction.commit()
+  return HttpResponse()
+
+
+def removePermissions(player, perm_code, group_names):
+  for group in group_names:
+    try:
+      PlayerPermission.objects.get(player=player, permission=perm_code, group__name=group).delete()
+    except ObjectDoesNotExist:
+      transaction.rollback()
+      return HttpResponseMissingResource('permission-group')
+  transaction.commit()
+  return HttpResponse()
+
+
+@NeedsAuth
+@AcceptsMethods(['PUT', 'DELETE'])
+@PlayerExists
+@HasPlayerPermissions(['MPE'])
+@transaction.commit_manually
+def modPlayerPermissions(request, player_id, permission_name, player):
+  try:
+    perm_code = filter(lambda x: x[1]==permission_name, PlayerPermission.PERMISSION_CHOICES)[0][0]
+  except IndexError:
+    transaction.rollback()
+    return HttpResponseMissingResource('permission')
+
+  groupsToSet = json.loads(request.raw_post_data)
+
+  if request.method == 'PUT':
+    return addPermissions(player, perm_code, groupsToSet)
+  else:
+    return removePermissions(player, perm_code, groupsToSet)
+
+
+

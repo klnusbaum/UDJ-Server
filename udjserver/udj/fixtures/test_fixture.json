@@ -1146,7 +1146,7 @@
     "model": "udj.playerpermission",
     "fields": {
       "player" : 1,
-      "permission" : "MPG",
+      "permission" : "MPE",
       "group" : 1
     }
   },
@@ -1310,7 +1310,7 @@
     "model": "udj.playerpermission",
     "fields": {
       "player" : 2,
-      "permission" : "MPG",
+      "permission" : "MPE",
       "group" : 2
     }
   },
@@ -1473,7 +1473,7 @@
     "model": "udj.playerpermission",
     "fields": {
       "player" : 3,
-      "permission" : "MPG",
+      "permission" : "MPE",
       "group" : 3
     }
   },
@@ -1636,7 +1636,7 @@
     "model": "udj.playerpermission",
     "fields": {
       "player" : 4,
-      "permission" : "MPG",
+      "permission" : "MPE",
       "group" : 4
     }
   },
@@ -1799,7 +1799,7 @@
     "model": "udj.playerpermission",
     "fields": {
       "player" : 4,
-      "permission" : "MPG",
+      "permission" : "MPE",
       "group" : 4
     }
   },
@@ -1963,7 +1963,7 @@
     "model": "udj.playerpermission",
     "fields": {
       "player" : 5,
-      "permission" : "MPG",
+      "permission" : "MPE",
       "group" : 5
     }
   },
@@ -2126,7 +2126,7 @@
     "model": "udj.playerpermission",
     "fields": {
       "player" : 6,
-      "permission" : "MPG",
+      "permission" : "MPE",
       "group" : 6
     }
   },
@@ -2292,7 +2292,7 @@
     "model": "udj.playerpermission",
     "fields": {
       "player" : 7,
-      "permission" : "MPG",
+      "permission" : "MPE",
       "group" : 7
     }
   },

@@ -1,6 +1,7 @@
 import json
 
 from udj.models import PlayerPermission
+from udj.models import PlayerPermissionGroup
 from udj.models import Library, AssociatedLibrary
 from udj.models import Player
 from udj.models import PlayerPassword
@@ -241,6 +242,24 @@ class DefaultOwnerAdminTests(KurtisTestCase):
       self.assertEqual(len(actual_perm_groups), len(returned_perm_groups))
       for group in actual_perm_groups:
         self.assertTrue(group in returned_perm_groups)
+
+  def testAddPermission(self):
+    PlayerPermissionGroup(player=Player.objects.get(pk=1), name='test_group1').save()
+    PlayerPermissionGroup(player=Player.objects.get(pk=1), name='test_group2').save()
+
+    to_add = ['test_group1', 'test_group2']
+    response = self.doJSONPut('/players/1/permissions/set_sorting_algorithm', json.dumps(to_add))
+    self.assertEqual(200, response.status_code)
+
+    test_perm1 = PlayerPermission.objects.filter(player__id=1,
+                                                 permission=u'SSA',
+                                                 group__name=u'test_group1')
+    test_perm2 = PlayerPermission.objects.filter(player__id=1,
+                                                 permission=u'SSA',
+                                                 group__name=u'test_group2')
+    self.assertTrue(test_perm1.exists())
+    self.assertTrue(test_perm2.exists())
+
 
 
 

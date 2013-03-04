@@ -606,7 +606,7 @@ class PlayerPermission(models.Model):
     (u'APD', u'active_playlist_downvote'),
     (u'ELI', u'enable_library'),
     (u'DLI', u'disable_library'),
-    (u'MPG', u'modify_permission_groups'),
+    (u'MPE', u'modify_permissions'),
     (u'CEV', u'create_event'),
     (u'HEV', u'host_event'),
     (u'MEV', u'modify_event'))
