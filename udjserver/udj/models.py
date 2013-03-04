@@ -7,6 +7,15 @@ from datetime import datetime
 from datetime import timedelta
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
+import hashlib
+
+
+def hashPlayerPassword(password):
+  m = hashlib.sha1()
+  m.update(password)
+  return m.hexdigest()
+
+
 def zero_ten_validator(value):
   if value < 0 or value > 10:
     raise ValidationError(u'%s is not between 0 and 10' % value)
@@ -310,6 +319,11 @@ class Player(models.Model):
   class Meta:
     unique_together = ('owning_user', 'name')
 
+  def getHasPassword(self):
+    return PlayerPassword.objects.filter(player=self).exists()
+
+  HasPassword = property(getHasPassword)
+
   def getAllSongs(self):
     associated_lib_ids = (AssociatedLibrary.objects.filter(player=self, enabled=True)
                           .values_list('library__id', flat=True))
@@ -468,11 +482,11 @@ class Player(models.Model):
       onList.update(state=u'RM')
       map(lambda song: song.save(), onList)
 
-  def setPassword(self, password):
+  def setPassword(self, givenPassword):
     hashedPassword = hashPlayerPassword(givenPassword)
 
     playerPassword , created = PlayerPassword.objects.get_or_create(
-        player=player,
+        player=self,
         defaults={'password_hash': hashedPassword})
     if not created:
       playerPassword.password_hash = hashedPassword

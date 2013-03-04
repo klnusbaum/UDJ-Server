@@ -2,7 +2,9 @@ import json
 
 from udj.models import Library, AssociatedLibrary
 from udj.models import Player
+from udj.models import PlayerPassword
 from udj.models import ActivePlaylistEntry
+from udj.models import hashPlayerPassword
 from udj.testhelpers.tests07.testclasses import KurtisTestCase
 from udj.headers import FORBIDDEN_REASON_HEADER, MISSING_RESOURCE_HEADER
 
@@ -58,6 +60,22 @@ class DefaultOwnerAdminTests(KurtisTestCase):
     response = self.doDelete('/players/1/enabled_libraries/1')
     self.assertEqual(404, response.status_code)
     self.assertEqual('library', response[MISSING_RESOURCE_HEADER])
+
+  def testSetPassword(self):
+    newPassword = 'nudepassword'
+    response = self.doPost('/players/1/password', {'password': newPassword})
+    self.assertEqual(response.status_code, 200)
+    playerPassword = PlayerPassword.objects.get(player__id=1)
+    self.assertEqual(playerPassword.password_hash, hashPlayerPassword(newPassword))
+
+  def testRemovePassword(self):
+    newPassword = 'nudepassword'
+    response = self.doPost('/players/1/password', {'password': newPassword})
+    self.assertTrue(Player.objects.get(pk=1).HasPassword)
+    response = self.doDelete('/players/1/password')
+    self.assertFalse(Player.objects.get(pk=1).HasPassword)
+
+
 
 
 

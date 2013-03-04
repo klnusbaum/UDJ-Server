@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from udj.models import Player, PlayerLocation, PlayerPassword, PlayerPermission, PlayerPermissionGroup
 from udj.testhelpers.tests07.testclasses import YunYoungTestCase
 from udj.headers import MISSING_RESOURCE_HEADER
-from udj.views.views07.auth import hashPlayerPassword
+from udj.models import hashPlayerPassword
 from settings import DEFAULT_PLAYER_PERMISSIONS
 
 class CreatePlayerTests(YunYoungTestCase):

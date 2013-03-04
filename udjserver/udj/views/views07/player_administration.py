@@ -5,7 +5,7 @@ from udj.models import Player
 
 
 from udj.views.views07.authdecorators import NeedsAuth, HasPlayerPermissions
-from udj.views.views07.decorators import AcceptsMethods, PlayerExists, LibraryExists
+from udj.views.views07.decorators import AcceptsMethods, PlayerExists, LibraryExists, HasNZParams
 from udj.views.views07.responses import HttpJSONResponse, HttpResponseForbiddenWithReason, HttpResponseMissingResource
 from udj.views.views07.JSONCodecs import UDJEncoder
 
@@ -64,11 +64,14 @@ def modEnabledLibraries(request, player_id, library_id, player, library):
 
 
 
+@HasPlayerPermissions(['SPA'])
 @HasNZParams(['password'])
-def setPlayerPassword(request, player)
+def setPlayerPassword(request, player):
   givenPassword = request.POST['password']
-  player.setPassword(givePassword)
+  player.setPassword(givenPassword)
+  return HttpResponse()
 
+@HasPlayerPermissions(['SPA'])
 def deletePlayerPassword(request, player):
   try:
     player.removePassword()
@@ -81,7 +84,6 @@ def deletePlayerPassword(request, player):
 @AcceptsMethods(['POST', 'DELETE'])
 @NeedsAuth
 @PlayerExists
-@HasPlayerPermissions(['SPA'])
 def modifyPlayerPassword(request, player_id, player):
   if request.method == 'POST':
     return setPlayerPassword(request, player)

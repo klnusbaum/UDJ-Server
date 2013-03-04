@@ -1,5 +1,4 @@
 import json
-import hashlib
 import random
 
 from udj.models import Ticket
@@ -13,11 +12,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-
-def hashPlayerPassword(password):
-  m = hashlib.sha1()
-  m.update(password)
-  return m.hexdigest()
 
 
 def getUserForTicket(request):

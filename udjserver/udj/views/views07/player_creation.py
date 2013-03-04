@@ -12,7 +12,6 @@ from udj.exceptions import LocationNotFoundError
 from udj.views.views07.decorators import AcceptsMethods
 from udj.views.views07.decorators import NeedsJSON
 from udj.views.views07.authdecorators import NeedsAuth
-from udj.views.views07.auth import hashPlayerPassword
 from udj.views.views07.auth import getUserForTicket
 from udj.views.views07.responses import HttpJSONResponse, HttpResponseMissingResource
 from udj.views.views07.JSONCodecs import UDJEncoder
@@ -98,9 +97,7 @@ def createPlayer(request):
 
   #If password provided, create and save password
   if 'password' in newPlayerJSON:
-    PlayerPassword(player=newPlayer,
-                   password_hash=hashPlayerPassword(newPlayerJSON['password'])).save()
-
+    newPlayer.setPassword(newPlayerJSON['password'])
 
   #Set location if provided
   if 'location' in newPlayerJSON:
