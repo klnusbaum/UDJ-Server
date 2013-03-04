@@ -5,6 +5,7 @@ from udj.models import Player
 from udj.models import PlayerPassword
 from udj.models import PlayerLocation
 from udj.models import ActivePlaylistEntry
+from udj.models import Participant
 from udj.models import hashPlayerPassword
 from udj.testhelpers.tests07.testclasses import KurtisTestCase
 from udj.headers import FORBIDDEN_REASON_HEADER, MISSING_RESOURCE_HEADER
@@ -167,6 +168,22 @@ class DefaultOwnerAdminTests(KurtisTestCase):
     self.assertEqual(response.status_code, 400)
     player = Player.objects.get(pk=1)
     self.assertEqual(player.volume, 5)
+
+  def testKickUser(self):
+    response = self.doPut('/players/1/kicked_users/3')
+    self.assertEqual(200, response.status_code)
+    kickedUser = Participant.objects.get(user__id=3, player__id=1)
+    self.assertEqual(True, kickedUser.kick_flag)
+
+  def testKickNonParticipatingUser(self):
+    response = self.doPut('/players/1/kicked_users/1')
+    self.assertEqual(404, response.status_code)
+    self.assertEqual('user', response[MISSING_RESOURCE_HEADER])
+
+  def testKickNonExistentUser(self):
+    response = self.doPut('/players/1/kicked_users/100000')
+    self.assertEqual(404, response.status_code)
+    self.assertEqual('user', response[MISSING_RESOURCE_HEADER])
 
 """
 class OwnerAdministrationTests(udj.testhelpers.tests06.testclasses.BasicPlayerAdministrationTests):

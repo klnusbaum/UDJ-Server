@@ -2,6 +2,7 @@ import json
 
 
 from udj.models import Player
+from udj.models import Participant
 from udj.models import SortingAlgorithm
 from udj.models import PlayerLocation
 from udj.views.views07.authdecorators import NeedsAuth, HasPlayerPermissions
@@ -17,24 +18,9 @@ from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.gis.geos import Point
+from django.contrib.auth.models import User
 
 from settings import geocodeLocation
-
-"""
-
-from udj.models import PlayerPassword
-from udj.models import Participant
-from udj.models import SortingAlgorithm
-from udj.models import PlayerPermission
-from udj.models import PlayerPermissionGroup
-from udj.exceptions import LocationNotFoundError
-from udj.views.views07.auth import hashPlayerPassword
-
-from django.http import HttpRequest
-from django.http import HttpResponseNotFound
-from django.http import HttpResponseBadRequest
-from django.contrib.auth.models import User
-"""
 
 @NeedsAuth
 @AcceptsMethods(['GET'])
@@ -192,65 +178,11 @@ def setPlayerVolume(request, player_id, player):
   except ValueError:
     return HttpResponseBadRequest('Bad volume: ' + request.POST['volume'])
 
-
-
-"""
-
-@csrf_exempt
-@NeedsAuth
-@AcceptsMethods(['POST'])
-@PlayerExists
-@IsOwnerOrAdmin
-@HasNZParams(['volume'])
-def setPlayerVolume(request, player_id, player):
-  try:
-    newVolume = int(request.POST['volume'])
-    if newVolume > 10 or newVolume < 0:
-      return HttpResponseBadRequest()
-    player.volume = newVolume
-    player.save()
-    return HttpResponse()
-  except ValueError:
-    return HttpResponseBadRequest('Bad volume: ' + request.POST['volume'])
-
-@csrf_exempt
-@NeedsAuth
-@AcceptsMethods(['PUT', 'DELETE'])
-@PlayerExists
-@IsOwnerOrAdmin
-def modAdmin(request, player_id, user_id, player):
-  if request.method == 'PUT':
-    return addAdmin(request, player_id, user_id, player)
-  elif request.method == 'DELETE':
-    return removeAdmin(request, player_id, user_id, player)
-
-def addAdmin(request, player_id, user_id, player):
-  try:
-    newAdminUser = User.objects.get(pk=user_id)
-    admin_group = PlayerPermissionGroup.objects.get(player=player, name=u'admin')
-    admin_group.add_member(newAdminUser)
-    return HttpResponse(status=201)
-  except ObjectDoesNotExist:
-    toReturn = HttpResponseNotFound()
-    toReturn[MISSING_RESOURCE_HEADER] = 'user'
-    return toReturn
-
-def removeAdmin(request, player_id, user_id, player):
-  try:
-    admin_group = PlayerPermissionGroup.objects.get(player=player, name=u'admin')
-    admin_group.remove_member(User.objects.get(pk=user_id))
-    return HttpResponse()
-  except ObjectDoesNotExist:
-    toReturn = HttpResponseNotFound()
-    toReturn[MISSING_RESOURCE_HEADER] = 'user'
-    return toReturn
-
-
 @csrf_exempt
 @NeedsAuth
 @AcceptsMethods(['PUT'])
 @PlayerExists
-@IsOwnerOrAdmin
+@HasPlayerPermissions(['KUS'])
 def kickUser(request, player_id, kick_user_id, player):
   try:
     toKick = Participant.objects.get(user__id=kick_user_id, player=player)
@@ -258,9 +190,12 @@ def kickUser(request, player_id, kick_user_id, player):
     toKick.save()
     return HttpResponse()
   except ObjectDoesNotExist:
-    toReturn = HttpResponseNotFound()
-    toReturn[MISSING_RESOURCE_HEADER] = 'user'
-    return toReturn
+    return HttpResponseMissingResource('user')
+
+
+
+"""
+
 
 @csrf_exempt
 @NeedsAuth
