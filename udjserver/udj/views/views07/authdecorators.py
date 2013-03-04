@@ -25,7 +25,10 @@ def HasPlayerPermissions(required_permissions):
   def decorator(target):
     def wrapper(*args, **kwargs):
       request = args[0]
-      player = args[1]
+      try:
+        player = args[1]
+      except IndexError:
+        player = kwargs['player']
       user = getUserForTicket(request)
       for perm in required_permissions:
         if not player.user_has_permission(perm, user):

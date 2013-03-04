@@ -29,11 +29,11 @@ urlpatterns += patterns('udj.views.views07.player_creation',
 urlpatterns += patterns('udj.views.views07.player_administration',
   (r'^players/(?P<player_id>\d+)/enabled_libraries$', 'getEnabledLibraries'),
   (r'^players/(?P<player_id>\d+)/enabled_libraries/(?P<library_id>\d+)$', 'modEnabledLibraries'),
-  (r'^players/(?P<player_id>\d+)/password$', 'modifyPlayerPassword')
+  (r'^players/(?P<player_id>\d+)/password$', 'modifyPlayerPassword'),
+  (r'^players/(?P<player_id>\d+)/location$', 'setLocation'),
 )
 
 """
-(r'^players/(?P<player_id>\d+)/location$', 'setLocation'),
 (r'^players/(?P<player_id>\d+)/sorting_algorithm$', 'setSortingAlgorithm'),
 (r'^players/(?P<player_id>\d+)/state$', 'setPlayerState'),
 (r'^players/(?P<player_id>\d+)/volume$', 'setPlayerVolume'),

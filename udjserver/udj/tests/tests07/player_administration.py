@@ -3,6 +3,7 @@ import json
 from udj.models import Library, AssociatedLibrary
 from udj.models import Player
 from udj.models import PlayerPassword
+from udj.models import PlayerLocation
 from udj.models import ActivePlaylistEntry
 from udj.models import hashPlayerPassword
 from udj.testhelpers.tests07.testclasses import KurtisTestCase
@@ -76,6 +77,47 @@ class DefaultOwnerAdminTests(KurtisTestCase):
     self.assertFalse(Player.objects.get(pk=1).HasPassword)
 
 
+  def testSetLocation(self):
+    newLocation = {
+      'address' : '305 Vicksburg Lane',
+      'locality' : 'Plymouth',
+      'region' : 'MN',
+      'postal_code' : '55447',
+      'country' : 'U.S.'
+    }
+
+    response = self.doPost('/players/1/location', newLocation)
+    self.assertEqual(response.status_code, 200)
+    playerLocation = PlayerLocation.objects.get(player__id=1)
+    self.assertEqual(newLocation['address'], playerLocation.address)
+    self.assertEqual(newLocation['locality'], playerLocation.locality)
+    self.assertEqual(newLocation['region'], playerLocation.region)
+    self.assertEqual(newLocation['postal_code'], playerLocation.postal_code)
+    self.assertEqual(newLocation['country'], playerLocation.country)
+    self.assertEqual(-93.4814, playerLocation.point.x)
+    self.assertEqual(44.981609, playerLocation.point.y)
+
+  def testSetLocationWithNoPreviousLocation(self):
+    PlayerLocation.objects.get(player__id=1).delete()
+
+    newLocation = {
+      'address' : '305 Vicksburg Lane',
+      'locality' : 'Plymouth',
+      'region' : 'MN',
+      'postal_code' : '55447',
+      'country' : 'U.S.'
+    }
+
+    response = self.doPost('/players/1/location', newLocation)
+    self.assertEqual(200, response.status_code)
+    playerLocation = PlayerLocation.objects.get(player__id=1)
+    self.assertEqual(newLocation['address'], playerLocation.address)
+    self.assertEqual(newLocation['locality'], playerLocation.locality)
+    self.assertEqual(newLocation['region'], playerLocation.region)
+    self.assertEqual(newLocation['postal_code'], playerLocation.postal_code)
+    self.assertEqual(newLocation['country'], playerLocation.country)
+    self.assertEqual(-93.4814, playerLocation.point.x)
+    self.assertEqual(44.981609, playerLocation.point.y)
 
 
 

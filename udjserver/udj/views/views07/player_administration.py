@@ -6,12 +6,19 @@ from udj.models import Player
 
 from udj.views.views07.authdecorators import NeedsAuth, HasPlayerPermissions
 from udj.views.views07.decorators import AcceptsMethods, PlayerExists, LibraryExists, HasNZParams
-from udj.views.views07.responses import HttpJSONResponse, HttpResponseForbiddenWithReason, HttpResponseMissingResource
+from udj.views.views07.responses import HttpJSONResponse
+from udj.views.views07.responses import HttpResponseForbiddenWithReason
+from udj.views.views07.responses import HttpResponseMissingResource
 from udj.views.views07.JSONCodecs import UDJEncoder
+from udj.exceptions import LocationNotFoundError
+from udj.models import PlayerLocation
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.gis.geos import Point
+
+from settings import geocodeLocation
 
 """
 
@@ -98,7 +105,7 @@ def modifyPlayerPassword(request, player_id, player):
 @HasPlayerPermissions(['SLO'])
 @HasNZParams(['postal_code', 'country'])
 def setLocation(request, player_id, player):
-  postal_code = request.POST['postal_code'],
+  postal_code = request.POST['postal_code']
   country = request.POST['country']
   address = request.POST.get('address', "")
   locality = request.POST.get('locality',"")
@@ -111,7 +118,7 @@ def setLocation(request, player_id, player):
 
   playerLocation, created = PlayerLocation.objects.get_or_create(player=player,
                                                                   defaults={
-                                                                    'point' : Point(lat, lon),
+                                                                    'point' : Point(lon, lat),
                                                                     'address' : address,
                                                                     'locality' : locality,
                                                                     'region' : region,
@@ -120,7 +127,7 @@ def setLocation(request, player_id, player):
                                                                     }
                                                                   )
   if not created:
-    playerLocation.point = Point(lat, lon)
+    playerLocation.point = Point(lon, lat)
     playerLocation.address = address
     playerLocation.locality = locality
     playerLocation.region = region
