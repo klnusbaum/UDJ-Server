@@ -91,33 +91,48 @@ def modifyPlayerPassword(request, player_id, player):
     return deletePlayerPassword(request, player)
 
 
-
-
-"""
-
 @csrf_exempt
 @AcceptsMethods(['POST', 'DELETE'])
 @NeedsAuth
 @PlayerExists
-@IsOwnerOrAdmin
+@HasPlayerPermissions(['SLO'])
 @HasNZParams(['postal_code', 'country'])
 def setLocation(request, player_id, player):
-  location = {
-    'postal_code' : request.POST['postal_code'],
-    'country' : request.POST['country']
-  }
-
-  location['address'] = request.POST.get('address', None)
-  location['locality'] = request.POST.get('locality', None)
-  location['region'] = request.POST.get('region', None)
+  postal_code = request.POST['postal_code'],
+  country = request.POST['country']
+  address = request.POST.get('address', "")
+  locality = request.POST.get('locality',"")
+  region = request.POST.get('region', "")
 
   try:
-    setPlayerLocation(location, player)
+    lat, lon = geocodeLocation(postal_code, country, address, locality, region)
   except LocationNotFoundError as e:
-    print "Error: " + str(e)
     return HttpResponseBadRequest('Location not found')
 
+  playerLocation, created = PlayerLocation.objects.get_or_create(player=player,
+                                                                  defaults={
+                                                                    'point' : Point(lat, lon),
+                                                                    'address' : address,
+                                                                    'locality' : locality,
+                                                                    'region' : region,
+                                                                    'country' : country,
+                                                                    'postal_code' : postal_code
+                                                                    }
+                                                                  )
+  if not created:
+    playerLocation.point = Point(lat, lon)
+    playerLocation.address = address
+    playerLocation.locality = locality
+    playerLocation.region = region
+    playerLocation.country = country
+    playerLocation.postal_code = postal_code
+    playerLocation.save()
+
+
   return HttpResponse()
+
+
+"""
 
 @csrf_exempt
 @AcceptsMethods(['POST'])
