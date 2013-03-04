@@ -194,14 +194,13 @@ def kickUser(request, player_id, kick_user_id, player):
 
 
 
-"""
 
 
 @csrf_exempt
 @NeedsAuth
 @AcceptsMethods(['PUT', 'DELETE'])
 @PlayerExists
-@IsOwnerOrAdmin
+@HasPlayerPermissions(['BUS'])
 def modBans(request, player_id, ban_user_id, player):
   if request.method == 'PUT':
     return banUser(request, player_id, ban_user_id, player)
@@ -211,12 +210,9 @@ def modBans(request, player_id, ban_user_id, player):
 
 def banUser(request, player_id, ban_user_id, player):
   try:
-    user = User.objects.get(pk=ban_user_id) 
+    user = User.objects.get(pk=ban_user_id)
   except ObjectDoesNotExist:
-    toReturn = HttpResponseNotFound()
-    toReturn[MISSING_RESOURCE_HEADER] = 'user'
-    return toReturn
-
+    return HttpResponseMissingResource('user')
 
   bannedParticipant, created = Participant.objects.get_or_create(user=user, player=player,
       defaults={'ban_flag' : True})
@@ -233,15 +229,11 @@ def unbanUser(request, player_id, ban_user_id, player):
     bannedUser.save()
     return HttpResponse()
   except ObjectDoesNotExist:
-    toReturn = HttpResponseNotFound()
-    toReturn[MISSING_RESOURCE_HEADER] = 'user'
-    return toReturn
+    return HttpResponseMissingResource('user')
 
 @NeedsAuth
 @AcceptsMethods(['GET'])
 @PlayerExists
-@IsOwnerOrAdmin
 def getBannedUsers(request, player_id, player):
-  return HttpJSONResponse(json.dumps(player.BannedUsers(), cls=UDJEncoder))
+  return HttpJSONResponse(json.dumps(player.BannedUsers, cls=UDJEncoder))
 
-"""

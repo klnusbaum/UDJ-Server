@@ -4,6 +4,7 @@ from udj.models import Player
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
 from udj.models import Library
+from udj.models import Participant
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 """
@@ -73,6 +74,8 @@ class UDJEncoder(json.JSONEncoder):
         'read_permission' : obj.get_read_permission_display(),
         'write_permission' : obj.get_write_permission_display()
       }
+    elif isinstance(obj, Participant):
+      return obj.user
     else:
       return json.JSONEncoder.default(self, obj)
     """
