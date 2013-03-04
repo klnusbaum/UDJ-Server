@@ -460,10 +460,10 @@ class Player(models.Model):
       association.save()
 
   def disable_library(self, library):
-    association = AssociatedLibrary.objects.get(library=library, player=self)
+    association = AssociatedLibrary.objects.get(library=library, player=self, enabled=True)
     association.enabled = False
     association.save()
-    onList = ActivePlaylistEntry.objects.filter(player=player, song__library=library, state=u'QE')
+    onList = ActivePlaylistEntry.objects.filter(player=self, song__library=library, state=u'QE')
     if onList.exists():
       onList.update(state=u'RM')
       map(lambda song: song.save(), onList)

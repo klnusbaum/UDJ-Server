@@ -6,11 +6,12 @@ from udj.models import Player
 
 from udj.views.views07.authdecorators import NeedsAuth, HasPlayerPermissions
 from udj.views.views07.decorators import AcceptsMethods, PlayerExists, LibraryExists
-from udj.views.views07.responses import HttpJSONResponse, HttpResponseForbiddenWithReason
+from udj.views.views07.responses import HttpJSONResponse, HttpResponseForbiddenWithReason, HttpResponseMissingResource
 from udj.views.views07.JSONCodecs import UDJEncoder
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
 
 """
 
@@ -26,7 +27,6 @@ from django.http import HttpRequest
 from django.http import HttpResponseNotFound
 from django.http import HttpResponseBadRequest
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
 """
 
 @NeedsAuth
@@ -45,8 +45,11 @@ def enable_library(request, player, library):
 
 @HasPlayerPermissions(['DLI'])
 def disable_library(request, player, library):
-  player.disable_library(library)
-  return HttpResponse()
+  try:
+    player.disable_library(library)
+    return HttpResponse()
+  except ObjectDoesNotExist:
+    return HttpResponseMissingResource('library')
 
 @csrf_exempt
 @NeedsAuth

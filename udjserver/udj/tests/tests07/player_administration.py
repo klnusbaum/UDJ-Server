@@ -2,6 +2,7 @@ import json
 
 from udj.models import Library, AssociatedLibrary
 from udj.models import Player
+from udj.models import ActivePlaylistEntry
 from udj.testhelpers.tests07.testclasses import KurtisTestCase
 from udj.headers import FORBIDDEN_REASON_HEADER, MISSING_RESOURCE_HEADER
 
@@ -42,6 +43,22 @@ class DefaultOwnerAdminTests(KurtisTestCase):
     response = self.doPut('/players/1/enabled_libraries/949949949')
     self.assertEqual(404, response.status_code)
     self.assertEqual('library', response[MISSING_RESOURCE_HEADER])
+
+  def testDisableLibrary(self):
+    response = self.doDelete('/players/1/enabled_libraries/1')
+    self.assertEqual(200, response.status_code)
+    self.assertFalse(AssociatedLibrary.objects.get(player__id=1, library__id=1).enabled)
+    self.assertFalse(ActivePlaylistEntry.objects.filter(player__id=1,
+                                                        song__library__id=1,
+                                                        state=u'QE').exists())
+
+  def testDoubleDisableLibrary(self):
+    response = self.doDelete('/players/1/enabled_libraries/1')
+    self.assertEqual(200, response.status_code)
+    response = self.doDelete('/players/1/enabled_libraries/1')
+    self.assertEqual(404, response.status_code)
+    self.assertEqual('library', response[MISSING_RESOURCE_HEADER])
+
 
 
 """
