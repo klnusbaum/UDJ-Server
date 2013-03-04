@@ -1,5 +1,6 @@
 import json
 
+from udj.models import PlayerPermission
 from udj.models import Library, AssociatedLibrary
 from udj.models import Player
 from udj.models import PlayerPassword
@@ -226,20 +227,21 @@ class DefaultOwnerAdminTests(KurtisTestCase):
     self.assertEqual(1, len(bannedUsers))
     self.assertEqual('8', bannedUsers[0]['id'])
 
-"""
-class OwnerAdministrationTests(udj.testhelpers.tests06.testclasses.BasicPlayerAdministrationTests):
-  username = "kurtis"
-  userpass = "testkurtis"
 
-class AdminAdministrationTests(udj.testhelpers.tests06.testclasses.BasicPlayerAdministrationTests):
-  username = "lucas"
-  userpass = "testlucas"
+  def testGetPermissions(self):
+    response = self.doGet('/players/1/permissions')
+    self.assertEqual(200, response.status_code)
+    self.isJSONResponse(response)
+    permissions = json.loads(response.content)
+    for perm in permissions.keys():
+      perm_code = filter(lambda x: x[1]==perm, PlayerPermission.PERMISSION_CHOICES)[0][0]
+      actual_perm_groups = (PlayerPermission.objects.filter(player__id=1, permission=perm_code)
+                                             .values_list('group__name', flat=True))
+      returned_perm_groups = permissions[perm]
+      self.assertEqual(len(actual_perm_groups), len(returned_perm_groups))
+      for group in actual_perm_groups:
+        self.assertTrue(group in returned_perm_groups)
 
-class OwnerPasswordAdministrationTests(udj.testhelpers.tests06.testclasses.PasswordAdministrationTests):
-  username = 'alejandro'
-  userpass = 'testalejandro'
 
-class AdminPasswordAdministrationTests(udj.testhelpers.tests06.testclasses.PasswordAdministrationTests):
-  username = 'kurtis'
-  userpass = 'testkurtis'
-"""
+
+

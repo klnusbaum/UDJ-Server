@@ -37,6 +37,7 @@ urlpatterns += patterns('udj.views.views07.player_administration',
   (r'^players/(?P<player_id>\d+)/kicked_users/(?P<kick_user_id>\d+)$', 'kickUser'),
   (r'^players/(?P<player_id>\d+)/banned_users/(?P<ban_user_id>\d+)$', 'modBans'),
   (r'^players/(?P<player_id>\d+)/banned_users$', 'getBannedUsers'),
+  (r'^players/(?P<player_id>\d+)/permissions$', 'getPlayerPermissions'),
 )
 
 

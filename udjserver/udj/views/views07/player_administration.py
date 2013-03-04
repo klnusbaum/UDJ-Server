@@ -5,6 +5,7 @@ from udj.models import Player
 from udj.models import Participant
 from udj.models import SortingAlgorithm
 from udj.models import PlayerLocation
+from udj.models import PlayerPermission
 from udj.views.views07.authdecorators import NeedsAuth, HasPlayerPermissions
 from udj.views.views07.decorators import AcceptsMethods, PlayerExists, LibraryExists, HasNZParams
 from udj.views.views07.responses import HttpJSONResponse
@@ -237,3 +238,14 @@ def unbanUser(request, player_id, ban_user_id, player):
 def getBannedUsers(request, player_id, player):
   return HttpJSONResponse(json.dumps(player.BannedUsers, cls=UDJEncoder))
 
+
+@NeedsAuth
+@AcceptsMethods(['GET'])
+@PlayerExists
+def getPlayerPermissions(request, player_id, player):
+  permissions = {}
+  for perm in PlayerPermission.PERMISSION_CHOICES:
+    perm_groups = (PlayerPermission.objects.filter(player=player, permission=perm[0])
+                                           .values_list('group__name', flat=True))
+    permissions[perm[1]] = perm_groups
+  return HttpJSONResponse(json.dumps(permissions, cls=UDJEncoder))

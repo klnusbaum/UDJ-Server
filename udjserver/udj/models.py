@@ -338,7 +338,7 @@ class Player(models.Model):
     defined_permissions = PlayerPermission.objects.filter(player=self, permission=permission)
 
     if not defined_permissions.exists():
-      return True
+      return self.ActiveParticipants.filter(user=user).exists() or user == self.owning_user
     else:
       allowed_group_ids = defined_permissions.values_list('group__id', flat=True)
       allowed_user_ids = PlayerPermissionGroupMember.objects.filter(permission_group__id__in=allowed_group_ids).values_list('user__id', flat=True)
@@ -591,25 +591,25 @@ class PlayerPermissionGroupMember(models.Model):
 
 class PlayerPermission(models.Model):
   PERMISSION_CHOICES = (
-    (u'CSS', u'Create Song Set'),
-    (u'MOS', u'Modify Other\'s Song Set'),
-    (u'SPT', u'Set Player State'),
-    (u'CVO', u'Control Volume'),
-    (u'SSA', u'Set Sorting Algorithm'),
-    (u'SLO', u'Set Location'),
-    (u'SPA', u'Set Password'),
-    (u'KUS', u'Kick Users'),
-    (u'BUS', u'Ban Users'),
-    (u'APR', u'Active Playist Remove'),
-    (u'APA', u'Active Playlist Add'),
-    (u'APU', u'Active Playlist Upvote'),
-    (u'APD', u'Active Playlist Downvote'),
-    (u'ELI', u'Enable Library'),
-    (u'DLI', u'Disable Library'),
-    (u'MPG', u'Modify Permission Groups'),
-    (u'CEV', u'Create Event'),
-    (u'HEV', u'Host Event'),
-    (u'MEV', u'Modify Event'))
+    (u'CSS', u'create_song_set'),
+    (u'MOS', u'modify_others_song_set'),
+    (u'SPT', u'set_player_state'),
+    (u'CVO', u'control_volume'),
+    (u'SSA', u'set_sorting_algorithm'),
+    (u'SLO', u'set_location'),
+    (u'SPA', u'set_password'),
+    (u'KUS', u'kick_users'),
+    (u'BUS', u'ban_users'),
+    (u'APR', u'active_playlist_remove_songs'),
+    (u'APA', u'active_playlist_add_songs'),
+    (u'APU', u'active_playlist_upvote'),
+    (u'APD', u'active_playlist_downvote'),
+    (u'ELI', u'enable_library'),
+    (u'DLI', u'disable_library'),
+    (u'MPG', u'modify_permission_groups'),
+    (u'CEV', u'create_event'),
+    (u'HEV', u'host_event'),
+    (u'MEV', u'modify_event'))
 
   player = models.ForeignKey(Player)
   permission = models.CharField(max_length=3, choices=PERMISSION_CHOICES)

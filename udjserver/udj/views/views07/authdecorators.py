@@ -5,6 +5,7 @@ from udj.headers import TICKET_HEADER
 from django.http import HttpRequest
 from django.core.exceptions import ObjectDoesNotExist
 from udj.views.views07.auth import getUserForTicket
+from udj.views.views07.responses import HttpResponseForbiddenWithReason
 
 
 """
