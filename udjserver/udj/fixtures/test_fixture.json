@@ -100,6 +100,18 @@
     }
   },
 
+  {
+    "pk" :9,
+    "model" : "udj.library",
+    "fields" : {
+      "name" : "Lock down",
+      "description" : "A library no one can use. Not even Cthulu.",
+      "pub_key" : "",
+      "read_permission" : "NO",
+      "write_permission" : "NO"
+    }
+  },
+
 
 
 

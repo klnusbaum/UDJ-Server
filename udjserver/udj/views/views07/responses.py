@@ -17,5 +17,5 @@ class HttpResponseMissingResource(HttpResponseNotFound):
 class HttpResponseForbiddenWithReason(HttpResponseForbidden):
 
   def __init__(self, reason):
-    super(HttpMissingResponse, self).__init__()
+    super(HttpResponseForbiddenWithReason, self).__init__()
     self[FORBIDDEN_REASON_HEADER] = reason
