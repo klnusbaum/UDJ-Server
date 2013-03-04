@@ -468,6 +468,20 @@ class Player(models.Model):
       onList.update(state=u'RM')
       map(lambda song: song.save(), onList)
 
+  def setPassword(self, password):
+    hashedPassword = hashPlayerPassword(givenPassword)
+
+    playerPassword , created = PlayerPassword.objects.get_or_create(
+        player=player,
+        defaults={'password_hash': hashedPassword})
+    if not created:
+      playerPassword.password_hash = hashedPassword
+      playerPassword.save()
+
+  def removePassword(self):
+    toRemove = PlayerPassword.objects.get(player=self)
+    toRemove.delete()
+
 
   def __unicode__(self):
     return self.name + " player"

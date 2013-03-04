@@ -64,66 +64,34 @@ def modEnabledLibraries(request, player_id, library_id, player, library):
 
 
 
+@HasNZParams(['password'])
+def setPlayerPassword(request, player)
+  givenPassword = request.POST['password']
+  player.setPassword(givePassword)
 
-"""
-
-@csrf_exempt
-@AcceptsMethods(['POST'])
-@NeedsAuth
-@PlayerExists
-@IsOwnerOrAdmin
-@HasNZParams(['songset_user_permission'])
-def changeSongSetPermission(request, player_id, player):
-  if request.POST['songset_user_permission'] == 'yes':
-    PlayerPermission.objects.filter(player=player, permission=u'CSS').delete()
-  elif request.POST['songset_user_permission'] == 'no':
-    ownerGroup = PlayerPermissionGroup.objects.get(player=player, name=u'owner')
-    newPermission = PlayerPermission(player=player, permission=u'CSS', group=ownerGroup)
-    newPermission.save()
-  else:
-    return HttpResponse('Invalid permission value', status=400)
-
-  return HttpResponse()
-
+def deletePlayerPassword(request, player):
+  try:
+    player.removePassword()
+    return HttpResponse()
+  except ObjectDoesNotExist:
+    return HttpResponseMissingResource('password')
 
 
 @csrf_exempt
 @AcceptsMethods(['POST', 'DELETE'])
 @NeedsAuth
 @PlayerExists
-@IsOwnerOrAdmin
+@HasPlayerPermissions(['SPA'])
 def modifyPlayerPassword(request, player_id, player):
   if request.method == 'POST':
-    return setPlayerPassword(request, player_id, player)
+    return setPlayerPassword(request, player)
   elif request.method == 'DELETE':
-    return deletePlayerPassword(request, player_id, player)
+    return deletePlayerPassword(request, player)
 
-@HasNZParams(['password'])
-def setPlayerPassword(request, player_id, player):
-  givenPassword = request.POST['password']
-  if givenPassword == '':
-    return HttpResponseBadRequest("Bad password")
 
-  hashedPassword = hashPlayerPassword(givenPassword)
 
-  playerPassword , created = PlayerPassword.objects.get_or_create(
-      player=player,
-      defaults={'password_hash': hashedPassword})
-  if not created:
-    playerPassword.password_hash = hashedPassword
-    playerPassword.save()
 
-  return HttpResponse()
-
-def deletePlayerPassword(request, player_id, player):
-  try:
-    toDelete = PlayerPassword.objects.get(player=player)
-    toDelete.delete()
-    return HttpResponse()
-  except ObjectDoesNotExist:
-    toReturn = HttpResponseNotFound()
-    toReturn[MISSING_RESOURCE_HEADER] = 'password'
-    return toReturn
+"""
 
 @csrf_exempt
 @AcceptsMethods(['POST', 'DELETE'])
