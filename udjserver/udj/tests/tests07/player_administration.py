@@ -129,7 +129,44 @@ class DefaultOwnerAdminTests(KurtisTestCase):
     player = Player.objects.get(pk=1)
     self.assertEqual(2, player.sorting_algo.id)
 
+  def testSetPlayerPlaying(self):
+    player = Player.objects.get(pk=1)
+    player.state = u'PA'
+    player.save()
+    response = self.doPost('/players/1/state', {'state' :'playing'})
+    self.assertEqual(200, response.status_code)
+    self.assertEqual(u'PL', Player.objects.get(pk=1).state)
 
+  def testPausePlayer(self):
+    response = self.doPost('/players/1/state', {'state' :'paused'})
+    self.assertEqual(200, response.status_code)
+    self.assertEqual(u'PA', Player.objects.get(pk=1).state)
+
+  def testSetPlayerInactive(self):
+    response = self.doPost('/players/1/state', {'state' :'inactive'})
+    self.assertEqual(200, response.status_code)
+    self.assertEqual(u'IN', Player.objects.get(pk=1).state)
+
+  def testBadPlayerStateSet(self):
+    response = self.doPost('/players/1/state', {'state' :'bad'})
+    self.assertEqual(400, response.status_code)
+    self.assertEqual(u'PL', Player.objects.get(pk=1).state)
+
+  def testSetVolume(self):
+    player = Player.objects.get(pk=1)
+    self.assertEqual(player.volume, 5)
+    response = self.doPost('/players/1/volume', {'volume' : 2})
+    self.assertEqual(response.status_code, 200)
+    player = Player.objects.get(pk=1)
+    self.assertEqual(player.volume, 2)
+
+  def testBadVolumeSet(self):
+    player = Player.objects.get(pk=1)
+    self.assertEqual(player.volume, 5)
+    response = self.doPost('/players/1/volume', {'volume' : 11})
+    self.assertEqual(response.status_code, 400)
+    player = Player.objects.get(pk=1)
+    self.assertEqual(player.volume, 5)
 
 """
 class OwnerAdministrationTests(udj.testhelpers.tests06.testclasses.BasicPlayerAdministrationTests):

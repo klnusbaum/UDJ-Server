@@ -593,7 +593,7 @@ class PlayerPermission(models.Model):
   PERMISSION_CHOICES = (
     (u'CSS', u'Create Song Set'),
     (u'MOS', u'Modify Other\'s Song Set'),
-    (u'CPB', u'Control Playback'),
+    (u'SPT', u'Set Player State'),
     (u'CVO', u'Control Volume'),
     (u'SSA', u'Set Sorting Algorithm'),
     (u'SLO', u'Set Location'),

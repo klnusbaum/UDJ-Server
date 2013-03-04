@@ -14,6 +14,7 @@ from udj.exceptions import LocationNotFoundError
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
+from django.http import HttpResponseBadRequest
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.gis.geos import Point
 
@@ -153,16 +154,11 @@ def setSortingAlgorithm(request, player_id, player):
   player.save()
   return HttpResponse()
 
-
-"""
-
-
-
 @csrf_exempt
 @NeedsAuth
 @AcceptsMethods(['POST'])
 @PlayerExists
-@IsOwnerOrAdmin
+@HasPlayerPermissions(['SPT'])
 @HasNZParams(['state'])
 def setPlayerState(request, player_id, player):
   givenState = request.POST['state']
@@ -179,6 +175,26 @@ def setPlayerState(request, player_id, player):
   player.save()
   return HttpResponse()
 
+@csrf_exempt
+@NeedsAuth
+@AcceptsMethods(['POST'])
+@PlayerExists
+@HasPlayerPermissions(['CVO'])
+@HasNZParams(['volume'])
+def setPlayerVolume(request, player_id, player):
+  try:
+    newVolume = int(request.POST['volume'])
+    if newVolume > 10 or newVolume < 0:
+      return HttpResponseBadRequest()
+    player.volume = newVolume
+    player.save()
+    return HttpResponse()
+  except ValueError:
+    return HttpResponseBadRequest('Bad volume: ' + request.POST['volume'])
+
+
+
+"""
 
 @csrf_exempt
 @NeedsAuth
