@@ -497,6 +497,11 @@ class Player(models.Model):
     toRemove.delete()
 
 
+  def getPermissionGroups(self):
+    return PlayerPermissionGroup.objects.filter(player=self)
+
+  PermissionGroups = property(getPermissionGroups)
+
   def __unicode__(self):
     return self.name + " player"
 
@@ -577,6 +582,13 @@ class PlayerPermissionGroup(models.Model):
   def contains_member(self, user):
     return user.id in (PlayerPermissionGroupMember.objects.filter(permission_group=self)
                       .values_list('user__id', flat=True))
+
+  def getMembers(self):
+    group_member_ids = (PlayerPermissionGroupMember.objects.filter(permission_group=self)
+                                                           .values_list('users__id'))
+    return Users.objects.filter(pk__in=group_member_ids)
+
+  Members = property(getMembers)
 
   def __unicode__(self):
     return self.name

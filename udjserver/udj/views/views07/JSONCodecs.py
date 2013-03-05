@@ -74,6 +74,11 @@ class UDJEncoder(json.JSONEncoder):
         'read_permission' : obj.get_read_permission_display(),
         'write_permission' : obj.get_write_permission_display()
       }
+    elif isinstance(obj, PlayerPermissionGroup):
+      return {
+        'name' : obj.name,
+        'users' : obj.Members
+      }
     elif isinstance(obj, Participant):
       return obj.user
     else:

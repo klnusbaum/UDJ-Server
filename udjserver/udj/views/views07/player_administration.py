@@ -292,4 +292,8 @@ def modPlayerPermissions(request, player_id, permission_name, group_name, player
     return removePermissions(player, perm_code, group_name)
 
 
-
+@NeedsAuth
+@AcceptsMethods(['GET'])
+@PlayerExists
+def getPermissionGroups(request, player_id, player):
+  return HttpJSONResponse(json.dumps(player.PermissionGroups, cls=UDJEncoder))
