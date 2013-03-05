@@ -1,5 +1,5 @@
 import json
-from django.test import TestCase
+from django.test import TransactionTestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
 from udj.models import Ticket
@@ -14,7 +14,7 @@ from datetime import datetime
 from datetime import timedelta
 """
 
-class DoesServerOpsTestCase(TestCase):
+class DoesServerOpsTestCase(TransactionTestCase):
   fixtures = ['test_fixture']
   client = Client()
 

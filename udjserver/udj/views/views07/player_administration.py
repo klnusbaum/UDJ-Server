@@ -252,27 +252,26 @@ def getPlayerPermissions(request, player_id, player):
     permissions[perm[1]] = perm_groups
   return HttpJSONResponse(json.dumps(permissions, cls=UDJEncoder))
 
-def addPermissions(player, perm_code, group_names):
-  for group in group_names:
-    try:
-      actual_group = PlayerPermissionGroup.objects.get(player=player, name=group)
-      PlayerPermission.objects.get_or_create(player=player,
-                                             permission=perm_code,
-                                             group=actual_group)
-    except ObjectDoesNotExist:
-      transaction.rollback()
-      return HttpResponseMissingResource('permission-group')
-  transaction.commit()
+def addPermissions(player, perm_code, group_name):
+  try:
+    actual_group = PlayerPermissionGroup.objects.get(player=player, name=group_name)
+    PlayerPermission.objects.get_or_create(player=player,
+                                           permission=perm_code,
+                                           group=actual_group)
+  except ObjectDoesNotExist:
+    return HttpResponseMissingResource('permission-group')
+
   return HttpResponse()
 
 
-def removePermissions(player, perm_code, group_names):
-  for group in group_names:
-    try:
-      PlayerPermission.objects.get(player=player, permission=perm_code, group__name=group).delete()
-    except ObjectDoesNotExist:
-      transaction.rollback()
-      return HttpResponseMissingResource('permission-group')
+def removePermissions(player, perm_code, group_name):
+  try:
+    PlayerPermission.objects.get(player=player,
+                                 permission=perm_code,
+                                 group__name=group_name).delete()
+  except ObjectDoesNotExist:
+    transaction.rollback()
+    return HttpResponseMissingResource('permission-group')
   transaction.commit()
   return HttpResponse()
 
@@ -281,20 +280,16 @@ def removePermissions(player, perm_code, group_names):
 @AcceptsMethods(['PUT', 'DELETE'])
 @PlayerExists
 @HasPlayerPermissions(['MPE'])
-@transaction.commit_manually
-def modPlayerPermissions(request, player_id, permission_name, player):
+def modPlayerPermissions(request, player_id, permission_name, group_name, player):
   try:
-    perm_code = filter(lambda x: x[1]==permission_name, PlayerPermission.PERMISSION_CHOICES)[0][0]
-  except IndexError:
-    transaction.rollback()
+    perm_code = PlayerPermission.PERMISSION_NAME_MAP[permission_name]
+  except KeyError:
     return HttpResponseMissingResource('permission')
 
-  groupsToSet = json.loads(request.raw_post_data)
-
   if request.method == 'PUT':
-    return addPermissions(player, perm_code, groupsToSet)
+    return addPermissions(player, perm_code, group_name)
   else:
-    return removePermissions(player, perm_code, groupsToSet)
+    return removePermissions(player, perm_code, group_name)
 
 
 

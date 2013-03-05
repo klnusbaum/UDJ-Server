@@ -919,6 +919,24 @@
     }
   },
 
+  {
+    "pk": 11,
+    "model": "udj.playerpermissiongroup",
+    "fields": {
+      "name" : "empty_test1",
+      "player" : 1
+    }
+  },
+
+  {
+    "pk": 12,
+    "model": "udj.playerpermissiongroup",
+    "fields": {
+      "name" : "empty_test2",
+      "player" : 1
+    }
+  },
+
 
 
   {

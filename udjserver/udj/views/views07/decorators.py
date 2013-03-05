@@ -54,12 +54,12 @@ def NeedsJSON(function):
 
 def PlayerExists(function):
   def wrapper(*args, **kwargs):
-    request = args[0]
     try:
       actualPlayer = Player.objects.get(pk=kwargs['player_id'])
       kwargs['player'] = actualPlayer
       return function(*args, **kwargs)
     except ObjectDoesNotExist:
+      print "decorator failed\n"
       return HttpResponseMissingResource('player')
   return wrapper
 
