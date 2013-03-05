@@ -300,17 +300,41 @@ def getPermissionGroups(request, player_id, player):
   return HttpJSONResponse(json.dumps(player.PermissionGroups, cls=UDJEncoder))
 
 
-@NeedsAuth
-@AcceptsMethods(['PUT'])
-@PlayerExists
-@HasPlayerPermissions(['MPE'])
-def modPlayerPermissionGroup(request, player_id, group_name, player):
+
+def addPlayerPermissionGroup(player, group_name):
   try:
     PlayerPermissionGroup(player=player, name=group_name).save()
     return HttpResponse(status=201)
   except IntegrityError:
     return HttpResponse(status=409)
 
+def removePlayerPermissionGroup(player, group_name):
+  try:
+    PlayerPermissionGroup.objects.get(player=player, name=group_name).delete()
+    return HttpResponse(status=200)
+  except ObjectDoesNotExist:
+    return HttpResponseMissingResource('permission-group')
 
+
+@NeedsAuth
+@AcceptsMethods(['PUT', 'DELETE'])
+@PlayerExists
+@HasPlayerPermissions(['MPE'])
+def modPlayerPermissionGroup(request, player_id, group_name, player):
+  if request.method == 'PUT':
+    return addPlayerPermissionGroup(player, group_name)
+  else:
+    return removePlayerPermissionGroup(player, group_name)
+
+
+@NeedsAuth
+@AcceptsMethods(['GET'])
+@PlayerExists
+def getPermissionGroupMembers(request, player_id, group_name, player):
+  try:
+    group = PlayerPermissionGroup.objects.get(player=player, name=group_name)
+    return HttpJSONResponse(json.dumps(group.Members, cls=UDJEncoder))
+  except ObjectDoesNotExist:
+    return HttpResponseMissingResource('permission-group')
 
 
