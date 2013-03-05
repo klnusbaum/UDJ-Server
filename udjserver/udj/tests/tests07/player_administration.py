@@ -352,3 +352,19 @@ class DefaultOwnerAdminTests(KurtisTestCase):
     response = self.doPut('/players/1/permission_groups/doesntexist/members/3')
     self.assertEqual(404, response.status_code)
     self.assertEqual('permission-group', response[MISSING_RESOURCE_HEADER])
+
+  def testRemoveUserFromPermissionGroup(self):
+    response = self.doDelete('/players/1/permission_groups/owner/members/2')
+    self.assertEqual(200, response.status_code)
+    self.assertFalse(PlayerPermissionGroupMember.objects.filter(permission_group__name="owner",
+                                                                permission_group__player__id=1,
+                                                                user__id=2).exists())
+  def testRemoveBadUserFromPermissionGroup(self):
+    response = self.doDelete('/players/1/permission_groups/owner/members/3')
+    self.assertEqual(404, response.status_code)
+    self.assertEqual('user', response[MISSING_RESOURCE_HEADER])
+
+  def testRemoveUserFromBadPermissionGroup(self):
+    response = self.doDelete('/players/1/permission_groups/doesntexist/members/3')
+    self.assertEqual(404, response.status_code)
+    self.assertEqual('permission-group', response[MISSING_RESOURCE_HEADER])
