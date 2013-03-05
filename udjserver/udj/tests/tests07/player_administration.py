@@ -276,14 +276,12 @@ class DefaultOwnerAdminTests(KurtisTestCase):
                                                      permission=u'SSA',
                                                      group__name=u'owner').exists())
 
-
-
-
-
-
   def testRemoveBadPermission(self):
-    pass
+    response = self.doDelete('/players/1/permissions/invalid/owner')
+    self.assertEqual(404, response.status_code)
+    self.assertEqual('permission', response[MISSING_RESOURCE_HEADER])
 
   def testRemovePermissionWithBadGroup(self):
-    pass
-
+    response = self.doPut('/players/1/permissions/set_sorting_algorithm/dontexists_mofo')
+    self.assertEqual(404, response.status_code)
+    self.assertEqual('permission-group', response[MISSING_RESOURCE_HEADER])
