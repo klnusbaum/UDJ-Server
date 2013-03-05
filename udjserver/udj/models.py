@@ -585,8 +585,8 @@ class PlayerPermissionGroup(models.Model):
 
   def getMembers(self):
     group_member_ids = (PlayerPermissionGroupMember.objects.filter(permission_group=self)
-                                                           .values_list('users__id'))
-    return Users.objects.filter(pk__in=group_member_ids)
+                                                           .values_list('user__id'))
+    return User.objects.filter(pk__in=group_member_ids)
 
   Members = property(getMembers)
 

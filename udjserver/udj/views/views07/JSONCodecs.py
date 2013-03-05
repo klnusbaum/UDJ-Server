@@ -5,6 +5,7 @@ from udj.models import PlayerLocation
 from udj.models import PlayerPassword
 from udj.models import Library
 from udj.models import Participant
+from udj.models import PlayerPermissionGroup
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 """

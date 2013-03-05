@@ -285,3 +285,20 @@ class DefaultOwnerAdminTests(KurtisTestCase):
     response = self.doPut('/players/1/permissions/set_sorting_algorithm/dontexists_mofo')
     self.assertEqual(404, response.status_code)
     self.assertEqual('permission-group', response[MISSING_RESOURCE_HEADER])
+
+  def testGetPermissionGroups(self):
+    response = self.doGet('/players/1/permission_groups')
+    self.assertEqual(200, response.status_code)
+    self.isJSONResponse(response)
+    retrieved_groups = json.loads(response.content)
+    actual_groups = PlayerPermissionGroup.objects.filter(player__id=1)
+    self.assertEqual(len(actual_groups), len(retrieved_groups))
+    for group in retrieved_groups:
+      current_actual_group = actual_groups.get(name=group['name'])
+      current_actual_members = current_actual_group.Members
+      self.assertEqual(len(current_actual_members), len(group['users']))
+      for user in group['users']:
+        existing_user  =current_actual_members.get(pk=user['id'])
+
+
+

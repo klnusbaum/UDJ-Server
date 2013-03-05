@@ -297,3 +297,6 @@ def modPlayerPermissions(request, player_id, permission_name, group_name, player
 @PlayerExists
 def getPermissionGroups(request, player_id, player):
   return HttpJSONResponse(json.dumps(player.PermissionGroups, cls=UDJEncoder))
+
+
+
