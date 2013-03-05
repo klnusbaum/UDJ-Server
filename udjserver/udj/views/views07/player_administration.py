@@ -337,4 +337,27 @@ def getPermissionGroupMembers(request, player_id, group_name, player):
   except ObjectDoesNotExist:
     return HttpResponseMissingResource('permission-group')
 
+@NeedsAuth
+@AcceptsMethods(['PUT', 'DELETE'])
+@PlayerExists
+def modPermissionGroupMembers(request, player_id, group_name, user_id, player):
+  try:
+    user = User.objects.get(pk=user_id)
+  except ObjectDoesNotExist:
+    return HttpResponseMissingResource('user')
+
+  try:
+    group = PlayerPermissionGroup.objects.get(player=player, name=group_name)
+  except ObjectDoesNotExist:
+    return HttpResponseMissingResource('permission-group')
+
+  if request.method == 'PUT':
+    group.add_member(user)
+    return HttpResponse(status=201)
+  else:
+    try:
+      group.remove_member(user)
+      return HttpResponse()
+    except ObjectDoesNotExist:
+      return HttpResponseMissingResource('user')
 

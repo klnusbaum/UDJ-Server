@@ -573,8 +573,7 @@ class PlayerPermissionGroup(models.Model):
 
 
   def add_member(self, user):
-    new_member = PlayerPermissionGroupMember(permission_group=self, user=user)
-    new_member.save()
+    PlayerPermissionGroupMember.objects.get_or_create(permission_group=self, user=user)
 
   def remove_member(self, user):
     PlayerPermissionGroupMember.objects.get(permission_group=self, user=user).delete()

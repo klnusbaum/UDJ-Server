@@ -2,6 +2,7 @@ import json
 
 from udj.models import PlayerPermission
 from udj.models import PlayerPermissionGroup
+from udj.models import PlayerPermissionGroupMember
 from udj.models import Library, AssociatedLibrary
 from udj.models import Player
 from udj.models import PlayerPassword
@@ -244,7 +245,7 @@ class DefaultOwnerAdminTests(KurtisTestCase):
         self.assertTrue(group in returned_perm_groups)
 
   def testAddPermission(self):
-    response = self.doPut('/players/1/permissions/set_sorting_algorithm/empty_test1')
+    response = self.doPut('/players/1/permissions/set_sorting_algorithm/groups/empty_test1')
     self.assertEqual(200, response.status_code)
 
     test_perm1 = PlayerPermission.objects.filter(player__id=1,
@@ -254,13 +255,13 @@ class DefaultOwnerAdminTests(KurtisTestCase):
 
 
   def testAddBadPermission(self):
-    response = self.doPut('/players/1/permissions/invalid_perm/empty_test1')
+    response = self.doPut('/players/1/permissions/invalid_perm/groups/empty_test1')
     self.assertEqual(404, response.status_code)
     self.assertEqual('permission', response[MISSING_RESOURCE_HEADER])
 
   def testAddPermissionWithBadGroup(self):
     self.assertTrue(Player.objects.filter(pk=1).exists())
-    response = self.doPut('/players/1/permissions/set_sorting_algorithm/dontexists_mofo')
+    response = self.doPut('/players/1/permissions/set_sorting_algorithm/groups/dontexists_mofo')
     self.assertEqual(404, response.status_code)
     self.assertEqual('permission-group', response[MISSING_RESOURCE_HEADER])
 
@@ -270,19 +271,19 @@ class DefaultOwnerAdminTests(KurtisTestCase):
 
 
   def testRemovePermission(self):
-    response = self.doDelete('/players/1/permissions/set_sorting_algorithm/owner')
+    response = self.doDelete('/players/1/permissions/set_sorting_algorithm/groups/owner')
     self.assertEqual(200, response.status_code)
     self.assertFalse(PlayerPermission.objects.filter(player__id=1,
                                                      permission=u'SSA',
                                                      group__name=u'owner').exists())
 
   def testRemoveBadPermission(self):
-    response = self.doDelete('/players/1/permissions/invalid/owner')
+    response = self.doDelete('/players/1/permissions/invalid/groups/owner')
     self.assertEqual(404, response.status_code)
     self.assertEqual('permission', response[MISSING_RESOURCE_HEADER])
 
   def testRemovePermissionWithBadGroup(self):
-    response = self.doPut('/players/1/permissions/set_sorting_algorithm/dontexists_mofo')
+    response = self.doPut('/players/1/permissions/set_sorting_algorithm/groups/dontexists_mofo')
     self.assertEqual(404, response.status_code)
     self.assertEqual('permission-group', response[MISSING_RESOURCE_HEADER])
 
@@ -332,5 +333,22 @@ class DefaultOwnerAdminTests(KurtisTestCase):
 
   def testGetBadPermissionGroupMembers(self):
     response = self.doGet('/players/1/permission_groups/dontexist/members')
+    self.assertEqual(404, response.status_code)
+    self.assertEqual('permission-group', response[MISSING_RESOURCE_HEADER])
+
+  def testAddUserToPermissionGroup(self):
+    response = self.doPut('/players/1/permission_groups/owner/members/3')
+    self.assertEqual(201, response.status_code)
+    new_group_member = PlayerPermissionGroupMember.objects.get(permission_group__name="owner",
+                                                               permission_group__player__id=1,
+                                                               user__id=3)
+
+  def testAddBadUserToPermissionGroup(self):
+    response = self.doPut('/players/1/permission_groups/owner/members/3333333333')
+    self.assertEqual(404, response.status_code)
+    self.assertEqual('user', response[MISSING_RESOURCE_HEADER])
+
+  def testAddUserToBadPermissionGroup(self):
+    response = self.doPut('/players/1/permission_groups/doesntexist/members/3')
     self.assertEqual(404, response.status_code)
     self.assertEqual('permission-group', response[MISSING_RESOURCE_HEADER])

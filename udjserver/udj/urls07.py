@@ -38,15 +38,19 @@ urlpatterns += patterns('udj.views.views07.player_administration',
   (r'^players/(?P<player_id>\d+)/banned_users/(?P<ban_user_id>\d+)$', 'modBans'),
   (r'^players/(?P<player_id>\d+)/banned_users$', 'getBannedUsers'),
   (r'^players/(?P<player_id>\d+)/permissions$', 'getPlayerPermissions'),
-  (r'^players/(?P<player_id>\d+)/permission_groups/(?P<group_name>.+)/members$',
-    'getPermissionGroupMembers'),
-
-
-
-  (r'^players/(?P<player_id>\d+)/permissions/(?P<permission_name>\S+)/(?P<group_name>.+)$',
+  (r'^players/(?P<player_id>\d+)/permissions/(?P<permission_name>\S+)/groups/(?P<group_name>.+)$',
     'modPlayerPermissions'),
   (r'^players/(?P<player_id>\d+)/permission_groups$', 'getPermissionGroups'),
+
+
+  (r'^players/(?P<player_id>\d+)/permission_groups/(?P<group_name>.+)/members$',
+    'getPermissionGroupMembers'),
+  (r'^players/(?P<player_id>\d+)/permission_groups/(?P<group_name>.+)/members/(?P<user_id>\d+)$',
+    'modPermissionGroupMembers'),
+
   (r'^players/(?P<player_id>\d+)/permission_groups/(?P<group_name>.+)$', 'modPlayerPermissionGroup'),
+
+
 )
 
 
