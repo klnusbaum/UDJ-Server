@@ -300,5 +300,13 @@ class DefaultOwnerAdminTests(KurtisTestCase):
       for user in group['users']:
         existing_user  =current_actual_members.get(pk=user['id'])
 
+  def testCreatePermissionGroup(self):
+    response = self.doPut('/players/1/permission_groups/blah_group')
+    self.assertEqual(201, response.status_code)
+    created_group = PlayerPermissionGroup.objects.get(player__id=1, name="blah_group")
+
+  def testCreateExistingGroup(self):
+    response = self.doPut('/players/1/permission_groups/owner')
+    self.assertEqual(409, response.status_code)
 
 

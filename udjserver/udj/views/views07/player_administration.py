@@ -22,6 +22,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.gis.geos import Point
 from django.contrib.auth.models import User
 from django.db import transaction
+from django.db import IntegrityError
 
 from settings import geocodeLocation
 
@@ -297,6 +298,19 @@ def modPlayerPermissions(request, player_id, permission_name, group_name, player
 @PlayerExists
 def getPermissionGroups(request, player_id, player):
   return HttpJSONResponse(json.dumps(player.PermissionGroups, cls=UDJEncoder))
+
+
+@NeedsAuth
+@AcceptsMethods(['PUT'])
+@PlayerExists
+@HasPlayerPermissions(['MPE'])
+def modPlayerPermissionGroup(request, player_id, group_name, player):
+  try:
+    PlayerPermissionGroup(player=player, name=group_name).save()
+    return HttpResponse(status=201)
+  except IntegrityError:
+    return HttpResponse(status=409)
+
 
 
 

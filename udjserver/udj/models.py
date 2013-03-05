@@ -630,8 +630,5 @@ class PlayerPermission(models.Model):
   group = models.ForeignKey(PlayerPermissionGroup)
 
 
-
-
-
   def __unicode__(self):
     return self.permissions + " for " + self.player.name
