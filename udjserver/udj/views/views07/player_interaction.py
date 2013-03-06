@@ -1,7 +1,6 @@
 import json
 from udj.models import hashPlayerPassword, PlayerPassword, Participant
 from udj.headers import FORBIDDEN_REASON_HEADER
-from udj.views.views07.auth import getUserForTicket
 from udj.views.views07.authdecorators import NeedsAuth, IsntOwner, HasPlayerPermissions, IsOwnerOrParticipates
 from udj.views.views07.decorators import PlayerExists, PlayerIsActive, AcceptsMethods, UpdatePlayerActivity, HasNZParams
 
@@ -65,7 +64,7 @@ def participateWithPlayer(request, player_id, player):
     return HttpResponse(status=201)
 
 
-  user = getUserForTicket(request)
+  user = request.udjuser
   playerPassword = PlayerPassword.objects.filter(player=player)
   if playerPassword.exists():
     hashedPassword = ""
@@ -93,7 +92,7 @@ def participateWithPlayer(request, player_id, player):
     return onSuccessfulPlayerAuth(player, user)
 
 def logoutOfPlayer(request, player_id, player):
-  user = getUserForTicket(request)
+  user = request.udjuser
 
   try:
     toLogOut = Participant.objects.get(player=player, user=user)
