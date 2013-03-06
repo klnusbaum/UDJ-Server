@@ -116,24 +116,6 @@ def getUsersForPlayer(request, player_id, player):
 @PlayerIsActive
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
-def getAdminsForPlayer(request, player_id, player):
-  return HttpJSONResponse(json.dumps(player.Admins, cls=UDJEncoder))
-
-@AcceptsMethods(['GET'])
-@NeedsAuth
-@PlayerExists
-@PlayerIsActive
-@IsOwnerOrParticipates
-@UpdatePlayerActivity
-def getSongSetsForPlayer(request, player_id, player):
-  return HttpJSONResponse(json.dumps(player.SongSets, cls=UDJEncoder))
-
-@AcceptsMethods(['GET'])
-@NeedsAuth
-@PlayerExists
-@PlayerIsActive
-@IsOwnerOrParticipates
-@UpdatePlayerActivity
 @HasNZParams(['query'])
 def getAvailableMusic(request, player_id, player):
   query = request.GET['query']

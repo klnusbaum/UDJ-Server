@@ -82,11 +82,16 @@ class UDJEncoder(json.JSONEncoder):
       }
     elif isinstance(obj, Participant):
       return obj.user
-    else:
-      return json.JSONEncoder.default(self, obj)
-    """
-    elif isinstance(obj, Favorite):
-      return obj.favorite_song
+    elif isinstance(obj, SongSet):
+      return {
+          "name" : obj.name,
+          "description" : obj.description,
+          "songs" : obj.Songs(),
+          "owner" : obj.owner,
+          "date_created" : obj.date_created.replace(microsecond=0).isoformat()
+      }
+    elif isinstance(obj, SongSetEntry):
+      return obj.song
     elif isinstance(obj, ActivePlaylistEntry):
       toReturn =  {
         'song' : obj.song,
@@ -97,8 +102,20 @@ class UDJEncoder(json.JSONEncoder):
       }
 
       if obj.state == 'PL' or obj.state == 'FN':
-        toReturn['time_played'] = PlaylistEntryTimePlayed.objects.get(playlist_entry=obj).time_played.replace(microsecond=0).isoformat()
+        toReturn['time_played'] = (PlaylistEntryTimePlayed.objects.get(playlist_entry=obj)
+                                                                  .time_played
+                                                                  .replace(microsecond=0)
+                                                                  .isoformat())
       return toReturn
+
+    elif isinstance(obj, PlaylistEntryTimePlayed):
+      return obj.playlist_entry
+
+    else:
+      return json.JSONEncoder.default(self, obj)
+    """
+    elif isinstance(obj, Favorite):
+      return obj.favorite_song
 
     elif isinstance(obj, LibraryEntry):
       return {
@@ -111,23 +128,7 @@ class UDJEncoder(json.JSONEncoder):
           'duration' : obj.duration
       }
 
-    elif isinstance(obj, Participant):
-      return obj.user
-    elif isinstance(obj, SongSet):
-      return {
-          "name" : obj.name,
-          "description" : obj.description,
-          "songs" : obj.Songs(),
-          "owner" : obj.owner,
-          "date_created" : obj.date_created.replace(microsecond=0).isoformat()
-      }
 
-
-    elif isinstance(obj, SongSetEntry):
-      return obj.song
-
-    elif isinstance(obj, PlaylistEntryTimePlayed):
-      return obj.playlist_entry
     """
 
 
