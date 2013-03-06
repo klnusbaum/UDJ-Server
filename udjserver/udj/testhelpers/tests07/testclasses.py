@@ -473,6 +473,10 @@ class YunYoungTestCase(DoesServerOpsTestCase):
   username = "yunyoung"
   userpass = "testyunyoung"
 
+class ZachTestCase(DoesServerOpsTestCase):
+  username = "zach"
+  userpass = "testzach"
+
 
 """
 
@@ -487,10 +491,6 @@ class LucasTestCase(DoesServerOpsTestCase):
 class LeeTestCase(DoesServerOpsTestCase):
   username = "lee"
   userpass = "testlee"
-
-class ZachTestCase(DoesServerOpsTestCase):
-  username = "zach"
-  userpass = "testzach"
 
 class MattTestCase(DoesServerOpsTestCase):
   username = "matt"

@@ -74,7 +74,6 @@ def LibraryExists(function):
   return wrapper
 
 
-"""
 def PlayerIsActive(function):
   def wrapper(*args, **kwargs):
     if 'player' in kwargs:
@@ -92,7 +91,7 @@ def PlayerIsActive(function):
 
 
 def UpdatePlayerActivity(function):
-  from udj.views.views06.auth import getUserForTicket
+  from udj.views.views07.auth import getUserForTicket
   def wrapper(*args, **kwargs):
     toReturn = function(*args, **kwargs)
     request = args[0]
@@ -104,5 +103,3 @@ def UpdatePlayerActivity(function):
       participant.save()
     return toReturn
   return wrapper
-
-"""

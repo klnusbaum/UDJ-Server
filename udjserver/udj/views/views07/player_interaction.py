@@ -1,14 +1,19 @@
+import json
+from udj.models import hashPlayerPassword, PlayerPassword, Participant
+from udj.headers import FORBIDDEN_REASON_HEADER
+from udj.views.views07.auth import getUserForTicket
+from udj.views.views07.authdecorators import NeedsAuth, IsntOwner, HasPlayerPermissions, IsOwnerOrParticipates
+from udj.views.views07.decorators import PlayerExists, PlayerIsActive, AcceptsMethods, UpdatePlayerActivity, HasNZParams
+
+
+
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
-from udj.views.views06.authdecorators import NeedsAuth, IsntOwner
-from udj.views.views06.decorators import PlayerExists, PlayerIsActive, AcceptsMethods, UpdatePlayerActivity, HasNZParams
+from datetime import datetime
 """
 import json
 
 from udj.models import Participant, PlayerPassword, ActivePlaylistEntry, PlaylistEntryTimePlayed
-from udj.headers import FORBIDDEN_REASON_HEADER, MISSING_RESOURCE_HEADER
-from udj.views.views06.decorators import PlayerExists, PlayerIsActive, AcceptsMethods, UpdatePlayerActivity, HasNZParams
-from udj.views.views06.authdecorators import NeedsAuth, IsOwnerOrParticipates, IsOwnerOrParticipatingAdmin, IsntOwner
-from udj.views.views06.auth import getUserForTicket, hashPlayerPassword
 from udj.views.views06.JSONCodecs import UDJEncoder
 from udj.views.views06.helpers import HttpJSONResponse
 
@@ -16,8 +21,6 @@ from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFoun
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 
-from datetime import datetime
-from importlib import import_module
 
 """
 
@@ -33,7 +36,12 @@ def modPlayerParticiapants(request, player_id, player):
     return logoutOfPlayer(request, player_id, player)
 
 @PlayerIsActive
+@HasPlayerPermissions(['PWP'], 2)
 def participateWithPlayer(request, player_id, player):
+  """
+  This code is terrible. It's just ugly. But I can't see a better way to do it.
+  My sincerest apologies.
+  """
 
   def onSuccessfulPlayerAuth(activePlayer, user):
     #very important to check if they're banned or player is full first.
@@ -91,12 +99,10 @@ def logoutOfPlayer(request, player_id, player):
     toLogOut = Participant.objects.get(player=player, user=user)
     toLogOut.logout_flag = True
     toLogOut.save()
+    return HttpResponse()
   except ObjectDoesNotExist:
-    toReturn = HttpResponseNotFound()
-    toReturn[MISSING_RESOURCE_HEADER] = 'user'
-    return toReturn
+    return HttpResponseMissingResource('user')
 
-  return HttpResponse()
 
 
 @AcceptsMethods(['GET'])
@@ -188,6 +194,7 @@ def getRandomSongsForPlayer(request, player_id, player):
   randomSongs = player.Randoms[:rand_limit]
   return HttpJSONResponse(json.dumps(randomSongs, cls=UDJEncoder))
 
+"""
 @csrf_exempt
 @AcceptsMethods(['POST', 'DELETE'])
 @NeedsAuth
@@ -248,5 +255,4 @@ def removeCurrentSong(request, player):
     return toReturn
   return HttpResponse()
 
-
-
+"""

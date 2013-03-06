@@ -338,7 +338,7 @@ class Player(models.Model):
     defined_permissions = PlayerPermission.objects.filter(player=self, permission=permission)
 
     if not defined_permissions.exists():
-      return self.ActiveParticipants.filter(user=user).exists() or user == self.owning_user
+      return True
     else:
       allowed_group_ids = defined_permissions.values_list('group__id', flat=True)
       allowed_user_ids = PlayerPermissionGroupMember.objects.filter(permission_group__id__in=allowed_group_ids).values_list('user__id', flat=True)
@@ -602,6 +602,7 @@ class PlayerPermissionGroupMember(models.Model):
 
 class PlayerPermission(models.Model):
   PERMISSION_CHOICES = (
+    (u'PWP', u'participate_with_player'),
     (u'CSS', u'create_song_set'),
     (u'MOS', u'modify_others_song_set'),
     (u'SPT', u'set_player_state'),

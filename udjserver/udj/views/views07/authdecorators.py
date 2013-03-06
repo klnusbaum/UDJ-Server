@@ -22,12 +22,12 @@ def isValidTicket(provided_hash):
     return False
   return True
 
-def HasPlayerPermissions(required_permissions):
+def HasPlayerPermissions(required_permissions, player_arg_position=1):
   def decorator(target):
     def wrapper(*args, **kwargs):
       request = args[0]
       try:
-        player = args[1]
+        player = args[player_arg_position]
       except IndexError:
         player = kwargs['player']
       user = getUserForTicket(request)
@@ -38,9 +38,6 @@ def HasPlayerPermissions(required_permissions):
     return wrapper
   return decorator
 
-
-
-"""
 def IsntOwner(function):
   def wrapper(*args, **kwargs):
     request = args[0]
@@ -51,6 +48,7 @@ def IsntOwner(function):
     else:
       return function(*args, **kwargs)
   return wrapper
+
 
 def IsOwnerOrParticipates(function):
   def wrapper(*args, **kwargs):
@@ -69,6 +67,7 @@ def IsOwnerOrParticipates(function):
       return toReturn
   return wrapper
 
+"""
 def IsOwner(function):
   def wrapper(*args, **kwargs):
     request = args[0]
