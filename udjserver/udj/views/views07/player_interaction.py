@@ -3,6 +3,8 @@ from udj.models import hashPlayerPassword, PlayerPassword, Participant
 from udj.headers import FORBIDDEN_REASON_HEADER
 from udj.views.views07.authdecorators import NeedsAuth, IsntOwner, HasPlayerPermissions, IsOwnerOrParticipates
 from udj.views.views07.decorators import PlayerExists, PlayerIsActive, AcceptsMethods, UpdatePlayerActivity, HasNZParams
+from udj.views.views07.responses import HttpJSONResponse, HttpResponseMissingResource
+from udj.views.views07.JSONCodecs import UDJEncoder
 
 
 
@@ -12,9 +14,6 @@ from datetime import datetime
 """
 import json
 
-from udj.models import Participant, PlayerPassword, ActivePlaylistEntry, PlaylistEntryTimePlayed
-from udj.views.views06.JSONCodecs import UDJEncoder
-from udj.views.views06.helpers import HttpJSONResponse
 
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound, HttpResponseBadRequest
 from django.core.exceptions import ObjectDoesNotExist
@@ -101,8 +100,6 @@ def logoutOfPlayer(request, player_id, player):
     return HttpResponse()
   except ObjectDoesNotExist:
     return HttpResponseMissingResource('user')
-
-
 
 @AcceptsMethods(['GET'])
 @NeedsAuth

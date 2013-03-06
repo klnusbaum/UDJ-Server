@@ -2,7 +2,7 @@ import json
 import udj
 from udj.models import Participant, SongSet, SongSetEntry, LibraryEntry, Player, PlayerPermissionGroup, PlayerPermission
 from datetime import datetime
-from udj.testhelpers.tests07.testclasses import ZachTestCase
+from udj.testhelpers.tests07.testclasses import ZachTestCase, LeeTestCase, MattTestCase
 """
 , MattTestCase, JeffTestCase, LeeTestCase, KurtisTestCase
 """
@@ -54,14 +54,12 @@ class BeginParticipateTests(ZachTestCase):
     zach = Participant.objects.get(player__id=6, user__id=8)
     self.assertEqual(zach.kick_flag, False)
 
-"""
 class LoginAfterLogout(LeeTestCase):
   def testLogin(self):
     response = self.doPut('/players/1/users/user')
     self.assertEqual(response.status_code, 201)
     lee = Participant.objects.get(user__id=11, player__id=1)
     self.assertEqual(False, lee.logout_flag)
-
 
 class GetUsersTests(MattTestCase):
   def setUp(self):
@@ -94,6 +92,9 @@ class GetUsersTests(MattTestCase):
     expectedIds = ['9', '10']
     for user in users:
       self.assertTrue(user['id'] in expectedIds)
+
+
+"""
 
 class GetAdminsTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
 

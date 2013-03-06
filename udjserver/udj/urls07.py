@@ -53,11 +53,10 @@ urlpatterns += patterns('udj.views.views07.player_administration',
 
 urlpatterns += patterns('udj.views.views07.player_interaction',
   (r'^players/(?P<player_id>\d+)/users/user$', 'modPlayerParticiapants'),
+(r'^players/(?P<player_id>\d+)/users$', 'getUsersForPlayer'),
 )
 
 """
-(r'^players/(?P<player_id>\d+)/users$', 'getUsersForPlayer'),
-(r'^players/(?P<player_id>\d+)/admins$', 'getAdminsForPlayer'),
 (r'^players/(?P<player_id>\d+)/song_sets$', 'getSongSetsForPlayer'),
 (r'^players/(?P<player_id>\d+)/available_music$', 'getAvailableMusic'),
 (r'^players/(?P<player_id>\d+)/available_music/artists$', 'getArtists'),

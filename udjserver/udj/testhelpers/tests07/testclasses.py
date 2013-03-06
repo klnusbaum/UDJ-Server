@@ -477,9 +477,6 @@ class ZachTestCase(DoesServerOpsTestCase):
   username = "zach"
   userpass = "testzach"
 
-
-"""
-
 class AlejandroTestCase(DoesServerOpsTestCase):
   username = "alejandro"
   userpass = "testalejandro"
@@ -495,6 +492,8 @@ class LeeTestCase(DoesServerOpsTestCase):
 class MattTestCase(DoesServerOpsTestCase):
   username = "matt"
   userpass = "testmatt"
+
+"""
 
 class EnsureActiveJeffTest(JeffTestCase):
   def setUp(self):

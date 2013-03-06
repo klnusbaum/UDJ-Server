@@ -3,6 +3,7 @@ from udj.headers import MISSING_RESOURCE_HEADER
 from udj.headers import MISSING_REASON_HEADER
 from udj.models import Player
 from udj.models import Library
+from udj.models import Participant
 from udj.views.views07.responses import HttpResponseMissingResource
 """
 from udj.models import Participant
