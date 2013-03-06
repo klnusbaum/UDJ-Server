@@ -12,7 +12,6 @@ from udj.exceptions import LocationNotFoundError
 from udj.views.views07.decorators import AcceptsMethods
 from udj.views.views07.decorators import NeedsJSON
 from udj.views.views07.authdecorators import NeedsAuth
-from udj.views.views07.auth import getUserForTicket
 from udj.views.views07.responses import HttpJSONResponse, HttpResponseMissingResource
 from udj.views.views07.JSONCodecs import UDJEncoder
 
@@ -43,7 +42,7 @@ def isValidLocation(location):
 @NeedsJSON
 @transaction.commit_on_success
 def createPlayer(request):
-  user = getUserForTicket(request)
+  user = request.udjuser
   try:
     newPlayerJSON = json.loads(request.raw_post_data)
   except ValueError:

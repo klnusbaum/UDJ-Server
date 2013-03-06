@@ -4,7 +4,6 @@ from udj.headers import TICKET_HEADER
 
 from django.http import HttpRequest
 from django.core.exceptions import ObjectDoesNotExist
-from udj.views.views07.auth import getUserForTicket
 from udj.views.views07.responses import HttpResponseForbiddenWithReason
 
 
@@ -15,13 +14,6 @@ from django.http import HttpResponseBadRequest
 """
 
 
-def isValidTicket(provided_hash):
-  try:
-    matchingTicket = Ticket.objects.get(ticket_hash=provided_hash)
-  except ObjectDoesNotExist:
-    return False
-  return True
-
 def HasPlayerPermissions(required_permissions):
   def decorator(target):
     def wrapper(*args, **kwargs):
@@ -30,9 +22,8 @@ def HasPlayerPermissions(required_permissions):
         player = args[1]
       except IndexError:
         player = kwargs['player']
-      user = getUserForTicket(request)
       for perm in required_permissions:
-        if not player.user_has_permission(perm, user):
+        if not player.user_has_permission(perm, request.udjuser):
           return HttpResponseForbiddenWithReason('player-permission')
       return target(*args, **kwargs)
     return wrapper
@@ -90,13 +81,16 @@ def NeedsAuth(function):
       toReturn = HttpResponse(responseString, status=401)
       toReturn['WWW-Authenticate'] = 'ticket-hash'
       return toReturn
-    elif not isValidTicket(request.META[DJANGO_TICKET_HEADER]):
+
+    try:
+      validticket = Ticket.objects.get(ticket_hash=request.META[DJANGO_TICKET_HEADER])
+      args[0].udjuser = validticket.user
+      return function(*args, **kwargs)
+    except ObjectDoesNotExist:
       toReturn = HttpResponse("Invalid ticket: \"" + 
         request.META[DJANGO_TICKET_HEADER] + "\"", status=401)
       toReturn['WWW-Authenticate'] = 'ticket-hash'
       return toReturn
-    else:
-      return function(*args, **kwargs)
   return wrapper
 
 """

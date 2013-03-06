@@ -14,11 +14,6 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 
-def getUserForTicket(request):
-  return Ticket.objects.get(
-    ticket_hash=request.META[DJANGO_TICKET_HEADER]).user
-
-
 def generateRandomHash():
   rand_hash = random.getrandbits(128)
   toReturn = "%032x" % rand_hash
