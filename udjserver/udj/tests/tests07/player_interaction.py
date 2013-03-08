@@ -94,9 +94,8 @@ class GetUsersTests(MattTestCase):
       self.assertTrue(user['id'] in expectedIds)
 
 
-"""
 
-class GetAvailableMusicTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
+class GetAvailableMusicTests(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest):
 
   @EnsureParticipationUpdated(3,1)
   def testGetBasicMusic(self):
@@ -128,6 +127,7 @@ class GetAvailableMusicTests(udj.testhelpers.tests06.testclasses.EnsureActiveJef
     for song in songResults:
       self.assertTrue(song['id'] in expectedLibIds)
 
+"""
 class GetArtistsTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
 
   @EnsureParticipationUpdated(3,1)

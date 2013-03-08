@@ -3,14 +3,15 @@ from django.test import TransactionTestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
 from udj.models import Ticket
+from udj.models import Participant
 from udj.headers import DJANGO_TICKET_HEADER
+from datetime import datetime
 """
 from udj.views.views07.auth import hashPlayerPassword
 from udj.headers import DJANGO_TICKET_HEADER, MISSING_RESOURCE_HEADER
 from udj.models import Player, PlayerPassword, PlayerLocation, PlayerAdmin, ActivePlaylistEntry, PlaylistEntryTimePlayed
 from udj.models import Ticket, Participant, ActivePlaylistEntry, LibraryEntry
 
-from datetime import datetime
 from datetime import timedelta
 """
 
@@ -493,7 +494,6 @@ class MattTestCase(DoesServerOpsTestCase):
   username = "matt"
   userpass = "testmatt"
 
-"""
 
 class EnsureActiveJeffTest(JeffTestCase):
   def setUp(self):
@@ -502,4 +502,3 @@ class EnsureActiveJeffTest(JeffTestCase):
     jeff.time_last_interaction = datetime.now()
     jeff.save()
 
-"""

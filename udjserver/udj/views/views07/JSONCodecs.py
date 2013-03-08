@@ -3,22 +3,18 @@ from udj.models import SortingAlgorithm
 from udj.models import Player
 from udj.models import PlayerLocation
 from udj.models import PlayerPassword
+from udj.models import SongSet
+from udj.models import SongSetEntry
+from udj.models import ActivePlaylistEntry
+from udj.models import PlaylistEntryTimePlayed
 from udj.models import Library
 from udj.models import Participant
 from udj.models import PlayerPermissionGroup
+from udj.models import Favorite
+from udj.models import LibraryEntry
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
-"""
-from udj.models import SongSet
-from udj.models import SongSetEntry
-from udj.models import PlaylistEntryTimePlayed
-from udj.models import Participant
-from udj.models import LibraryEntry
-from udj.models import ActivePlaylistEntry
-from udj.models import PlaylistEntryTimePlayed
-from udj.models import Favorite
-
-"""
 from django.db.models.query import QuerySet
 
 class UDJEncoder(json.JSONEncoder):
@@ -111,9 +107,6 @@ class UDJEncoder(json.JSONEncoder):
     elif isinstance(obj, PlaylistEntryTimePlayed):
       return obj.playlist_entry
 
-    else:
-      return json.JSONEncoder.default(self, obj)
-    """
     elif isinstance(obj, Favorite):
       return obj.favorite_song
 
@@ -127,8 +120,9 @@ class UDJEncoder(json.JSONEncoder):
           'genre' : obj.genre,
           'duration' : obj.duration
       }
+    else:
+      return json.JSONEncoder.default(self, obj)
 
 
-    """
 
 
