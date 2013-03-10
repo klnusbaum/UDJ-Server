@@ -2667,7 +2667,7 @@
       "groups": [], 
       "user_permissions": [], 
       "password": "sha1$f9735$4ecc50c6d8d49b7da721ca59f09038b25f6faf55", 
-      "email": "", 
+      "email": "lucas@lucas.com", 
       "date_joined": "2012-04-14 23:57:08"
     }
   }, 
@@ -2703,7 +2703,7 @@
       "groups": [], 
       "user_permissions": [], 
       "password": "sha1$ba6e8$1a1a9583d77c053b7de164ac418b853d52620d49", 
-      "email": "", 
+      "email": "yunyoung@yy.com", 
       "date_joined": "2012-04-14 23:57:48"
     }
   },

@@ -45,17 +45,19 @@ def userMod(request, json_params):
 
 @NeedsAuth
 @transaction.commit_on_success
-def modifyUser(request, username, email, first_name, last_name):
-  if request.user.email != email and User.objects.filter(email=email).exists():
+def modifyUser(request, username, email, password, first_name, last_name):
+  user = request.udjuser
+  if user.email != email and User.objects.filter(email=email).exists():
     return HttpResponseConflictingResource('email')
 
-  if username != request.user.username:
-    return HttpResponseNotAcceptable("username")
+  if username != user.username:
+    return HttpResponseNotAcceptable('username')
 
-  request.user.email = json_param['email']
-  request.user.first_name = json_param['first_name']
-  request.user.last_name = json_param['last_name']
-  request.user.set_password(password)
+  user.email = email
+  user.first_name = first_name
+  user.last_name = last_name
+  user.save()
+  user.set_password(password)
   return HttpResponse()
 
 @transaction.commit_on_success

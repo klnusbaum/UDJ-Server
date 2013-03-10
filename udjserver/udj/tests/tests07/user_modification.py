@@ -1,6 +1,7 @@
 import json
 
 from udj.headers import CONFLICT_RESOURCE_HEADER, NOT_ACCEPTABLE_REASON_HEADER
+from udj.testhelpers.tests07.testclasses import YunYoungTestCase
 
 from django.test import TestCase
 from django.test.client import Client
@@ -107,6 +108,107 @@ class CreateUserTests(TestCase):
     response = self.client.put('/udj/0_7/user', data=json.dumps(tocreate), content_type="text/json")
     self.assertEqual(406, response.status_code)
     self.assertEqual('email', response[NOT_ACCEPTABLE_REASON_HEADER])
+
+
+class ModifyUserTests(YunYoungTestCase):
+  def testChangeName(self):
+    payload = {
+        'username' : 'yunyoung',
+        'password' : 'testyunyoung',
+        'email' : 'yunyoung@yy.com',
+        'first_name' : 'youyoung',
+        'last_name' : 'differnt'
+      }
+    response = self.doJSONPost('/user', payload)
+    self.assertEqual(200, response.status_code)
+
+    user = User.objects.get(username='yunyoung')
+    self.assertEqual(user.first_name, payload['first_name'])
+    self.assertEqual(user.last_name, payload['last_name'])
+
+  def testEmailChange(self):
+    payload = {
+        'username' : 'yunyoung',
+        'password' : 'testyunyoung',
+        'email' : 'yunyoung1@yy.com',
+        'first_name' : '',
+        'last_name' : ''
+      }
+    response = self.doJSONPost('/user', payload)
+    self.assertEqual(200, response.status_code)
+
+    user = User.objects.get(username='yunyoung')
+    self.assertEqual(user.email, payload['email'])
+
+
+  def testBadUsernameChange(self):
+    payload = {
+        'username' : 'yunyoung1',
+        'password' : 'testyunyoung',
+        'email' : 'yunyoung@yy.com',
+        'first_name' : 'steve',
+        'last_name' : ''
+      }
+    response = self.doJSONPost('/user', payload)
+    self.assertEqual(406, response.status_code)
+    self.assertEqual('username', response[NOT_ACCEPTABLE_REASON_HEADER])
+
+
+    user = User.objects.get(username='yunyoung')
+    self.assertEqual('', user.first_name)
+
+  def testBadEmailChange(self):
+    payload = {
+        'username' : 'yunyoung',
+        'password' : 'testyunyoung',
+        'email' : 'yunyoung',
+        'first_name' : 'steve',
+        'last_name' : ''
+      }
+    response = self.doJSONPost('/user', payload)
+    self.assertEqual(406, response.status_code)
+    self.assertEqual('email', response[NOT_ACCEPTABLE_REASON_HEADER])
+
+
+    user = User.objects.get(username='yunyoung')
+    self.assertEqual('', user.first_name)
+    self.assertEqual('yunyoung@yy.com', user.email)
+
+  def testDuplicateEmailChange(self):
+    payload = {
+        'username' : 'yunyoung',
+        'password' : 'testyunyoung',
+        'email' : 'lucas@lucas.com',
+        'first_name' : 'steve',
+        'last_name' : ''
+      }
+    response = self.doJSONPost('/user', payload)
+    self.assertEqual(409, response.status_code)
+    self.assertEqual('email', response[CONFLICT_RESOURCE_HEADER])
+
+
+    user = User.objects.get(username='yunyoung')
+    self.assertEqual('', user.first_name)
+    self.assertEqual('yunyoung@yy.com', user.email)
+
+
+  def testBadPasswordChange(self):
+    payload = {
+        'username' : 'yunyoung',
+        'password' : 'short',
+        'email' : 'yunyoung@yy.com',
+        'first_name' : 'steve',
+        'last_name' : ''
+      }
+    response = self.doJSONPost('/user', payload)
+    self.assertEqual(406, response.status_code)
+    self.assertEqual('password', response[NOT_ACCEPTABLE_REASON_HEADER])
+
+
+    user = User.objects.get(username='yunyoung')
+    self.assertEqual('', user.first_name)
+    self.assertTrue(check_password('testyunyoung', user.password))
+
 
 
 

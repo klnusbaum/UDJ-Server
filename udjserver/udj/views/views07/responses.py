@@ -3,7 +3,7 @@ from udj.headers import MISSING_RESOURCE_HEADER, FORBIDDEN_REASON_HEADER, CONFLI
 
 class HttpJSONResponse(HttpResponse):
 
-  def __init__(self, content):
+  def __init__(self, content, status=200):
     super(HttpJSONResponse, self).__init__(content,
                                            status=status,
                                            content_type="text/json; charset=utf-8")
