@@ -1,9 +1,9 @@
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden
-from udj.headers import MISSING_RESOURCE_HEADER, FORBIDDEN_REASON_HEADER
+from udj.headers import MISSING_RESOURCE_HEADER, FORBIDDEN_REASON_HEADER, CONFLICT_RESOURCE_HEADER
 
 class HttpJSONResponse(HttpResponse):
 
-  def __init__(self, content, status=200):
+  def __init__(self, content):
     super(HttpJSONResponse, self).__init__(content,
                                            status=status,
                                            content_type="text/json; charset=utf-8")
@@ -13,6 +13,12 @@ class HttpResponseMissingResource(HttpResponseNotFound):
   def __init__(self, missing_resource):
     super(HttpResponseMissingResource, self).__init__()
     self[MISSING_RESOURCE_HEADER] = missing_resource
+
+class HttpResponseConflictingResource(HttpResponse):
+
+  def __init__(self, resource):
+    super(HttpResponseConflictingResource, self).__init__(status=409)
+    self[CONFLICT_RESOURCE_HEADER] = resource
 
 class HttpResponseForbiddenWithReason(HttpResponseForbidden):
 

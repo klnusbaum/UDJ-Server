@@ -4,7 +4,8 @@ import re
 from udj.views.views07.decorators import NeedsJSON
 from udj.views.views07.decorators import AcceptsMethods
 from udj.views.views07.decorators import HasNZJSONParams
-from udj.headers import CONFLICT_RESOURCE_HEADER
+from udj.views.views07.authdecorators import NeedsAuth
+from udj.views.views07.responses import HttpResponseConflictingResource
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpRequest
@@ -27,11 +28,6 @@ def userMod(request, json_params):
   first_name = json_params.get('first_name', '')
   last_name = json_params.get('last_name', '')
 
-  if User.objects.filter(email=email).exists():
-    toReturn = HttpResponse(status=409)
-    toReturn[CONFLICT_RESOURCE_HEADER] = 'email'
-    return toReturn
-
   if len(password) < 8:
     return HttpResponse("Invalid password", status=406)
 
@@ -46,8 +42,12 @@ def userMod(request, json_params):
   else:
     return modifyUser(request, username, email, password, first_name, last_name)
 
+@NeedsAuth
 @transaction.commit_on_success
 def modifyUser(request, username, email, first_name, last_name):
+  if request.user.email != email and User.objects.filter(email=email).exists():
+    return HttpResponseConflictingResource('email')
+
   if username != request.user.username:
     return HttpResponse("Can't change username", status=406)
 
@@ -61,9 +61,10 @@ def modifyUser(request, username, email, first_name, last_name):
 def createUser(request, username, email, password, first_name, last_name):
 
   if User.objects.filter(username=username).exists():
-    toReturn = HttpResponse(status=409)
-    toReturn[CONFLICT_RESOURCE_HEADER] = 'username'
-    return toReturn
+    return HttpResponseConflictingResource('username')
+
+  if User.objects.filter(email=email).exists():
+    return HttpResponseConflictingResource('email')
 
   if not re.compile(r'^[\w.@+-]+$').match(username):
     return HttpResponse("Invalid username", status=406)
