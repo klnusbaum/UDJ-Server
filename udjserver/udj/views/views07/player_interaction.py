@@ -2,7 +2,7 @@ import json
 from udj.models import hashPlayerPassword, PlayerPassword, Participant
 from udj.headers import FORBIDDEN_REASON_HEADER
 from udj.views.views07.authdecorators import NeedsAuth, IsntOwner, HasPlayerPermissions, IsOwnerOrParticipates
-from udj.views.views07.decorators import PlayerExists, PlayerIsActive, AcceptsMethods, UpdatePlayerActivity, HasNZParams
+from udj.views.views07.decorators import PlayerExists, PlayerIsActive, AcceptsMethods, UpdatePlayerActivity, HasNZJSONParams, NeedsJSON, HasNZParams
 from udj.views.views07.responses import HttpJSONResponse, HttpResponseMissingResource
 from udj.views.views07.JSONCodecs import UDJEncoder
 

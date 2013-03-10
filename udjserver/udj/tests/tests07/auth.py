@@ -11,7 +11,8 @@ class AuthTests(TestCase):
 
   def issueTicketRequest(self, username='kurtis', password='testkurtis'):
     return self.client.post(
-        '/udj/0_6/auth', {'username': username, 'password' : password})
+        '/udj/0_7/auth', json.dumps({'username': username, 'password' : password}),
+        content_type="text/json")
 
   def getCurrentKurtisTicket(self):
     return Ticket.objects.get(user__username='kurtis')

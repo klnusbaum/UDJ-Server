@@ -4,7 +4,8 @@ import random
 from udj.models import Ticket
 from udj.headers import DJANGO_TICKET_HEADER
 from udj.views.views07.decorators import AcceptsMethods
-from udj.views.views07.decorators import HasNZParams
+from udj.views.views07.decorators import HasNZJSONParams
+from udj.views.views07.decorators import NeedsJSON
 from udj.views.views07.responses import HttpJSONResponse
 
 from django.contrib.auth.models import User
@@ -35,12 +36,13 @@ def obtainTicketForUser(userRequestingTicket):
 
 @csrf_exempt
 @AcceptsMethods(['POST'])
-@HasNZParams(['username', 'password'])
-def authenticate(request):
+@NeedsJSON
+@HasNZJSONParams(['username', 'password'])
+def authenticate(request, json_params):
 
   try:
-    userToAuth = User.objects.get(username=request.POST['username'])
-    if userToAuth.check_password(request.POST['password']):
+    userToAuth = User.objects.get(username=json_params['username'])
+    if userToAuth.check_password(json_params['password']):
       ticket = obtainTicketForUser(userToAuth)
       ticket_and_id = {"ticket_hash" : ticket.ticket_hash, "user_id" : str(userToAuth.id)}
       response = HttpJSONResponse(json.dumps(ticket_and_id))

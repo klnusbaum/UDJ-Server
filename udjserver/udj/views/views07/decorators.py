@@ -1,3 +1,5 @@
+import json
+
 from udj.headers import DJANGO_TICKET_HEADER
 from udj.headers import MISSING_RESOURCE_HEADER
 from udj.headers import MISSING_REASON_HEADER
@@ -28,13 +30,29 @@ def AcceptsMethods(acceptedMethods):
     return wrapper
   return decorator
 
+def HasNZJSONParams(necessaryParams):
+  def decorator(target):
+    def wrapper(*args, **kwargs):
+      request = args[0]
+      try:
+        received_params = json.loads(request.raw_post_data)
+        for param in necessaryParams:
+          if not param in received_params:
+            return HttpResponseBadRequest("Must include non-blank " + param + " parameter")
+      except ValueError:
+        return HttpResponseBadRequest('Bad JSON')
+      kwargs['json_params'] = received_params
+      return target(*args, **kwargs)
+    return wrapper
+  return decorator
+
 
 def HasNZParams(necessaryParams):
   def decorator(target):
     def wrapper(*args, **kwargs):
       request = args[0]
       for param in necessaryParams:
-        if not (param in request.REQUEST) or request.REQUEST[param] == "":
+        if not (param in request.GET) or request.GET[param] == "":
           return HttpResponseBadRequest("Must include non-blank " + param + " parameter")
       return target(*args, **kwargs)
     return wrapper

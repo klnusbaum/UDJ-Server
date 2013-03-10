@@ -11,6 +11,7 @@ from udj.models import PlayerLocation
 from udj.exceptions import LocationNotFoundError
 from udj.views.views07.decorators import AcceptsMethods
 from udj.views.views07.decorators import NeedsJSON
+from udj.views.views07.decorators import HasNZJSONParams
 from udj.views.views07.authdecorators import NeedsAuth
 from udj.views.views07.responses import HttpJSONResponse, HttpResponseMissingResource
 from udj.views.views07.JSONCodecs import UDJEncoder
@@ -40,25 +41,17 @@ def isValidLocation(location):
 @NeedsAuth
 @AcceptsMethods(['PUT'])
 @NeedsJSON
+@HasNZJSONParams(['name'])
 @transaction.commit_on_success
-def createPlayer(request):
+def createPlayer(request, json_params):
   user = request.udjuser
-  try:
-    newPlayerJSON = json.loads(request.raw_post_data)
-  except ValueError:
-    return HttpResponseBadRequest('Bad JSON')
-
-  #Ensure the name attribute was provided with the JSON
-  try:
-    newPlayerName = newPlayerJSON['name']
-  except KeyError:
-    return HttpResponseBadRequest('No name given')
+  newPlayerName = json_params['name']
 
 
   #Determine which sorting algorithm to use
-  if 'sorting_algorithm_id' in newPlayerJSON:
+  if 'sorting_algorithm_id' in json_params:
     try:
-      sortingAlgo = SortingAlgorithm.objects.get(pk=newPlayerJSON['sorting_algorithm_id'])
+      sortingAlgo = SortingAlgorithm.objects.get(pk=json_params['sorting_algorithm_id'])
     except ObjectDoesNotExist:
       return HttpResponseMissingResource('sorting-algorithm')
   else:
@@ -68,11 +61,10 @@ def createPlayer(request):
       raise ImproperlyConfigured('Default sorting algorithm is not in database')
 
   #If locaiton provided, attempted to geocode it.
-  if 'location' in newPlayerJSON:
-    location = newPlayerJSON['location']
+  if 'location' in json_params:
+    location = json_params['location']
     if isValidLocation(location):
       try:
-        #setPlayerLocation(location, newPlayer)
         address = location.get('address', "")
         locality = location.get('locality', "")
         region = location.get('region', "")
@@ -95,11 +87,11 @@ def createPlayer(request):
     return HttpResponse('A player with that name already exists', status=409)
 
   #If password provided, create and save password
-  if 'password' in newPlayerJSON:
-    newPlayer.setPassword(newPlayerJSON['password'])
+  if 'password' in json_params:
+    newPlayer.setPassword(json_params['password'])
 
   #Set location if provided
-  if 'location' in newPlayerJSON:
+  if 'location' in json_params:
     playerLocation = PlayerLocation(player=newPlayer,
                                     point=Point(lon, lat),
                                     address=address,

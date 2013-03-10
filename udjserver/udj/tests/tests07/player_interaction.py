@@ -16,14 +16,12 @@ class BeginParticipateTests(ZachTestCase):
     newParticipant = Participant.objects.get(user__id=8, player__id=5)
 
   def testPasswordPlayerMethod(self):
-    response = self.doJSONPut('/players/3/users/user',
-        json.dumps({'password' : 'alejandro'}))
+    response = self.doJSONPut('/players/3/users/user', {'password' : 'alejandro'})
     self.assertEqual(response.status_code, 201)
     newParticipant = Participant.objects.get(user__id=8, player__id=3)
 
   def testBadPassword(self):
-    response = self.doJSONPut('/players/3/users/user',
-        json.dumps({'password' : 'wrong'}))
+    response = self.doJSONPut('/players/3/users/user', {'password' : 'wrong'})
     self.assertEqual(response.status_code, 401)
     self.assertEqual(response['WWW-Authenticate'], 'player-password')
 

@@ -3,6 +3,7 @@ import re
 
 from udj.views.views07.decorators import NeedsJSON
 from udj.views.views07.decorators import AcceptsMethods
+from udj.views.views07.decorators import HasNZJSONParams
 from udj.headers import CONFLICT_RESOURCE_HEADER
 
 from django.views.decorators.csrf import csrf_exempt
@@ -15,16 +16,11 @@ from django.contrib.auth.models import User
 
 @NeedsJSON
 @AcceptsMethods(['PUT'])
-def createUser(request):
-  try:
-    desiredUser = json.loads(request.raw_post_data)
-    username = desiredUser['username']
-    email = desiredUser['email']
-    password = desiredUser['password']
-  except ValueError:
-    return HttpResponseBadRequest("Malformed JSON")
-  except KeyError:
-    return HttpResponseBadRequest("Malformed JSON")
+@HasNZJSONParams(['username', 'email', 'password'])
+def createUser(request, json_params):
+  username = json_params['username']
+  email = json_params['email']
+  password = json_params['password']
 
   if User.objects.filter(email=email).exists():
     toReturn = HttpResponse(status=409)

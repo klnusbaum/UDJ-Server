@@ -68,14 +68,14 @@ class DefaultOwnerAdminTests(KurtisTestCase):
 
   def testSetPassword(self):
     newPassword = 'nudepassword'
-    response = self.doPost('/players/1/password', {'password': newPassword})
+    response = self.doJSONPost('/players/1/password', {'password': newPassword})
     self.assertEqual(response.status_code, 200)
     playerPassword = PlayerPassword.objects.get(player__id=1)
     self.assertEqual(playerPassword.password_hash, hashPlayerPassword(newPassword))
 
   def testRemovePassword(self):
     newPassword = 'nudepassword'
-    response = self.doPost('/players/1/password', {'password': newPassword})
+    response = self.doJSONPost('/players/1/password', {'password': newPassword})
     self.assertTrue(Player.objects.get(pk=1).HasPassword)
     response = self.doDelete('/players/1/password')
     self.assertFalse(Player.objects.get(pk=1).HasPassword)
@@ -90,7 +90,7 @@ class DefaultOwnerAdminTests(KurtisTestCase):
       'country' : 'U.S.'
     }
 
-    response = self.doPost('/players/1/location', newLocation)
+    response = self.doJSONPost('/players/1/location', newLocation)
     self.assertEqual(response.status_code, 200)
     playerLocation = PlayerLocation.objects.get(player__id=1)
     self.assertEqual(newLocation['address'], playerLocation.address)
@@ -112,7 +112,7 @@ class DefaultOwnerAdminTests(KurtisTestCase):
       'country' : 'U.S.'
     }
 
-    response = self.doPost('/players/1/location', newLocation)
+    response = self.doJSONPost('/players/1/location', newLocation)
     self.assertEqual(200, response.status_code)
     playerLocation = PlayerLocation.objects.get(player__id=1)
     self.assertEqual(newLocation['address'], playerLocation.address)
@@ -128,7 +128,7 @@ class DefaultOwnerAdminTests(KurtisTestCase):
     algorithmParams = {
       'sorting_algorithm_id' : '2'
     }
-    response = self.doPost('/players/1/sorting_algorithm', algorithmParams)
+    response = self.doJSONPost('/players/1/sorting_algorithm', algorithmParams)
     self.assertEqual(200, response.status_code, response.content)
     player = Player.objects.get(pk=1)
     self.assertEqual(2, player.sorting_algo.id)
@@ -137,29 +137,29 @@ class DefaultOwnerAdminTests(KurtisTestCase):
     player = Player.objects.get(pk=1)
     player.state = u'PA'
     player.save()
-    response = self.doPost('/players/1/state', {'state' :'playing'})
+    response = self.doJSONPost('/players/1/state', {'state' :'playing'})
     self.assertEqual(200, response.status_code)
     self.assertEqual(u'PL', Player.objects.get(pk=1).state)
 
   def testPausePlayer(self):
-    response = self.doPost('/players/1/state', {'state' :'paused'})
+    response = self.doJSONPost('/players/1/state', {'state' :'paused'})
     self.assertEqual(200, response.status_code)
     self.assertEqual(u'PA', Player.objects.get(pk=1).state)
 
   def testSetPlayerInactive(self):
-    response = self.doPost('/players/1/state', {'state' :'inactive'})
+    response = self.doJSONPost('/players/1/state', {'state' :'inactive'})
     self.assertEqual(200, response.status_code)
     self.assertEqual(u'IN', Player.objects.get(pk=1).state)
 
   def testBadPlayerStateSet(self):
-    response = self.doPost('/players/1/state', {'state' :'bad'})
+    response = self.doJSONPost('/players/1/state', {'state' :'bad'})
     self.assertEqual(400, response.status_code)
     self.assertEqual(u'PL', Player.objects.get(pk=1).state)
 
   def testSetVolume(self):
     player = Player.objects.get(pk=1)
     self.assertEqual(player.volume, 5)
-    response = self.doPost('/players/1/volume', {'volume' : 2})
+    response = self.doJSONPost('/players/1/volume', {'volume' : 2})
     self.assertEqual(response.status_code, 200)
     player = Player.objects.get(pk=1)
     self.assertEqual(player.volume, 2)
@@ -167,7 +167,7 @@ class DefaultOwnerAdminTests(KurtisTestCase):
   def testBadVolumeSet(self):
     player = Player.objects.get(pk=1)
     self.assertEqual(player.volume, 5)
-    response = self.doPost('/players/1/volume', {'volume' : 11})
+    response = self.doJSONPost('/players/1/volume', {'volume' : 11})
     self.assertEqual(response.status_code, 400)
     player = Player.objects.get(pk=1)
     self.assertEqual(player.volume, 5)

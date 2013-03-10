@@ -18,7 +18,7 @@ class CreatePlayerTests(YunYoungTestCase):
   def testCreatePlayer(self):
     playerName = "Yunyoung Player"
     payload = {'name' : playerName } 
-    response = self.doJSONPut('/players/player', json.dumps(payload))
+    response = self.doJSONPut('/players/player', payload)
     self.assertEqual(response.status_code, 201, "Error: " + response.content)
     self.isJSONResponse(response)
     givenPlayerId = json.loads(response.content)['id']
@@ -36,7 +36,7 @@ class CreatePlayerTests(YunYoungTestCase):
     password = 'playerpassword'
     passwordHash = hashPlayerPassword(password)
     payload = {'name' : playerName, 'password' : password}
-    response = self.doJSONPut('/players/player', json.dumps(payload))
+    response = self.doJSONPut('/players/player', payload)
     self.assertEqual(response.status_code, 201, "Error: " + response.content)
     self.isJSONResponse(response)
     givenPlayerId = json.loads(response.content)['id']
@@ -61,7 +61,7 @@ class CreatePlayerTests(YunYoungTestCase):
     }
     payload['location'] = location
 
-    response = self.doJSONPut('/players/player', json.dumps(payload))
+    response = self.doJSONPut('/players/player', payload)
     self.assertEqual(response.status_code, 201, "Error: " + response.content)
     self.isJSONResponse(response)
     givenPlayerId = json.loads(response.content)['id']
@@ -92,7 +92,7 @@ class CreatePlayerTests(YunYoungTestCase):
     }
     payload['location'] = location
 
-    response = self.doJSONPut('/players/player', json.dumps(payload))
+    response = self.doJSONPut('/players/player', payload)
     self.assertEqual(response.status_code, 201, "Error: " + response.content)
 
   def testBareLocation(self):
@@ -104,7 +104,7 @@ class CreatePlayerTests(YunYoungTestCase):
     }
     payload['location'] = location
 
-    response = self.doJSONPut('/players/player', json.dumps(payload))
+    response = self.doJSONPut('/players/player', payload)
     self.assertEqual(response.status_code, 201, "Error: " + response.content)
 
   def testBadLocation(self):
@@ -118,14 +118,14 @@ class CreatePlayerTests(YunYoungTestCase):
     }
     payload['location'] = location
 
-    response = self.doJSONPut('/players/player', json.dumps(payload))
+    response = self.doJSONPut('/players/player', payload)
     self.assertEqual(response.status_code, 400)
 
   def testMissingSortingAlgo(self):
     playerName = "Yunyoung Player"
     payload = {'name' : playerName, 'sorting_algorithm_id' : 50}
 
-    response = self.doJSONPut('/players/player', json.dumps(payload))
+    response = self.doJSONPut('/players/player', payload)
     self.assertEqual(response.status_code, 404)
     self.assertEqual(response[MISSING_RESOURCE_HEADER], "sorting-algorithm")
 

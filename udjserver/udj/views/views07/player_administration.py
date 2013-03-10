@@ -8,7 +8,7 @@ from udj.models import PlayerLocation
 from udj.models import PlayerPermission
 from udj.models import PlayerPermissionGroup
 from udj.views.views07.authdecorators import NeedsAuth, HasPlayerPermissions
-from udj.views.views07.decorators import AcceptsMethods, PlayerExists, LibraryExists, HasNZParams
+from udj.views.views07.decorators import AcceptsMethods, PlayerExists, LibraryExists, HasNZJSONParams, NeedsJSON
 from udj.views.views07.responses import HttpJSONResponse
 from udj.views.views07.responses import HttpResponseForbiddenWithReason
 from udj.views.views07.responses import HttpResponseMissingResource
@@ -62,10 +62,10 @@ def modEnabledLibraries(request, player_id, library_id, player, library):
 
 
 @HasPlayerPermissions(['SPA'])
-@HasNZParams(['password'])
-def setPlayerPassword(request, player):
-  givenPassword = request.POST['password']
-  player.setPassword(givenPassword)
+@NeedsJSON
+@HasNZJSONParams(['password'])
+def setPlayerPassword(request, player, json_params):
+  player.setPassword(json_params['password'])
   return HttpResponse()
 
 @HasPlayerPermissions(['SPA'])
@@ -93,13 +93,28 @@ def modifyPlayerPassword(request, player_id, player):
 @NeedsAuth
 @PlayerExists
 @HasPlayerPermissions(['SLO'])
-@HasNZParams(['postal_code', 'country'])
-def setLocation(request, player_id, player):
-  postal_code = request.POST['postal_code']
-  country = request.POST['country']
-  address = request.POST.get('address', "")
-  locality = request.POST.get('locality',"")
-  region = request.POST.get('region', "")
+def modLocation(request, player_id, player):
+  if request.method == 'POST':
+    return setLocation(request, player)
+  else:
+    return deleteLocation(request, player)
+
+
+def deleteLocation(request, player):
+  try:
+    PlayerLocation.objects.get(player=player).delete()
+    return HttpResponse()
+  except ObjectDoesNotExist:
+    return HttpResponseMissingResource('location')
+
+@NeedsJSON
+@HasNZJSONParams(['postal_code', 'country'])
+def setLocation(request, player, json_params):
+  postal_code = json_params['postal_code']
+  country = json_params['country']
+  address = json_params.get('address', "")
+  locality = json_params.get('locality',"")
+  region = json_params.get('region', "")
 
   try:
     lat, lon = geocodeLocation(postal_code, country, address, locality, region)
@@ -133,10 +148,11 @@ def setLocation(request, player_id, player):
 @NeedsAuth
 @PlayerExists
 @HasPlayerPermissions(['SSA'])
-@HasNZParams(['sorting_algorithm_id'])
-def setSortingAlgorithm(request, player_id, player):
+@NeedsJSON
+@HasNZJSONParams(['sorting_algorithm_id'])
+def setSortingAlgorithm(request, player_id, player, json_params):
   try:
-    newAlgorithm = SortingAlgorithm.objects.get(pk=request.POST['sorting_algorithm_id'])
+    newAlgorithm = SortingAlgorithm.objects.get(pk=json_params['sorting_algorithm_id'])
   except ObjectDoesNotExist:
     return HttpResponseMissingResource('sorting-algorithm')
 
@@ -149,9 +165,10 @@ def setSortingAlgorithm(request, player_id, player):
 @AcceptsMethods(['POST'])
 @PlayerExists
 @HasPlayerPermissions(['SPT'])
-@HasNZParams(['state'])
-def setPlayerState(request, player_id, player):
-  givenState = request.POST['state']
+@NeedsJSON
+@HasNZJSONParams(['state'])
+def setPlayerState(request, player_id, player, json_params):
+  givenState = json_params['state']
 
   if givenState == u'paused':
     player.state = u'PA'
@@ -170,17 +187,18 @@ def setPlayerState(request, player_id, player):
 @AcceptsMethods(['POST'])
 @PlayerExists
 @HasPlayerPermissions(['CVO'])
-@HasNZParams(['volume'])
-def setPlayerVolume(request, player_id, player):
+@NeedsJSON
+@HasNZJSONParams(['volume'])
+def setPlayerVolume(request, player_id, player, json_params):
   try:
-    newVolume = int(request.POST['volume'])
+    newVolume = int(json_params['volume'])
     if newVolume > 10 or newVolume < 0:
       return HttpResponseBadRequest()
     player.volume = newVolume
     player.save()
     return HttpResponse()
   except ValueError:
-    return HttpResponseBadRequest('Bad volume: ' + request.POST['volume'])
+    return HttpResponseBadRequest('Bad volume: ' + json_params['volume'])
 
 @csrf_exempt
 @NeedsAuth

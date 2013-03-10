@@ -4,11 +4,6 @@ urlpatterns = patterns('udj.views.views07.user_creation',
   (r'^user$', 'createUser'),
 )
 
-urlpatterns += patterns('udj.views.views07.user_pub_keys',
-  (r'^(?P<user_id>\d+)/public_key$', 'getUserPubKey'),
-  (r'^public_key$', 'myPubKeyOps')
-)
-
 urlpatterns += patterns('udj.views.views07.auth',
   (r'^auth$', 'authenticate'),
 )
@@ -30,7 +25,7 @@ urlpatterns += patterns('udj.views.views07.player_administration',
   (r'^players/(?P<player_id>\d+)/enabled_libraries$', 'getEnabledLibraries'),
   (r'^players/(?P<player_id>\d+)/enabled_libraries/(?P<library_id>\d+)$', 'modEnabledLibraries'),
   (r'^players/(?P<player_id>\d+)/password$', 'modifyPlayerPassword'),
-  (r'^players/(?P<player_id>\d+)/location$', 'setLocation'),
+  (r'^players/(?P<player_id>\d+)/location$', 'modLocation'),
   (r'^players/(?P<player_id>\d+)/sorting_algorithm$', 'setSortingAlgorithm'),
   (r'^players/(?P<player_id>\d+)/state$', 'setPlayerState'),
   (r'^players/(?P<player_id>\d+)/volume$', 'setPlayerVolume'),

@@ -20,8 +20,9 @@ class DoesServerOpsTestCase(TransactionTestCase):
   client = Client()
 
   def setUp(self):
-    response = self.client.post(
-      '/udj/0_7/auth', {'username': self.username, 'password' : self.userpass})
+    response = self.client.post('/udj/0_7/auth',
+                          json.dumps({'username': self.username, 'password' :self.userpass}),
+                          content_type='text/json')
     self.assertEqual(response.status_code, 200)
     ticket_and_user_id = json.loads(response.content)
     self.ticket_hash = ticket_and_user_id['ticket_hash']
@@ -31,7 +32,7 @@ class DoesServerOpsTestCase(TransactionTestCase):
     headers[DJANGO_TICKET_HEADER] = self.ticket_hash
     return self.client.put(
       '/udj/0_7' + url,
-      data=payload, content_type='text/json',
+      data=json.dumps(payload), content_type='text/json',
       **headers)
 
   def doPut(self, url, headers={}):
@@ -46,9 +47,13 @@ class DoesServerOpsTestCase(TransactionTestCase):
     headers[DJANGO_TICKET_HEADER] = self.ticket_hash
     return self.client.delete('/udj/0_7' + url, **headers)
 
-  def doPost(self, url, args={}, headers={}):
+  def doJSONPost(self, url, payload, headers={}):
     headers[DJANGO_TICKET_HEADER] = self.ticket_hash
-    return self.client.post('/udj/0_7' + url, args, **headers)
+    return self.client.post('/udj/0_7' + url,
+                            json.dumps(payload),
+                            content_type='text/json',
+                            **headers)
+
 
   def isJSONResponse(self, response):
     self.assertEqual(response['Content-Type'], 'text/json; charset=utf-8')
