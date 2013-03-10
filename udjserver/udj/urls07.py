@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import patterns, include, url
 
-urlpatterns = patterns('udj.views.views07.user_creation',
+urlpatterns = patterns('udj.views.views07.user_modification',
   (r'^user$', 'createUser'),
 )
 

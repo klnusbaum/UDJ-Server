@@ -13,10 +13,12 @@ from django.http import HttpResponseBadRequest
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.contrib.auth.models import User
+from django.db import transaction
 
 @NeedsJSON
 @AcceptsMethods(['PUT'])
 @HasNZJSONParams(['username', 'email', 'password'])
+@transaction.commit_on_success
 def createUser(request, json_params):
   username = json_params['username']
   email = json_params['email']
@@ -47,8 +49,11 @@ def createUser(request, json_params):
   newUser = User.objects.create_user(
       username,
       email,
-      password
+      password,
   )
 
+  newUser.first_name = json_params.get('first_name', '')
+  newUser.last_name = json_params.get('last_name', '')
   newUser.save()
+
   return HttpResponse(status=201)

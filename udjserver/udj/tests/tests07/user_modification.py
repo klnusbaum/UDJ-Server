@@ -23,6 +23,26 @@ class CreateUserTests(TestCase):
     newUser = User.objects.get(username=tocreate['username'])
     self.assertEqual(tocreate['email'], newUser.email)
     self.assertTrue(check_password(tocreate['password'], newUser.password))
+    self.assertEqual(newUser.first_name, "")
+    self.assertEqual(newUser.last_name, "")
+
+  def testNameCreation(self):
+    tocreate = {
+        'username' : 'thesteve',
+        'email' : 'steve@steve.com',
+        'password' : 'bigcheese',
+        'first_name' : 'steve',
+        'last_name' : 'steveson'
+    }
+
+    response = self.client.put('/udj/0_7/user', data=json.dumps(tocreate), content_type="text/json")
+    self.assertEqual(201, response.status_code)
+    newUser = User.objects.get(username=tocreate['username'])
+    self.assertEqual(tocreate['email'], newUser.email)
+    self.assertTrue(check_password(tocreate['password'], newUser.password))
+    self.assertEqual(tocreate['first_name'], newUser.first_name)
+    self.assertEqual(tocreate['last_name'], newUser.last_name)
+
 
   def testDuplicateEmail(self):
     tocreate = {
