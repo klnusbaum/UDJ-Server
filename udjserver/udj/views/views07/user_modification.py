@@ -6,6 +6,7 @@ from udj.views.views07.decorators import AcceptsMethods
 from udj.views.views07.decorators import HasNZJSONParams
 from udj.views.views07.authdecorators import NeedsAuth
 from udj.views.views07.responses import HttpResponseConflictingResource
+from udj.views.views07.responses import HttpResponseNotAcceptable
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpRequest
@@ -29,12 +30,12 @@ def userMod(request, json_params):
   last_name = json_params.get('last_name', '')
 
   if len(password) < 8:
-    return HttpResponse("Invalid password", status=406)
+    return HttpResponseNotAcceptable("password")
 
   try:
     validate_email(email)
   except ValidationError:
-    return HttpResponse("Invalid email", status=406)
+    return HttpResponseNotAcceptable("email")
 
   #actuall do stuff
   if request.method == 'PUT':
@@ -49,7 +50,7 @@ def modifyUser(request, username, email, first_name, last_name):
     return HttpResponseConflictingResource('email')
 
   if username != request.user.username:
-    return HttpResponse("Can't change username", status=406)
+    return HttpResponseNotAcceptable("username")
 
   request.user.email = json_param['email']
   request.user.first_name = json_param['first_name']
@@ -67,7 +68,7 @@ def createUser(request, username, email, password, first_name, last_name):
     return HttpResponseConflictingResource('email')
 
   if not re.compile(r'^[\w.@+-]+$').match(username):
-    return HttpResponse("Invalid username", status=406)
+    return HttpResponseNotAcceptable("username")
 
   newUser = User.objects.create_user(
       username,

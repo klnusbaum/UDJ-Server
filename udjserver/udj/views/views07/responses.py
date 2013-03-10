@@ -1,5 +1,5 @@
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden
-from udj.headers import MISSING_RESOURCE_HEADER, FORBIDDEN_REASON_HEADER, CONFLICT_RESOURCE_HEADER
+from udj.headers import MISSING_RESOURCE_HEADER, FORBIDDEN_REASON_HEADER, CONFLICT_RESOURCE_HEADER, NOT_ACCEPTABLE_REASON_HEADER
 
 class HttpJSONResponse(HttpResponse):
 
@@ -25,3 +25,10 @@ class HttpResponseForbiddenWithReason(HttpResponseForbidden):
   def __init__(self, reason):
     super(HttpResponseForbiddenWithReason, self).__init__()
     self[FORBIDDEN_REASON_HEADER] = reason
+
+class HttpResponseNotAcceptable(HttpResponse):
+
+  def __init__(self, reason):
+    super(HttpResponseNotAcceptable, self).__init__(status=406)
+    self[NOT_ACCEPTABLE_REASON_HEADER] = reason
+

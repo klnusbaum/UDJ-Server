@@ -1,6 +1,6 @@
 import json
 
-from udj.headers import CONFLICT_RESOURCE_HEADER
+from udj.headers import CONFLICT_RESOURCE_HEADER, NOT_ACCEPTABLE_REASON_HEADER
 
 from django.test import TestCase
 from django.test.client import Client
@@ -84,6 +84,7 @@ class CreateUserTests(TestCase):
 
     response = self.client.put('/udj/0_7/user', data=json.dumps(tocreate), content_type="text/json")
     self.assertEqual(406, response.status_code)
+    self.assertEqual('password', response[NOT_ACCEPTABLE_REASON_HEADER])
 
   def testBadUsername(self):
     tocreate = {
@@ -94,6 +95,7 @@ class CreateUserTests(TestCase):
 
     response = self.client.put('/udj/0_7/user', data=json.dumps(tocreate), content_type="text/json")
     self.assertEqual(406, response.status_code)
+    self.assertEqual('username', response[NOT_ACCEPTABLE_REASON_HEADER])
 
   def testBadEmail(self):
     tocreate = {
@@ -104,6 +106,7 @@ class CreateUserTests(TestCase):
 
     response = self.client.put('/udj/0_7/user', data=json.dumps(tocreate), content_type="text/json")
     self.assertEqual(406, response.status_code)
+    self.assertEqual('email', response[NOT_ACCEPTABLE_REASON_HEADER])
 
 
 
