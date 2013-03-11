@@ -5,7 +5,7 @@ from udj.testhelpers.tests07.testclasses import JeffTestCase
 
 from udj.headers import NOT_ACCEPTABLE_REASON_HEADER
 
-from settings import min_search_radius, max_search_radius
+from settings import MIN_SEARCH_RADIUS, MAX_SEARCH_RADIUS
 
 class GetPlayersTests(JeffTestCase):
   def testGetNearbyPlayers(self):
@@ -73,21 +73,12 @@ class GetPlayersTests(JeffTestCase):
     self.assertEqual('6', players[0]["id"])
 
   def testTooSmallRadius(self):
-    badRadius = min_search_radius -1
+    badRadius = MIN_SEARCH_RADIUS -1
     response = self.doGet('/players/40.11241/-88.222053?radius=%d' % badRadius)
     self.assertEqual(406, response.status_code)
     self.assertEqual('bad-radius', response[NOT_ACCEPTABLE_REASON_HEADER])
-    self.isJSONResponse(response)
-    radiiInfo = json.loads(response.content)
-    self.assertEqual(min_search_radius, radiiInfo['min_radius'])
-    self.assertEqual(max_search_radius, radiiInfo['max_radius'])
 
   def testTooBigRadius(self):
-    badRadius = max_search_radius +1
+    badRadius = MAX_SEARCH_RADIUS +1
     response = self.doGet('/players/40.11381/-88.224083?radius=%d' % badRadius)
     self.assertEqual(406, response.status_code)
-    self.isJSONResponse(response)
-    radiiInfo = json.loads(response.content)
-    self.assertEqual(min_search_radius, radiiInfo['min_radius'])
-    self.assertEqual(max_search_radius, radiiInfo['max_radius'])
-

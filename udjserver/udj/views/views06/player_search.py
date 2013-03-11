@@ -14,7 +14,7 @@ from django.contrib.gis.measure import D
 from django.http import HttpRequest
 from django.http import HttpResponse
 
-from settings import default_search_radius, max_search_radius, min_search_radius
+from settings import DEFAULT_SEARCH_RADIUS, MAX_SEARCH_RADIUS, MIN_SEARCH_RADIUS
 
 @NeedsAuth
 @AcceptsMethods(['GET'])
@@ -23,9 +23,9 @@ def getNearbyPlayers(request, latitude, longitude):
   search_limit = int(request.GET.get('max_results', 20))
   search_limit = min(search_limit, 100)
 
-  search_radius = int(request.GET.get('radius', default_search_radius))
-  if search_radius >= max_search_radius or search_radius < min_search_radius:
-    radii_info = { 'min_radius' : min_search_radius, 'max_radius' : max_search_radius}
+  search_radius = int(request.GET.get('radius', DEFAULT_SEARCH_RADIUS))
+  if search_radius >= MAX_SEARCH_RADIUS or search_radius < MIN_SEARCH_RADIUS:
+    radii_info = { 'min_radius' : MIN_SEARCH_RADIUS, 'max_radius' : MAX_SEARCH_RADIUS}
     toReturn = HttpJSONResponse(json.dumps(radii_info), status=406)
     toReturn[NOT_ACCEPTABLE_REASON_HEADER] = 'bad-radius'
     return toReturn

@@ -148,9 +148,9 @@ DEFAULT_SORTING_ALGO = "totalVotes"
 DEFAULT_PLAYER_PERMISSIONS = [u'CSS', u'MOS', u'CPB', u'CVO', u'SSA', u'SLO', u'SPA',
                               u'KUS', u'BUS', u'APR', u'ELI', u'DLI', u'MPG', u'CEV', 
                               u'HEV', u'MEV']
-default_search_radius = 5
-max_search_radius = 20
-min_search_radius = 1
+DEFAULT_SEARCH_RADIUS = 5
+MAX_SEARCH_RADIUS = 20
+MIN_SEARCH_RADIUS = 1
 TICKET_EXPIRATION_LENGTH = 14
 
 RDIO_CONSUMER_KEY = ""

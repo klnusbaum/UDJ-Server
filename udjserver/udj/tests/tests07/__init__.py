@@ -1,6 +1,6 @@
 from udj.tests.tests07.user_modification import *
 from udj.tests.tests07.auth import *
-from udj.tests.tests07.server_capabilities import *
+from udj.tests.tests07.server_config import *
 from udj.tests.tests07.player_search import *
 from udj.tests.tests07.player_creation import *
 from udj.tests.tests07.player_administration import *

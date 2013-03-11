@@ -8,7 +8,7 @@ urlpatterns += patterns('udj.views.views07.auth',
   (r'^auth$', 'authenticate'),
 )
 
-urlpatterns += patterns('udj.views.views07.server_capabilities',
+urlpatterns += patterns('udj.views.views07.server_config',
   (r'^sorting_algorithms$', 'getSortingAlgorithms'),
 )
 
