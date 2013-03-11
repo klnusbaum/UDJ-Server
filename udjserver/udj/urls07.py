@@ -10,6 +10,8 @@ urlpatterns += patterns('udj.views.views07.auth',
 
 urlpatterns += patterns('udj.views.views07.server_config',
   (r'^sorting_algorithms$', 'getSortingAlgorithms'),
+  (r'^player_search_radius$', 'getAcceptableSearchRadii'),
+  (r'^default_player_permissions$', 'getDefaultPlayerPermissions'),
 )
 
 urlpatterns += patterns('udj.views.views07.player_search',

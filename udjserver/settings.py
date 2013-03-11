@@ -145,8 +145,8 @@ def geocodeLocation(postal_code, country, address="", locality="", region=""):
 
 DEFAULT_SORTING_ALGO = "totalVotes"
 
-DEFAULT_PLAYER_PERMISSIONS = [u'CSS', u'MOS', u'CPB', u'CVO', u'SSA', u'SLO', u'SPA',
-                              u'KUS', u'BUS', u'APR', u'ELI', u'DLI', u'MPG', u'CEV', 
+DEFAULT_PLAYER_PERMISSIONS = [u'CSS', u'MOS', u'SPT', u'CVO', u'SSA', u'SLO', u'SPA',
+                              u'KUS', u'BUS', u'APR', u'ELI', u'DLI', u'MPE', u'CEV', 
                               u'HEV', u'MEV']
 DEFAULT_SEARCH_RADIUS = 5
 MAX_SEARCH_RADIUS = 20

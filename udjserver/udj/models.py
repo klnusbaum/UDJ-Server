@@ -624,6 +624,7 @@ class PlayerPermission(models.Model):
     (u'MEV', u'modify_event'))
 
   PERMISSION_NAME_MAP = dict((name,code) for (code,name) in list(PERMISSION_CHOICES))
+  PERMISSION_CODE_MAP = dict((code,name) for (code,name) in list(PERMISSION_CHOICES))
 
   player = models.ForeignKey(Player)
   permission = models.CharField(max_length=3, choices=PERMISSION_CHOICES)
