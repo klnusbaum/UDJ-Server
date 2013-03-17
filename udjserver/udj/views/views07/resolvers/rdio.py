@@ -3,7 +3,7 @@ import urllib
 from settings import RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET
 import json
 
-from udj.resolvers.query import LibraryQuery
+from udj.views.views07.resolvers.query import LibraryQuery
 
 consumer = oauth.Consumer(RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET)
 client = oauth.Client(consumer)
@@ -62,8 +62,6 @@ class RdioArtistSearch(RdioQuery):
   def doQuery(self):
     responseJSON = self.queryRdio()
     return [x['name'] for x in responseJSON['result']]
-
-
 
 
 
