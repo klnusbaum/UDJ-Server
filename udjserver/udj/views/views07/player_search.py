@@ -16,6 +16,51 @@ from django.http import HttpResponse
 
 from settings import DEFAULT_SEARCH_RADIUS, MAX_SEARCH_RADIUS, MIN_SEARCH_RADIUS
 
+def hasBadLatLonParams(request):
+  if 'latitude' in request.GET and 'longitude' not in request.GET:
+    return True
+  elif 'longitude' in request.GET and 'latitude' not in request.GET:
+    return True
+  elif ('latitude' in request.GET and 'longitude' in request.GET and
+         (request.GET['latitude'] == "" or request.GET['longitude'] ==""))
+    return True
+  else:
+    return False
+
+@NeedsAuth
+@AcceptsMethods(['GET'])
+def playerSearch(request):
+  if hasBadLatLonParams(request):
+    return HttpResponseNotAcceptable('latitude-longitude')
+
+  toReturn = Players.objects.all()
+  if 'latitude' in request.GET:
+    search_radius = int(request.GET.get('radius', DEFAULT_SEARCH_RADIUS))
+    if search_radius >= MAX_SEARCH_RADIUS or search_radius < MIN_SEARCH_RADIUS:
+      return HttpResponseNotAcceptable('bad-radius')
+    point = Point(float(request.GET['longitude']), float(request.GET['latitude']))
+    nearbyLocations_ids = (PlayerLocation.objects.exclude(player__state='IN')
+                                                 .filter(point__distance_lte=
+                                                          (point, D(km=search_radius)))
+                                                 .distance(point)
+                                                 .order_by('distance'))
+                                                 .values_list('player_id', flat=True)
+    toReturn = toReturn.filter(pk__in=nearbyLocations_ids)
+
+
+  if 'name' in request.GET and not request.GET['name'] == '':
+    toReturn = toReturn.filter(name__icontains=request.GET['name'])
+
+  search_limit = int(request.GET.get('max_results', 20))
+  search_limit = min(search_limit, 100)
+  offset = int(request.GET.get('start_position', 0))
+
+  toReturn = toReturn[offset:offset+search_limit]
+  return HttpJSONResponse(json.dumps(toReturn, cls=UDJEncoder))
+
+
+
+"""
 @NeedsAuth
 @AcceptsMethods(['GET'])
 def getNearbyPlayers(request, latitude, longitude):
@@ -50,4 +95,4 @@ def getPlayers(request):
   players = (Player.objects.filter(name__icontains=request.GET['name'])
                           .exclude(state='IN')[:search_limit])
   return HttpJSONResponse(json.dumps(players, cls=UDJEncoder))
-
+"""
