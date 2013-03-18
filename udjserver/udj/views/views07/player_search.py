@@ -22,7 +22,7 @@ def hasBadLatLonParams(request):
   elif 'longitude' in request.GET and 'latitude' not in request.GET:
     return True
   elif ('latitude' in request.GET and 'longitude' in request.GET and
-         (request.GET['latitude'] == "" or request.GET['longitude'] ==""))
+         (request.GET['latitude'] == "" or request.GET['longitude'] =="")):
     return True
   else:
     return False
@@ -33,23 +33,34 @@ def playerSearch(request):
   if hasBadLatLonParams(request):
     return HttpResponseNotAcceptable('latitude-longitude')
 
-  toReturn = Players.objects.all()
+  toReturn = Player.objects.all()
+
+  """
+  Note we need this particular if-else chain in order to return
+  players ordered by distance if a location is provided
+  """
   if 'latitude' in request.GET:
     search_radius = int(request.GET.get('radius', DEFAULT_SEARCH_RADIUS))
     if search_radius >= MAX_SEARCH_RADIUS or search_radius < MIN_SEARCH_RADIUS:
       return HttpResponseNotAcceptable('bad-radius')
     point = Point(float(request.GET['longitude']), float(request.GET['latitude']))
-    nearbyLocations_ids = (PlayerLocation.objects.exclude(player__state='IN')
+    nearbyLocations = (PlayerLocation.objects.exclude(player__state='IN')
                                                  .filter(point__distance_lte=
                                                           (point, D(km=search_radius)))
                                                  .distance(point)
                                                  .order_by('distance'))
-                                                 .values_list('player_id', flat=True)
-    toReturn = toReturn.filter(pk__in=nearbyLocations_ids)
+    if 'name' in request.GET and not request.GET['name'] == '':
+      toReturn = toReturn.filter(player__name__icontains=request.GET['name'])
+    toReturn = [location.player for location in nearbyLocations]
 
 
-  if 'name' in request.GET and not request.GET['name'] == '':
+    """
+    Note this has to be an else if. if the player has a location and name we do something
+    differente above. This is only for when we have a name and no location.
+    """
+  elif 'name' in request.GET and not request.GET['name'] == '':
     toReturn = toReturn.filter(name__icontains=request.GET['name'])
+
 
   search_limit = int(request.GET.get('max_results', 20))
   search_limit = min(search_limit, 100)

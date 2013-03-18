@@ -15,8 +15,7 @@ urlpatterns += patterns('udj.views.views07.server_config',
 )
 
 urlpatterns += patterns('udj.views.views07.player_search',
-  (r'^players/(?P<latitude>-?\d+\.\d+)/(?P<longitude>-?\d+\.\d+)$', 'getNearbyPlayers'),
-  (r'^players$', 'getPlayers'),
+  (r'^players$', 'playerSearch'),
 )
 
 urlpatterns += patterns('udj.views.views07.player_creation',

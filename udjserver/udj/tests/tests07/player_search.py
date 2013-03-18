@@ -9,7 +9,7 @@ from settings import MIN_SEARCH_RADIUS, MAX_SEARCH_RADIUS
 
 class GetPlayersTests(JeffTestCase):
   def testGetNearbyPlayers(self):
-    response = self.doGet('/players/40.11241/-88.222053')
+    response = self.doGet('/players?latitude=40.11241&longitude=-88.222053')
     self.assertEqual(response.status_code, 200, response.content)
     self.isJSONResponse(response)
     players = json.loads(response.content)
@@ -44,7 +44,7 @@ class GetPlayersTests(JeffTestCase):
     self.assertEqual(0, firstPlayer['num_active_users'])
 
   def testLocationSearchWithLimit(self):
-    response = self.doGet('/players/40.11241/-88.222053?max_results=1')
+    response = self.doGet('/players?latitude=40.11241&longitude=-88.222053&max_results=1')
     self.assertEqual(response.status_code, 200, response.content)
     self.isJSONResponse(response)
     players = json.loads(response.content)
@@ -58,27 +58,35 @@ class GetPlayersTests(JeffTestCase):
     self.assertEqual(len(players), 1)
 
   def testSearchWithRadius(self):
-    response = self.doGet('/players/40.111595/-88.204847?radius=2')
+    response = self.doGet('/players?latitude=40.111595&longitude=-88.204847&radius=2')
     self.assertEqual(200, response.status_code)
     self.isJSONResponse(response)
     players = json.loads(response.content)
     self.assertEqual(2, len(players))
 
   def testSearchWithRadiusAndLimit(self):
-    response = self.doGet('/players/40.111595/-88.204847?radius=2&max_results=1')
+    response = self.doGet('/players?latitude=40.111595&longitude=-88.204847&radius=2&max_results=1')
     self.assertEqual(200, response.status_code)
     self.isJSONResponse(response)
     players = json.loads(response.content)
     self.assertEqual(1, len(players))
     self.assertEqual('6', players[0]["id"])
 
+  def testSearchWithRadiusLimitAndOffset(self):
+    response = self.doGet('/players?latitude=40.111595&longitude=-88.204847&radius=2&max_results=1&start_position=1')
+    self.assertEqual(200, response.status_code)
+    self.isJSONResponse(response)
+    players = json.loads(response.content)
+    self.assertEqual(1, len(players))
+    self.assertEqual('1', players[0]["id"])
+
   def testTooSmallRadius(self):
     badRadius = MIN_SEARCH_RADIUS -1
-    response = self.doGet('/players/40.11241/-88.222053?radius=%d' % badRadius)
+    response = self.doGet('/players?latitude=40.11241&longitude=-88.222053&radius=%d' % badRadius)
     self.assertEqual(406, response.status_code)
     self.assertEqual('bad-radius', response[NOT_ACCEPTABLE_REASON_HEADER])
 
   def testTooBigRadius(self):
     badRadius = MAX_SEARCH_RADIUS +1
-    response = self.doGet('/players/40.11381/-88.224083?radius=%d' % badRadius)
+    response = self.doGet('/players?latitude=40.11381&longitude=-88.224083&radius=%d' % badRadius)
     self.assertEqual(406, response.status_code)
