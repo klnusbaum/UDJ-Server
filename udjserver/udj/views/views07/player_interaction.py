@@ -5,6 +5,7 @@ from udj.views.views07.authdecorators import NeedsAuth, IsntOwner, HasPlayerPerm
 from udj.views.views07.decorators import PlayerExists, PlayerIsActive, AcceptsMethods, UpdatePlayerActivity, HasNZJSONParams, NeedsJSON, HasNZParams
 from udj.views.views07.responses import HttpJSONResponse, HttpResponseMissingResource
 from udj.views.views07.JSONCodecs import UDJEncoder
+from settings import DEFAULT_MAX_SONGS_RESULTS
 
 
 
@@ -119,11 +120,14 @@ def getUsersForPlayer(request, player_id, player):
 @HasNZParams(['query'])
 def getAvailableMusic(request, player_id, player):
   query = request.GET['query']
-  toReturn = player.AvailableMusic(query)
-  if 'max_results' in request.GET:
-    toReturn = toReturn[:int(request.GET['max_results'])]
+  lib_results = [x.search(player, query) for x in player.EnabledLibraries]
+  from itertools import chain
+  full_results = reduce(chain, lib_results)
+  limit = request.GET.get('max_results', DEFAULT_MAX_SONGS_RESULTS)
+  full_results = full_results[:limit]
 
-  return HttpJSONResponse(json.dumps(toReturn, cls=UDJEncoder))
+
+  return HttpJSONResponse(json.dumps(full_results, cls=UDJEncoder))
 
 
 

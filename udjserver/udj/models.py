@@ -175,6 +175,16 @@ class Library(models.Model):
 
   Writers = property(getWriters)
 
+  def getBannedIds(self, player):
+    return (BannedLibraryEntry.objects.filter(player=player, song__library=self)
+                                      .values_list('song__id'))
+
+
+  def search(self, player, query):
+    resolver_module = __import__('udj.resolvers.'+self.resolver, globals(), locals(), ['search'], -1)
+    return resolver_module.search(query, self, player)
+
+
   def __unicode__(self):
     return "Library: " + self.name
 

@@ -1,3 +1,4 @@
+"""
 class LibraryQuery:
   def __init__(self, library, player):
     self.library_id = library_id
@@ -13,3 +14,8 @@ class LibraryQuery:
                                       .values_list('song__id'))
 
   BannedIds = property(getBannedIds)
+"""
+def getBannedIds(player, library):
+    return (BannedLibraryEntry.objects.filter(player=self.player, song__library=self.library)
+                                      .values_list('song__id'))
+
