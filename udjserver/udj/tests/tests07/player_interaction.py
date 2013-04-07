@@ -125,8 +125,9 @@ class GetAvailableMusicTests(udj.testhelpers.tests07.testclasses.EnsureActiveJef
     for song in songResults:
       self.assertTrue(song['id'] in expectedLibIds)
 
+
 """
-class GetArtistsTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
+class GetArtistsTests(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest):
 
   @EnsureParticipationUpdated(3,1)
   def testGetArtists(self):
@@ -141,7 +142,7 @@ class GetArtistsTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
 
   @EnsureParticipationUpdated(3,1)
   def testSpecificArtistGet(self):
-    response = self.doGet('/players/1/available_music/artists/Third Eye Blind')
+    response = self.doGet('/players/1/available_music/artists/Third+Eye+Blind')
     self.assertEqual(response.status_code, 200)
     jsonResponse = json.loads(response.content)
     self.assertEqual(4, len(jsonResponse))
@@ -149,8 +150,7 @@ class GetArtistsTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
     for songId in [x['id'] for x in jsonResponse]:
       self.assertTrue(songId in requiredIds)
 
-
-class GetRecentlyPlayed(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
+class GetRecentlyPlayed(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest):
 
   @EnsureParticipationUpdated(3,1)
   def testRecentlyPlayed(self):
@@ -170,7 +170,7 @@ class GetRecentlyPlayed(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest
     self.assertEqual(1, len(jsonResponse))
 
 
-class GetRandoms(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
+class GetRandoms(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest):
 
   @EnsureParticipationUpdated(3,1)
   def testSimpleGetRandom(self):
@@ -185,7 +185,7 @@ class GetRandoms(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
       self.assertFalse(
           LibraryEntry.objects.get(library__id=1, lib_id=song['id']).is_banned(Player.objects.get(pk=1)))
 
-class LogoutTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
+class LogoutTests(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest):
   def testLogout(self):
     response = self.doDelete('/players/1/users/user')
     self.assertEqual(response.status_code, 200)
@@ -194,17 +194,17 @@ class LogoutTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
     self.assertFalse(3 in activeUserIds)
 
 
-class OwnerCurrentSongTestCase(udj.testhelpers.tests06.testclasses.CurrentSongTestCase):
+class OwnerCurrentSongTestCase(udj.testhelpers.tests07.testclasses.CurrentSongTestCase):
   username="kurtis"
   userpass="testkurtis"
 
 
-class AdminCurrentSongTestCase(udj.testhelpers.tests06.testclasses.CurrentSongTestCase):
+class AdminCurrentSongTestCase(udj.testhelpers.tests07.testclasses.CurrentSongTestCase):
   username="lucas"
   userpass="testlucas"
 
   def setUp(self):
-    super(udj.testhelpers.tests06.testclasses.CurrentSongTestCase, self).setUp()
+    super(udj.testhelpers.tests07.testclasses.CurrentSongTestCase, self).setUp()
     lucas = Participant.objects.get(user__id=5, player__id=1)
     lucas.time_last_interaction = datetime.now()
     lucas.save()
@@ -215,16 +215,16 @@ class AdminCurrentSongTestCase(udj.testhelpers.tests06.testclasses.CurrentSongTe
     lucas = Participant.objects.get(user__id=5, player__id=1)
     self.assertTrue(lucas.time_last_interaction > self.oldtime)
 
-class OwnerBlankCurrentSongTestCase(udj.testhelpers.tests06.testclasses.BlankCurrentSongTestCase):
+class OwnerBlankCurrentSongTestCase(udj.testhelpers.tests07.testclasses.BlankCurrentSongTestCase):
   username = 'alejandro'
   userpass = 'testalejandro'
 
-class AdminBlankCurrentSongTestCase(udj.testhelpers.tests06.testclasses.BlankCurrentSongTestCase):
+class AdminBlankCurrentSongTestCase(udj.testhelpers.tests07.testclasses.BlankCurrentSongTestCase):
   username="kurtis"
   userpass="testkurtis"
 
   def setUp(self):
-    super(udj.testhelpers.tests06.testclasses.BlankCurrentSongTestCase, self).setUp()
+    super(udj.testhelpers.tests07.testclasses.BlankCurrentSongTestCase, self).setUp()
     kurtis = Participant.objects.get(user__id=2, player__id=3)
     kurtis.time_last_interaction = datetime.now()
     kurtis.save()

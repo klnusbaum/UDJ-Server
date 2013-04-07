@@ -8,4 +8,19 @@ def search(query, library, player):
                               .filter(Q(title__icontains=query) |
                                       Q(artist__icontains=query) |
                                       Q(album__icontains=query))
-                              .exclude(id__in=bannedIds))
+                              .exclude(id__in=bannedIds)
+                              .exclude(is_deleted=True))
+
+def artists(library, player):
+  bannedIds = library.getBannedIds(player)
+  return (LibraryEntry.objects.filter(library=library)
+                              .exclude(id__in=bannedIds)
+                              .exclude(is_deleted=True)
+                              .distinct('artist')
+                              .order_by('artist')
+                              .values_list('artist', flat=True))
+
+def getSongsForArtist(artist, library, player):
+  return (LibraryEntry.objects.filter(library=library, artist__iexact=artist)
+                              .exclude(id__in=bannedIds)
+                              .exclude(is_deleted=True))

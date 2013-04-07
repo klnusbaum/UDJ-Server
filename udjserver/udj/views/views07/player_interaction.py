@@ -5,7 +5,7 @@ from udj.views.views07.authdecorators import NeedsAuth, IsntOwner, HasPlayerPerm
 from udj.views.views07.decorators import PlayerExists, PlayerIsActive, AcceptsMethods, UpdatePlayerActivity, HasNZJSONParams, NeedsJSON, HasNZParams
 from udj.views.views07.responses import HttpJSONResponse, HttpResponseMissingResource
 from udj.views.views07.JSONCodecs import UDJEncoder
-from settings import DEFAULT_MAX_SONGS_RESULTS
+from settings import DEFAULT_MAX_SONGS_RESULTS, DEFAULT_MAX_ARTIST_RESULTS
 
 
 
@@ -120,14 +120,10 @@ def getUsersForPlayer(request, player_id, player):
 @HasNZParams(['query'])
 def getAvailableMusic(request, player_id, player):
   query = request.GET['query']
-  lib_results = [x.search(player, query) for x in player.EnabledLibraries]
-  from itertools import chain
-  full_results = reduce(chain, lib_results)
+  available_music = player.AvailableMusic(query)
   limit = request.GET.get('max_results', DEFAULT_MAX_SONGS_RESULTS)
-  full_results = full_results[:limit]
-
-
-  return HttpJSONResponse(json.dumps(full_results, cls=UDJEncoder))
+  available_music = available_music[:limit]
+  return HttpJSONResponse(json.dumps(available_music, cls=UDJEncoder))
 
 
 
@@ -138,7 +134,8 @@ def getAvailableMusic(request, player_id, player):
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
 def getArtists(request, player_id, player):
-  return HttpJSONResponse(json.dumps(player.Artists, cls=UDJEncoder))
+  limit = request.GET.get('max_results', DEFAULT_MAX_ARTIST_RESULTS)
+  return HttpJSONResponse(json.dumps(player.Artists[:limit], cls=UDJEncoder))
 
 @AcceptsMethods(['GET'])
 @NeedsAuth
@@ -147,10 +144,9 @@ def getArtists(request, player_id, player):
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
 def getArtistSongs(request, player_id, player, givenArtist):
-
   toReturn = player.ArtistSongs(givenArtist)
-
-  return HttpJSONResponse(json.dumps(toReturn, cls=UDJEncoder))
+  limit = request.GET.get('max_results', DEFAULT_MAX_ARTIST_RESULTS)
+  return HttpJSONResponse(json.dumps(toReturn[:limit], cls=UDJEncoder))
 
 @AcceptsMethods(['GET'])
 @NeedsAuth
