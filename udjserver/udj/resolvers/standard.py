@@ -1,4 +1,3 @@
-from udj.resolvers.query import getBannedIds
 from udj.models import LibraryEntry
 from django.db.models import Q
 
@@ -21,6 +20,15 @@ def artists(library, player):
                               .values_list('artist', flat=True))
 
 def getSongsForArtist(artist, library, player):
+  bannedIds = library.getBannedIds(player)
   return (LibraryEntry.objects.filter(library=library, artist__iexact=artist)
                               .exclude(id__in=bannedIds)
                               .exclude(is_deleted=True))
+
+def randoms(library, player):
+  bannedIds = library.getBannedIds(player)
+  return (LibraryEntry.objects.filter(library=library)
+                              .exclude(id__in=bannedIds)
+                              .exclude(is_deleted=True)
+                              .order_by('?'))
+

@@ -503,7 +503,7 @@ class MattTestCase(DoesServerOpsTestCase):
 class EnsureActiveJeffTest(JeffTestCase):
   def setUp(self):
     super(EnsureActiveJeffTest, self).setUp()
-    jeff = Participant.objects.get(user__id=3, player__id=1)
+    jeff = Participant.objects.get(user__id=3, player__id=self.playerid)
     jeff.time_last_interaction = datetime.now()
     jeff.save()
 

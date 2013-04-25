@@ -6,7 +6,7 @@ from udj.views.views07.decorators import PlayerExists, PlayerIsActive, AcceptsMe
 from udj.views.views07.responses import HttpJSONResponse, HttpResponseMissingResource
 from udj.views.views07.JSONCodecs import UDJEncoder
 from settings import DEFAULT_MAX_SONGS_RESULTS, DEFAULT_MAX_ARTIST_RESULTS
-
+from itertools import islice
 
 
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseBadRequest
@@ -121,8 +121,8 @@ def getUsersForPlayer(request, player_id, player):
 def getAvailableMusic(request, player_id, player):
   query = request.GET['query']
   available_music = player.AvailableMusic(query)
-  limit = request.GET.get('max_results', DEFAULT_MAX_SONGS_RESULTS)
-  available_music = available_music[:limit]
+  limit = int(request.GET.get('max_results', DEFAULT_MAX_SONGS_RESULTS))
+  available_music = [x for x in islice(available_music, limit)]
   return HttpJSONResponse(json.dumps(available_music, cls=UDJEncoder))
 
 
@@ -134,8 +134,9 @@ def getAvailableMusic(request, player_id, player):
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
 def getArtists(request, player_id, player):
-  limit = request.GET.get('max_results', DEFAULT_MAX_ARTIST_RESULTS)
-  return HttpJSONResponse(json.dumps(player.Artists[:limit], cls=UDJEncoder))
+  limit = int(request.GET.get('max_results', DEFAULT_MAX_ARTIST_RESULTS))
+  artists = [x for x in islice(player.Artists, 0, limit)]
+  return HttpJSONResponse(json.dumps(artists, cls=UDJEncoder))
 
 @AcceptsMethods(['GET'])
 @NeedsAuth
@@ -145,7 +146,7 @@ def getArtists(request, player_id, player):
 @UpdatePlayerActivity
 def getArtistSongs(request, player_id, player, givenArtist):
   toReturn = player.ArtistSongs(givenArtist)
-  limit = request.GET.get('max_results', DEFAULT_MAX_ARTIST_RESULTS)
+  limit = int(request.GET.get('max_results', DEFAULT_MAX_ARTIST_RESULTS))
   return HttpJSONResponse(json.dumps(toReturn[:limit], cls=UDJEncoder))
 
 @AcceptsMethods(['GET'])

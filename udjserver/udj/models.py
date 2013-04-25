@@ -179,6 +179,13 @@ class Library(models.Model):
     return (BannedLibraryEntry.objects.filter(player=player, song__library=self)
                                       .values_list('song__id'))
 
+  def randoms(self, player):
+    resolver_module = __import__('udj.resolvers.'+self.resolver,
+                                 globals(),
+                                 locals(),
+                                 ['randoms'],
+                                 -1)
+    return resolver_module.randoms(self, player)
 
   def search(self, player, query):
     resolver_module = __import__('udj.resolvers.'+self.resolver, globals(), locals(), ['search'], -1)
@@ -190,7 +197,7 @@ class Library(models.Model):
                                   locals(),
                                   ['artists'],
                                   -1)
-    return resolver_module.getArtists(self, player)
+    return resolver_module.artists(self, player)
 
   def artistSongs(self, artist, player):
     resolver_module = __import__('udj.resolvers.'+self.resolver,
@@ -198,7 +205,7 @@ class Library(models.Model):
                                   locals(),
                                   ['getSongsForArtist'],
                                   -1)
-    return resolver_module.getArtists(artist, self, player)
+    return resolver_module.getSongsForArtist(artist, self, player)
 
   def __unicode__(self):
     return "Library: " + self.name
@@ -373,7 +380,7 @@ class Player(models.Model):
   SongSets = property(getSongSets)
 
   def getArtists(self):
-    lib_results = [x.artists(player) for x in player.EnabledLibraries]
+    lib_results = [x.artists(self) for x in self.EnabledLibraries]
     from itertools import chain
     full_results = reduce(chain, lib_results)
     return full_results
@@ -381,7 +388,7 @@ class Player(models.Model):
   Artists = property(getArtists)
 
   def ArtistSongs(self, artist):
-    lib_results = [x.artistSongs(player) for x in player.EnabledLibraries]
+    lib_results = [x.artistSongs(artist, self) for x in self.EnabledLibraries]
     from itertools import chain
     full_results = reduce(chain, lib_results)
     return full_results
@@ -398,7 +405,9 @@ class Player(models.Model):
   RecentlyPlayed = property(getRecentlyPlayed)
 
   def getRandoms(self):
-    return self.getAllSongs().order_by('?')
+    random_results = [x.randoms(self) for x in self.EnabledLibraries]
+    from itertools import chain
+    return reduce(chain, random_results)
 
   Randoms = property(getRandoms)
 

@@ -16,6 +16,8 @@ from django.db import transaction
 from datetime import datetime
 from importlib import import_module
 
+from itertools import islice
+
 @csrf_exempt
 @AcceptsMethods(['PUT', 'DELETE'])
 @NeedsAuth
@@ -185,7 +187,7 @@ def getRecentlyPlayed(request, player_id, player):
 def getRandomSongsForPlayer(request, player_id, player):
   rand_limit = int(request.GET.get('max_randoms',40))
   rand_limit = min(rand_limit,100)
-  randomSongs = player.Randoms[:rand_limit]
+  randomSongs = [x for x in islice(player.Randoms,rand_limit)]
   return HttpJSONResponse(json.dumps(randomSongs, cls=UDJEncoder))
 
 @csrf_exempt

@@ -94,6 +94,7 @@ class GetUsersTests(MattTestCase):
 
 
 class GetAvailableMusicTests(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest):
+  playerid=1
 
   @EnsureParticipationUpdated(3,1)
   def testGetBasicMusic(self):
@@ -124,6 +125,26 @@ class GetAvailableMusicTests(udj.testhelpers.tests07.testclasses.EnsureActiveJef
     expectedLibIds =['6','7']
     for song in songResults:
       self.assertTrue(song['id'] in expectedLibIds)
+
+class GetAvailableMusicTestsRdio(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest):
+  playerid = 8
+
+
+  @EnsureParticipationUpdated(3,8)
+  def testGetBasicMusic(self):
+    response = self.doGet('/players/8/available_music?query=Third+Eye+Blind')
+    self.assertEqual(response.status_code, 200)
+    self.isJSONResponse(response)
+    songResults = json.loads(response.content)
+    self.assertTrue(len(songResults) > 4)
+
+  @EnsureParticipationUpdated(3,8)
+  def testSimpleGetWithMax(self):
+    response = self.doGet('/players/8/available_music?query=Third+Eye+Blind&max_results=2')
+    self.assertEqual(response.status_code, 200)
+    self.isJSONResponse(response)
+    songResults = json.loads(response.content)
+    self.assertEquals(2, len(songResults))
 
 
 """

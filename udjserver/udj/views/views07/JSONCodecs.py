@@ -113,6 +113,7 @@ class UDJEncoder(json.JSONEncoder):
     elif isinstance(obj, LibraryEntry):
       return {
           'id' : obj.lib_id,
+          'library_id' : str(obj.library.id),
           'title' : obj.title,
           'artist' : obj.artist,
           'album' : obj.album,
