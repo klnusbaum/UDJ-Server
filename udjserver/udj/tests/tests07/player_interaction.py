@@ -165,12 +165,12 @@ class GetArtistsTests(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest):
 
   def testGetArtistSongsStandardResolver(self):
     songs = udj.resolvers.standard.getSongsForArtist("Third Eye Blind",
-                                       Library.objects.get(pk=1),
-                                       Player.objects.get(pk=1)
-                                      )
+                                                     Library.objects.get(pk=1),
+                                                     Player.objects.get(pk=1)
+                                                    )
     self.assertEqual(4, len(songs))
     requiredIds = ['1', '2', '3', '5']
-    for songId in [str(x.id) for x in songs]:
+    for songId in [x.lib_id for x in songs]:
       self.assertTrue(songId in requiredIds)
 
   @EnsureParticipationUpdated(3,1)
@@ -182,6 +182,47 @@ class GetArtistsTests(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest):
     requiredIds = ['1', '2', '3', '5']
     for songId in [x['id'] for x in jsonResponse]:
       self.assertTrue(songId in requiredIds)
+
+class GetRdioArtistsTests(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest):
+  playerid = 8
+
+  @EnsureParticipationUpdated(3,8)
+  def testGetArtists(self):
+    response = self.doGet('/players/8/available_music/artists')
+    self.assertEqual(response.status_code, 200)
+    self.isJSONResponse(response)
+    jsonResponse = json.loads(response.content)
+    #This is bad, we should really only be getting back 3 but I don't
+    #really have a good way of merging results from different libraries yet :/
+    self.assertEqual(4, len(jsonResponse))
+    requiredArtists = [u'Skrillex', u'The Mars Volta', u'Third Eye Blind']
+    for artist in jsonResponse:
+      self.assertTrue(artist in requiredArtists)
+
+  @EnsureParticipationUpdated(3,8)
+  def testSpecificArtistGet(self):
+    response = self.doGet('/players/8/available_music/artists/Skrillex')
+    self.assertEqual(response.status_code, 200)
+    jsonResponse = json.loads(response.content)
+
+    standard_songs = udj.resolvers.standard.getSongsForArtist("Skrillex",
+                                                              Library.objects.get(pk=1),
+                                                              Player.objects.get(pk=8))
+    rdio_songs = udj.resolvers.rdio.getSongsForArtist("Skrillex",
+                                                      Library.objects.get(pk=8),
+                                                      Player.objects.get(pk=8))
+
+    #This next part is two fold. not only does it ensure we get the correct
+    #overall response, but it ensures that everything we get back
+    #was also added to the database like it was supposed to be
+    db_ids = [x.lib_id for x in standard_songs]
+    db_ids.extend([x.lib_id for x in rdio_songs])
+    self.assertTrue(0 < len(db_ids))
+    self.assertEqual(len(db_ids), len(jsonResponse))
+    for songId in [x['id'] for x in jsonResponse]:
+      self.assertTrue(songId in db_ids, "Not found Song: " + str(songId))
+
+
 
 """
 class GetRecentlyPlayed(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest):

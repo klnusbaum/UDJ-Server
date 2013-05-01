@@ -26,7 +26,7 @@ def insert_songs_into_rdio_library(songJSON, library):
                                        album=song['album'],
                                        track=song['trackNum'],
                                        genre='',
-                                       duration=song['length'])
+                                       duration=song['duration'])
 
 
 def search(query, library, player):
@@ -66,7 +66,8 @@ def getSongsForArtist(artist, library, player):
   #Get all the songs for the artist we found above
   params = {'method': 'getTracksForArtist', 'artist': artist_key}
   response = do_rdio_query(params)
-  insert_songs_into_rdio_library(response['result']['results'], library)
+  #print "Rdio response {0}".format(json.dumps(response, indent=2))
+  insert_songs_into_rdio_library(response['result'], library)
   bannedIds = library.getBannedIds(player)
   return (LibraryEntry.objects.filter(library=library, artist__iexact=artist)
                               .exclude(id__in=bannedIds)

@@ -535,6 +535,38 @@
   },
 
   {
+    "pk": 13,
+    "model" : "udj.libraryentry",
+    "fields": {
+      "library" : 8,
+      "lib_id" : "t14314000",
+      "title" : "The Devil's Den",
+      "artist" : "Skrillex",
+      "album" : "Bangarang EP",
+      "track" : 4,
+      "genre" : "",
+      "duration" : 292,
+      "is_deleted" : false
+    }
+  },
+
+  {
+    "pk": 14,
+    "model" : "udj.libraryentry",
+    "fields": {
+      "library" : 8,
+      "lib_id" : "t14314059",
+      "title" : "Summit (feat. Ellie Goulding)",
+      "artist" : "Skrillex",
+      "album" : "Bangarang EP",
+      "track" : 7,
+      "genre" : "",
+      "duration" : 374,
+      "is_deleted" : false
+    }
+  },
+
+  {
     "pk": 1,
     "model":"udj.bannedlibraryentry",
     "fields":{
