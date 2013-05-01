@@ -1,6 +1,6 @@
 import json
 import udj
-from udj.models import Participant, SongSet, SongSetEntry, LibraryEntry, Player, PlayerPermissionGroup, PlayerPermission
+from udj.models import Participant, SongSet, SongSetEntry, LibraryEntry, Player, PlayerPermissionGroup, PlayerPermission, Library
 from datetime import datetime
 from udj.testhelpers.tests07.testclasses import ZachTestCase, LeeTestCase, MattTestCase
 """
@@ -8,6 +8,8 @@ from udj.testhelpers.tests07.testclasses import ZachTestCase, LeeTestCase, MattT
 """
 from udj.headers import FORBIDDEN_REASON_HEADER
 from udj.testhelpers.tests07.decorators import EnsureParticipationUpdated
+
+import udj.resolvers.standard
 
 class BeginParticipateTests(ZachTestCase):
   def testSimplePlayer(self):
@@ -147,8 +149,8 @@ class GetAvailableMusicTestsRdio(udj.testhelpers.tests07.testclasses.EnsureActiv
     self.assertEquals(2, len(songResults))
 
 
-"""
 class GetArtistsTests(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest):
+  playerid = 1
 
   @EnsureParticipationUpdated(3,1)
   def testGetArtists(self):
@@ -161,9 +163,19 @@ class GetArtistsTests(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest):
     for artist in jsonResponse:
       self.assertTrue(artist in requiredArtists)
 
+  def testGetArtistSongsStandardResolver(self):
+    songs = udj.resolvers.standard.getSongsForArtist("Third Eye Blind",
+                                       Library.objects.get(pk=1),
+                                       Player.objects.get(pk=1)
+                                      )
+    self.assertEqual(4, len(songs))
+    requiredIds = ['1', '2', '3', '5']
+    for songId in [str(x.id) for x in songs]:
+      self.assertTrue(songId in requiredIds)
+
   @EnsureParticipationUpdated(3,1)
   def testSpecificArtistGet(self):
-    response = self.doGet('/players/1/available_music/artists/Third+Eye+Blind')
+    response = self.doGet('/players/1/available_music/artists/Third Eye Blind')
     self.assertEqual(response.status_code, 200)
     jsonResponse = json.loads(response.content)
     self.assertEqual(4, len(jsonResponse))
@@ -171,6 +183,7 @@ class GetArtistsTests(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest):
     for songId in [x['id'] for x in jsonResponse]:
       self.assertTrue(songId in requiredIds)
 
+"""
 class GetRecentlyPlayed(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest):
 
   @EnsureParticipationUpdated(3,1)

@@ -144,10 +144,11 @@ def getArtists(request, player_id, player):
 @PlayerIsActive
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
-def getArtistSongs(request, player_id, player, givenArtist):
-  toReturn = player.ArtistSongs(givenArtist)
+def getArtistSongs(request, player_id, givenArtist, player):
+  songs = player.ArtistSongs(givenArtist)
   limit = int(request.GET.get('max_results', DEFAULT_MAX_ARTIST_RESULTS))
-  return HttpJSONResponse(json.dumps(toReturn[:limit], cls=UDJEncoder))
+  toReturn = [x for x in islice(songs, 0, limit)]
+  return HttpJSONResponse(json.dumps(toReturn, cls=UDJEncoder))
 
 @AcceptsMethods(['GET'])
 @NeedsAuth
