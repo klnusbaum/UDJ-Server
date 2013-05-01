@@ -215,6 +215,8 @@ class GetRdioArtistsTests(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTe
     #This next part is two fold. not only does it ensure we get the correct
     #overall response, but it ensures that everything we get back
     #was also added to the database like it was supposed to be
+    #the only thing is that it doesn't verify that we get everything we're
+    #supposed to get from Rdio. I can't think of a good way to do that :/
     db_ids = [x.lib_id for x in standard_songs]
     db_ids.extend([x.lib_id for x in rdio_songs])
     self.assertTrue(0 < len(db_ids))
@@ -223,9 +225,8 @@ class GetRdioArtistsTests(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTe
       self.assertTrue(songId in db_ids, "Not found Song: " + str(songId))
 
 
-
-"""
 class GetRecentlyPlayed(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest):
+  playerid=1
 
   @EnsureParticipationUpdated(3,1)
   def testRecentlyPlayed(self):
@@ -244,7 +245,7 @@ class GetRecentlyPlayed(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest
     jsonResponse = json.loads(response.content)
     self.assertEqual(1, len(jsonResponse))
 
-
+"""
 class GetRandoms(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest):
 
   @EnsureParticipationUpdated(3,1)
