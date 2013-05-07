@@ -171,8 +171,9 @@ def getRecentlyPlayed(request, player_id, player):
 def getRandomSongsForPlayer(request, player_id, player):
   rand_limit = int(request.GET.get('max_randoms',40))
   rand_limit = min(rand_limit,100)
-  randomSongs = player.Randoms[:rand_limit]
-  return HttpJSONResponse(json.dumps(randomSongs, cls=UDJEncoder))
+  toReturn = [x for x in islice(player.Randoms, 0, rand_limit)]
+  return HttpJSONResponse(json.dumps(toReturn, cls=UDJEncoder))
+
 
 """
 @csrf_exempt

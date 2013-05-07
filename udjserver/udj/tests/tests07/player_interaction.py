@@ -245,8 +245,8 @@ class GetRecentlyPlayed(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest
     jsonResponse = json.loads(response.content)
     self.assertEqual(1, len(jsonResponse))
 
-"""
 class GetRandoms(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest):
+  playerid=1
 
   @EnsureParticipationUpdated(3,1)
   def testSimpleGetRandom(self):
@@ -256,11 +256,30 @@ class GetRandoms(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest):
     songResults = json.loads(response.content)
     self.assertEquals(2, len(songResults))
     for song in songResults:
-      self.assertFalse(
-          LibraryEntry.objects.get(library__id=1, lib_id=song['id']).is_deleted)
-      self.assertFalse(
-          LibraryEntry.objects.get(library__id=1, lib_id=song['id']).is_banned(Player.objects.get(pk=1)))
+      self.assertFalse(LibraryEntry.objects.get(library__id=int(song['library_id']),
+                                                lib_id=song['id']).is_deleted)
+      self.assertFalse(LibraryEntry.objects.get(library__id=int(song['library_id']),
+                                                lib_id=song['id'])
+                                                .is_banned(Player.objects.get(pk=1)))
 
+class GetRdioRandoms(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest):
+  playerid=8
+
+  @EnsureParticipationUpdated(3,8)
+  def testSimpleGetRandom(self):
+    response = self.doGet('/players/8/available_music/random_songs?max_randoms=4')
+    self.assertEqual(response.status_code, 200)
+    self.isJSONResponse(response)
+    songResults = json.loads(response.content)
+    self.assertEquals(4, len(songResults))
+    for song in songResults:
+      self.assertFalse(LibraryEntry.objects.get(library__id=int(song['library_id']),
+                                                lib_id=song['id']).is_deleted)
+      self.assertFalse(LibraryEntry.objects.get(library__id=int(song['library_id']),
+                                                lib_id=song['id'])
+                                                .is_banned(Player.objects.get(pk=8)))
+
+"""
 class LogoutTests(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest):
   def testLogout(self):
     response = self.doDelete('/players/1/users/user')

@@ -88,6 +88,7 @@ def randoms(library, player):
       (datetime.now - last_rdio_heavy_rotation_query).days > 0):
     load_up_heavy_rotation(library)
   """
+  bannedIds = library.getBannedIds(player)
   return (LibraryEntry.objects.filter(library=library)
                               .exclude(id__in=bannedIds)
                               .exclude(is_deleted=True)
