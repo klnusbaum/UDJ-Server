@@ -51,16 +51,13 @@ urlpatterns += patterns('udj.views.views07.player_interaction',
   (r'^players/(?P<player_id>\d+)/users/user$', 'modPlayerParticiapants'),
   (r'^players/(?P<player_id>\d+)/users$', 'getUsersForPlayer'),
   (r'^players/(?P<player_id>\d+)/song_sets$', 'getSongSetsForPlayer'),
-(r'^players/(?P<player_id>\d+)/available_music$', 'getAvailableMusic'),
+  (r'^players/(?P<player_id>\d+)/available_music$', 'getAvailableMusic'),
+  (r'^players/(?P<player_id>\d+)/available_music/artists$', 'getArtists'),
+  (r'^players/(?P<player_id>\d+)/available_music/artists/(?P<givenArtist>.*)$', 'getArtistSongs'),
+  (r'^players/(?P<player_id>\d+)/recently_played$', 'getRecentlyPlayed'),
+  (r'^players/(?P<player_id>\d+)/available_music/random_songs$', 'getRandomSongsForPlayer'),
+  (r'^players/(?P<player_id>\d+)/current_song$', 'modCurrentSong'),
 )
-
-"""
-(r'^players/(?P<player_id>\d+)/available_music/artists$', 'getArtists'),
-(r'^players/(?P<player_id>\d+)/available_music/artists/(?P<givenArtist>.*)$', 'getArtistSongs'),
-(r'^players/(?P<player_id>\d+)/available_music/random_songs$', 'getRandomSongsForPlayer'),
-(r'^players/(?P<player_id>\d+)/recently_played$', 'getRecentlyPlayed'),
-(r'^players/(?P<player_id>\d+)/current_song$', 'modCurrentSong'),
-"""
 
 """
 urlpatterns += patterns('udj.views.views07.favorites',

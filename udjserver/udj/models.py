@@ -175,6 +175,38 @@ class Library(models.Model):
 
   Writers = property(getWriters)
 
+  def getBannedIds(self, player):
+    return (BannedLibraryEntry.objects.filter(player=player, song__library=self)
+                                      .values_list('song__id'))
+
+  def randoms(self, player):
+    resolver_module = __import__('udj.resolvers.'+self.resolver,
+                                 globals(),
+                                 locals(),
+                                 ['randoms'],
+                                 -1)
+    return resolver_module.randoms(self, player)
+
+  def search(self, player, query):
+    resolver_module = __import__('udj.resolvers.'+self.resolver, globals(), locals(), ['search'], -1)
+    return resolver_module.search(query, self, player)
+
+  def artists(self, player):
+    resolver_module = __import__('udj.resolvers.'+self.resolver,
+                                  globals(),
+                                  locals(),
+                                  ['artists'],
+                                  -1)
+    return resolver_module.artists(self, player)
+
+  def artistSongs(self, artist, player):
+    resolver_module = __import__('udj.resolvers.'+self.resolver,
+                                  globals(),
+                                  locals(),
+                                  ['getSongsForArtist'],
+                                  -1)
+    return resolver_module.getSongsForArtist(artist, self, player)
+
   def __unicode__(self):
     return "Library: " + self.name
 
@@ -324,16 +356,6 @@ class Player(models.Model):
 
   HasPassword = property(getHasPassword)
 
-  def getAllSongs(self):
-    associated_lib_ids = (AssociatedLibrary.objects.filter(player=self, enabled=True)
-                          .values_list('library__id', flat=True))
-    banned_entries = (BannedLibraryEntry.objects.filter(player=self)
-                      .values_list('song__id', flat=True))
-    return (LibraryEntry.objects.filter(library__id__in=associated_lib_ids, is_deleted=False)
-            .exclude(pk__in=banned_entries))
-
-  AllSongs = property(getAllSongs)
-
   def user_has_permission(self, permission, user):
     defined_permissions = PlayerPermission.objects.filter(player=self, permission=permission)
 
@@ -358,16 +380,18 @@ class Player(models.Model):
   SongSets = property(getSongSets)
 
   def getArtists(self):
-    return (self.AllSongs
-            .distinct('artist')
-            .order_by('artist')
-            .values_list('artist', flat=True))
+    lib_results = [x.artists(self) for x in self.EnabledLibraries]
+    from itertools import chain
+    full_results = reduce(chain, lib_results)
+    return full_results
 
   Artists = property(getArtists)
 
-
   def ArtistSongs(self, artist):
-    return self.AllSongs.filter(artist=artist)
+    lib_results = [x.artistSongs(artist, self) for x in self.EnabledLibraries]
+    from itertools import chain
+    full_results = reduce(chain, lib_results)
+    return full_results
 
   def getRecentlyPlayed(self):
     #This is weird, for some reason I have to put time_played in the distinct field
@@ -381,14 +405,16 @@ class Player(models.Model):
   RecentlyPlayed = property(getRecentlyPlayed)
 
   def getRandoms(self):
-    return self.getAllSongs().order_by('?')
+    random_results = [x.randoms(self) for x in self.EnabledLibraries]
+    from itertools import chain
+    return reduce(chain, random_results)
 
   Randoms = property(getRandoms)
 
   def AvailableMusic(self, query):
-    return self.AllSongs.filter(Q(title__icontains=query) |
-                                     Q(artist__icontains=query) |
-                                     Q(album__icontains=query))
+    lib_results = [x.search(self, query) for x in self.EnabledLibraries]
+    from itertools import chain
+    return reduce(chain, lib_results)
 
   def getActivePlaylist(self):
     queuedEntries = ActivePlaylistEntry.objects.filter(player=self, state='QE')

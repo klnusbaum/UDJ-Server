@@ -92,9 +92,8 @@ class LibraryAdmin(admin.ModelAdmin):
     'track', 
     'genre', 
     'duration', 
-    'is_banned', 
     'is_deleted')
-  list_filter = ('library', 'is_deleted', 'is_banned')
+  list_filter = ('library', 'is_deleted')
 
 class VoteAdmin(admin.ModelAdmin):
   list_display = ('playlist_entry', 'user', 'weight')

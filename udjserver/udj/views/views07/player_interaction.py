@@ -5,7 +5,8 @@ from udj.views.views07.authdecorators import NeedsAuth, IsntOwner, HasPlayerPerm
 from udj.views.views07.decorators import PlayerExists, PlayerIsActive, AcceptsMethods, UpdatePlayerActivity, HasNZJSONParams, NeedsJSON, HasNZParams
 from udj.views.views07.responses import HttpJSONResponse, HttpResponseMissingResource
 from udj.views.views07.JSONCodecs import UDJEncoder
-
+from settings import DEFAULT_MAX_SONGS_RESULTS, DEFAULT_MAX_ARTIST_RESULTS
+from itertools import islice
 
 
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseBadRequest
@@ -119,11 +120,10 @@ def getUsersForPlayer(request, player_id, player):
 @HasNZParams(['query'])
 def getAvailableMusic(request, player_id, player):
   query = request.GET['query']
-  toReturn = player.AvailableMusic(query)
-  if 'max_results' in request.GET:
-    toReturn = toReturn[:int(request.GET['max_results'])]
-
-  return HttpJSONResponse(json.dumps(toReturn, cls=UDJEncoder))
+  available_music = player.AvailableMusic(query)
+  limit = int(request.GET.get('max_results', DEFAULT_MAX_SONGS_RESULTS))
+  available_music = [x for x in islice(available_music, limit)]
+  return HttpJSONResponse(json.dumps(available_music, cls=UDJEncoder))
 
 
 
@@ -134,7 +134,9 @@ def getAvailableMusic(request, player_id, player):
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
 def getArtists(request, player_id, player):
-  return HttpJSONResponse(json.dumps(player.Artists, cls=UDJEncoder))
+  limit = int(request.GET.get('max_results', DEFAULT_MAX_ARTIST_RESULTS))
+  artists = [x for x in islice(player.Artists, 0, limit)]
+  return HttpJSONResponse(json.dumps(artists, cls=UDJEncoder))
 
 @AcceptsMethods(['GET'])
 @NeedsAuth
@@ -142,10 +144,10 @@ def getArtists(request, player_id, player):
 @PlayerIsActive
 @IsOwnerOrParticipates
 @UpdatePlayerActivity
-def getArtistSongs(request, player_id, player, givenArtist):
-
-  toReturn = player.ArtistSongs(givenArtist)
-
+def getArtistSongs(request, player_id, givenArtist, player):
+  songs = player.ArtistSongs(givenArtist)
+  limit = int(request.GET.get('max_results', DEFAULT_MAX_ARTIST_RESULTS))
+  toReturn = [x for x in islice(songs, 0, limit)]
   return HttpJSONResponse(json.dumps(toReturn, cls=UDJEncoder))
 
 @AcceptsMethods(['GET'])
@@ -169,8 +171,9 @@ def getRecentlyPlayed(request, player_id, player):
 def getRandomSongsForPlayer(request, player_id, player):
   rand_limit = int(request.GET.get('max_randoms',40))
   rand_limit = min(rand_limit,100)
-  randomSongs = player.Randoms[:rand_limit]
-  return HttpJSONResponse(json.dumps(randomSongs, cls=UDJEncoder))
+  toReturn = [x for x in islice(player.Randoms, 0, rand_limit)]
+  return HttpJSONResponse(json.dumps(toReturn, cls=UDJEncoder))
+
 
 """
 @csrf_exempt

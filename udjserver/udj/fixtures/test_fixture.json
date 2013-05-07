@@ -96,7 +96,8 @@
       "description" : "The Rdio music library",
       "pub_key" : "",
       "read_permission" : "PU",
-      "write_permission" : "NO"
+      "write_permission" : "NO",
+      "resolver" : "rdio"
     }
   },
 
@@ -318,6 +319,26 @@
     }
   },
 
+  {
+    "pk": 8,
+    "model" :"udj.associatedlibrary",
+    "fields" : {
+      "library" : 8,
+      "player" : 8,
+      "enabled" : true
+    }
+  },
+
+  {
+    "pk": 9,
+    "model" :"udj.associatedlibrary",
+    "fields" : {
+      "library" : 1,
+      "player" : 8,
+      "enabled" : true
+    }
+  },
+
 
   {
     "pk": 1,
@@ -510,6 +531,38 @@
       "genre": "Rock",
       "duration": 255,
       "is_deleted": false
+    }
+  },
+
+  {
+    "pk": 13,
+    "model" : "udj.libraryentry",
+    "fields": {
+      "library" : 8,
+      "lib_id" : "t14314000",
+      "title" : "The Devil's Den",
+      "artist" : "Skrillex",
+      "album" : "Bangarang EP",
+      "track" : 4,
+      "genre" : "",
+      "duration" : 292,
+      "is_deleted" : false
+    }
+  },
+
+  {
+    "pk": 14,
+    "model" : "udj.libraryentry",
+    "fields": {
+      "library" : 8,
+      "lib_id" : "t14314059",
+      "title" : "Summit (feat. Ellie Goulding)",
+      "artist" : "Skrillex",
+      "album" : "Bangarang EP",
+      "track" : 7,
+      "genre" : "",
+      "duration" : 374,
+      "is_deleted" : false
     }
   },
 
@@ -826,6 +879,18 @@
       "volume": 5,
       "sorting_algo" : 1,
       "size_limit" : 2
+    }
+  },
+
+  {
+    "pk": 8,
+    "model": "udj.player",
+    "fields": {
+      "owning_user" : 2,
+      "name" : "Rdio + standard player",
+      "state" : "PL",
+      "volume": 5,
+      "sorting_algo" : 1
     }
   },
 
@@ -2535,6 +2600,16 @@
       "time_joined": "2012-08-11 9:34:22",
       "time_last_interaction" : "2012-08-11 10:27:33",
       "logout_flag" : true
+    }
+  },
+  {
+    "pk": 11,
+    "model": "udj.participant",
+    "fields": {
+      "player": 8,
+      "user": 3,
+      "time_joined": "2012-04-14 11:54:22",
+      "time_last_interaction" : "2012-04-14 12:30:33"
     }
   },
 

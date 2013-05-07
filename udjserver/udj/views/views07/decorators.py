@@ -78,7 +78,6 @@ def PlayerExists(function):
       kwargs['player'] = actualPlayer
       return function(*args, **kwargs)
     except ObjectDoesNotExist:
-      print "decorator failed\n"
       return HttpResponseMissingResource('player')
   return wrapper
 
