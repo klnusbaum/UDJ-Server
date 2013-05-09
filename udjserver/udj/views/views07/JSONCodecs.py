@@ -26,7 +26,11 @@ class UDJEncoder(json.JSONEncoder):
       return {
         'id' : str(obj.id),
         'name' : obj.name,
-        'description' : obj.description
+        'description' : obj.description,
+        'uses_adder' : obj.uses_adder,
+        'uses_time_added' : obj.uses_time_added,
+        'uses_upvotes' : obj.uses_upvotes,
+        'uses_downvotes' : obj.uses_downvotes
       }
     elif isinstance(obj, Player):
       toReturn = {

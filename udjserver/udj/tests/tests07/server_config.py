@@ -1,7 +1,7 @@
 import json
 from udj.testhelpers.tests07.testclasses import KurtisTestCase
 from settings import MIN_SEARCH_RADIUS, MAX_SEARCH_RADIUS, DEFAULT_PLAYER_PERMISSIONS
-from udj.models import PlayerPermission
+from udj.models import PlayerPermission, SortingAlgorithm
 
 class ServerConfigTests(KurtisTestCase):
 
@@ -10,11 +10,15 @@ class ServerConfigTests(KurtisTestCase):
     self.assertEqual(200, response.status_code)
     self.isJSONResponse(response)
     sortingAlgo = json.loads(response.content)
-    self.assertEqual(3, len(sortingAlgo))
-    firstAlgo = sortingAlgo[0]
-    self.assertTrue('id' in firstAlgo)
-    self.assertTrue('name' in firstAlgo)
-    self.assertTrue('description' in firstAlgo)
+    self.assertEqual(3, len(SortingAlgorithm.objects.all()))
+    for algo in sortingAlgo:
+      actualAlgo = SortingAlgorithm.objects.get(pk=int(algo['id']))
+      self.assertEqual(actualAlgo.name, algo['name'])
+      self.assertEqual(actualAlgo.description, algo['description'])
+      self.assertEqual(actualAlgo.uses_adder, algo['uses_adder'])
+      self.assertEqual(actualAlgo.uses_time_added, algo['uses_time_added'])
+      self.assertEqual(actualAlgo.uses_upvotes, algo['uses_upvotes'])
+      self.assertEqual(actualAlgo.uses_downvotes, algo['uses_downvotes'])
 
   def testGetSearchRadii(self):
     response = self.doGet('/player_search_radius')

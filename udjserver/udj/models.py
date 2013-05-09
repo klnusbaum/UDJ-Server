@@ -24,6 +24,10 @@ class SortingAlgorithm(models.Model):
   name = models.CharField(max_length=200, unique=True)
   description = models.CharField(max_length=500)
   function_name = models.CharField(max_length=200, unique=True)
+  uses_adder = models.BooleanField(default=True)
+  uses_time_added = models.BooleanField(default=True)
+  uses_upvotes = models.BooleanField(default=True)
+  uses_downvotes = models.BooleanField(default=True)
 
   def __unicode__(self):
     return self.name

@@ -2865,7 +2865,11 @@
     "fields": {
       "name" : "Total Votes",
       "description" : "Sorts the playlist be calculating each songs total votes (upvotes - downvotes). Ties are broken by the time each song was added (with preference given to the song that was added first",
-      "function_name" : "totalVotes"
+      "function_name" : "totalVotes",
+      "uses_adder" : false,
+      "uses_time_added" : true,
+      "uses_upvotes" : true,
+      "uses_downvotes" : true
     }
   },
   {
@@ -2874,7 +2878,11 @@
     "fields": {
       "name" : "Time Added",
       "description" : "Sorts the playlist songs by the time the songs were added.",
-      "function_name" : "timeAdded"
+      "function_name" : "timeAdded",
+      "uses_adder" : false,
+      "uses_time_added" : true,
+      "uses_upvotes" : false,
+      "uses_downvotes" : false
     }
   },
   {
@@ -2883,7 +2891,11 @@
     "fields": {
       "name" : "Round Robin",
       "description" : "Sorts the playlist songs by the time the songs were added and spaces songs out by adder.",
-      "function_name" : "roundRobin"
+      "function_name" : "roundRobin",
+      "uses_adder" : true,
+      "uses_time_added" : true,
+      "uses_upvotes" : true,
+      "uses_downvotes" : true
     }
   },
 
