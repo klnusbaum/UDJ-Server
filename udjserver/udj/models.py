@@ -152,28 +152,27 @@ class Library(models.Model):
         return True
 
 
-  def getOwner(self):
+
+  @property
+  def Owner(self):
     try:
       owned_lib = OwnedLibrary.objects.get(library=self)
       return owned_lib.owner
     except ObjectDoesNotExist:
       return None
 
-  Owner = property(getOwner)
-
-  def getReaders(self):
+  @property
+  def Readers(self):
     user_ids = (AuthorizedLibraryUser.objects.filter(library=self, user_type=u'RE')
                                              .values_list('user__id', flat=True))
     return User.objects.filter(pk__in=user_ids)
 
-  Readers = property(getReaders)
 
-  def getWriters(self):
+  @property
+  def Writer(self):
     user_ids = (AuthorizedLibraryUser.objects.filter(library=self, user_type=u'WR')
                                              .values_list('user__id', flat=True))
     return User.objects.filter(pk__in=user_ids)
-
-  Writers = property(getWriters)
 
   def getBannedIds(self, player):
     return (BannedLibraryEntry.objects.filter(player=player, song__library=self)
@@ -270,17 +269,24 @@ class ActivePlaylistEntry(models.Model):
   adder = models.ForeignKey(User)
   state = models.CharField(max_length=2, choices=STATE_CHOICES, default=u'QE')
 
-  def upvote_count(self):
+  @property
+  def UpvoteCount(self):
     return self.vote_set.filter(weight=1).count()
 
-  def downvote_count(self):
+
+  @property
+  def DownvoteCount(self):
     return self.vote_set.filter(weight=-1).count()
 
-  def upvoters(self):
+  @property
+  def Upvoters(self):
     return  [vote.user for vote in  Vote.objects.filter(playlist_entry=self, weight=1 )]
 
-  def downvoters(self):
+
+  @property
+  def Downvoters(self):
     return  [vote.user for vote in  Vote.objects.filter(playlist_entry=self, weight=-1 )]
+
 
   @staticmethod
   def isQueuedOrPlaying(songId, library, player):
@@ -327,6 +333,7 @@ class SongSet(models.Model):
   owner = models.ForeignKey(User)
   date_created = models.DateTimeField()
 
+  @property
   def Songs(self):
     return SongSetEntry.objects.filter(songset=self)
 
@@ -339,11 +346,11 @@ class SongSet(models.Model):
 
 
 class Player(models.Model):
-  PLAYER_STATE_CHOICES = (('IN', u'Inactive'), ('PL', u'Playing'), ('PA', u'Paused'))
+  PLAYER_STATE_CHOICES = (('IN', u'inactive'), ('PL', u'playing'), ('PA', u'paused'))
 
   owning_user = models.ForeignKey(User)
   name = models.CharField(max_length=200)
-  state = models.CharField(max_length=2, default='IN')
+  state = models.CharField(max_length=2, default='IN', choices=PLAYER_STATE_CHOICES)
   volume = models.IntegerField(default=5, validators=[zero_ten_validator])
   sorting_algo = models.ForeignKey(SortingAlgorithm)
   size_limit = models.IntegerField(null=True, blank=True)
@@ -351,10 +358,9 @@ class Player(models.Model):
   class Meta:
     unique_together = ('owning_user', 'name')
 
-  def getHasPassword(self):
+  @property
+  def HasPassword(self):
     return PlayerPassword.objects.filter(player=self).exists()
-
-  HasPassword = property(getHasPassword)
 
   def user_has_permission(self, permission, user):
     defined_permissions = PlayerPermission.objects.filter(player=self, permission=permission)
@@ -374,18 +380,16 @@ class Player(models.Model):
     (ActivePlaylistEntry.objects.select_for_update().filter(player=self)
      .exclude(state='FN').exclude(state='RM'))
 
-  def getSongSets(self):
+  @property
+  def SongSets(self):
     return SongSet.objects.filter(player=self)
 
-  SongSets = property(getSongSets)
-
-  def getArtists(self):
+  @property
+  def Artists(self):
     lib_results = [x.artists(self) for x in self.EnabledLibraries]
     from itertools import chain
     full_results = reduce(chain, lib_results)
     return full_results
-
-  Artists = property(getArtists)
 
   def ArtistSongs(self, artist):
     lib_results = [x.artistSongs(artist, self) for x in self.EnabledLibraries]
@@ -393,7 +397,8 @@ class Player(models.Model):
     full_results = reduce(chain, lib_results)
     return full_results
 
-  def getRecentlyPlayed(self):
+  @property
+  def RecentlyPlayed(self):
     #This is weird, for some reason I have to put time_played in the distinct field
     #in theory this shouldn't hurt anything (since all the time_playeds "should" be different).
     #But it's still weird...
@@ -402,21 +407,19 @@ class Player(models.Model):
             .order_by('-time_played')
             .distinct('time_played', 'playlist_entry__song__id'))
 
-  RecentlyPlayed = property(getRecentlyPlayed)
-
-  def getRandoms(self):
+  @property
+  def Randoms(self):
     random_results = [x.randoms(self) for x in self.EnabledLibraries]
     from itertools import chain
     return reduce(chain, random_results)
-
-  Randoms = property(getRandoms)
 
   def AvailableMusic(self, query):
     lib_results = [x.search(self, query) for x in self.EnabledLibraries]
     from itertools import chain
     return reduce(chain, lib_results)
 
-  def getActivePlaylist(self):
+  @property
+  def ActivePlaylist(self):
     queuedEntries = ActivePlaylistEntry.objects.filter(player=self, state='QE')
     queuedEntries = self.sortPlaylist(queuedEntries)
     playlist={'active_playlist' : queuedEntries}
@@ -431,15 +434,10 @@ class Player(models.Model):
     playlist['state'] = 'playing' if self.state=='PL' else 'paused'
     return playlist
 
-
-  ActivePlaylist = property(getActivePlaylist)
-
-
-  def getIsFull(self):
+  @property
+  def IsFull(self):
     return (self.size_limit != None and
             self.ActiveParticipants.count() < self.size_limit)
-
-  IsFull = property(getIsFull)
 
   def isAdmin(self, user):
     return user in self.Admins
@@ -450,46 +448,40 @@ class Player(models.Model):
   def isKicked(self, user):
     return self.KickedUsers.filter(user=user).exists()
 
-  def getActiveParticipants(self):
+  @property
+  def ActiveParticipants(self):
     return Participant.objects.filter(player=self,
       time_last_interaction__gt=(datetime.now() - timedelta(hours=1))).exclude(kick_flag=True).exclude(logout_flag=True)
 
-  ActiveParticipants = property(getActiveParticipants)
-
-  def getAdmins(self):
+  @property
+  def Admins(self):
     admin_group = PlayerPermissionGroup.objects.filter(player=self, name=u'admin')
     member_ids = (PlayerPermissionGroupMember.objects.filter(permission_group=admin_group)
                   .values_list('user__id', flat=True))
     return User.objects.filter(pk__in=member_ids)
 
-  Admins = property(getAdmins)
-
-  def getKickedUsers(self):
+  @property
+  def KickedUsers(self):
     return Participant.objects.filter(player=self, kick_flag=True)
 
-  KickedUsers = property(getKickedUsers)
 
-  def getBannedUsers(self):
+  @property
+  def BannedUsers(self):
     return Participant.objects.filter(player=self, ban_flag=True)
-
-  BannedUsers = property(getBannedUsers)
 
   def sortPlaylist(self, toSort):
     from udj import playlistalgos
     toCall = getattr(playlistalgos, self.sorting_algo.function_name)
     return toCall(toSort)
 
-
-  def getDefaultLibrary(self):
+  @property
+  def DefaultLibrary(self):
     return DefaultLibrary.objects.get(player=self).library
 
-  DefaultLibrary = property(getDefaultLibrary)
-
-  def getEnabledLibraries(self):
+  @property
+  def EnabledLibraries(self):
     lib_ids = AssociatedLibrary.objects.filter(player=self).values_list('library__id', flat=True)
     return Library.objects.filter(pk__in=lib_ids)
-
-  EnabledLibraries = property(getEnabledLibraries)
 
   def enable_library(self, library):
     association, created = AssociatedLibrary.objects.get_or_create(library=library,
@@ -523,10 +515,9 @@ class Player(models.Model):
     toRemove.delete()
 
 
-  def getPermissionGroups(self):
+  @property
+  def PermissionGroups(self):
     return PlayerPermissionGroup.objects.filter(player=self)
-
-  PermissionGroups = property(getPermissionGroups)
 
   def __unicode__(self):
     return self.name + " player"
@@ -608,12 +599,14 @@ class PlayerPermissionGroup(models.Model):
     return user.id in (PlayerPermissionGroupMember.objects.filter(permission_group=self)
                       .values_list('user__id', flat=True))
 
-  def getMembers(self):
+  @property
+  def Members(self):
+    """
+    There's gotta be a cleaner way to do this...
+    """
     group_member_ids = (PlayerPermissionGroupMember.objects.filter(permission_group=self)
                                                            .values_list('user__id'))
     return User.objects.filter(pk__in=group_member_ids)
-
-  Members = property(getMembers)
 
   def __unicode__(self):
     return self.name

@@ -41,8 +41,8 @@ class UDJEncoder(json.JSONEncoder):
     elif isinstance(obj, ActivePlaylistEntry):
       toReturn =  {
         'song' : obj.song,
-        'upvoters' : obj.upvoters(),
-        'downvoters' : obj.downvoters(),
+        'upvoters' : obj.Upvoters,
+        'downvoters' : obj.Downvoters,
         'time_added' : obj.time_added.replace(microsecond=0).isoformat(),
         'adder' : obj.adder
       }
@@ -102,7 +102,7 @@ class UDJEncoder(json.JSONEncoder):
       return {
           "name" : obj.name,
           "description" : obj.description,
-          "songs" : obj.Songs(),
+          "songs" : obj.Songs,
           "owner" : obj.owner,
           "date_created" : obj.date_created.replace(microsecond=0).isoformat()
       }

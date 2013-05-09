@@ -160,7 +160,8 @@ def getRecentlyPlayed(request, player_id, player):
   songs_limit = int(request.GET.get('max_songs',40))
   songs_limit = min(songs_limit,100)
   recentlyPlayed = player.RecentlyPlayed[:songs_limit]
-  return HttpJSONResponse(json.dumps(recentlyPlayed, cls=UDJEncoder))
+  toReturn = HttpJSONResponse(json.dumps(recentlyPlayed, cls=UDJEncoder))
+  return toReturn
 
 @AcceptsMethods(['GET'])
 @NeedsAuth

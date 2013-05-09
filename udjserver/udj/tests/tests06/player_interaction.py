@@ -108,7 +108,7 @@ class GetSongSetTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):
     expectedNames = ['Third Eye Blind', 'Mars Volta']
     for songset in songsets:
       self.assertTrue(songset['name'] in expectedNames)
-      expectedSongs = SongSet.objects.get(name=songset['name'], player__id=1).Songs()
+      expectedSongs = SongSet.objects.get(name=songset['name'], player__id=1).Songs
       expectedSongIds = [x.song.lib_id for x in expectedSongs]
       self.assertTrue(len(expectedSongIds), len(songset['songs']))
       for song in songset['songs']:

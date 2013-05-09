@@ -100,19 +100,19 @@ class ParticipantPlaylistModTests(udj.testhelpers.tests06.testclasses.EnsureActi
 
   @EnsureParticipationUpdated(3, 1)
   def testAddQueuedSong(self):
-    initialUpvoteCount = len(ActivePlaylistEntry.objects.get(song__library__id=1, song__lib_id=1).upvoters())
+    initialUpvoteCount = len(ActivePlaylistEntry.objects.get(song__library__id=1, song__lib_id=1).Upvoters)
     response = self.doPut('/udj/0_6/players/1/active_playlist/songs/1')
     self.assertEqual(response.status_code, 200)
-    afterUpvoteCount = len(ActivePlaylistEntry.objects.get(song__library__id=1, song__lib_id=1).upvoters())
+    afterUpvoteCount = len(ActivePlaylistEntry.objects.get(song__library__id=1, song__lib_id=1).Upvoters)
     self.assertEqual(initialUpvoteCount+1, afterUpvoteCount)
 
 
   @EnsureParticipationUpdated(3, 1)
   def testAddPlayingSong(self):
-    initialUpvoteCount = len(ActivePlaylistEntry.objects.get(song__library__id=1, song__lib_id=1).upvoters())
+    initialUpvoteCount = len(ActivePlaylistEntry.objects.get(song__library__id=1, song__lib_id=1).Upvoters)
     response = self.doPut('/udj/0_6/players/1/active_playlist/songs/6')
     self.assertEqual(response.status_code, 200)
-    afterUpvoteCount = len(ActivePlaylistEntry.objects.get(song__library__id=1, song__lib_id=1).upvoters())
+    afterUpvoteCount = len(ActivePlaylistEntry.objects.get(song__library__id=1, song__lib_id=1).Upvoters)
     self.assertEqual(initialUpvoteCount, afterUpvoteCount)
 
   @EnsureParticipationUpdated(3, 1)
@@ -138,14 +138,14 @@ class ParticipantPlaylistModTests(udj.testhelpers.tests06.testclasses.EnsureActi
       song__library__id=1,
       song__lib_id='9',
       state="QE")
-    self.assertEqual(1, len(song9.upvoters()))
-    self.assertEqual(0, len(song9.downvoters()))
+    self.assertEqual(1, len(song9.Upvoters))
+    self.assertEqual(0, len(song9.Downvoters))
     song10 = ActivePlaylistEntry.objects.get(
       song__library__id='1',
       song__lib_id='10',
       state="QE")
-    self.assertEqual(1, len(song10.upvoters()))
-    self.assertEqual(0, len(song10.downvoters()))
+    self.assertEqual(1, len(song10.Upvoters))
+    self.assertEqual(0, len(song10.Downvoters))
 
   @EnsureParticipationUpdated(3,1)
   def testForbiddenRemove(self):
@@ -169,7 +169,7 @@ class ParticipantPlaylistModTests(udj.testhelpers.tests06.testclasses.EnsureActi
 
   @EnsureParticipationUpdated(3,1)
   def testMultiAddWithDuplicateSong(self):
-    initialUpvoteCount = len(ActivePlaylistEntry.objects.get(song__library__id=1, song__lib_id=1).upvoters())
+    initialUpvoteCount = len(ActivePlaylistEntry.objects.get(song__library__id=1, song__lib_id=1).Upvoters)
 
     toAdd = [1,10]
     toRemove = []
@@ -184,15 +184,15 @@ class ParticipantPlaylistModTests(udj.testhelpers.tests06.testclasses.EnsureActi
       song__library__id='1',
       song__lib_id='1',
       state="QE")
-    afterUpvoteCount = len(ActivePlaylistEntry.objects.get(song__library__id=1, song__lib_id=1).upvoters())
+    afterUpvoteCount = len(ActivePlaylistEntry.objects.get(song__library__id=1, song__lib_id=1).Upvoters)
     self.assertEqual(initialUpvoteCount+1, afterUpvoteCount)
 
     song10 = ActivePlaylistEntry.objects.get(
       song__library__id='1',
       song__lib_id='10',
       state="QE")
-    self.assertEqual(1, len(song10.upvoters()))
-    self.assertEqual(0, len(song10.downvoters()))
+    self.assertEqual(1, len(song10.Upvoters))
+    self.assertEqual(0, len(song10.Downvoters))
 
 
 class VotingTests(udj.testhelpers.tests06.testclasses.EnsureActiveJeffTest):

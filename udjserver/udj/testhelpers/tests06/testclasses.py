@@ -340,7 +340,9 @@ class PlaylistModTests(DoesServerOpsTestCase):
       state="QE")
 
   def testDuplicateAddMultiMod(self):
-    sixInitVoteCount = len(ActivePlaylistEntry.objects.get(player__id=1, song__library__id=1, song__lib_id='6').upvoters())
+    sixInitVoteCount = len(ActivePlaylistEntry.objects.get(player__id=1,
+                                                           song__library__id=1,
+                                                           song__lib_id=6).Upvoters)
 
     toAdd = [6,9]
     toRemove = [3]
@@ -365,7 +367,9 @@ class PlaylistModTests(DoesServerOpsTestCase):
       state="RM")
 
     #ensure the vote count for 6 hasn't changed since it's the current song.
-    sixNewVoteCount = len(ActivePlaylistEntry.objects.get(player__id=1, song__lib_id='6', song__library__id=1 ).upvoters())
+    sixNewVoteCount = len(ActivePlaylistEntry.objects.get(player__id=1, 
+                                                          song__lib_id=6,
+                                                          song__library__id=1).Upvoters)
     self.assertEqual(sixInitVoteCount, sixNewVoteCount)
 
 class LibTestCases(DoesServerOpsTestCase):

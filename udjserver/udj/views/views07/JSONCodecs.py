@@ -36,7 +36,9 @@ class UDJEncoder(json.JSONEncoder):
         "has_password" : True if PlayerPassword.objects.filter(player=obj).exists() else False,
         "sorting_algo": obj.sorting_algo,
         "num_active_users" : len(obj.ActiveParticipants),
-        "size_limit" : obj.size_limit if obj.size_limit != None else 0
+        "size_limit" : obj.size_limit if obj.size_limit != None else 0,
+        "state" : obj.get_state_display(),
+        "volume" : obj.volume
       }
 
       try:
@@ -82,7 +84,7 @@ class UDJEncoder(json.JSONEncoder):
       return {
           "name" : obj.name,
           "description" : obj.description,
-          "songs" : obj.Songs(),
+          "songs" : obj.Songs,
           "owner" : obj.owner,
           "date_created" : obj.date_created.replace(microsecond=0).isoformat()
       }
@@ -91,28 +93,25 @@ class UDJEncoder(json.JSONEncoder):
     elif isinstance(obj, ActivePlaylistEntry):
       toReturn =  {
         'song' : obj.song,
-        'upvoters' : obj.upvoters(),
-        'downvoters' : obj.downvoters(),
+        'upvoters' : obj.Upvoters,
+        'downvoters' : obj.Downvoters,
         'time_added' : obj.time_added.replace(microsecond=0).isoformat(),
         'adder' : obj.adder
       }
 
-      if obj.state == 'PL' or obj.state == 'FN':
-        toReturn['time_played'] = (PlaylistEntryTimePlayed.objects.get(playlist_entry=obj)
-                                                                  .time_played
-                                                                  .replace(microsecond=0)
-                                                                  .isoformat())
       return toReturn
 
     elif isinstance(obj, PlaylistEntryTimePlayed):
-      return obj.playlist_entry
+      toReturn = self.default(obj.playlist_entry)
+      toReturn['time_played'] = obj.time_played .replace(microsecond=0) .isoformat()
+      return toReturn
 
     elif isinstance(obj, Favorite):
       return obj.favorite_song
 
     elif isinstance(obj, LibraryEntry):
       return {
-          'id' : obj.lib_id,
+          'id' : str(obj.lib_id),
           'library_id' : str(obj.library.id),
           'title' : obj.title,
           'artist' : obj.artist,
