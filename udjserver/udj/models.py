@@ -28,6 +28,7 @@ class SortingAlgorithm(models.Model):
   uses_time_added = models.BooleanField(default=True)
   uses_upvotes = models.BooleanField(default=True)
   uses_downvotes = models.BooleanField(default=True)
+  uses_duration = models.BooleanField(default=True)
 
   def __unicode__(self):
     return self.name

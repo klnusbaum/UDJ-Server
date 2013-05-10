@@ -19,6 +19,7 @@ class ServerConfigTests(KurtisTestCase):
       self.assertEqual(actualAlgo.uses_time_added, algo['uses_time_added'])
       self.assertEqual(actualAlgo.uses_upvotes, algo['uses_upvotes'])
       self.assertEqual(actualAlgo.uses_downvotes, algo['uses_downvotes'])
+      self.assertEqual(actualAlgo.uses_duration, algo['uses_duration'])
 
   def testGetSearchRadii(self):
     response = self.doGet('/player_search_radius')

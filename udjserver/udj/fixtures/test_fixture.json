@@ -2869,7 +2869,8 @@
       "uses_adder" : false,
       "uses_time_added" : true,
       "uses_upvotes" : true,
-      "uses_downvotes" : true
+      "uses_downvotes" : true,
+      "uses_duration" : false
     }
   },
   {
@@ -2882,7 +2883,8 @@
       "uses_adder" : false,
       "uses_time_added" : true,
       "uses_upvotes" : false,
-      "uses_downvotes" : false
+      "uses_downvotes" : false,
+      "uses_duration" : false
     }
   },
   {
@@ -2895,7 +2897,8 @@
       "uses_adder" : true,
       "uses_time_added" : true,
       "uses_upvotes" : true,
-      "uses_downvotes" : true
+      "uses_downvotes" : true,
+      "uses_duration" : false
     }
   },
 

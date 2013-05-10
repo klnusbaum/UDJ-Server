@@ -30,7 +30,8 @@ class UDJEncoder(json.JSONEncoder):
         'uses_adder' : obj.uses_adder,
         'uses_time_added' : obj.uses_time_added,
         'uses_upvotes' : obj.uses_upvotes,
-        'uses_downvotes' : obj.uses_downvotes
+        'uses_downvotes' : obj.uses_downvotes,
+        'uses_duration' : obj.uses_duration
       }
     elif isinstance(obj, Player):
       toReturn = {
