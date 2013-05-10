@@ -1,4 +1,8 @@
 from django.db.models import Sum
+"""
+Playlist Algorithms should be functions that take a QuerySet of ActivePlaylistEntry objects.
+They should return a sorted QuerySet
+"""
 
 def totalVotes(queuedEntries):
   return queuedEntries.annotate(totalvotes=Sum('vote__weight')).order_by('-totalvotes','time_added')
@@ -6,7 +10,11 @@ def totalVotes(queuedEntries):
 def timeAdded(queuedEntries):
   return queuedEntries.order_by('time_added')
 
+
 def roundRobin(queuedEntries):
+  """
+  This doesn't return a queryset. It's poop. Should be fixed.
+  """
   queuedEntries = totalVotes(queuedEntries)
   usersongs = {}
   for entry in queuedEntries:
