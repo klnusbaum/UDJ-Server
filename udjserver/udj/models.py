@@ -556,8 +556,9 @@ class PlayerLocation(gismodels.Model):
 
 class Ticket(models.Model):
   user = models.ForeignKey(User)
-  ticket_hash = models.CharField(max_length=32, unique=True)
-  time_issued = models.DateTimeField(auto_now=True)
+  ticket_hash = models.CharField(max_length=64, unique=True)
+  time_issued = models.DateTimeField(auto_now_add=True)
+  time_last_used = models.DateTimeField(auto_now_add=True)
 
   class Meta:
     unique_together = ("user", "ticket_hash")
