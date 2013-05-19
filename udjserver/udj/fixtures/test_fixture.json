@@ -2908,7 +2908,8 @@
     "fields": {
       "ticket_hash": "9e25c0feed38afb11c3098a9628790f9", 
       "user": 5, 
-      "time_issued": "2012-04-24 23:01:37"
+      "time_issued": "2012-04-24 23:01:37",
+      "time_last_used": "2012-04-24 23:01:37"
     }
   },
 

@@ -1,6 +1,5 @@
 import json
 
-from udj.headers import DJANGO_TICKET_HEADER
 from udj.headers import MISSING_RESOURCE_HEADER
 from udj.headers import MISSING_REASON_HEADER
 from udj.models import Player

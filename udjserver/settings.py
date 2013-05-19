@@ -1,5 +1,7 @@
 import os
 from django.core.exceptions import ImproperlyConfigured
+from datetime import timedelta
+
 # Django settings for udjserver project.
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
@@ -144,6 +146,7 @@ def geocodeLocation(postal_code, country, address="", locality="", region=""):
   raise ImproperlyConfigured('Must specifiy a function for geocoding')
 
 DEFAULT_SORTING_ALGO = "totalVotes"
+TICKET_VALIDITY_LENGTH=timedelta(days=6*30)
 
 DEFAULT_PLAYER_PERMISSIONS = [u'CSS', u'MOS', u'SPT', u'CVO', u'SSA', u'SLO', u'SPA',
                               u'KUS', u'BUS', u'APR', u'ELI', u'DLI', u'MPE', u'CEV', 

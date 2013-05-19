@@ -14,23 +14,26 @@ from django.http import HttpRequest
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
+import uuid
+import time
+import hashlib
+
 
 def generateRandomHash():
-  rand_hash = random.getrandbits(128)
-  toReturn = "%032x" % rand_hash
-  return toReturn
+  rand = uuid.uuid4()
+  seconds = int(time.time())
+  raw = "UDJ-{0!s}-{1!s}".format(rand, seconds)
+  return hashlib.sha256(raw).hexdigest()
 
-def getUniqueRandHash():
-  rand_hash = generateRandomHash()
-  while Ticket.objects.filter(ticket_hash=rand_hash).exists():
-    rand_hash = generateRandomHash()
-  return rand_hash
-
-
-def obtainTicketForUser(userRequestingTicket):
-  ticket , created = Ticket.objects.get_or_create(
-    user=userRequestingTicket,
-    defaults={'ticket_hash' : getUniqueRandHash()})
+def obtainNewTicketForUser(userRequestingTicket):
+  """
+  There is a non-zero probability that we may get a unqiueness violation here
+  by generating the same random hash. However, the probability of this is so
+  astronomically small, we choose to not account for it. Google it if you don't
+  beleive me.
+  """
+  ticket = Ticket(user=userRequestingTicket, ticket_hash=generateRandomHash())
+  ticket.save()
   return ticket
 
 
@@ -43,7 +46,7 @@ def authenticate(request, json_params):
   try:
     userToAuth = User.objects.get(username=json_params['username'])
     if userToAuth.check_password(json_params['password']):
-      ticket = obtainTicketForUser(userToAuth)
+      ticket = obtainNewTicketForUser(userToAuth)
       ticket_and_id = {"ticket_hash" : ticket.ticket_hash, "user_id" : str(userToAuth.id)}
       response = HttpJSONResponse(json.dumps(ticket_and_id))
       return response

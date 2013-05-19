@@ -1,11 +1,13 @@
 from udj.models import Ticket
 from udj.headers import DJANGO_TICKET_HEADER
 from udj.headers import TICKET_HEADER
+from settings import TICKET_VALIDITY_LENGTH
 
 from django.http import HttpRequest
 from django.core.exceptions import ObjectDoesNotExist
 from udj.views.views07.responses import HttpResponseForbiddenWithReason
 from django.http import HttpResponse
+from datetime import datetime
 
 
 """
@@ -83,7 +85,10 @@ def NeedsAuth(function):
       return toReturn
 
     try:
-      validticket = Ticket.objects.get(ticket_hash=request.META[DJANGO_TICKET_HEADER])
+      validticket = Ticket.objects.get(ticket_hash=request.META[DJANGO_TICKET_HEADER],
+                                       time_last_used__gte=datetime.now()-TICKET_VALIDITY_LENGTH)
+      validticket.time_last_used = datetime.now()
+      validticket.save()
       args[0].udjuser = validticket.user
       return function(*args, **kwargs)
     except ObjectDoesNotExist:

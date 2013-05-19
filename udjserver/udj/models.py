@@ -560,9 +560,6 @@ class Ticket(models.Model):
   time_issued = models.DateTimeField(auto_now_add=True)
   time_last_used = models.DateTimeField(auto_now_add=True)
 
-  class Meta:
-    unique_together = ("user", "ticket_hash")
-
   def __unicode__(self):
     return "Ticket " + self.ticket_hash +  " : User id " + str(self.user.id)
 
