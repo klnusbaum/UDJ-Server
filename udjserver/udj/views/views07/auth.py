@@ -20,6 +20,9 @@ import hashlib
 
 
 def generateRandomHash():
+  """
+  Thanks for the randoms murph!
+  """
   rand = uuid.uuid4()
   seconds = int(time.time())
   raw = "UDJ-{0!s}-{1!s}".format(rand, seconds)
