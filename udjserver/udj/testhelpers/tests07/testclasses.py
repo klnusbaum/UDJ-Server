@@ -6,14 +6,6 @@ from udj.models import Ticket
 from udj.models import Participant
 from udj.headers import DJANGO_TICKET_HEADER
 from datetime import datetime
-"""
-from udj.views.views07.auth import hashPlayerPassword
-from udj.headers import DJANGO_TICKET_HEADER, MISSING_RESOURCE_HEADER
-from udj.models import Player, PlayerPassword, PlayerLocation, PlayerAdmin, ActivePlaylistEntry, PlaylistEntryTimePlayed
-from udj.models import Ticket, Participant, ActivePlaylistEntry, LibraryEntry
-
-from datetime import timedelta
-"""
 
 class DoesServerOpsTestCase(TransactionTestCase):
   fixtures = ['test_fixture']
