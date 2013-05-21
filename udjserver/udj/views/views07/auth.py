@@ -6,7 +6,7 @@ from udj.headers import DJANGO_TICKET_HEADER
 from udj.views.views07.decorators import AcceptsMethods
 from udj.views.views07.decorators import HasNZJSONParams
 from udj.views.views07.decorators import NeedsJSON
-from udj.views.views07.responses import HttpJSONResponse
+from udj.views.views07.responses import HttpJSONResponse, HttpResponseUnauthorized
 
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
@@ -40,6 +40,12 @@ def obtainNewTicketForUser(userRequestingTicket):
   return ticket
 
 
+def generate_ticket_response(userToAuth):
+  ticket = obtainNewTicketForUser(userToAuth)
+  ticket_and_id = {"ticket_hash" : ticket.ticket_hash, "user_id" : str(userToAuth.id)}
+  response = HttpJSONResponse(json.dumps(ticket_and_id))
+  return response
+
 @csrf_exempt
 @AcceptsMethods(['POST'])
 @NeedsJSON
@@ -48,17 +54,44 @@ def authenticate(request, json_params):
 
   try:
     userToAuth = User.objects.get(username=json_params['username'])
-    if userToAuth.check_password(json_params['password']):
-      ticket = obtainNewTicketForUser(userToAuth)
-      ticket_and_id = {"ticket_hash" : ticket.ticket_hash, "user_id" : str(userToAuth.id)}
-      response = HttpJSONResponse(json.dumps(ticket_and_id))
-      return response
+    if userToAuth.has_usable_password() and userToAuth.check_password(json_params['password']):
+      return generate_ticket_response(userToAuth)
   except ObjectDoesNotExist:
     pass
 
-  response = HttpResponse(status=401)
-  response['WWW-Authenticate'] = 'password'
-  return response
+  return HttpResponseUnauthorized('password')
 
+
+@csrf_exempt
+@AcceptsMethods(['POST'])
+@NeedsJSON
+@HasNZJSONParams(['user_id', 'access_token'])
+def fb_authenticate(request, json_params):
+  import requests
+  params = {
+      "fields" : "last_name,first_name,email,username"
+      "access_token" : json_params['access_token']
+  }
+  user_request = requests.get("https://graph.facebook.com/1278780539" params)
+  user_data = json.loads(user_request.text)
+
+  if ("last_name" not in user_data or
+      "first_name" not in user_data or
+      "email" not in user_data or
+      "username" not in user_data):
+    return HttpResponseUnauthorized('access_token')
+
+  user_to_auth = None
+  try:
+    user_to_auth = User.objects.get(username=user_data['username'])
+  except ObjectDoesNotExist:
+    user_to_auth = User(username=user_data['username'],
+                first_name=user_data['first_name'],
+                last_name=user_data['last_name'],
+                email=user_data['email'])
+    user.set_unusable_password()
+    user.save()
+
+  return generate_ticket_response(user_to_auth)
 
 
