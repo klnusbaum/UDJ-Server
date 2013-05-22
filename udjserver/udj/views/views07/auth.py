@@ -1,7 +1,7 @@
 import json
 import random
 
-from udj.models import Ticket
+from udj.models import Ticket, FbUser
 from udj.headers import DJANGO_TICKET_HEADER
 from udj.views.views07.decorators import AcceptsMethods
 from udj.views.views07.decorators import HasNZJSONParams
@@ -85,7 +85,7 @@ def fb_authenticate(request, json_params):
 
   user_to_auth = None
   try:
-    user_to_auth = User.objects.get(username=user_data['username'])
+    user_to_auth = FbUser.objects.get(fb_user_id=json_params['user_id']).user
   except ObjectDoesNotExist:
     user_to_auth = User(username=user_data['username'],
                 first_name=user_data['first_name'],
@@ -93,6 +93,7 @@ def fb_authenticate(request, json_params):
                 email=user_data['email'])
     user_to_auth.set_unusable_password()
     user_to_auth.save()
+    FbUser(user=user_to_auth, fb_user_id=json_params['user_id']).save()
 
   return generate_ticket_response(user_to_auth)
 

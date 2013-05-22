@@ -5,11 +5,11 @@ from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
 
-from udj.models import Ticket
+from udj.models import Ticket, FbUser
 from udj.headers import DJANGO_TICKET_HEADER
 from udj.testhelpers.tests07.testclasses import BasicUDJTestCase
 
-from settings import TICKET_VALIDITY_LENGTH, FB_TEST_ACCESS_TOKEN
+from settings import TICKET_VALIDITY_LENGTH, FB_TEST_ACCESS_TOKEN, FB_TEST_USER_ID
 
 
 class AuthTests(BasicUDJTestCase):
@@ -89,20 +89,35 @@ class AuthTests(BasicUDJTestCase):
 class FbAuthTests(BasicUDJTestCase):
 
   def testFbAuth(self):
+    import requests
     params = {
-              "user_id" : "1278780539",
+              "user_id" : FB_TEST_USER_ID,
               "access_token" : FB_TEST_ACCESS_TOKEN
             }
     response = self.client.post('/udj/0_7/fb_auth', json.dumps(params), content_type='text/json')
 
     self.assertEqual(response.status_code, 200, response.content)
+    fb_user = FbUser.objects.get(fb_user_id=FB_TEST_USER_ID)
+    actual_user = fb_user.user
+
+    params = {
+        "fields" : "last_name,first_name,email,username",
+        "access_token" : FB_TEST_ACCESS_TOKEN
+        }
+    url = "https://graph.facebook.com/{0}".format(FB_TEST_USER_ID)
+    user_request = requests.get(url, params=params)
+    user_data = json.loads(user_request.text)
+    self.assertEqual(user_data['email'], actual_user.email)
+    self.assertEqual(user_data['first_name'], actual_user.first_name)
+    self.assertEqual(user_data['last_name'], actual_user.last_name)
+    self.assertEqual(user_data['username'], actual_user.username)
 
 
   def testBadFbAuth(self):
     params = {
               "user_id" : "1278780539",
               "access_token" : "badtoken"
-            }
+             }
     response = self.client.post('/udj/0_7/fb_auth', json.dumps(params), content_type='text/json')
 
     self.assertEqual(response.status_code, 401, response.content)

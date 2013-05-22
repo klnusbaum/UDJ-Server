@@ -162,6 +162,7 @@ RDIO_CONSUMER_KEY = ""
 RDIO_CONSUMER_SECRET = ""
 
 FB_TEST_ACCESS_TOKEN = ""
+FB_TEST_USER_ID = ""
 
 try:
   from settings_local import *

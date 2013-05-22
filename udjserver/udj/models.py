@@ -20,6 +20,10 @@ def zero_ten_validator(value):
   if value < 0 or value > 10:
     raise ValidationError(u'%s is not between 0 and 10' % value)
 
+class FbUser(models.Model):
+  user = models.ForeignKey(User, unique=True)
+  fb_user_id = models.CharField(max_length=200, unique=True)
+
 class SortingAlgorithm(models.Model):
   name = models.CharField(max_length=200, unique=True)
   description = models.CharField(max_length=500)
