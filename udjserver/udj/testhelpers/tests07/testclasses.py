@@ -7,9 +7,11 @@ from udj.models import Participant
 from udj.headers import DJANGO_TICKET_HEADER
 from datetime import datetime
 
-class DoesServerOpsTestCase(TransactionTestCase):
+class BasicUDJTestCase(TransactionTestCase):
   fixtures = ['test_fixture']
   client = Client()
+
+class DoesServerOpsTestCase(BasicUDJTestCase):
 
   def setUp(self):
     response = self.client.post('/udj/0_7/auth',

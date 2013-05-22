@@ -1,7 +1,7 @@
 from udj.models import Ticket
 from udj.headers import DJANGO_TICKET_HEADER
 from udj.headers import TICKET_HEADER
-from udj.views.views07.responses import HttpResponseForbiddenWithReason, HttpResponseUnathorized
+from udj.views.views07.responses import HttpResponseForbiddenWithReason, HttpResponseUnauthorized
 
 from django.http import HttpRequest
 from django.core.exceptions import ObjectDoesNotExist
@@ -47,9 +47,9 @@ def IsOwnerOrParticipates(function):
     if player.owning_user==user or player.isActiveParticipant(user):
       return function(*args, **kwargs)
     elif player.isKicked(user):
-      return HttpResponseUnathorized('kicked')
+      return HttpResponseUnauthorized('kicked')
     else:
-      return HttpResponseUnathorized('begin-participating')
+      return HttpResponseUnauthorized('begin-participating')
   return wrapper
 
 """
@@ -70,7 +70,7 @@ def NeedsAuth(function):
   def wrapper(*args, **kwargs):
     request = args[0]
     if DJANGO_TICKET_HEADER not in request.META:
-      return HttpResponseUnathorized('ticket-hash')
+      return HttpResponseUnauthorized('ticket-hash')
 
     try:
       validticket = Ticket.objects.get(ticket_hash=request.META[DJANGO_TICKET_HEADER],
