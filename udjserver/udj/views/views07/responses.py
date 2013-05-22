@@ -34,5 +34,5 @@ class HttpResponseNotAcceptable(HttpResponse):
 
 class HttpResponseUnauthorized(HttpResponse):
   def __init__(self, auth_fail_header_value):
-    super(HttpResponse, self).__init__(status=401)
+    super(HttpResponseUnauthorized, self).__init__(status=401)
     self['WWW-Authenticate'] = auth_fail_header_value

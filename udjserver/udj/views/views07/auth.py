@@ -69,17 +69,19 @@ def authenticate(request, json_params):
 def fb_authenticate(request, json_params):
   import requests
   params = {
-      "fields" : "last_name,first_name,email,username"
+      "fields" : "last_name,first_name,email,username",
       "access_token" : json_params['access_token']
   }
-  user_request = requests.get("https://graph.facebook.com/1278780539" params)
+
+  url = "https://graph.facebook.com/{0}".format(json_params['user_id'])
+  user_request = requests.get(url, params=params)
   user_data = json.loads(user_request.text)
 
   if ("last_name" not in user_data or
       "first_name" not in user_data or
       "email" not in user_data or
       "username" not in user_data):
-    return HttpResponseUnauthorized('access_token')
+    return HttpResponseUnauthorized('access-token')
 
   user_to_auth = None
   try:

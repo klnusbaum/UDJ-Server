@@ -87,3 +87,17 @@ class AuthTests(TestCase):
     self.assertEqual(response['WWW-Authenticate'], 'ticket-hash')
 
 
+class FbAuthTests(TestCase):
+  fixtures = ['test_fixture']
+  client = Client()
+
+  def testBadFbAuth(self):
+    params = {
+              "user_id" : "1278780539",
+              "access_token" : "badtoken"
+            }
+    response = self.client.post('/udj/0_7/fb_auth', json.dumps(params), content_type='text/json')
+
+    self.assertEqual(response.status_code, 401, response.content)
+    self.assertEqual(response['WWW-Authenticate'], 'access-token')
+
