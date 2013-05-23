@@ -238,6 +238,19 @@ class GetRecentlyPlayed(udj.testhelpers.tests07.testclasses.EnsureActiveJeffTest
     self.assertEqual('7', jsonResponse[0]['song']['id'])
     self.assertEqual('5', jsonResponse[1]['song']['id'])
 
+  @EnsureParticipationUpdated(3,1)
+  def testRecentlyPlayedWithDeletion(self):
+    to_delete = LibraryEntry.objects.get(pk=5)
+    to_delete.is_deleted = True
+    to_delete.save()
+    response = self.doGet('/players/1/recently_played')
+    self.assertEqual(response.status_code, 200)
+    self.isJSONResponse(response)
+    jsonResponse = json.loads(response.content)
+    self.assertEqual(1, len(jsonResponse))
+    self.assertEqual('7', jsonResponse[0]['song']['id'])
+
+
   @EnsureParticipationUpdated(3, 1)
   def testRecentlyPlayedWithMax(self):
     response = self.doGet('/players/1/recently_played?max_songs=1')

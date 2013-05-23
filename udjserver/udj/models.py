@@ -413,6 +413,7 @@ class Player(models.Model):
     #But it's still weird...
     return (PlaylistEntryTimePlayed.objects.filter(playlist_entry__player=self)
             .filter(playlist_entry__state='FN')
+            .exclude(playlist_entry__song__is_deleted=True)
             .order_by('-time_played')
             .distinct('time_played', 'playlist_entry__song__id'))
 
